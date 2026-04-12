@@ -60,6 +60,7 @@ export default function CollectionPage() {
   const [filterParallel, setFilterParallel] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('scarcity');
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewSize, setViewSize] = useState<'sm' | 'md'>('sm');
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -188,23 +189,27 @@ export default function CollectionPage() {
             <p className="text-xs text-muted">Drag cards to rearrange your showcase</p>
           </div>
           <div className="p-6 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 min-h-[320px]">
-            {showcaseCards.length === 0 ? (
-              <div className="flex items-center justify-center h-[280px] text-muted text-sm">
-                Click cards below to add them to your showcase
+            <SortableContext items={showcaseIds} strategy={rectSortingStrategy}>
+              <div className="flex flex-wrap gap-4 justify-center">
+                {showcaseCards.map((card) => (
+                  <SortableShowcaseCard
+                    key={card.id}
+                    card={card}
+                    onRemove={removeFromShowcase}
+                  />
+                ))}
+                {/* Empty slots */}
+                {Array.from({ length: Math.max(0, 8 - showcaseCards.length) }).map((_, i) => (
+                  <div
+                    key={`empty-${i}`}
+                    className="w-[200px] h-[280px] rounded-xl border-2 border-dashed border-border/40 flex flex-col items-center justify-center text-muted/40 gap-2"
+                  >
+                    <span className="text-3xl">+</span>
+                    <span className="text-xs">Slot {showcaseCards.length + i + 1}</span>
+                  </div>
+                ))}
               </div>
-            ) : (
-              <SortableContext items={showcaseIds} strategy={rectSortingStrategy}>
-                <div className="flex flex-wrap gap-4 justify-center">
-                  {showcaseCards.map((card) => (
-                    <SortableShowcaseCard
-                      key={card.id}
-                      card={card}
-                      onRemove={removeFromShowcase}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            )}
+            </SortableContext>
           </div>
         </section>
 
@@ -212,6 +217,34 @@ export default function CollectionPage() {
           {activeCard && <CardItem card={activeCard} size="md" />}
         </DragOverlay>
       </DndContext>
+
+      {/* Set tabs */}
+      <section className="mb-4">
+        <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+          <button
+            onClick={() => setFilterSet('all')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+              filterSet === 'all' ? 'bg-accent text-white' : 'bg-surface text-muted hover:text-foreground border border-border'
+            }`}
+          >
+            All Sets ({OWNED_CARDS.length})
+          </button>
+          {SETS.map(s => {
+            const count = OWNED_CARDS.filter(c => c.setSlug === s.slug).length;
+            return (
+              <button
+                key={s.slug}
+                onClick={() => setFilterSet(s.slug)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  filterSet === s.slug ? 'bg-accent text-white' : 'bg-surface text-muted hover:text-foreground border border-border'
+                }`}
+              >
+                <span>{s.icon}</span> {s.name} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Filters */}
       <section className="mb-6">
@@ -271,7 +304,23 @@ export default function CollectionPage() {
             <option value="price">Sort: Price</option>
           </select>
 
-          <span className="text-xs text-muted ml-auto">{filteredCards.length} cards</span>
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="flex rounded-lg border border-border overflow-hidden">
+              <button
+                onClick={() => setViewSize('sm')}
+                className={`px-2 py-1.5 text-xs ${viewSize === 'sm' ? 'bg-accent text-white' : 'bg-surface text-muted'}`}
+              >
+                Small
+              </button>
+              <button
+                onClick={() => setViewSize('md')}
+                className={`px-2 py-1.5 text-xs ${viewSize === 'md' ? 'bg-accent text-white' : 'bg-surface text-muted'}`}
+              >
+                Large
+              </button>
+            </div>
+            <span className="text-xs text-muted">{filteredCards.length} cards</span>
+          </div>
         </div>
       </section>
 
@@ -292,7 +341,7 @@ export default function CollectionPage() {
                   onClick={() => addToShowcase(card.id)}
                   className={showcaseIds.length < 8 ? 'cursor-pointer' : ''}
                 >
-                  <CardItem card={card} size="sm" />
+                  <CardItem card={card} size={viewSize} />
                 </div>
               </motion.div>
             ))}
