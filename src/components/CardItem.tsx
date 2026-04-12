@@ -56,65 +56,12 @@ export default function CardItem({ card, size = 'md', onClick, showPrice = false
 
   const borderColor = scarcityConfig.color;
 
-  const getParallelOverlay = () => {
+  const getParallelOverlayClass = () => {
     switch (card.parallel) {
-      case 'silver':
-        return (
-          <div
-            className="absolute inset-0 pointer-events-none rounded-xl opacity-20"
-            style={{
-              background: 'linear-gradient(135deg, transparent 0%, rgba(192,192,192,0.4) 25%, transparent 50%, rgba(192,192,192,0.3) 75%, transparent 100%)',
-              backgroundSize: '200% 200%',
-              animation: 'shimmer 3s ease-in-out infinite',
-            }}
-          />
-        );
-      case 'gold':
-        return (
-          <div
-            className="absolute inset-0 pointer-events-none rounded-xl opacity-25"
-            style={{
-              background: 'linear-gradient(135deg, transparent 0%, rgba(255,215,0,0.5) 25%, rgba(255,180,0,0.3) 50%, rgba(255,215,0,0.4) 75%, transparent 100%)',
-              backgroundSize: '200% 200%',
-              animation: 'shimmer 4s ease-in-out infinite',
-            }}
-          />
-        );
-      case 'holographic':
-        return (
-          <motion.div
-            className="absolute inset-0 pointer-events-none rounded-xl opacity-30"
-            style={{
-              background: useTransform(
-                [holoX, holoY],
-                ([hx, hy]) => `linear-gradient(${135 + (hx as number) * 1.5}deg,
-                  rgba(255,0,128,0.4) 0%,
-                  rgba(0,255,128,0.3) 20%,
-                  rgba(128,0,255,0.4) 40%,
-                  rgba(255,128,0,0.3) 60%,
-                  rgba(0,128,255,0.4) 80%,
-                  rgba(255,0,128,0.3) 100%)`
-              ),
-              mixBlendMode: 'screen',
-            }}
-          />
-        );
-      case 'obsidian':
-        return (
-          <>
-            <div
-              className="absolute inset-0 pointer-events-none rounded-xl"
-              style={{
-                background: 'radial-gradient(ellipse at 50% 0%, rgba(100,100,255,0.15) 0%, transparent 60%)',
-              }}
-            />
-            <div
-              className="absolute inset-[2px] pointer-events-none rounded-[10px] border border-indigo-500/20"
-            />
-          </>
-        );
-      default:
-        return null;
+      case 'silver': return 'silver-effect';
+      case 'gold': return 'gold-effect';
+      case 'holographic': return 'holo-effect';
+      default: return '';
     }
   };
 
@@ -187,7 +134,15 @@ export default function CardItem({ card, size = 'md', onClick, showPrice = false
           />
 
           {/* Parallel overlay effect */}
-          {getParallelOverlay()}
+          {card.parallel !== 'base' && card.parallel !== 'obsidian' && (
+            <div className={`absolute inset-0 pointer-events-none rounded-xl ${getParallelOverlayClass()}`} />
+          )}
+          {card.parallel === 'obsidian' && (
+            <>
+              <div className="absolute inset-0 pointer-events-none rounded-xl" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(100,100,255,0.15) 0%, transparent 60%)' }} />
+              <div className="absolute inset-[2px] pointer-events-none rounded-[10px] border border-indigo-500/20" />
+            </>
+          )}
 
           {/* Scarcity indicator strip with glow */}
           <div
