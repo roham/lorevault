@@ -1,0 +1,132 @@
+import { Challenge } from './types';
+
+export const CHALLENGES: Challenge[] = [
+  {
+    id: 'ch-1',
+    name: 'Complete the Baker Street Files',
+    description: 'Collect all 20 base cards from the Baker Street Files set.',
+    type: 'set-completion',
+    requirements: [
+      { description: 'Own 20 Baker Street Files base cards', met: false },
+    ],
+    reward: {
+      type: 'card',
+      name: 'Sherlock Holmes — The Final Problem (Holographic)',
+      description: 'An exclusive Holographic variant only available through this challenge.',
+      scarcity: 'epic',
+    },
+    progress: 14,
+    total: 20,
+    active: true,
+  },
+  {
+    id: 'ch-2',
+    name: 'Scarcity Hunter',
+    description: 'Collect 5 Legendary cards from any set.',
+    type: 'scarcity-chase',
+    requirements: [
+      { description: 'Own 5 Legendary scarcity cards', met: false },
+    ],
+    reward: {
+      type: 'badge',
+      name: 'Legendary Collector',
+      description: 'A prestigious badge displayed on your profile.',
+    },
+    progress: 3,
+    total: 5,
+    active: true,
+  },
+  {
+    id: 'ch-3',
+    name: 'Villains Unite',
+    description: 'Collect Moriarty, The Evil Queen, and The Queen of Hearts.',
+    type: 'thematic',
+    requirements: [
+      { description: 'Own Professor Moriarty', met: true },
+      { description: 'Own The Evil Queen', met: true },
+      { description: 'Own The Queen of Hearts', met: false },
+    ],
+    reward: {
+      type: 'title',
+      name: 'Master of Villains',
+      description: 'A collector title displayed on your profile.',
+    },
+    progress: 2,
+    total: 3,
+    active: true,
+  },
+  {
+    id: 'ch-4',
+    name: 'Daily Discovery',
+    description: 'List 2 cards on the marketplace today.',
+    type: 'daily',
+    requirements: [
+      { description: 'List 2 cards on the marketplace', met: false },
+    ],
+    reward: {
+      type: 'xp',
+      name: '+50 Collector XP',
+      description: 'Earn experience toward your Collector Score.',
+    },
+    progress: 1,
+    total: 2,
+    expiresAt: '2026-04-13T00:00:00Z',
+    active: true,
+  },
+  {
+    id: 'ch-5',
+    name: 'Weekly Explorer',
+    description: 'Open a pack and complete a trade this week.',
+    type: 'weekly',
+    requirements: [
+      { description: 'Open 1 pack', met: true },
+      { description: 'Complete 1 trade', met: false },
+    ],
+    reward: {
+      type: 'pack',
+      name: 'Bonus Pack Credit',
+      description: 'One free pack from any available set.',
+    },
+    progress: 1,
+    total: 2,
+    expiresAt: '2026-04-18T00:00:00Z',
+    active: true,
+  },
+  {
+    id: 'ch-6',
+    name: 'Gothic Master',
+    description: 'Collect all 20 cards from The Castle of Otranto set in any scarcity.',
+    type: 'set-completion',
+    requirements: [
+      { description: 'Own 20 unique Castle of Otranto characters', met: false },
+    ],
+    reward: {
+      type: 'card',
+      name: 'Count Dracula — The Eternal Night (Obsidian)',
+      description: 'A 1-of-1 Obsidian variant. The ultimate Gothic horror collectible.',
+      scarcity: 'legendary',
+    },
+    progress: 11,
+    total: 20,
+    active: true,
+  },
+  {
+    id: 'ch-7',
+    name: 'Olympian Glory',
+    description: 'Earn 1000 Collector XP this season.',
+    type: 'seasonal',
+    requirements: [
+      { description: 'Earn 1000 Collector XP', met: false },
+    ],
+    reward: {
+      type: 'card',
+      name: 'Zeus — The Lightning Crown (Gold)',
+      description: 'A seasonal exclusive available only this quarter.',
+      scarcity: 'rare',
+    },
+    progress: 720,
+    total: 1000,
+    expiresAt: '2026-06-30T00:00:00Z',
+    active: true,
+  },
+];
