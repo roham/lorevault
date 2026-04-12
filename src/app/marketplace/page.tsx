@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
@@ -13,6 +14,7 @@ export default function MarketplacePage() {
   const [sortBy, setSortBy] = useState<string>('price-low');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid');
 
   const listings = useMemo(() => {
     let cards = ALL_CARDS.filter(c => c.listed);
@@ -64,10 +66,26 @@ export default function MarketplacePage() {
           <h1 className="text-2xl font-bold">Marketplace</h1>
           <p className="text-sm text-muted">{stats.totalListings} active listings</p>
         </div>
-        <div className="flex gap-4 text-xs text-muted">
-          <div>Low: <span className="text-green-400 font-mono">${stats.lowestPrice.toFixed(2)}</span></div>
-          <div>Avg: <span className="text-accent font-mono">${stats.avgPrice.toFixed(2)}</span></div>
-          <div>High: <span className="text-legendary font-mono">${stats.highestPrice.toFixed(2)}</span></div>
+        <div className="flex items-center gap-4">
+          <div className="flex gap-4 text-xs text-muted">
+            <div>Low: <span className="text-green-400 font-mono">${stats.lowestPrice.toFixed(2)}</span></div>
+            <div>Avg: <span className="text-accent font-mono">${stats.avgPrice.toFixed(2)}</span></div>
+            <div>High: <span className="text-legendary font-mono">${stats.highestPrice.toFixed(2)}</span></div>
+          </div>
+          <div className="flex rounded-lg border border-border overflow-hidden">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 text-xs ${viewMode === 'grid' ? 'bg-accent text-white' : 'bg-surface text-muted'}`}
+            >
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode('compact')}
+              className={`px-3 py-1.5 text-xs ${viewMode === 'compact' ? 'bg-accent text-white' : 'bg-surface text-muted'}`}
+            >
+              List
+            </button>
+          </div>
         </div>
       </div>
 
@@ -116,31 +134,68 @@ export default function MarketplacePage() {
         </select>
       </div>
 
-      {/* Listings Grid */}
+      {/* Listings */}
       <AnimatePresence mode="popLayout">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {listings.map((card, i) => (
-            <motion.div
-              key={card.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.2, delay: Math.min(i * 0.02, 0.4) }}
-              className="relative group"
-            >
-              <CardItem card={card} size="sm" showPrice onClick={() => setSelectedCard(card)} />
-              {/* Quick buy button */}
-              <motion.button
-                initial={{ opacity: 0, y: 5 }}
-                whileHover={{ scale: 1.05 }}
-                className="absolute bottom-2 left-2 right-2 py-1.5 rounded-lg bg-accent text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        {viewMode === 'grid' ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {listings.map((card, i) => (
+              <motion.div
+                key={card.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2, delay: Math.min(i * 0.02, 0.4) }}
+                className="relative group"
               >
-                Buy ${card.price.toFixed(2)}
-              </motion.button>
-            </motion.div>
-          ))}
-        </div>
+                <Link href={`/card/${card.id}`}>
+                  <CardItem card={card} size="sm" showPrice />
+                </Link>
+                <motion.button
+                  className="absolute bottom-2 left-2 right-2 py-1.5 rounded-lg bg-accent text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                >
+                  Buy ${card.price.toFixed(2)}
+                </motion.button>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {listings.map((card, i) => (
+              <motion.div
+                key={card.id}
+                layout
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.15, delay: Math.min(i * 0.015, 0.3) }}
+              >
+                <Link
+                  href={`/card/${card.id}`}
+                  className="flex items-center gap-4 p-3 rounded-lg bg-surface border border-border hover:bg-surface-hover transition-colors"
+                >
+                  <span className="text-xl w-8 text-center">{card.symbol}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{card.character} — {card.moment}</div>
+                    <div className="text-xs text-muted">{card.set}</div>
+                  </div>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded" style={{ color: SCARCITY_CONFIG[card.scarcity].color, background: `${SCARCITY_CONFIG[card.scarcity].color}15` }}>
+                    {SCARCITY_CONFIG[card.scarcity].label}
+                  </span>
+                  {card.scarcity !== 'common' && (
+                    <span className="text-xs font-mono text-muted">#{card.serialNumber}/{card.maxSerial}</span>
+                  )}
+                  <span className="text-sm font-mono text-green-400 font-bold">${card.price.toFixed(2)}</span>
+                  <button
+                    onClick={(e) => { e.preventDefault(); }}
+                    className="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-semibold hover:bg-accent/90"
+                  >
+                    Buy
+                  </button>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </AnimatePresence>
 
       {listings.length === 0 && (

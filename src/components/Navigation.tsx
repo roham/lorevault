@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/marketplace', label: 'Marketplace', icon: '🏪' },
   { href: '/challenges', label: 'Challenges', icon: '🏆' },
   { href: '/packs', label: 'Open Packs', icon: '🎁' },
+  { href: '/leaderboard', label: 'Leaderboard', icon: '📊' },
   { href: '/profile', label: 'Profile', icon: '👤' },
 ];
 
