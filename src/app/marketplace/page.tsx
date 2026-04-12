@@ -159,6 +159,52 @@ export default function MarketplacePage() {
         </select>
       </div>
 
+      {/* Active filter chips */}
+      {(filterSet !== 'all' || filterScarcity !== 'all' || searchQuery) && (
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xs text-muted">Active filters:</span>
+          {filterSet !== 'all' && (
+            <button
+              onClick={() => setFilterSet('all')}
+              className="flex items-center gap-1 px-2 py-1 rounded-full bg-accent/10 text-accent text-xs border border-accent/20 hover:bg-accent/20"
+            >
+              {SETS.find(s => s.slug === filterSet)?.name}
+              <span className="ml-1 opacity-60">×</span>
+            </button>
+          )}
+          {filterScarcity !== 'all' && (
+            <button
+              onClick={() => setFilterScarcity('all')}
+              className="flex items-center gap-1 px-2 py-1 rounded-full text-xs border"
+              style={{
+                color: SCARCITY_CONFIG[filterScarcity as keyof typeof SCARCITY_CONFIG]?.color,
+                borderColor: `${SCARCITY_CONFIG[filterScarcity as keyof typeof SCARCITY_CONFIG]?.color}30`,
+                background: `${SCARCITY_CONFIG[filterScarcity as keyof typeof SCARCITY_CONFIG]?.color}10`,
+              }}
+            >
+              {filterScarcity}
+              <span className="ml-1 opacity-60">×</span>
+            </button>
+          )}
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="flex items-center gap-1 px-2 py-1 rounded-full bg-surface text-muted text-xs border border-border hover:bg-surface-hover"
+            >
+              &ldquo;{searchQuery}&rdquo;
+              <span className="ml-1 opacity-60">×</span>
+            </button>
+          )}
+          <button
+            onClick={() => { setFilterSet('all'); setFilterScarcity('all'); setSearchQuery(''); }}
+            className="text-xs text-muted hover:text-foreground underline ml-1"
+          >
+            Clear all
+          </button>
+          <span className="text-xs text-muted ml-auto">{listings.length} results</span>
+        </div>
+      )}
+
       {/* Listings */}
       <AnimatePresence mode="popLayout">
         {viewMode === 'grid' ? (
