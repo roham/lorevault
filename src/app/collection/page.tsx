@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DndContext,
@@ -20,9 +20,10 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
-import { OWNED_CARDS } from '@/data/cards';
+import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { Card, Scarcity, Parallel, SCARCITY_CONFIG } from '@/data/types';
+import { getOwnedCards, getShowcaseIds, setShowcaseIds as saveShowcaseIds } from '@/lib/store';
 
 function SortableShowcaseCard({ card, onRemove }: { card: Card; onRemove: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -49,12 +50,27 @@ function SortableShowcaseCard({ card, onRemove }: { card: Card; onRemove: (id: s
 }
 
 export default function CollectionPage() {
-  const [showcaseIds, setShowcaseIds] = useState<string[]>(() => {
-    const owned = OWNED_CARDS;
-    // Pick some interesting starter cards for showcase
-    const starters = owned.filter(c => c.scarcity === 'legendary' || c.scarcity === 'epic').slice(0, 6);
-    return starters.map(c => c.id);
-  });
+  const [ownedCards, setOwnedCards] = useState<Card[]>([]);
+  const [showcaseIds, setShowcaseIds] = useState<string[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const owned = getOwnedCards();
+    setOwnedCards(owned);
+    const savedShowcase = getShowcaseIds();
+    if (savedShowcase.length > 0) {
+      setShowcaseIds(savedShowcase);
+    } else {
+      const starters = owned.filter(c => c.scarcity === 'legendary' || c.scarcity === 'epic').slice(0, 6);
+      setShowcaseIds(starters.map(c => c.id));
+    }
+    setLoaded(true);
+  }, []);
+
+  // Persist showcase changes
+  useEffect(() => {
+    if (loaded) saveShowcaseIds(showcaseIds);
+  }, [showcaseIds, loaded]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [filterSet, setFilterSet] = useState<string>('all');
   const [filterScarcity, setFilterScarcity] = useState<string>('all');
@@ -69,12 +85,12 @@ export default function CollectionPage() {
 
   const showcaseCards = useMemo(() => {
     return showcaseIds
-      .map(id => OWNED_CARDS.find(c => c.id === id))
+      .map(id => ownedCards.find(c => c.id === id))
       .filter(Boolean) as Card[];
   }, [showcaseIds]);
 
   const filteredCards = useMemo(() => {
-    let cards = OWNED_CARDS.filter(c => !showcaseIds.includes(c.id));
+    let cards = ownedCards.filter(c => !showcaseIds.includes(c.id));
 
     if (filterSet !== 'all') cards = cards.filter(c => c.setSlug === filterSet);
     if (filterScarcity !== 'all') cards = cards.filter(c => c.scarcity === filterScarcity);
@@ -142,18 +158,18 @@ export default function CollectionPage() {
     setShowcaseIds(showcaseIds.filter(id => id !== cardId));
   }
 
-  const activeCard = activeId ? OWNED_CARDS.find(c => c.id === activeId) : null;
+  const activeCard = activeId ? ownedCards.find(c => c.id === activeId) : null;
 
   // Stats
-  const scarcityCounts = OWNED_CARDS.reduce((acc, c) => {
+  const scarcityCounts = ownedCards.reduce((acc, c) => {
     acc[c.scarcity] = (acc[c.scarcity] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const totalValue = OWNED_CARDS.reduce((sum, c) => sum + c.price, 0);
+  const totalValue = ownedCards.reduce((sum, c) => sum + c.price, 0);
   const setCompletion = SETS.map(s => ({
     ...s,
-    owned: new Set(OWNED_CARDS.filter(c => c.setSlug === s.slug).map(c => c.character)).size,
+    owned: new Set(ownedCards.filter(c => c.setSlug === s.slug).map(c => c.character)).size,
   }));
 
   return (
@@ -162,7 +178,7 @@ export default function CollectionPage() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold">My Collection</h1>
-          <p className="text-sm text-muted">{OWNED_CARDS.length} cards collected</p>
+          <p className="text-sm text-muted">{ownedCards.length} cards collected</p>
         </div>
         <div className="flex gap-2">
           {Object.entries(scarcityCounts).map(([scarcity, count]) => (
@@ -183,7 +199,7 @@ export default function CollectionPage() {
       {/* Quick stats */}
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6">
         <div className="p-3 rounded-xl bg-surface border border-border text-center">
-          <div className="text-lg font-bold text-accent">{OWNED_CARDS.length}</div>
+          <div className="text-lg font-bold text-accent">{ownedCards.length}</div>
           <div className="text-[10px] text-muted">Cards</div>
         </div>
         <div className="p-3 rounded-xl bg-surface border border-border text-center">
@@ -256,10 +272,10 @@ export default function CollectionPage() {
               filterSet === 'all' ? 'bg-accent text-white' : 'bg-surface text-muted hover:text-foreground border border-border'
             }`}
           >
-            All Sets ({OWNED_CARDS.length})
+            All Sets ({ownedCards.length})
           </button>
           {SETS.map(s => {
-            const count = OWNED_CARDS.filter(c => c.setSlug === s.slug).length;
+            const count = ownedCards.filter(c => c.setSlug === s.slug).length;
             return (
               <button
                 key={s.slug}
