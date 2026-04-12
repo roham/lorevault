@@ -47,6 +47,35 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/* How It Works */}
+      <section className="mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          {[
+            { step: '1', icon: '🎁', title: 'Open Packs', desc: 'Use pack credits to open themed packs. Each contains 5 cards with guaranteed rare or better.', href: '/packs' },
+            { step: '2', icon: '📦', title: 'Build Your Collection', desc: 'Cards are saved permanently. Chase legendary parallels and low serial numbers.', href: '/collection' },
+            { step: '3', icon: '🏆', title: 'Complete Challenges', desc: 'Earn XP, badges, and exclusive rewards by completing set and thematic challenges.', href: '/challenges' },
+            { step: '4', icon: '✨', title: 'Show Off', desc: 'Curate your showcase, climb leaderboards, and trade with other collectors.', href: '/profile' },
+          ].map((item, i) => (
+            <motion.div
+              key={item.step}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + i * 0.1, duration: 0.4 }}
+            >
+              <Link
+                href={item.href}
+                className="block p-5 rounded-xl border border-border bg-surface hover:bg-surface-hover transition-all text-center group h-full"
+              >
+                <div className="text-3xl mb-2">{item.icon}</div>
+                <div className="text-xs text-accent font-mono mb-1">Step {item.step}</div>
+                <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{item.title}</h3>
+                <p className="text-xs text-muted">{item.desc}</p>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       {/* Featured Cards Carousel */}
       <section className="mb-16">
         <div className="flex items-center justify-between mb-6">
