@@ -219,14 +219,23 @@ export default function CardItem({ card, size = 'md', onClick, showPrice = false
             </div>
           )}
 
-          {/* Character symbol (placeholder for art) */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <motion.span
-              className={`${textSizes[size].symbol} drop-shadow-lg`}
-              style={{ opacity: 0.85 }}
+          {/* Card art placeholder — monogram + symbol */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            {/* Large monogram initial */}
+            <span
+              className={`${size === 'lg' ? 'text-[80px]' : size === 'md' ? 'text-[56px]' : 'text-[36px]'} font-bold leading-none`}
+              style={{
+                color: `${borderColor}20`,
+                textShadow: `0 0 40px ${borderColor}15`,
+                fontFamily: 'Georgia, serif',
+              }}
             >
+              {card.character[0]}
+            </span>
+            {/* Emoji accent */}
+            <span className={`${textSizes[size].symbol} -mt-2 drop-shadow-lg relative z-10`} style={{ opacity: 0.9 }}>
               {card.symbol}
-            </motion.span>
+            </span>
           </div>
 
           {/* Vignette */}
