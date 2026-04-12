@@ -1,13 +1,20 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
+import { getOwnedCardIds } from '@/lib/store';
 
 export default function CardDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const [isOwned, setIsOwned] = useState(false);
+
+  useEffect(() => {
+    const owned = new Set(getOwnedCardIds());
+    setIsOwned(owned.has(id));
+  }, []);
   const { id } = use(params);
   const card = ALL_CARDS.find(c => c.id === id);
 
@@ -131,13 +138,21 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
             </div>
           </div>
 
-          {/* Buy button */}
-          <button className="w-full py-3.5 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent/90 transition-colors mb-3">
-            Buy Now — ${card.price.toFixed(2)}
-          </button>
-          <button className="w-full py-3 rounded-xl bg-surface border border-border text-foreground font-semibold text-sm hover:bg-surface-hover transition-colors">
-            Make an Offer
-          </button>
+          {/* Buy/Own indicator */}
+          {isOwned ? (
+            <div className="w-full py-3.5 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 font-semibold text-sm text-center mb-3">
+              ✓ You own this card
+            </div>
+          ) : (
+            <>
+              <button className="w-full py-3.5 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent/90 transition-colors mb-3">
+                Buy Now — ${card.price.toFixed(2)}
+              </button>
+              <button className="w-full py-3 rounded-xl bg-surface border border-border text-foreground font-semibold text-sm hover:bg-surface-hover transition-colors">
+                Make an Offer
+              </button>
+            </>
+          )}
 
           {/* Lore */}
           <div className="mt-6 p-4 rounded-xl bg-surface/50 border border-border/50">
