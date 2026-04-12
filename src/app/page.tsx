@@ -1,13 +1,27 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
+import { getOwnedCardIds, getPackCredits, getXP, getStreak, recordVisit } from '@/lib/store';
 
 export default function Home() {
+  const [ownedCount, setOwnedCount] = useState(0);
+  const [packs, setPacks] = useState(0);
+  const [xp, setXp] = useState(0);
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    recordVisit();
+    setOwnedCount(getOwnedCardIds().length);
+    setPacks(getPackCredits());
+    setXp(getXP());
+    setStreak(getStreak());
+  }, []);
   const featuredCards = SETS.map(set => {
     const setCards = ALL_CARDS.filter(c => c.setSlug === set.slug);
     return setCards.find(c => c.scarcity === 'legendary') || setCards.find(c => c.scarcity === 'epic') || setCards[0];
@@ -199,10 +213,10 @@ export default function Home() {
       <section className="mb-16">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: 'Total Cards', value: ALL_CARDS.length.toString(), icon: '🃏' },
-            { label: 'Sets', value: SETS.length.toString(), icon: '📚' },
-            { label: 'Your Collection', value: '—', icon: '📦' },
-            { label: 'Active Challenges', value: CHALLENGES.filter(c => c.active).length.toString(), icon: '🏆' },
+            { label: 'Your Cards', value: ownedCount.toString(), icon: '📦' },
+            { label: 'Pack Credits', value: packs.toString(), icon: '🎁' },
+            { label: 'XP Earned', value: xp.toString(), icon: '⭐' },
+            { label: 'Day Streak', value: streak > 0 ? `${streak} 🔥` : '0', icon: '📅' },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
