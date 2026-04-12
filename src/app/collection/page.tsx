@@ -401,7 +401,20 @@ export default function CollectionPage() {
           </div>
         </AnimatePresence>
 
-        {filteredCards.length === 0 && (
+        {filteredCards.length === 0 && ownedCards.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-60 text-center">
+            <span className="text-4xl mb-3">📦</span>
+            <h3 className="text-lg font-semibold mb-1">Your collection is empty</h3>
+            <p className="text-sm text-muted mb-4">Open packs to start building your collection of legendary characters.</p>
+            <Link
+              href="/packs"
+              className="px-6 py-2.5 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent/90 transition-colors"
+            >
+              Open Your First Pack
+            </Link>
+          </div>
+        )}
+        {filteredCards.length === 0 && ownedCards.length > 0 && (
           <div className="flex items-center justify-center h-40 text-muted text-sm">
             No cards match your filters
           </div>
