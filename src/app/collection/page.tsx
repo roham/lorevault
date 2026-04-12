@@ -150,10 +150,16 @@ export default function CollectionPage() {
     return acc;
   }, {} as Record<string, number>);
 
+  const totalValue = OWNED_CARDS.reduce((sum, c) => sum + c.price, 0);
+  const setCompletion = SETS.map(s => ({
+    ...s,
+    owned: new Set(OWNED_CARDS.filter(c => c.setSlug === s.slug).map(c => c.character)).size,
+  }));
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold">My Collection</h1>
           <p className="text-sm text-muted">{OWNED_CARDS.length} cards collected</p>
@@ -172,6 +178,28 @@ export default function CollectionPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Quick stats */}
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6">
+        <div className="p-3 rounded-xl bg-surface border border-border text-center">
+          <div className="text-lg font-bold text-accent">{OWNED_CARDS.length}</div>
+          <div className="text-[10px] text-muted">Cards</div>
+        </div>
+        <div className="p-3 rounded-xl bg-surface border border-border text-center">
+          <div className="text-lg font-bold text-green-400">${totalValue.toFixed(0)}</div>
+          <div className="text-[10px] text-muted">Value</div>
+        </div>
+        <div className="p-3 rounded-xl bg-surface border border-border text-center">
+          <div className="text-lg font-bold" style={{ color: SCARCITY_CONFIG.legendary.color }}>{scarcityCounts.legendary || 0}</div>
+          <div className="text-[10px] text-muted">Legendary</div>
+        </div>
+        {setCompletion.slice(0, 3).map(s => (
+          <div key={s.slug} className="p-3 rounded-xl bg-surface border border-border text-center">
+            <div className="text-lg font-bold text-foreground">{Math.round((s.owned / s.cardCount) * 100)}%</div>
+            <div className="text-[10px] text-muted truncate">{s.icon} {s.name.split(' ').slice(0, 2).join(' ')}</div>
+          </div>
+        ))}
       </div>
 
       <DndContext
