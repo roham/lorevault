@@ -125,30 +125,67 @@ export default function PacksPage() {
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentReveal}
-                    initial={{ scale: 0, rotateY: 180 }}
-                    animate={{ scale: 1, rotateY: 0 }}
+                    initial={{ scale: 0, rotateY: 180, opacity: 0 }}
+                    animate={{ scale: 1, rotateY: 0, opacity: 1 }}
                     transition={{
                       type: 'spring',
-                      stiffness: 200,
-                      damping: 20,
-                      duration: 0.6,
+                      stiffness: 180,
+                      damping: 18,
+                      duration: 0.8,
                     }}
-                    className="mb-4"
+                    className={`mb-4 relative ${
+                      revealedCards[currentReveal]?.scarcity === 'legendary' ? 'glow-legendary' :
+                      revealedCards[currentReveal]?.scarcity === 'epic' ? 'glow-epic' :
+                      revealedCards[currentReveal]?.scarcity === 'rare' ? 'glow-rare' : ''
+                    } rounded-xl`}
                   >
                     {revealedCards[currentReveal] && (
                       <>
-                        {/* Scarcity flash effect */}
+                        {/* Scarcity flash burst */}
                         {(revealedCards[currentReveal].scarcity === 'epic' || revealedCards[currentReveal].scarcity === 'legendary') && (
                           <motion.div
-                            initial={{ opacity: 0.8, scale: 1 }}
-                            animate={{ opacity: 0, scale: 3 }}
-                            transition={{ duration: 1 }}
-                            className="absolute inset-0 rounded-full"
+                            initial={{ opacity: 0.9, scale: 0.5 }}
+                            animate={{ opacity: 0, scale: 4 }}
+                            transition={{ duration: 1.2, ease: 'easeOut' }}
+                            className="absolute inset-0 z-20 pointer-events-none"
                             style={{
-                              background: `radial-gradient(circle, ${SCARCITY_CONFIG[revealedCards[currentReveal].scarcity].color}40, transparent)`,
-                              pointerEvents: 'none',
+                              background: `radial-gradient(circle, ${SCARCITY_CONFIG[revealedCards[currentReveal].scarcity].color}60, ${SCARCITY_CONFIG[revealedCards[currentReveal].scarcity].color}20, transparent)`,
+                              borderRadius: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              left: '50%',
+                              top: '50%',
+                              width: '200%',
+                              height: '200%',
                             }}
                           />
+                        )}
+                        {/* Floating particles for legendary */}
+                        {revealedCards[currentReveal].scarcity === 'legendary' && (
+                          <>
+                            {Array.from({ length: 8 }).map((_, pi) => (
+                              <motion.div
+                                key={pi}
+                                initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                                animate={{
+                                  opacity: 0,
+                                  y: -100 - Math.random() * 60,
+                                  x: (Math.random() - 0.5) * 120,
+                                  scale: 0,
+                                }}
+                                transition={{ duration: 1.5 + Math.random() * 0.5, delay: 0.2 + pi * 0.08, ease: 'easeOut' }}
+                                className="absolute z-30 pointer-events-none"
+                                style={{
+                                  left: `${20 + Math.random() * 60}%`,
+                                  bottom: `${10 + Math.random() * 30}%`,
+                                  width: 4 + Math.random() * 4,
+                                  height: 4 + Math.random() * 4,
+                                  borderRadius: '50%',
+                                  background: '#f59e0b',
+                                  boxShadow: '0 0 6px #f59e0b',
+                                }}
+                              />
+                            ))}
+                          </>
                         )}
                         <CardItem card={revealedCards[currentReveal]} size="lg" />
                       </>
