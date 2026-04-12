@@ -1,13 +1,20 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { SCARCITY_CONFIG, Scarcity } from '@/data/types';
+import { getOwnedCardIds } from '@/lib/store';
 
 export default function SetsPage() {
+  const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    setOwnedIds(new Set(getOwnedCardIds()));
+  }, []);
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
       <h1 className="text-2xl font-bold mb-1">Card Sets</h1>
@@ -16,7 +23,7 @@ export default function SetsPage() {
       <div className="space-y-8">
         {SETS.map((set, si) => {
           const setCards = ALL_CARDS.filter(c => c.setSlug === set.slug);
-          const ownedCards = setCards.filter(() => false); // Dynamic — use store in client
+          const ownedCards = setCards.filter(c => ownedIds.has(c.id));
           const uniqueOwned = new Set(ownedCards.map(c => c.character)).size;
           const completion = Math.round((uniqueOwned / set.cardCount) * 100);
 
