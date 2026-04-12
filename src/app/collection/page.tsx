@@ -18,6 +18,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { OWNED_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
@@ -337,11 +338,19 @@ export default function CollectionPage() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.2, delay: Math.min(i * 0.02, 0.3) }}
               >
-                <div
-                  onClick={() => addToShowcase(card.id)}
-                  className={showcaseIds.length < 8 ? 'cursor-pointer' : ''}
-                >
-                  <CardItem card={card} size={viewSize} />
+                <div className="relative group">
+                  <Link href={`/card/${card.id}`}>
+                    <CardItem card={card} size={viewSize} />
+                  </Link>
+                  {showcaseIds.length < 8 && !showcaseIds.includes(card.id) && (
+                    <button
+                      onClick={(e) => { e.preventDefault(); addToShowcase(card.id); }}
+                      className="absolute top-1 right-1 w-6 h-6 rounded-full bg-accent/80 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      title="Add to showcase"
+                    >
+                      +
+                    </button>
+                  )}
                 </div>
               </motion.div>
             ))}
