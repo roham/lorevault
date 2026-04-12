@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { CHALLENGES } from '@/data/challenges';
 import { SCARCITY_CONFIG } from '@/data/types';
 
@@ -34,8 +35,43 @@ export default function ChallengesPage() {
         <h1 className="text-2xl font-bold mb-1">Challenges</h1>
         <p className="text-sm text-muted">{activeChallenges.length} active challenges</p>
 
+        {/* Streak Tracker */}
+        <div className="mt-4 p-4 rounded-xl bg-surface border border-border mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🔥</span>
+              <span className="text-sm font-semibold">Daily Streak</span>
+            </div>
+            <div className="text-right">
+              <span className="text-lg font-bold text-orange-400">7 days</span>
+              <span className="text-xs text-muted ml-1">Best: 14</span>
+            </div>
+          </div>
+          <div className="flex gap-1.5">
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
+              <div key={day} className="flex-1 text-center">
+                <div
+                  className={`w-full aspect-square rounded-lg flex items-center justify-center text-xs font-bold mb-1 ${
+                    i < 5
+                      ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                      : i === 5
+                        ? 'bg-accent/20 text-accent border border-accent/30 animate-pulse'
+                        : 'bg-background text-muted/40 border border-border/50'
+                  }`}
+                >
+                  {i < 5 ? '✓' : i === 5 ? '!' : '○'}
+                </div>
+                <span className="text-[9px] text-muted">{day}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-2 text-xs text-muted">
+            Complete any challenge today to keep your streak! <span className="text-orange-400 font-medium">+2x XP at 7 days</span>
+          </div>
+        </div>
+
         {/* Overall progress */}
-        <div className="mt-4 p-4 rounded-xl bg-surface border border-border">
+        <div className="p-4 rounded-xl bg-surface border border-border">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Overall Progress</span>
             <span className="text-sm text-accent font-bold">
@@ -93,16 +129,24 @@ export default function ChallengesPage() {
                   <div className="space-y-1.5 mb-3">
                     {challenge.requirements.map((req, j) => (
                       <div key={j} className="flex items-center gap-2 text-xs">
-                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
+                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] flex-shrink-0 ${
                           req.met
                             ? 'bg-green-500/20 text-green-400'
                             : 'bg-background text-muted'
                         }`}>
                           {req.met ? '✓' : '○'}
                         </span>
-                        <span className={req.met ? 'text-foreground line-through opacity-60' : 'text-muted'}>
+                        <span className={`flex-1 ${req.met ? 'text-foreground line-through opacity-60' : 'text-muted'}`}>
                           {req.description}
                         </span>
+                        {!req.met && (challenge.type === 'set-completion' || challenge.type === 'thematic' || challenge.type === 'scarcity-chase') && (
+                          <Link
+                            href="/marketplace"
+                            className="text-accent hover:underline flex-shrink-0 font-medium"
+                          >
+                            Find on Marketplace →
+                          </Link>
+                        )}
                       </div>
                     ))}
                   </div>
