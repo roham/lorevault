@@ -388,8 +388,8 @@ export default function CollectionPage() {
                   </Link>
                   {showcaseIds.length < 8 && !showcaseIds.includes(card.id) && (
                     <button
-                      onClick={(e) => { e.preventDefault(); addToShowcase(card.id); }}
-                      className="absolute top-1 right-1 w-6 h-6 rounded-full bg-accent/80 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToShowcase(card.id); }}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-accent text-white text-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-lg hover:bg-accent/80"
                       title="Add to showcase"
                     >
                       +
