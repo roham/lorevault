@@ -23,7 +23,8 @@ import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { Card, Scarcity, Parallel, SCARCITY_CONFIG } from '@/data/types';
-import { getOwnedCards, getShowcaseIds, setShowcaseIds as saveShowcaseIds } from '@/lib/store';
+import { getOwnedCards, getShowcaseIds, setShowcaseIds as saveShowcaseIds, getPackCredits } from '@/lib/store';
+import { getOnboardingState, updateOnboarding } from '@/lib/onboarding';
 
 function SortableShowcaseCard({ card, onRemove }: { card: Card; onRemove: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -53,17 +54,26 @@ export default function CollectionPage() {
   const [ownedCards, setOwnedCards] = useState<Card[]>([]);
   const [showcaseIds, setShowcaseIds] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [showFirstVisitBanner, setShowFirstVisitBanner] = useState(false);
+  const [packsRemaining, setPacksRemaining] = useState(0);
 
   useEffect(() => {
     const owned = getOwnedCards();
     setOwnedCards(owned);
+    setPacksRemaining(getPackCredits());
+
     const savedShowcase = getShowcaseIds();
     if (savedShowcase.length > 0) {
       setShowcaseIds(savedShowcase);
-    } else {
-      const starters = owned.filter(c => c.scarcity === 'legendary' || c.scarcity === 'epic').slice(0, 6);
-      setShowcaseIds(starters.map(c => c.id));
     }
+
+    // Check if this is the first visit to collection after opening first pack
+    const onboarding = getOnboardingState();
+    if (onboarding.hasOpenedFirstPack && !onboarding.hasSeenCollectionReveal) {
+      setShowFirstVisitBanner(true);
+      updateOnboarding({ hasSeenCollectionReveal: true });
+    }
+
     setLoaded(true);
   }, []);
 
@@ -224,6 +234,35 @@ export default function CollectionPage() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
+        {/* First visit celebration banner */}
+        {showFirstVisitBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-accent/10 via-purple-500/10 to-accent/10 border border-accent/20 text-center"
+          >
+            <motion.span
+              className="text-3xl block mb-2"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              🎉
+            </motion.span>
+            <h3 className="text-base font-bold mb-1">Your collection has begun!</h3>
+            <p className="text-xs text-muted mb-3">
+              Tap the <span className="text-accent font-semibold">+</span> on any card below to add it to your showcase. Your showcase is how other collectors see you.
+            </p>
+            {packsRemaining > 0 && (
+              <Link
+                href="/packs"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-white text-xs font-semibold"
+              >
+                🎁 Open {packsRemaining} More Packs
+              </Link>
+            )}
+          </motion.div>
+        )}
+
         {/* Showcase Section */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-4">
