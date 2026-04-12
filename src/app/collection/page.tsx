@@ -428,18 +428,24 @@ export default function CollectionPage() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.2, delay: Math.min(i * 0.02, 0.3) }}
               >
-                <div className="relative group">
+                <div className="relative">
                   <Link href={`/card/${card.id}`}>
                     <CardItem card={card} size={viewSize} />
                   </Link>
                   {showcaseIds.length < 8 && !showcaseIds.includes(card.id) && (
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToShowcase(card.id); }}
-                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-accent text-white text-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-lg hover:bg-accent/80"
-                      title="Add to showcase"
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addToShowcase(card.id);
+                      }}
+                      className="absolute top-1.5 right-1.5 w-8 h-8 rounded-full bg-accent text-white text-base font-bold flex items-center justify-center z-30 shadow-lg cursor-pointer active:scale-90 transition-transform touch-manipulation"
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
                     >
                       +
-                    </button>
+                    </div>
                   )}
                 </div>
               </motion.div>
