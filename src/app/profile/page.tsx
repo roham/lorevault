@@ -1,30 +1,42 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
-import { resetAll, addPackCredits } from '@/lib/store';
 import { PROFILE } from '@/data/profile';
-import { SCARCITY_CONFIG, Scarcity } from '@/data/types';
+import { SCARCITY_CONFIG, Scarcity, Card } from '@/data/types';
 import { SETS } from '@/data/sets';
+import { getOwnedCards, getShowcaseIds, getXP, getStreak, getPackCredits, resetAll, addPackCredits } from '@/lib/store';
 
 export default function ProfilePage() {
-  const showcaseCards = PROFILE.showcaseCards
-    .map(id => ALL_CARDS.slice(0, 40).find(c => c.id === id) || null)
-    .filter(Boolean);
+  const [ownedCards, setOwnedCards] = useState<Card[]>([]);
+  const [showcaseCards, setShowcaseCards] = useState<Card[]>([]);
+  const [xp, setXp] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [packs, setPacks] = useState(0);
 
-  // Collection stats by set
+  useEffect(() => {
+    const owned = getOwnedCards();
+    setOwnedCards(owned);
+    const sIds = getShowcaseIds();
+    setShowcaseCards(sIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[]);
+    setXp(getXP());
+    setStreak(getStreak());
+    setPacks(getPackCredits());
+  }, []);
+
   const setStats = SETS.map(set => {
-    const owned = ALL_CARDS.slice(0, 40).filter(c => c.setSlug === set.slug).length;
+    const owned = new Set(ownedCards.filter(c => c.setSlug === set.slug).map(c => c.character)).size;
     return { ...set, owned, total: set.cardCount };
   });
 
-  // Scarcity distribution
-  const scarcityDist = ALL_CARDS.slice(0, 40).reduce((acc, c) => {
+  const scarcityDist = ownedCards.reduce((acc, c) => {
     acc[c.scarcity] = (acc[c.scarcity] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
+
+  const totalValue = ownedCards.reduce((sum, c) => sum + c.price, 0);
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
@@ -40,20 +52,20 @@ export default function ProfilePage() {
           </div>
           <div>
             <h1 className="text-xl font-bold">{PROFILE.username}</h1>
-            <p className="text-sm text-muted">Joined {new Date(PROFILE.joinedDate).toLocaleDateString()}</p>
+            <p className="text-sm text-muted">Collector since {new Date(PROFILE.joinedDate).toLocaleDateString()}</p>
           </div>
           <div className="ml-auto text-right">
-            <div className="text-3xl font-bold text-accent">{PROFILE.collectorScore.toLocaleString()}</div>
-            <div className="text-xs text-muted">Collector Score</div>
+            <div className="text-3xl font-bold text-accent">{xp.toLocaleString()}</div>
+            <div className="text-xs text-muted">Collector XP</div>
           </div>
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-3">
           {[
-            { label: 'Cards', value: PROFILE.totalCards, icon: '🃏' },
-            { label: 'Sets', value: PROFILE.uniqueSets, icon: '📚' },
-            { label: 'Legendary', value: PROFILE.legendaryCount, icon: '⭐' },
+            { label: 'Cards', value: ownedCards.length, icon: '🃏' },
+            { label: 'Value', value: `$${totalValue.toFixed(0)}`, icon: '💰' },
+            { label: 'Streak', value: `${streak}d`, icon: '🔥' },
+            { label: 'Packs', value: packs, icon: '🎁' },
             { label: 'Badges', value: PROFILE.badges.length, icon: '🏅' },
           ].map((stat) => (
             <div key={stat.label} className="text-center p-3 rounded-xl bg-background">
@@ -66,23 +78,25 @@ export default function ProfilePage() {
       </motion.div>
 
       {/* Showcase */}
-      <section className="mb-8">
-        <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <span>✨</span> Showcase
-        </h2>
-        <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none' }}>
-          {showcaseCards.map((card, i) => (
-            <motion.div
-              key={card!.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.1, duration: 0.4 }}
-            >
-              <CardItem card={card!} size="md" />
-            </motion.div>
-          ))}
-        </div>
-      </section>
+      {showcaseCards.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <span>✨</span> Showcase
+          </h2>
+          <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none' }}>
+            {showcaseCards.map((card, i) => (
+              <motion.div
+                key={card.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.1, duration: 0.4 }}
+              >
+                <CardItem card={card} size="md" />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Badges */}
       <section className="mb-8">
@@ -109,7 +123,7 @@ export default function ProfilePage() {
         <h2 className="text-lg font-bold mb-4">Set Completion</h2>
         <div className="space-y-3">
           {setStats.map((set, i) => {
-            const pct = Math.round((set.owned / set.total) * 100);
+            const pct = set.total > 0 ? Math.round((set.owned / set.total) * 100) : 0;
             return (
               <motion.div
                 key={set.slug}
@@ -178,7 +192,7 @@ export default function ProfilePage() {
             Reset Everything
           </button>
         </div>
-        <p className="text-[10px] text-muted/30 mt-2">For demo purposes only. Resets localStorage and starts fresh.</p>
+        <p className="text-[10px] text-muted/30 mt-2">For demo purposes. Resets localStorage and starts fresh.</p>
       </section>
     </div>
   );
