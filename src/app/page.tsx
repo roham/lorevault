@@ -55,12 +55,8 @@ export default function Home() {
           {/* Greeting + Stats Row */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-xl font-bold">
-                {!ready ? 'Welcome to LoreVault' : 'Welcome back'}
-              </h1>
-              <p className="text-xs text-muted">
-                {!ready ? 'Your legend begins with a single card.' : `${ownedCards.length} cards collected`}
-              </p>
+              <h1 className="text-xl font-bold">Welcome back</h1>
+              <p className="text-xs text-muted">{ownedCards.length} cards collected</p>
             </div>
             <div className="flex items-center gap-3">
               {streak > 0 && (
@@ -94,16 +90,11 @@ export default function Home() {
               <div className="relative flex items-center justify-between">
                 <div>
                   <p className="text-xs text-accent font-medium uppercase tracking-wider mb-1">
-                    {!ready ? 'Start Your Journey' : packs > 0 ? `${packs} Packs Available` : 'Earn More Packs'}
+                    {packs > 0 ? `${packs} Pack${packs > 1 ? 's' : ''} Available` : 'Earn More Packs'}
                   </p>
-                  <h2 className="text-2xl font-bold text-white mb-1">
-                    {!ready ? 'Open Your First Pack' : 'Open Packs'}
-                  </h2>
+                  <h2 className="text-2xl font-bold text-white mb-1">Open Packs</h2>
                   <p className="text-sm text-white/50">
-                    {!ready
-                      ? '3 free packs waiting. Discover legendary characters.'
-                      : 'Pull cards, chase rarities, build your legend.'
-                    }
+                    Pull cards, chase rarities, build your legend.
                   </p>
                 </div>
                 <motion.div
