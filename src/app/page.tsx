@@ -8,17 +8,26 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds } from '@/lib/store';
+import { shouldShowWelcome } from '@/lib/onboarding';
 import { Card } from '@/data/types';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   const [ownedCards, setOwnedCards] = useState<Card[]>([]);
   const [showcaseCards, setShowcaseCards] = useState<Card[]>([]);
   const [packs, setPacks] = useState(0);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [isNewUser, setIsNewUser] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // Redirect new users to welcome
+    if (shouldShowWelcome()) {
+      router.replace('/welcome');
+      return;
+    }
+
     const owned = getOwnedCards();
     setOwnedCards(owned);
     setPacks(getPackCredits());
@@ -27,10 +36,8 @@ export default function Home() {
 
     const sIds = getShowcaseIds();
     setShowcaseCards(sIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[]);
-
-    // Check if truly new (no cards opened yet, still has default 3 packs)
-    setIsNewUser(owned.length <= 5 && getPackCredits() >= 3);
-  }, []);
+    setReady(true);
+  }, [router]);
 
   const featuredCards = SETS.map(set => {
     const setCards = ALL_CARDS.filter(c => c.setSlug === set.slug);
@@ -49,10 +56,10 @@ export default function Home() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-xl font-bold">
-                {isNewUser ? 'Welcome to LoreVault' : 'Welcome back'}
+                {!ready ? 'Welcome to LoreVault' : 'Welcome back'}
               </h1>
               <p className="text-xs text-muted">
-                {isNewUser ? 'Your legend begins with a single card.' : `${ownedCards.length} cards collected`}
+                {!ready ? 'Your legend begins with a single card.' : `${ownedCards.length} cards collected`}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -87,13 +94,13 @@ export default function Home() {
               <div className="relative flex items-center justify-between">
                 <div>
                   <p className="text-xs text-accent font-medium uppercase tracking-wider mb-1">
-                    {isNewUser ? 'Start Your Journey' : packs > 0 ? `${packs} Packs Available` : 'Earn More Packs'}
+                    {!ready ? 'Start Your Journey' : packs > 0 ? `${packs} Packs Available` : 'Earn More Packs'}
                   </p>
                   <h2 className="text-2xl font-bold text-white mb-1">
-                    {isNewUser ? 'Open Your First Pack' : 'Open Packs'}
+                    {!ready ? 'Open Your First Pack' : 'Open Packs'}
                   </h2>
                   <p className="text-sm text-white/50">
-                    {isNewUser
+                    {!ready
                       ? '3 free packs waiting. Discover legendary characters.'
                       : 'Pull cards, chase rarities, build your legend.'
                     }

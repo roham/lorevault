@@ -4,60 +4,62 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { getPackCredits, getOwnedCardIds } from '@/lib/store';
+import { getPackCredits } from '@/lib/store';
+import { shouldShowWelcome } from '@/lib/onboarding';
 
 const TABS = [
-  { href: '/', label: 'Home', icon: '🏠', activeIcon: '🏠' },
-  { href: '/collection', label: 'Collection', icon: '📦', activeIcon: '📦' },
-  { href: '/packs', label: 'Open', icon: '🎁', activeIcon: '🎁', primary: true },
-  { href: '/challenges', label: 'Quests', icon: '🏆', activeIcon: '🏆' },
-  { href: '/profile', label: 'Profile', icon: '👤', activeIcon: '👤' },
+  { href: '/', label: 'Home', icon: '🏠' },
+  { href: '/collection', label: 'Collection', icon: '📦' },
+  { href: '/packs', label: 'Open', icon: '🎁', primary: true },
+  { href: '/profile', label: 'Profile', icon: '👤' },
 ];
 
 export default function Navigation() {
   const pathname = usePathname();
   const [packs, setPacks] = useState(0);
+  const [hidden, setHidden] = useState(true);
 
   useEffect(() => {
     setPacks(getPackCredits());
+    // Hide nav during onboarding welcome and during full-screen pack opening
+    setHidden(shouldShowWelcome() || pathname === '/welcome');
   }, [pathname]);
 
-  // Hide nav during onboarding
-  if (pathname === '/welcome') return null;
+  if (hidden) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">
-      {/* Frosted glass background */}
-      <div className="absolute inset-0 bg-surface/90 backdrop-blur-xl border-t border-border/50" />
+    <nav className="fixed bottom-0 left-0 right-0 z-50">
+      <div className="absolute inset-0 bg-background/90 backdrop-blur-xl border-t border-border/40" />
 
-      <div className="relative flex items-end justify-around px-2 h-16">
+      <div className="relative flex items-end justify-around px-4 h-[72px] max-w-lg mx-auto">
         {TABS.map((tab) => {
-          const isActive = tab.href === '/' ? pathname === '/' : pathname.startsWith(tab.href);
+          const isActive = tab.href === '/'
+            ? pathname === '/'
+            : pathname.startsWith(tab.href);
 
           if (tab.primary) {
-            // Center "Open Pack" button — elevated, larger
             return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className="relative -mt-4 flex flex-col items-center"
-              >
+              <Link key={tab.href} href={tab.href} className="relative -mt-5 flex flex-col items-center">
                 <motion.div
-                  whileTap={{ scale: 0.9 }}
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+                  whileTap={{ scale: 0.88 }}
+                  className={`w-[56px] h-[56px] rounded-2xl flex items-center justify-center shadow-xl ${
                     isActive
-                      ? 'bg-accent shadow-accent/30'
-                      : 'bg-gradient-to-br from-accent to-purple-600 shadow-accent/20'
+                      ? 'bg-accent shadow-accent/40'
+                      : 'bg-gradient-to-br from-accent via-purple-500 to-accent shadow-accent/25'
                   }`}
                 >
-                  <span className="text-xl">{tab.icon}</span>
+                  <span className="text-2xl">{tab.icon}</span>
                   {packs > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold px-1 shadow-sm"
+                    >
                       {packs}
-                    </span>
+                    </motion.span>
                   )}
                 </motion.div>
-                <span className={`text-[10px] mt-1 font-medium ${isActive ? 'text-accent' : 'text-muted'}`}>
+                <span className={`text-[10px] mt-1.5 font-semibold ${isActive ? 'text-accent' : 'text-muted'}`}>
                   {tab.label}
                 </span>
               </Link>
@@ -65,22 +67,22 @@ export default function Navigation() {
           }
 
           return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className="flex flex-col items-center py-2 px-3 relative"
-            >
+            <Link key={tab.href} href={tab.href} className="flex flex-col items-center py-2.5 px-4 relative">
               {isActive && (
                 <motion.div
-                  layoutId="tab-indicator"
-                  className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-accent"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  layoutId="tab-dot"
+                  className="absolute top-1 w-1 h-1 rounded-full bg-accent"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}
-              <span className={`text-xl transition-transform ${isActive ? 'scale-110' : ''}`}>
-                {isActive ? tab.activeIcon : tab.icon}
-              </span>
-              <span className={`text-[10px] mt-0.5 font-medium ${isActive ? 'text-accent' : 'text-muted'}`}>
+              <motion.span
+                className="text-[22px]"
+                animate={{ scale: isActive ? 1.1 : 1, y: isActive ? -1 : 0 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              >
+                {tab.icon}
+              </motion.span>
+              <span className={`text-[10px] mt-1 font-medium ${isActive ? 'text-foreground' : 'text-muted'}`}>
                 {tab.label}
               </span>
             </Link>

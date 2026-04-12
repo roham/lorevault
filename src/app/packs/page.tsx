@@ -1,14 +1,19 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { SETS } from '@/data/sets';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
-import { generatePack, getPackCredits, usePackCredit, addOwnedCards, addXP, getOwnedCardIds } from '@/lib/store';
+import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addOwnedCards, addXP, getOwnedCardIds } from '@/lib/store';
+import { getOnboardingState, updateOnboarding, checkUnlocks } from '@/lib/onboarding';
+import { useSearchParams } from 'next/navigation';
 
-export default function PacksPage() {
+function PacksContent() {
+  const searchParams = useSearchParams();
+  const isFirstPack = searchParams.get('first') === 'true';
+
   const [revealedCards, setRevealedCards] = useState<Card[]>([]);
   const [currentReveal, setCurrentReveal] = useState(-1);
   const [isOpening, setIsOpening] = useState(false);
@@ -17,12 +22,18 @@ export default function PacksPage() {
   const [duplicates, setDuplicates] = useState<Set<string>>(new Set());
   const [anticipationPhase, setAnticipationPhase] = useState(false);
   const [selectedSet, setSelectedSet] = useState<string>('');
+  const [isGuidedMode, setIsGuidedMode] = useState(false);
 
   useEffect(() => {
     setPackCreditsState(getPackCredits());
-  }, []);
+    // Auto-open first pack if coming from welcome screen
+    if (isFirstPack && !getOnboardingState().hasOpenedFirstPack) {
+      setIsGuidedMode(true);
+      openPack('mixed', true);
+    }
+  }, [isFirstPack]);
 
-  const openPack = useCallback((setSlug: string) => {
+  const openPack = useCallback((setSlug: string, rigged: boolean = false) => {
     if (!usePackCredit()) return;
     setPackCreditsState(prev => prev - 1);
     setSelectedSet(setSlug);
@@ -31,7 +42,7 @@ export default function PacksPage() {
     setCurrentReveal(-1);
 
     const ownedBefore = new Set(getOwnedCardIds());
-    const cards = generatePack(setSlug);
+    const cards = rigged ? generateFirstPack() : generatePack(setSlug);
     setRevealedCards(cards);
 
     const newOnes = new Set<string>();
@@ -42,8 +53,15 @@ export default function PacksPage() {
     }
     setNewCards(newOnes);
     setDuplicates(dupes);
-    addOwnedCards(cards.map(c => c.id));
+    const newOwnedIds = addOwnedCards(cards.map(c => c.id));
     addXP(50 + cards.filter(c => c.scarcity !== 'common').length * 25);
+
+    // Update onboarding
+    updateOnboarding({
+      hasOpenedFirstPack: true,
+      totalPacksOpened: (getOnboardingState().totalPacksOpened || 0) + 1,
+    });
+    checkUnlocks(newOwnedIds.length);
 
     // Anticipation phase: 2.5 seconds of build-up
     setTimeout(() => {
@@ -265,16 +283,39 @@ export default function PacksPage() {
                   {currentCard.parallel !== 'base' && (
                     <span className="text-xs text-muted capitalize">• {currentCard.parallel}</span>
                   )}
+                  {currentCard.scarcity !== 'common' && (
+                    <span className="text-xs text-muted font-mono">#{currentCard.serialNumber}/{currentCard.maxSerial}</span>
+                  )}
                 </div>
-                <motion.p
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  className={`text-xs mt-1 font-bold ${
-                    newCards.has(currentCard.id) ? 'text-green-400' : 'text-yellow-400/70'
-                  }`}
-                >
-                  {newCards.has(currentCard.id) ? '✨ NEW CARD!' : '↻ Already in collection'}
-                </motion.p>
+
+                {/* Guided tutorial text (first pack only) */}
+                {isGuidedMode && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-xs text-accent/80 mt-2 max-w-xs mx-auto italic"
+                  >
+                    {currentReveal === 0 && 'Your first card. Every card captures a legendary moment from the world\'s greatest stories.'}
+                    {currentReveal === 1 && 'Each card belongs to a themed set. Complete sets to earn exclusive rewards.'}
+                    {currentReveal === 2 && currentCard.scarcity !== 'common' && `A ${SCARCITY_CONFIG[currentCard.scarcity].label} card! Only ${currentCard.maxSerial} of these exist.`}
+                    {currentReveal === 2 && currentCard.scarcity === 'common' && 'Common cards are the foundation. Collect them all to complete your sets.'}
+                    {currentReveal === 3 && 'Cards come in parallels — Silver, Gold, Holographic, and the ultra-rare Obsidian.'}
+                    {currentReveal === 4 && 'Your collection has begun. 2 more packs are waiting.'}
+                  </motion.p>
+                )}
+
+                {!isGuidedMode && (
+                  <motion.p
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className={`text-xs mt-1 font-bold ${
+                      newCards.has(currentCard.id) ? 'text-green-400' : 'text-yellow-400/70'
+                    }`}
+                  >
+                    {newCards.has(currentCard.id) ? '✨ NEW CARD!' : '↻ Already in collection'}
+                  </motion.p>
+                )}
               </motion.div>
             )}
 
@@ -298,21 +339,33 @@ export default function PacksPage() {
                     </p>
                   </div>
                   <div className="flex gap-3">
-                    {packCredits > 0 && (
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
-                        onClick={resetPack}
-                        className="px-6 py-3 rounded-2xl bg-accent text-white font-bold text-sm"
+                    {isGuidedMode ? (
+                      <Link
+                        href="/collection"
+                        onClick={() => updateOnboarding({ hasSeenCollectionReveal: false })}
+                        className="px-8 py-3 rounded-2xl bg-accent text-white font-bold text-sm shadow-lg shadow-accent/20"
                       >
-                        Open Another ({packCredits})
-                      </motion.button>
+                        See Your Collection →
+                      </Link>
+                    ) : (
+                      <>
+                        {packCredits > 0 && (
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={resetPack}
+                            className="px-6 py-3 rounded-2xl bg-accent text-white font-bold text-sm"
+                          >
+                            Open Another ({packCredits})
+                          </motion.button>
+                        )}
+                        <Link
+                          href="/collection"
+                          className="px-6 py-3 rounded-2xl bg-surface border border-border text-foreground font-semibold text-sm"
+                        >
+                          View Collection
+                        </Link>
+                      </>
                     )}
-                    <Link
-                      href="/collection"
-                      className="px-6 py-3 rounded-2xl bg-surface border border-border text-foreground font-semibold text-sm"
-                    >
-                      View Collection
-                    </Link>
                   </div>
                 </div>
               )}
@@ -425,5 +478,13 @@ export default function PacksPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function PacksPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <PacksContent />
+    </Suspense>
   );
 }
