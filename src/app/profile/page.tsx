@@ -2,24 +2,24 @@
 
 import { motion } from 'framer-motion';
 import CardItem from '@/components/CardItem';
-import { OWNED_CARDS } from '@/data/cards';
+import { ALL_CARDS } from '@/data/cards';
 import { PROFILE } from '@/data/profile';
 import { SCARCITY_CONFIG, Scarcity } from '@/data/types';
 import { SETS } from '@/data/sets';
 
 export default function ProfilePage() {
   const showcaseCards = PROFILE.showcaseCards
-    .map(id => OWNED_CARDS.find(c => c.id === id) || null)
+    .map(id => ALL_CARDS.slice(0, 40).find(c => c.id === id) || null)
     .filter(Boolean);
 
   // Collection stats by set
   const setStats = SETS.map(set => {
-    const owned = OWNED_CARDS.filter(c => c.setSlug === set.slug).length;
+    const owned = ALL_CARDS.slice(0, 40).filter(c => c.setSlug === set.slug).length;
     return { ...set, owned, total: set.cardCount };
   });
 
   // Scarcity distribution
-  const scarcityDist = OWNED_CARDS.reduce((acc, c) => {
+  const scarcityDist = ALL_CARDS.slice(0, 40).reduce((acc, c) => {
     acc[c.scarcity] = (acc[c.scarcity] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);

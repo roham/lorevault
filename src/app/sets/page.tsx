@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
-import { ALL_CARDS, OWNED_CARDS } from '@/data/cards';
+import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { SCARCITY_CONFIG, Scarcity } from '@/data/types';
 
@@ -16,7 +16,7 @@ export default function SetsPage() {
       <div className="space-y-8">
         {SETS.map((set, si) => {
           const setCards = ALL_CARDS.filter(c => c.setSlug === set.slug);
-          const ownedCards = OWNED_CARDS.filter(c => c.setSlug === set.slug);
+          const ownedCards = setCards.filter(() => false); // Dynamic — use store in client
           const uniqueOwned = new Set(ownedCards.map(c => c.character)).size;
           const completion = Math.round((uniqueOwned / set.cardCount) * 100);
 

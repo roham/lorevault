@@ -139,10 +139,21 @@ function generatePrice(scarcity: Scarcity, parallel: Parallel): number {
   return Math.round(base * (0.8 + Math.random() * 0.4) * 100) / 100;
 }
 
-// Generate a curated subset of cards (100 cards for MVP)
+// Seeded random for deterministic card generation
+function seededRandom(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+// Generate cards: each character gets a base common + one random higher scarcity variant
+// This creates ~200 cards with meaningful chase targets
 export function generateCards(): Card[] {
   const cards: Card[] = [];
   let idCounter = 1;
+  const rand = seededRandom(42); // Deterministic for SSR consistency
 
   for (const [setSlug, characters] of Object.entries(SET_CHARACTERS)) {
     const setName = {
@@ -153,16 +164,40 @@ export function generateCards(): Card[] {
       'olympus': 'Olympus Rising',
     }[setSlug]!;
 
-    // For each character in the set, generate 1 card with random scarcity/parallel
     for (let i = 0; i < characters.length; i++) {
       const char = characters[i];
-      // Distribute scarcities: first few are common, last few are legendary
-      const scarcityIndex = Math.min(Math.floor(i / 4), 4);
-      const scarcity = scarcities[scarcityIndex];
-      // Distribute parallels
-      const parallel = parallels[i % 5];
-      const maxSerial = getMaxSerial(scarcity);
-      const serialNumber = Math.floor(Math.random() * maxSerial) + 1;
+
+      // Every character gets a Common Base card
+      const commonSerial = Math.floor(rand() * 9999) + 1;
+      cards.push({
+        id: `card-${idCounter++}`,
+        name: `${char.character} — ${char.moment}`,
+        character: char.character,
+        set: setName,
+        setSlug,
+        moment: char.moment,
+        scarcity: 'common',
+        parallel: 'base',
+        serialNumber: commonSerial,
+        maxSerial: 9999,
+        loreText: char.loreText,
+        price: generatePrice('common', 'base'),
+        listed: rand() > 0.5,
+        owned: false,
+        gradientFrom: char.gradientFrom,
+        gradientTo: char.gradientTo,
+        symbol: char.symbol,
+      });
+
+      // Each character also gets 1-2 higher scarcity variants
+      // Scarcity distribution: 40% uncommon, 30% rare, 20% epic, 10% legendary
+      const roll = rand();
+      const higherScarcity: Scarcity = roll < 0.4 ? 'uncommon' : roll < 0.7 ? 'rare' : roll < 0.9 ? 'epic' : 'legendary';
+      // Parallel distribution: 50% base, 20% silver, 15% gold, 10% holo, 5% obsidian
+      const pRoll = rand();
+      const higherParallel: Parallel = pRoll < 0.5 ? 'base' : pRoll < 0.7 ? 'silver' : pRoll < 0.85 ? 'gold' : pRoll < 0.95 ? 'holographic' : 'obsidian';
+      const maxSerial = getMaxSerial(higherScarcity);
+      const serialNumber = Math.floor(rand() * maxSerial) + 1;
 
       cards.push({
         id: `card-${idCounter++}`,
@@ -171,14 +206,14 @@ export function generateCards(): Card[] {
         set: setName,
         setSlug,
         moment: char.moment,
-        scarcity,
-        parallel,
+        scarcity: higherScarcity,
+        parallel: higherParallel,
         serialNumber,
         maxSerial,
         loreText: char.loreText,
-        price: generatePrice(scarcity, parallel),
-        listed: Math.random() > 0.6,
-        owned: Math.random() > 0.3,
+        price: generatePrice(higherScarcity, higherParallel),
+        listed: rand() > 0.4,
+        owned: false,
         gradientFrom: char.gradientFrom,
         gradientTo: char.gradientTo,
         symbol: char.symbol,
@@ -189,7 +224,7 @@ export function generateCards(): Card[] {
   return cards;
 }
 
-// Pre-generate for SSR
+// Pre-generate for SSR — deterministic due to seeded random
 export const ALL_CARDS = generateCards();
-export const OWNED_CARDS = ALL_CARDS.filter(c => c.owned);
 export const LISTED_CARDS = ALL_CARDS.filter(c => c.listed);
+// OWNED_CARDS no longer static — use store.getOwnedCards() instead

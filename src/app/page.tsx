@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
-import { ALL_CARDS, OWNED_CARDS } from '@/data/cards';
+import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 
@@ -201,7 +201,7 @@ export default function Home() {
           {[
             { label: 'Total Cards', value: ALL_CARDS.length.toString(), icon: '🃏' },
             { label: 'Sets', value: SETS.length.toString(), icon: '📚' },
-            { label: 'Your Collection', value: OWNED_CARDS.length.toString(), icon: '📦' },
+            { label: 'Your Collection', value: '—', icon: '📦' },
             { label: 'Active Challenges', value: CHALLENGES.filter(c => c.active).length.toString(), icon: '🏆' },
           ].map((stat, i) => (
             <motion.div

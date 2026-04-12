@@ -13,7 +13,7 @@ export const SETS: CardSet[] = [
   {
     name: 'The Enchanted Kingdom',
     slug: 'enchanted-kingdom',
-    description: 'Fairy tales reimagined — poisoned apples, enchanted mirrors, and the darkest corners of the deepest forests.',
+    description: 'The Brothers Grimm collection — fairy tales reimagined with poisoned apples, enchanted mirrors, and the darkest forests. The largest set with 20 base characters spanning a dozen classic stories.',
     cardCount: 20,
     icon: '👑',
     gradientFrom: '#1a0a2e',
@@ -22,7 +22,7 @@ export const SETS: CardSet[] = [
   {
     name: 'Wonderland Descending',
     slug: 'wonderland',
-    description: 'Down the rabbit hole — madness, tea parties, and a world where nothing is what it seems.',
+    description: 'Down the rabbit hole — madness, tea parties, grinning cats, and a world where nothing is what it seems. Featuring Lewis Carroll\'s complete cast.',
     cardCount: 20,
     icon: '🐇',
     gradientFrom: '#0a2e1a',
@@ -31,7 +31,7 @@ export const SETS: CardSet[] = [
   {
     name: 'The Castle of Otranto',
     slug: 'gothic-horror',
-    description: 'Gothic horror\'s greatest monsters — creatures of the night, mad scientists, and the thin line between genius and madness.',
+    description: 'Gothic horror\'s greatest monsters — Dracula, Frankenstein, the Phantom, Jekyll & Hyde. Creatures of the night and the thin line between genius and madness.',
     cardCount: 20,
     icon: '🦇',
     gradientFrom: '#2e0a0a',
@@ -40,7 +40,7 @@ export const SETS: CardSet[] = [
   {
     name: 'Olympus Rising',
     slug: 'olympus',
-    description: 'The gods and heroes of ancient Greece — epic battles, divine power, and the fate of mortals caught between.',
+    description: 'Gods, heroes, and monsters of ancient Greece — from the walls of Troy to the depths of the underworld. Epic battles, divine power, and mortal fate.',
     cardCount: 20,
     icon: '⚡',
     gradientFrom: '#2e2a0a',

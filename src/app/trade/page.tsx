@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CardItem from '@/components/CardItem';
-import { OWNED_CARDS, ALL_CARDS } from '@/data/cards';
+import { ALL_CARDS } from '@/data/cards';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
 
 // Mock trade proposals
@@ -12,7 +12,7 @@ const INCOMING_TRADES = [
     id: 'trade-1',
     from: 'DarkArchive',
     offering: [ALL_CARDS[42], ALL_CARDS[67]],
-    requesting: [OWNED_CARDS[3]],
+    requesting: [ALL_CARDS[3]],
     status: 'pending' as const,
     timeAgo: '2 hours ago',
   },
@@ -20,7 +20,7 @@ const INCOMING_TRADES = [
     id: 'trade-2',
     from: 'MythKeeper',
     offering: [ALL_CARDS[85]],
-    requesting: [OWNED_CARDS[7], OWNED_CARDS[12]],
+    requesting: [ALL_CARDS[7], ALL_CARDS[12]],
     status: 'pending' as const,
     timeAgo: '5 hours ago',
   },
@@ -273,7 +273,7 @@ export default function TradePage() {
                 {showMyPicker ? 'Select from your collection' : 'Select cards you want'}
               </h3>
               <div className="flex flex-wrap gap-3">
-                {(showMyPicker ? OWNED_CARDS : ALL_CARDS.filter(c => !c.owned)).slice(0, 20).map(card => (
+                {(showMyPicker ? ALL_CARDS.slice(0, 30) : ALL_CARDS.filter(c => !c.owned)).slice(0, 20).map(card => (
                   <div
                     key={card.id}
                     onClick={() => showMyPicker ? addToMyOffer(card) : addToTheirRequest(card)}
