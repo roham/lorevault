@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
+import { resetAll, addPackCredits } from '@/lib/store';
 import { PROFILE } from '@/data/profile';
 import { SCARCITY_CONFIG, Scarcity } from '@/data/types';
 import { SETS } from '@/data/sets';
@@ -157,6 +159,26 @@ export default function ProfilePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Debug / Testing */}
+      <section className="mb-8">
+        <h2 className="text-lg font-bold mb-4 text-muted/50">Testing Controls</h2>
+        <div className="flex gap-3">
+          <button
+            onClick={() => { addPackCredits(5); window.location.reload(); }}
+            className="px-4 py-2 rounded-lg bg-green-500/10 text-green-400 text-xs font-medium border border-green-500/20 hover:bg-green-500/20"
+          >
+            +5 Pack Credits
+          </button>
+          <button
+            onClick={() => { resetAll(); window.location.reload(); }}
+            className="px-4 py-2 rounded-lg bg-red-500/10 text-red-400 text-xs font-medium border border-red-500/20 hover:bg-red-500/20"
+          >
+            Reset Everything
+          </button>
+        </div>
+        <p className="text-[10px] text-muted/30 mt-2">For demo purposes only. Resets localStorage and starts fresh.</p>
       </section>
     </div>
   );

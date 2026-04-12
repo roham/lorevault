@@ -98,6 +98,11 @@ export function getStreak(): number {
   return getItem<number>(KEYS.streak, 0);
 }
 
+export function resetAll() {
+  if (typeof window === 'undefined') return;
+  Object.values(KEYS).forEach(key => localStorage.removeItem(key));
+}
+
 export function recordVisit() {
   const lastVisit = getItem<string>(KEYS.lastVisit, '');
   const today = new Date().toISOString().split('T')[0];
