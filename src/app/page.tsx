@@ -7,228 +7,246 @@ import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
-import { getOwnedCardIds, getPackCredits, getXP, getStreak, recordVisit } from '@/lib/store';
+import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds } from '@/lib/store';
+import { Card } from '@/data/types';
 
 export default function Home() {
-  const [ownedCount, setOwnedCount] = useState(0);
+  const [ownedCards, setOwnedCards] = useState<Card[]>([]);
+  const [showcaseCards, setShowcaseCards] = useState<Card[]>([]);
   const [packs, setPacks] = useState(0);
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
-    recordVisit();
-    setOwnedCount(getOwnedCardIds().length);
+    const owned = getOwnedCards();
+    setOwnedCards(owned);
     setPacks(getPackCredits());
     setXp(getXP());
     setStreak(getStreak());
+
+    const sIds = getShowcaseIds();
+    setShowcaseCards(sIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[]);
+
+    // Check if truly new (no cards opened yet, still has default 3 packs)
+    setIsNewUser(owned.length <= 5 && getPackCredits() >= 3);
   }, []);
+
   const featuredCards = SETS.map(set => {
     const setCards = ALL_CARDS.filter(c => c.setSlug === set.slug);
     return setCards.find(c => c.scarcity === 'legendary') || setCards.find(c => c.scarcity === 'epic') || setCards[0];
   }).filter(Boolean);
 
-  const recentListings = ALL_CARDS.filter(c => c.listed).slice(0, 6);
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6">
-      {/* Hero */}
-      <section className="py-12 sm:py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight mb-4">
-            Collect the <span className="text-accent">Legends</span>
-          </h1>
-          <p className="text-lg sm:text-xl text-muted max-w-2xl mx-auto mb-8">
-            Premium digital collectible cards featuring the greatest characters from literature, mythology, and folklore.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Link
-              href="/packs"
-              className="px-6 py-3 bg-accent text-white rounded-xl font-semibold text-sm hover:bg-accent/90 transition-colors"
-            >
-              Open a Pack
-            </Link>
-            <Link
-              href="/marketplace"
-              className="px-6 py-3 bg-surface hover:bg-surface-hover text-foreground rounded-xl font-semibold text-sm border border-border transition-colors"
-            >
-              Browse Marketplace
-            </Link>
+    <div className="min-h-screen">
+      {/* Hero — Pack Opening CTA */}
+      <section className="relative px-4 pt-8 pb-6">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/5 to-transparent pointer-events-none" />
+
+        <div className="relative">
+          {/* Greeting + Stats Row */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-xl font-bold">
+                {isNewUser ? 'Welcome to LoreVault' : 'Welcome back'}
+              </h1>
+              <p className="text-xs text-muted">
+                {isNewUser ? 'Your legend begins with a single card.' : `${ownedCards.length} cards collected`}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {streak > 0 && (
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                  <span className="text-xs">🔥</span>
+                  <span className="text-xs font-bold text-orange-400">{streak}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-accent/10 border border-accent/20">
+                <span className="text-xs">⭐</span>
+                <span className="text-xs font-bold text-accent">{xp}</span>
+              </div>
+            </div>
           </div>
-        </motion.div>
+
+          {/* Big Pack CTA */}
+          <Link href="/packs">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative overflow-hidden rounded-2xl p-6 mb-6"
+              style={{
+                background: 'linear-gradient(135deg, #1a103a 0%, #2d1b69 50%, #16213e 100%)',
+              }}
+            >
+              {/* Animated shimmer */}
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute inset-0 card-shimmer" />
+              </div>
+
+              <div className="relative flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-accent font-medium uppercase tracking-wider mb-1">
+                    {isNewUser ? 'Start Your Journey' : packs > 0 ? `${packs} Packs Available` : 'Earn More Packs'}
+                  </p>
+                  <h2 className="text-2xl font-bold text-white mb-1">
+                    {isNewUser ? 'Open Your First Pack' : 'Open Packs'}
+                  </h2>
+                  <p className="text-sm text-white/50">
+                    {isNewUser
+                      ? '3 free packs waiting. Discover legendary characters.'
+                      : 'Pull cards, chase rarities, build your legend.'
+                    }
+                  </p>
+                </div>
+                <motion.div
+                  animate={{ rotate: [0, -5, 5, -5, 0], scale: [1, 1.05, 1, 1.05, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="text-5xl"
+                >
+                  🎁
+                </motion.div>
+              </div>
+            </motion.div>
+          </Link>
+        </div>
       </section>
 
-      {/* How It Works */}
-      <section className="mb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          {[
-            { step: '1', icon: '🎁', title: 'Open Packs', desc: 'Use pack credits to open themed packs. Each contains 5 cards with guaranteed rare or better.', href: '/packs' },
-            { step: '2', icon: '📦', title: 'Build Your Collection', desc: 'Cards are saved permanently. Chase legendary parallels and low serial numbers.', href: '/collection' },
-            { step: '3', icon: '🏆', title: 'Complete Challenges', desc: 'Earn XP, badges, and exclusive rewards by completing set and thematic challenges.', href: '/challenges' },
-            { step: '4', icon: '✨', title: 'Show Off', desc: 'Curate your showcase, climb leaderboards, and trade with other collectors.', href: '/profile' },
-          ].map((item, i) => (
-            <motion.div
-              key={item.step}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1, duration: 0.4 }}
-            >
-              <Link
-                href={item.href}
-                className="block p-5 rounded-xl border border-border bg-surface hover:bg-surface-hover transition-all text-center group h-full"
+      {/* Your Showcase (if cards exist) */}
+      {showcaseCards.length > 0 && (
+        <section className="px-4 mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted">Your Showcase</h2>
+            <Link href="/collection" className="text-xs text-accent">Edit</Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+            {showcaseCards.map((card, i) => (
+              <motion.div
+                key={card.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.08 }}
               >
-                <div className="text-3xl mb-2">{item.icon}</div>
-                <div className="text-xs text-accent font-mono mb-1">Step {item.step}</div>
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{item.title}</h3>
-                <p className="text-xs text-muted">{item.desc}</p>
-              </Link>
-            </motion.div>
-          ))}
+                <CardItem card={card} size="sm" />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Active Missions */}
+      <section className="px-4 mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-muted">Active Missions</h2>
+          <Link href="/challenges" className="text-xs text-accent">See All</Link>
+        </div>
+        <div className="space-y-2">
+          {CHALLENGES.slice(0, 3).map((challenge, i) => {
+            const pct = Math.round((challenge.progress / challenge.total) * 100);
+            return (
+              <motion.div
+                key={challenge.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <Link
+                  href="/challenges"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-border hover:bg-surface-hover transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-lg flex-shrink-0">
+                    {challenge.type === 'set-completion' ? '📚' : challenge.type === 'scarcity-chase' ? '💎' : challenge.type === 'daily' ? '📅' : '🎭'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{challenge.name}</div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex-1 h-1.5 rounded-full bg-background overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full bg-accent"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ delay: 0.3 + i * 0.1, duration: 0.6 }}
+                        />
+                      </div>
+                      <span className="text-[10px] text-muted font-mono w-8 text-right">{pct}%</span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* Featured Cards Carousel */}
-      <section className="mb-16">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">Featured Cards</h2>
-          <Link href="/marketplace" className="text-sm text-accent hover:underline">View all</Link>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-          {featuredCards.map((card, i) => (
-            <motion.div
-              key={card!.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.4 }}
-              className="snap-start"
-            >
-              <CardItem card={card!} size="md" showPrice />
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Sets Grid */}
-      <section className="mb-16">
-        <h2 className="text-xl font-bold mb-6">Explore Sets</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Discover Sets */}
+      <section className="px-4 mb-8">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-3">Discover</h2>
+        <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
           {SETS.map((set, i) => (
             <motion.div
               key={set.slug}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08, duration: 0.4 }}
+              transition={{ delay: i * 0.08 }}
+              className="flex-shrink-0"
             >
               <Link
-                href={`/collection?set=${set.slug}`}
-                className="block p-5 rounded-xl border border-border hover:border-accent/30 transition-all group"
+                href={`/sets`}
+                className="block w-36 rounded-xl overflow-hidden border border-border hover:border-accent/30 transition-all"
                 style={{
-                  background: `linear-gradient(135deg, ${set.gradientFrom}88, ${set.gradientTo}44)`,
+                  background: `linear-gradient(135deg, ${set.gradientFrom}, ${set.gradientTo})`,
                 }}
               >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">{set.icon}</span>
-                  <div>
-                    <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors">{set.name}</h3>
-                    <p className="text-xs text-muted">{set.cardCount} cards</p>
-                  </div>
+                <div className="p-4 text-center">
+                  <span className="text-3xl block mb-2">{set.icon}</span>
+                  <div className="text-xs font-semibold truncate">{set.name}</div>
+                  <div className="text-[10px] text-muted">{set.cardCount} cards</div>
                 </div>
-                <p className="text-sm text-muted/80 line-clamp-2">{set.description}</p>
               </Link>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Active Challenges Preview */}
-      <section className="mb-16">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">Active Challenges</h2>
-          <Link href="/challenges" className="text-sm text-accent hover:underline">View all</Link>
+      {/* Featured Cards */}
+      <section className="px-4 mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-muted">Featured</h2>
+          <Link href="/marketplace" className="text-xs text-accent">Marketplace</Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {CHALLENGES.slice(0, 4).map((challenge, i) => (
+        <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+          {featuredCards.slice(0, 5).map((card, i) => (
             <motion.div
-              key={challenge.id}
-              initial={{ opacity: 0, y: 20 }}
+              key={card!.id}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08, duration: 0.4 }}
+              transition={{ delay: 0.1 + i * 0.08 }}
             >
-              <Link
-                href="/challenges"
-                className="block p-4 rounded-xl border border-border bg-surface hover:bg-surface-hover transition-all"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-sm">{challenge.name}</h3>
-                  <span className="text-xs text-muted capitalize px-2 py-0.5 rounded-full bg-background">
-                    {challenge.type.replace(/-/g, ' ')}
-                  </span>
-                </div>
-                <p className="text-xs text-muted mb-3">{challenge.description}</p>
-                <div className="relative h-2 rounded-full bg-background overflow-hidden">
-                  <motion.div
-                    className="absolute inset-y-0 left-0 rounded-full bg-accent"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(challenge.progress / challenge.total) * 100}%` }}
-                    transition={{ delay: 0.5 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
-                  />
-                </div>
-                <div className="flex items-center justify-between mt-1.5">
-                  <span className="text-[10px] text-muted">{challenge.progress}/{challenge.total}</span>
-                  <span className="text-[10px] text-accent font-medium">
-                    {Math.round((challenge.progress / challenge.total) * 100)}%
-                  </span>
-                </div>
+              <Link href={`/card/${card!.id}`}>
+                <CardItem card={card!} size="sm" showPrice />
               </Link>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Recent Marketplace Activity */}
-      <section className="mb-16">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">Recent Listings</h2>
-          <Link href="/marketplace" className="text-sm text-accent hover:underline">View all</Link>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-          {recentListings.map((card, i) => (
-            <motion.div
-              key={card.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.08, duration: 0.4 }}
-              className="snap-start"
-            >
-              <CardItem card={card} size="sm" showPrice />
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="mb-16">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* Quick Links */}
+      <section className="px-4 mb-8">
+        <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Your Cards', value: ownedCount.toString(), icon: '📦' },
-            { label: 'Pack Credits', value: packs.toString(), icon: '🎁' },
-            { label: 'XP Earned', value: xp.toString(), icon: '⭐' },
-            { label: 'Day Streak', value: streak > 0 ? `${streak} 🔥` : '0', icon: '📅' },
-          ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 + i * 0.05, duration: 0.3 }}
-              className="p-4 rounded-xl border border-border bg-surface text-center"
+            { href: '/marketplace', label: 'Market', icon: '🏪', desc: 'Buy & sell' },
+            { href: '/trade', label: 'Trade', icon: '🔄', desc: 'Swap cards' },
+            { href: '/leaderboard', label: 'Ranks', icon: '📊', desc: 'Leaderboard' },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="p-3 rounded-xl bg-surface border border-border hover:bg-surface-hover transition-colors text-center"
             >
-              <span className="text-2xl mb-2 block">{stat.icon}</span>
-              <div className="text-2xl font-bold text-accent">{stat.value}</div>
-              <div className="text-xs text-muted">{stat.label}</div>
-            </motion.div>
+              <span className="text-xl block mb-1">{item.icon}</span>
+              <div className="text-xs font-semibold">{item.label}</div>
+              <div className="text-[9px] text-muted">{item.desc}</div>
+            </Link>
           ))}
         </div>
       </section>

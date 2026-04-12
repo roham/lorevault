@@ -4,109 +4,89 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { getXP, getPackCredits, getOwnedCardIds } from '@/lib/store';
+import { getPackCredits, getOwnedCardIds } from '@/lib/store';
 
-const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: '🏠' },
-  { href: '/collection', label: 'Collection', icon: '📦' },
-  { href: '/marketplace', label: 'Market', icon: '🏪' },
-  { href: '/challenges', label: 'Challenges', icon: '🏆' },
-  { href: '/packs', label: 'Packs', icon: '🎁' },
-  { href: '/trade', label: 'Trade', icon: '🔄' },
-  { href: '/sets', label: 'Sets', icon: '📚' },
-  { href: '/leaderboard', label: 'Ranks', icon: '📊' },
-  { href: '/profile', label: 'Profile', icon: '👤' },
+const TABS = [
+  { href: '/', label: 'Home', icon: '🏠', activeIcon: '🏠' },
+  { href: '/collection', label: 'Collection', icon: '📦', activeIcon: '📦' },
+  { href: '/packs', label: 'Open', icon: '🎁', activeIcon: '🎁', primary: true },
+  { href: '/challenges', label: 'Quests', icon: '🏆', activeIcon: '🏆' },
+  { href: '/profile', label: 'Profile', icon: '👤', activeIcon: '👤' },
 ];
 
 export default function Navigation() {
   const pathname = usePathname();
-  const [xp, setXp] = useState(0);
   const [packs, setPacks] = useState(0);
-  const [cardCount, setCardCount] = useState(0);
 
   useEffect(() => {
-    setXp(getXP());
     setPacks(getPackCredits());
-    setCardCount(getOwnedCardIds().length);
-  }, [pathname]); // Refresh on route change
+  }, [pathname]);
+
+  // Hide nav during onboarding
+  if (pathname === '/welcome') return null;
 
   return (
-    <>
-      {/* Desktop nav */}
-      <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-14 items-center px-4 bg-surface/80 backdrop-blur-xl border-b border-border">
-        <Link href="/" className="flex items-center gap-2 mr-6">
-          <span className="text-lg">📜</span>
-          <span className="text-base font-bold text-foreground tracking-tight">LoreVault</span>
-        </Link>
-        <div className="flex items-center gap-0.5">
-          {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href;
+    <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">
+      {/* Frosted glass background */}
+      <div className="absolute inset-0 bg-surface/90 backdrop-blur-xl border-t border-border/50" />
+
+      <div className="relative flex items-end justify-around px-2 h-16">
+        {TABS.map((tab) => {
+          const isActive = tab.href === '/' ? pathname === '/' : pathname.startsWith(tab.href);
+
+          if (tab.primary) {
+            // Center "Open Pack" button — elevated, larger
             return (
               <Link
-                key={item.href}
-                href={item.href}
-                className={`relative px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  isActive ? 'text-foreground' : 'text-muted hover:text-foreground'
-                }`}
+                key={tab.href}
+                href={tab.href}
+                className="relative -mt-4 flex flex-col items-center"
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute inset-0 rounded-lg bg-accent/10 border border-accent/20"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-1">
-                  <span className="text-xs">{item.icon}</span>
-                  {item.label}
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+                    isActive
+                      ? 'bg-accent shadow-accent/30'
+                      : 'bg-gradient-to-br from-accent to-purple-600 shadow-accent/20'
+                  }`}
+                >
+                  <span className="text-xl">{tab.icon}</span>
+                  {packs > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold shadow-sm">
+                      {packs}
+                    </span>
+                  )}
+                </motion.div>
+                <span className={`text-[10px] mt-1 font-medium ${isActive ? 'text-accent' : 'text-muted'}`}>
+                  {tab.label}
                 </span>
               </Link>
             );
-          })}
-        </div>
-        <div className="ml-auto flex items-center gap-4">
-          <div className="flex items-center gap-1 text-xs text-muted">
-            <span>📦</span>
-            <span className="font-mono font-bold text-foreground">{cardCount}</span>
-          </div>
-          <div className="flex items-center gap-1 text-xs text-muted">
-            <span>🎁</span>
-            <span className="font-mono font-bold text-accent">{packs}</span>
-          </div>
-          <div className="flex items-center gap-1 text-xs text-muted">
-            <span>⭐</span>
-            <span className="font-mono font-bold text-foreground">{xp.toLocaleString()}</span>
-            <span className="text-muted/50">XP</span>
-          </div>
-        </div>
-      </nav>
+          }
 
-      {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 h-16 flex items-center justify-around bg-surface/90 backdrop-blur-xl border-t border-border safe-area-bottom">
-        {[NAV_ITEMS[0], NAV_ITEMS[1], NAV_ITEMS[4], NAV_ITEMS[2], NAV_ITEMS[8]].map((item) => {
-          const isActive = pathname === item.href;
           return (
             <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 relative ${
-                isActive ? 'text-accent' : 'text-muted'
-              }`}
+              key={tab.href}
+              href={tab.href}
+              className="flex flex-col items-center py-2 px-3 relative"
             >
-              <span className="text-lg">{item.icon}</span>
-              <span className="text-[10px] font-medium">{item.label}</span>
-              {item.href === '/packs' && packs > 0 && (
-                <span className="absolute -top-0.5 right-1 w-4 h-4 rounded-full bg-accent text-white text-[9px] flex items-center justify-center font-bold">
-                  {packs}
-                </span>
+              {isActive && (
+                <motion.div
+                  layoutId="tab-indicator"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-accent"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
               )}
+              <span className={`text-xl transition-transform ${isActive ? 'scale-110' : ''}`}>
+                {isActive ? tab.activeIcon : tab.icon}
+              </span>
+              <span className={`text-[10px] mt-0.5 font-medium ${isActive ? 'text-accent' : 'text-muted'}`}>
+                {tab.label}
+              </span>
             </Link>
           );
         })}
-      </nav>
-
-      {/* Spacer for fixed nav */}
-      <div className="h-14" />
-    </>
+      </div>
+    </nav>
   );
 }
