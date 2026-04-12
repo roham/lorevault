@@ -89,6 +89,31 @@ export default function MarketplacePage() {
         </div>
       </div>
 
+      {/* Recent Sales Ticker */}
+      <div className="mb-6 p-3 rounded-xl bg-surface/50 border border-border/50 overflow-hidden">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-xs text-green-400 font-medium">Live Activity</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+        </div>
+        <div className="flex gap-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+          {[
+            { buyer: 'MythKeeper', card: 'Dracula — The Castle at Night', price: 245.00, scarcity: 'epic', time: '2m ago' },
+            { buyer: 'DarkArchive', card: 'Alice — Falling Down', price: 12.50, scarcity: 'uncommon', time: '5m ago' },
+            { buyer: 'LoreHunter99', card: 'Achilles — Gates of Troy', price: 890.00, scarcity: 'legendary', time: '8m ago' },
+            { buyer: 'BookWyrm', card: 'Moriarty — Napoleon of Crime', price: 45.00, scarcity: 'rare', time: '12m ago' },
+            { buyer: 'FableFinder', card: 'Snow White — Poisoned Apple', price: 3.20, scarcity: 'common', time: '15m ago' },
+          ].map((sale, i) => (
+            <div key={i} className="flex items-center gap-2 text-xs whitespace-nowrap flex-shrink-0">
+              <span className="text-green-400">$</span>
+              <span className="font-mono text-green-400 font-bold">{sale.price.toFixed(2)}</span>
+              <span className="text-muted">{sale.card}</span>
+              <span className="text-muted/50">→ {sale.buyer}</span>
+              <span className="text-muted/30">{sale.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <input
