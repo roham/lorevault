@@ -135,7 +135,14 @@ export default function CollectionPage() {
     }
 
     return cards;
-  }, [filterSet, filterScarcity, filterParallel, sortBy, searchQuery, showcaseIds]);
+  }, [filterSet, filterScarcity, filterParallel, sortBy, searchQuery, showcaseIds, ownedCards]);
+
+  // Zeigarnik: show missing cards when filtering by a specific set
+  const missingCards = useMemo(() => {
+    if (filterSet === 'all' || filterScarcity !== 'all' || filterParallel !== 'all' || searchQuery) return [];
+    const ownedIds = new Set(ownedCards.map(c => c.id));
+    return ALL_CARDS.filter(c => c.setSlug === filterSet && !ownedIds.has(c.id));
+  }, [filterSet, filterScarcity, filterParallel, searchQuery, ownedCards]);
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id as string);
@@ -437,10 +444,36 @@ export default function CollectionPage() {
                 </div>
               </motion.div>
             ))}
+
+            {/* Zeigarnik empty slots — missing cards from this set */}
+            {missingCards.map((card, i) => (
+              <motion.div
+                key={`missing-${card.id}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: Math.min(filteredCards.length * 0.02 + i * 0.02, 0.5) }}
+              >
+                <Link href={`/card/${card.id}`}>
+                  <div
+                    className={`${viewSize === 'sm' ? 'w-[140px] h-[196px]' : 'w-[200px] h-[280px]'} rounded-xl border-2 border-dashed border-border/30 flex flex-col items-center justify-center bg-surface/20 hover:bg-surface/40 transition-colors cursor-pointer group`}
+                  >
+                    <span className={`${viewSize === 'sm' ? 'text-2xl' : 'text-3xl'} opacity-20 group-hover:opacity-40 transition-opacity`}>
+                      {card.symbol}
+                    </span>
+                    <span className="text-[9px] text-muted/30 mt-1 group-hover:text-muted/50 text-center px-2 truncate max-w-full">
+                      {card.character}
+                    </span>
+                    <span className="text-[8px] text-accent/0 group-hover:text-accent/60 mt-1 transition-colors font-medium">
+                      Find →
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </AnimatePresence>
 
-        {filteredCards.length === 0 && ownedCards.length === 0 && (
+        {filteredCards.length === 0 && missingCards.length === 0 && ownedCards.length === 0 && (
           <div className="flex flex-col items-center justify-center h-60 text-center">
             <span className="text-4xl mb-3">📦</span>
             <h3 className="text-lg font-semibold mb-1">Your collection is empty</h3>
