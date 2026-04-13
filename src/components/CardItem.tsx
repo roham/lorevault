@@ -5,7 +5,9 @@ import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
 
 function getCardArtPath(card: Card): string {
-  const id = `${card.setSlug}-${card.character.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${card.moment.toLowerCase().replace(/[^a-z0-9]/g, '-')}`.replace(/-+/g, '-');
+  const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+  // Non-base variants get scarcity+parallel suffix for differentiated art
+  const id = (card.parallel === 'base' && card.scarcity === 'common') ? base : `${base}-${card.scarcity}-${card.parallel}`;
   return `/cards/${id}.webp`;
 }
 
