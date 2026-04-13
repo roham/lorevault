@@ -75,6 +75,50 @@ export interface Badge {
   earnedDate: string;
 }
 
+// ===== Game Types =====
+
+export interface BattleRecord {
+  id: string;
+  date: string;
+  playerDeck: string[]; // card IDs
+  opponentDeck: string[]; // card names (AI doesn't use real cards)
+  rounds: BattleRound[];
+  playerWins: number;
+  opponentWins: number;
+  won: boolean;
+  xpEarned: number;
+}
+
+export interface BattleRound {
+  roundNumber: number;
+  stat: 'power' | 'intelligence' | 'mystery' | 'legend' | 'charm';
+  playerCardId: string;
+  playerValue: number;
+  opponentCharacter: string;
+  opponentValue: number;
+  playerWon: boolean;
+}
+
+export interface TriviaRecord {
+  id: string;
+  date: string;
+  score: number;
+  total: number;
+  streak: number;
+  xpEarned: number;
+  timeMs: number;
+}
+
+export interface GameStats {
+  battlesPlayed: number;
+  battlesWon: number;
+  triviaPlayed: number;
+  triviaHighScore: number;
+  totalGameXP: number;
+  longestBattleStreak: number;
+  longestTriviaStreak: number;
+}
+
 export const SCARCITY_CONFIG: Record<Scarcity, { label: string; color: string; maxSerial: number; bgClass: string }> = {
   common: { label: 'Common', color: '#6b7094', maxSerial: 9999, bgClass: 'bg-common' },
   uncommon: { label: 'Uncommon', color: '#22c55e', maxSerial: 1000, bgClass: 'bg-uncommon' },

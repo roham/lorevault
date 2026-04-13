@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from '@/data/types';
+import { Card, BattleRecord, TriviaRecord, GameStats } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
 
 // Local storage keys
@@ -11,6 +11,9 @@ const KEYS = {
   xp: 'lorevault_xp',
   streak: 'lorevault_streak',
   lastVisit: 'lorevault_last_visit',
+  battleRecords: 'lorevault_battles',
+  triviaRecords: 'lorevault_trivia',
+  gameStats: 'lorevault_game_stats',
 };
 
 function getItem<T>(key: string, fallback: T): T {
@@ -161,6 +164,78 @@ export function generateFirstPack(): Card[] {
   drawn.sort((a, b) => scarcityOrder[a.scarcity] - scarcityOrder[b.scarcity]);
 
   return drawn;
+}
+
+// ===== Game State =====
+
+const DEFAULT_GAME_STATS: GameStats = {
+  battlesPlayed: 0,
+  battlesWon: 0,
+  triviaPlayed: 0,
+  triviaHighScore: 0,
+  totalGameXP: 0,
+  longestBattleStreak: 0,
+  longestTriviaStreak: 0,
+};
+
+export function getGameStats(): GameStats {
+  return getItem<GameStats>(KEYS.gameStats, DEFAULT_GAME_STATS);
+}
+
+export function getBattleRecords(): BattleRecord[] {
+  return getItem<BattleRecord[]>(KEYS.battleRecords, []);
+}
+
+export function getTriviaRecords(): TriviaRecord[] {
+  return getItem<TriviaRecord[]>(KEYS.triviaRecords, []);
+}
+
+export function saveBattleRecord(record: BattleRecord) {
+  const records = getBattleRecords();
+  records.unshift(record);
+  // Keep last 50
+  setItem(KEYS.battleRecords, records.slice(0, 50));
+
+  // Update game stats
+  const stats = getGameStats();
+  stats.battlesPlayed++;
+  if (record.won) stats.battlesWon++;
+  stats.totalGameXP += record.xpEarned;
+
+  // Track win streak
+  const recentWins = records.filter(r => r.won).length;
+  let currentStreak = 0;
+  for (const r of records) {
+    if (r.won) currentStreak++;
+    else break;
+  }
+  if (currentStreak > stats.longestBattleStreak) {
+    stats.longestBattleStreak = currentStreak;
+  }
+
+  setItem(KEYS.gameStats, stats);
+
+  // Also add XP to main XP pool
+  addXP(record.xpEarned);
+}
+
+export function saveTriviaRecord(record: TriviaRecord) {
+  const records = getTriviaRecords();
+  records.unshift(record);
+  setItem(KEYS.triviaRecords, records.slice(0, 50));
+
+  const stats = getGameStats();
+  stats.triviaPlayed++;
+  if (record.score > stats.triviaHighScore) {
+    stats.triviaHighScore = record.score;
+  }
+  stats.totalGameXP += record.xpEarned;
+  if (record.streak > stats.longestTriviaStreak) {
+    stats.longestTriviaStreak = record.streak;
+  }
+  setItem(KEYS.gameStats, stats);
+
+  addXP(record.xpEarned);
 }
 
 // Generate a pack of cards (weighted by scarcity)
