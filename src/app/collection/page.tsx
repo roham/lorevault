@@ -410,6 +410,12 @@ export default function CollectionPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link
+            href="/collection/analytics"
+            className="px-4 py-2 rounded-xl bg-surface text-foreground text-sm font-semibold hover:bg-surface-hover transition-all border border-border"
+          >
+            Analytics
+          </Link>
+          <Link
             href="/collection/smart"
             className="px-4 py-2 rounded-xl bg-surface text-foreground text-sm font-semibold hover:bg-surface-hover transition-all border border-border"
           >
