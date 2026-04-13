@@ -28,6 +28,8 @@ import {
   getTrendingCards,
   getCompletionRecommendations,
   getUndervaluedCards,
+  getPortfolioValue,
+  getSetGaps,
   getSavedSearches,
   saveSearch,
   deleteSavedSearch,
@@ -82,6 +84,8 @@ export default function MarketplacePage() {
   const trending = useMemo(() => getTrendingCards(8), []);
   const completionRecs = useMemo(() => loaded ? getCompletionRecommendations(Array.from(ownedIds), 8) : [], [ownedIds, loaded]);
   const undervalued = useMemo(() => getUndervaluedCards(8), []);
+  const portfolio = useMemo(() => loaded ? getPortfolioValue(Array.from(ownedIds)) : null, [ownedIds, loaded]);
+  const setGaps = useMemo(() => loaded ? getSetGaps(Array.from(ownedIds)) : [], [ownedIds, loaded]);
 
   const handleSearchChange = useCallback((value: string) => {
     setFilters(f => ({ ...f, query: value }));
@@ -260,6 +264,31 @@ export default function MarketplacePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-3">
         <MarketStats />
 
+        {/* Portfolio mini-widget */}
+        {portfolio && portfolio.cardCount > 0 && (
+          <div className="flex items-center gap-4 px-3 py-2 rounded-lg bg-surface/50 border border-border/50 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-muted uppercase tracking-wider">Your Portfolio</span>
+              <span className="text-sm font-bold font-mono text-green-400">${portfolio.totalValue.toFixed(2)}</span>
+              <span className={`text-[10px] font-mono font-bold ${portfolio.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {portfolio.change24h >= 0 ? '+' : ''}{portfolio.change24h.toFixed(1)}%
+              </span>
+            </div>
+            <div className="w-px h-4 bg-border/50" />
+            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+              {setGaps.map(gap => (
+                <div key={gap.setSlug} className="flex items-center gap-1 shrink-0">
+                  <span className="text-xs">{gap.setIcon}</span>
+                  <div className="w-12 h-1.5 rounded-full bg-background overflow-hidden">
+                    <div className="h-full rounded-full bg-accent" style={{ width: `${gap.pct}%` }} />
+                  </div>
+                  <span className="text-[9px] text-muted font-mono">{gap.pct}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* TABS */}
         <div className="flex items-center gap-0.5 mb-3 border-b border-border/30 pb-0">
           {([{ key: 'browse' as MarketTab, label: 'Browse', count: results.length }, { key: 'watchlist' as MarketTab, label: 'Watchlist', count: watchlist.length }, { key: 'floors' as MarketTab, label: 'Floors' }]).map(tab => (
@@ -436,6 +465,39 @@ export default function MarketplacePage() {
                 </div>
               </section>
             )}
+            {/* Set Gaps */}
+            {setGaps.length > 0 && (
+              <section className="mb-5">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5 mb-2"><span className="text-purple-400">📊</span> Collection Gaps</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  {setGaps.filter(g => g.pct < 100).slice(0, 3).map((gap) => (
+                    <div key={gap.setSlug} className="p-3 rounded-xl bg-surface border border-border hover:bg-surface-hover transition-colors cursor-pointer" onClick={() => { setFilters(f => ({ ...f, sets: [gap.setSlug] })); setOwnershipFilter('need'); }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-lg">{gap.setIcon}</span>
+                          <span className="text-xs font-semibold">{gap.setName}</span>
+                        </div>
+                        <span className="text-xs font-mono text-accent">{gap.owned}/{gap.total}</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-background mb-2 overflow-hidden">
+                        <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${gap.pct}%` }} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex gap-1">
+                          {Object.entries(gap.missingByScarcity).map(([scarcity, count]) => (
+                            <span key={scarcity} className="text-[8px] font-mono font-bold uppercase" style={{ color: SCARCITY_CONFIG[scarcity as keyof typeof SCARCITY_CONFIG]?.color }}>
+                              {count}{scarcity[0]}
+                            </span>
+                          ))}
+                        </div>
+                        {gap.costToComplete > 0 && <span className="text-[9px] text-muted font-mono">${gap.costToComplete.toFixed(2)} to complete</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Undervalued */}
             {undervalued.length > 0 && (
               <section className="mb-5">

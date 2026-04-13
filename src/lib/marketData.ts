@@ -640,3 +640,82 @@ export function removePriceAlert(cardId: string): PriceAlert[] {
   localStorage.setItem(PRICE_ALERTS_KEY, JSON.stringify(updated));
   return updated;
 }
+
+// ===== PORTFOLIO VALUE =====
+export function getPortfolioValue(ownedIds: string[]): { totalValue: number; change24h: number; cardCount: number } {
+  const owned = new Set(ownedIds);
+  let totalValue = 0;
+  let totalPrev = 0;
+  let count = 0;
+
+  for (const card of ALL_CARDS) {
+    if (!owned.has(card.id)) continue;
+    const data = getCardMarketData(card.id);
+    const current = data?.currentPrice || card.price;
+    const prev = data ? current / (1 + data.change24h / 100) : current;
+    totalValue += current;
+    totalPrev += prev;
+    count++;
+  }
+
+  const change = totalPrev > 0 ? ((totalValue - totalPrev) / totalPrev) * 100 : 0;
+  return { totalValue, change24h: change, cardCount: count };
+}
+
+// ===== GAP-BASED SUGGESTIONS =====
+export interface SetGap {
+  setSlug: string;
+  setName: string;
+  setIcon: string;
+  owned: number;
+  total: number;
+  pct: number;
+  missingByScarcity: Record<string, number>;
+  cheapestMissing: Card | null;
+  costToComplete: number;
+}
+
+export function getSetGaps(ownedIds: string[]): SetGap[] {
+  const owned = new Set(ownedIds);
+  const setNames: Record<string, string> = {};
+  const setIcons: Record<string, string> = {};
+
+  for (const card of ALL_CARDS) {
+    setNames[card.setSlug] = card.set;
+    if (!setIcons[card.setSlug]) {
+      setIcons[card.setSlug] = card.setSlug === 'baker-street' ? '🔍' : card.setSlug === 'enchanted-kingdom' ? '👑' : card.setSlug === 'wonderland' ? '🐇' : card.setSlug === 'gothic-horror' ? '🦇' : '⚡';
+    }
+  }
+
+  const gaps: SetGap[] = [];
+  const slugs = [...new Set(ALL_CARDS.map(c => c.setSlug))];
+
+  for (const slug of slugs) {
+    const setCards = ALL_CARDS.filter(c => c.setSlug === slug);
+    const ownedInSet = setCards.filter(c => owned.has(c.id));
+    if (ownedInSet.length === 0) continue; // Only show started sets
+
+    const missing = setCards.filter(c => !owned.has(c.id));
+    const missingByScarcity: Record<string, number> = {};
+    for (const c of missing) {
+      missingByScarcity[c.scarcity] = (missingByScarcity[c.scarcity] || 0) + 1;
+    }
+
+    const listedMissing = missing.filter(c => c.listed).sort((a, b) => a.price - b.price);
+    const costToComplete = listedMissing.reduce((sum, c) => sum + c.price, 0);
+
+    gaps.push({
+      setSlug: slug,
+      setName: setNames[slug],
+      setIcon: setIcons[slug],
+      owned: ownedInSet.length,
+      total: setCards.length,
+      pct: Math.round((ownedInSet.length / setCards.length) * 100),
+      missingByScarcity,
+      cheapestMissing: listedMissing[0] || null,
+      costToComplete: Math.round(costToComplete * 100) / 100,
+    });
+  }
+
+  return gaps.sort((a, b) => b.pct - a.pct);
+}
