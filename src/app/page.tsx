@@ -265,8 +265,8 @@ export default function Home() {
         <div className="grid grid-cols-3 gap-2">
           {[
             { href: '/marketplace', label: 'Market', icon: '🏪', desc: 'Buy & sell' },
-            { href: '/trade', label: 'Trade', icon: '🔄', desc: 'Swap cards' },
-            { href: '/leaderboard', label: 'Ranks', icon: '📊', desc: 'Leaderboard' },
+            { href: '/games', label: 'Play', icon: '⚔️', desc: 'Card games' },
+            { href: '/collection/analytics', label: 'Stats', icon: '📊', desc: 'Analytics' },
           ].map((item) => (
             <Link
               key={item.href}
