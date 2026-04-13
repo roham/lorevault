@@ -151,6 +151,18 @@ export default function ProfilePage() {
         </div>
       </motion.div>
 
+      {/* Collector's Guide link */}
+      <Link href="/guide" className="block mb-6 p-4 rounded-xl bg-accent/5 border border-accent/20 hover:bg-accent/10 transition-all">
+        <div className="flex items-center gap-3">
+          <span className="text-xl">{'\u{1F4D6}'}</span>
+          <div>
+            <div className="text-sm font-semibold">Collector&apos;s Guide</div>
+            <div className="text-xs text-muted">Learn scarcity, parallels, VIP tiers &amp; strategy</div>
+          </div>
+          <span className="ml-auto text-muted">&rarr;</span>
+        </div>
+      </Link>
+
       {/* Season Track — hero section */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
