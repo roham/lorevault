@@ -441,6 +441,8 @@ export default function MarketplacePage() {
               <AnimatePresence mode="popLayout">
                 {results.map((card, i) => {
                   const data = getCardMarketData(card.id); const watched = watchlist.includes(card.id); const inBulk = bulkSelected.has(card.id);
+                  const owned = ownedIds.has(card.id);
+                  const isHotDeal = data && data.currentPrice < data.floorPrice * 1.05;
                   return (
                     <motion.div key={card.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.15, delay: Math.min(i * 0.012, 0.3) }} className="relative group">
                       {bulkMode ? (
@@ -449,13 +451,31 @@ export default function MarketplacePage() {
                           {inBulk && <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-accent text-white text-sm flex items-center justify-center z-10 font-bold">✓</div>}
                         </div>
                       ) : (
-                        <div className="cursor-pointer" onClick={() => setQuickViewCard(card)}><CardItem card={card} size="lg" showPrice interactive={false} /></div>
+                        <div className="cursor-pointer" onClick={() => setQuickViewCard(card)}>
+                          <CardItem card={card} size="lg" showPrice interactive={false} />
+                          {/* Hover overlay with market data */}
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col justify-end p-3 pointer-events-none group-hover:pointer-events-auto">
+                            <div className="flex items-end justify-between">
+                              <div>
+                                {data && <div className="flex items-center gap-1.5 mb-1">
+                                  {renderTrend(data.change24h)}
+                                  <span className="text-[9px] text-white/50 font-mono">vol {data.volume7d}</span>
+                                </div>}
+                                {data && <div className="flex items-center gap-2 text-[9px]">
+                                  <span className="text-white/40">Floor <span className="text-white/70 font-mono">${data.floorPrice.toFixed(2)}</span></span>
+                                  <span className="text-white/40">Avg <span className="text-white/70 font-mono">${data.avgPrice7d.toFixed(2)}</span></span>
+                                </div>}
+                              </div>
+                              <div className="flex gap-1">
+                                {!owned && <button onClick={(e) => { e.stopPropagation(); handleBuyCard(card); }} className="px-3 py-1.5 rounded-lg bg-accent text-white text-[10px] font-bold hover:bg-accent/90 transition-colors">Buy</button>}
+                                <button onClick={(e) => { e.stopPropagation(); toggleWatchlist(card.id); }} className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${watched ? 'bg-yellow-500/80 text-white' : 'bg-white/10 text-white/60 hover:text-yellow-400'}`}>{watched ? '★' : '☆'}</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       )}
                       {renderOwnedBadge(card.id)}
-                      {!bulkMode && <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWatchlist(card.id); }} className={`w-8 h-8 rounded-full flex items-center justify-center text-sm backdrop-blur-sm transition-colors ${watched ? 'bg-yellow-500/80 text-white' : 'bg-black/50 text-muted hover:text-yellow-400'}`}>{watched ? '★' : '☆'}</button>
-                      </div>}
-                      {data && !bulkMode && <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity z-20"><div className="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm">{renderTrend(data.change24h)}</div></div>}
+                      {isHotDeal && !bulkMode && <div className="absolute top-2 left-2 z-20"><span className="text-[8px] px-1.5 py-0.5 rounded bg-green-500/90 text-white font-bold uppercase">Near Floor</span></div>}
                     </motion.div>
                   );
                 })}

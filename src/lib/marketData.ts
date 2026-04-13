@@ -355,18 +355,61 @@ export function addRecentSearch(query: string) {
   localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
 }
 
+// ===== FUZZY MATCH =====
+function fuzzyMatch(text: string, pattern: string): number {
+  // Returns a relevance score 0-1. 1 = exact, 0 = no match.
+  text = text.toLowerCase();
+  pattern = pattern.toLowerCase();
+  if (text.includes(pattern)) return 1;
+  // Check if all chars appear in order (fuzzy)
+  let ti = 0;
+  let pi = 0;
+  let matched = 0;
+  while (ti < text.length && pi < pattern.length) {
+    if (text[ti] === pattern[pi]) { matched++; pi++; }
+    ti++;
+  }
+  if (pi < pattern.length) return 0; // Not all chars found
+  return matched / Math.max(text.length, pattern.length) * 0.7; // Partial score
+}
+
+function scoreCard(card: Card, terms: string[]): number {
+  const fields = [
+    { text: card.character, weight: 3 },
+    { text: card.moment, weight: 2 },
+    { text: card.set, weight: 1.5 },
+    { text: card.scarcity, weight: 1 },
+    { text: card.parallel, weight: 1 },
+  ];
+  let total = 0;
+  for (const term of terms) {
+    let best = 0;
+    for (const field of fields) {
+      const score = fuzzyMatch(field.text, term) * field.weight;
+      if (score > best) best = score;
+    }
+    total += best;
+  }
+  return total;
+}
+
 // ===== SEARCH + FILTER ENGINE =====
 export function searchMarketplace(cards: Card[], filters: MarketFilters): Card[] {
   let results = [...cards];
 
-  // Text search
+  // Text search with fuzzy matching
   if (filters.query.trim()) {
     const q = filters.query.toLowerCase().trim();
     const terms = q.split(/\s+/);
-    results = results.filter(card => {
-      const searchable = `${card.character} ${card.moment} ${card.set} ${card.scarcity} ${card.parallel}`.toLowerCase();
-      return terms.every(term => searchable.includes(term));
-    });
+    // Score and filter
+    const scored = results
+      .map(card => ({ card, score: scoreCard(card, terms) }))
+      .filter(({ score }) => score > 0);
+    // Sort by relevance if no explicit sort
+    if (filters.sortBy === 'popular') {
+      scored.sort((a, b) => b.score - a.score);
+    }
+    results = scored.map(s => s.card);
   }
 
   // Set filter
