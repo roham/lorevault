@@ -63,6 +63,7 @@ export default function MarketplacePage() {
   const [loaded, setLoaded] = useState(false);
   const [compact, setCompact] = useState(false);
   const [focusedIdx, setFocusedIdx] = useState(-1);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -149,7 +150,8 @@ export default function MarketplacePage() {
     const handler = (e: KeyboardEvent) => {
       const isInput = document.activeElement?.tagName === 'INPUT';
       if (e.key === '/' && !searchFocused && !isInput) { e.preventDefault(); searchRef.current?.focus(); }
-      if (e.key === 'Escape') { setSearchFocused(false); setQuickViewCard(null); searchRef.current?.blur(); setFocusedIdx(-1); }
+      if (e.key === '?' && !isInput) { e.preventDefault(); setShowShortcuts(prev => !prev); }
+      if (e.key === 'Escape') { setSearchFocused(false); setQuickViewCard(null); setShowShortcuts(false); searchRef.current?.blur(); setFocusedIdx(-1); }
       // J/K navigation through results
       if (!isInput && !quickViewCard && activeTab === 'browse') {
         if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); setFocusedIdx(prev => Math.min(prev + 1, results.length - 1)); }
@@ -163,6 +165,22 @@ export default function MarketplacePage() {
   }, [searchFocused, quickViewCard, activeTab, results, focusedIdx, toggleWatchlist]);
 
   const isSearchActive = !!(filters.query.trim() || filters.sets.length || filters.scarcities.length || filters.parallels.length);
+
+  const highlightMatch = (text: string, query: string) => {
+    if (!query.trim()) return text;
+    const terms = query.toLowerCase().trim().split(/\s+/);
+    let result = text;
+    for (const term of terms) {
+      const idx = result.toLowerCase().indexOf(term);
+      if (idx >= 0) {
+        result = result.slice(0, idx) + '**' + result.slice(idx, idx + term.length) + '**' + result.slice(idx + term.length);
+      }
+    }
+    // Convert **text** to JSX-friendly format
+    const parts = result.split(/\*\*(.*?)\*\*/);
+    if (parts.length === 1) return text;
+    return parts.map((part, i) => i % 2 === 1 ? <span key={i} className="text-accent font-bold">{part}</span> : part);
+  };
 
   const renderTrend = (change: number) => {
     if (Math.abs(change) < 0.5) return <span className="text-muted text-[10px]">--</span>;
@@ -222,7 +240,12 @@ export default function MarketplacePage() {
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xs">🔍</span>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                 {filters.query && <button onClick={() => { handleSearchChange(''); searchRef.current?.focus(); }} className="text-muted hover:text-foreground text-xs">x</button>}
-                {!searchFocused && !filters.query && <kbd className="text-[9px] text-muted/40 font-mono border border-border/50 rounded px-1 py-0.5">/</kbd>}
+                {!searchFocused && !filters.query && (
+                  <div className="flex items-center gap-1">
+                    <kbd className="text-[9px] text-muted/40 font-mono border border-border/50 rounded px-1 py-0.5">/</kbd>
+                    <button onClick={() => setShowShortcuts(true)} className="text-[9px] text-muted/30 font-mono border border-border/30 rounded px-1 py-0.5 hover:text-muted/60">?</button>
+                  </div>
+                )}
               </div>
             </div>
             <AnimatePresence>
@@ -260,6 +283,12 @@ export default function MarketplacePage() {
       </div>
 
       {searchFocused && <div className="fixed inset-0 z-30" onClick={() => setSearchFocused(false)} />}
+
+      {/* Mobile sales ticker */}
+      <div className="sm:hidden px-4 py-1.5 border-b border-border/20 flex items-center gap-2">
+        <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shrink-0" />
+        <SalesTicker />
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-3">
         <MarketStats />
@@ -591,7 +620,7 @@ export default function MarketplacePage() {
                         <div className="w-11 h-[60px] rounded-lg overflow-hidden flex-shrink-0 relative" style={{ background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`, border: `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}` }}><div className="absolute inset-0 flex items-center justify-center text-base">{card.symbol}</div></div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-semibold truncate">{card.character}</span>
+                            <span className="text-sm font-semibold truncate">{filters.query ? highlightMatch(card.character, filters.query) : card.character}</span>
                             {card.parallel !== 'base' && <span className="text-[8px] px-1 py-0.5 rounded bg-surface-hover text-muted">{PARALLEL_CONFIG[card.parallel].label}</span>}
                             {owned && <span className="text-[8px] px-1 py-0.5 rounded bg-green-500/10 text-green-400 font-bold">OWNED</span>}
                           </div>
@@ -649,7 +678,7 @@ export default function MarketplacePage() {
                           <div className="flex items-center gap-2">
                             {!compact && <div className="w-6 h-8 rounded flex-shrink-0 flex items-center justify-center text-xs" style={{ background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`, border: `1px solid ${SCARCITY_CONFIG[card.scarcity].color}40` }}>{card.symbol}</div>}
                             <div className="min-w-0">
-                              <div className="font-semibold text-foreground truncate flex items-center gap-1">{compact && <span className="text-xs">{card.symbol}</span>}{card.character}{owned && <span className="text-[7px] px-1 rounded bg-green-500/10 text-green-400 font-bold">OWN</span>}</div>
+                              <div className="font-semibold text-foreground truncate flex items-center gap-1">{compact && <span className="text-xs">{card.symbol}</span>}{filters.query ? highlightMatch(card.character, filters.query) : card.character}{owned && <span className="text-[7px] px-1 rounded bg-green-500/10 text-green-400 font-bold">OWN</span>}</div>
                               {!compact && <div className="text-[9px] text-muted truncate">{card.moment}</div>}
                             </div>
                           </div>
@@ -693,6 +722,40 @@ export default function MarketplacePage() {
             onToggleWatch={() => toggleWatchlist(quickViewCard.id)}
             onBuy={() => handleBuyCard(quickViewCard)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* KEYBOARD SHORTCUTS MODAL */}
+      <AnimatePresence>
+        {showShortcuts && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={() => setShowShortcuts(false)} />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-surface border border-border rounded-2xl p-5 z-50 shadow-2xl"
+            >
+              <h3 className="text-sm font-bold mb-3">Keyboard Shortcuts</h3>
+              <div className="space-y-2 text-xs">
+                {[
+                  { key: '/', desc: 'Focus search' },
+                  { key: 'Esc', desc: 'Close panel / clear focus' },
+                  { key: 'j / ↓', desc: 'Next card' },
+                  { key: 'k / ↑', desc: 'Previous card' },
+                  { key: 'Enter', desc: 'Open focused card' },
+                  { key: 'w', desc: 'Toggle watchlist on focused card' },
+                  { key: '?', desc: 'Toggle this panel' },
+                ].map(({ key, desc }) => (
+                  <div key={key} className="flex items-center justify-between">
+                    <kbd className="px-1.5 py-0.5 rounded bg-background border border-border font-mono text-[10px] text-muted">{key}</kbd>
+                    <span className="text-muted">{desc}</span>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => setShowShortcuts(false)} className="mt-4 w-full py-2 rounded-xl bg-accent/10 text-accent text-xs font-semibold hover:bg-accent/20 transition-colors">Close</button>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
