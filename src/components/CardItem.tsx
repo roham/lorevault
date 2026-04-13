@@ -4,6 +4,11 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
 
+function getCardArtPath(card: Card): string {
+  const id = `${card.setSlug}-${card.character.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${card.moment.toLowerCase().replace(/[^a-z0-9]/g, '-')}`.replace(/-+/g, '-');
+  return `/cards/${id}.webp`;
+}
+
 interface CardItemProps {
   card: Card;
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -211,8 +216,15 @@ export default function CardItem({
             </div>
           )}
 
-          {/* Card art: monogram + symbol */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
+          {/* Card art: real image or fallback monogram */}
+          <img
+            src={getCardArtPath(card)}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            loading="lazy"
+          />
+          <div className="absolute inset-0 flex flex-col items-center justify-center card-art-fallback">
             <span
               className={`${s.initial} font-bold leading-none`}
               style={{
