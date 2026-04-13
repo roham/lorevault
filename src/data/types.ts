@@ -119,6 +119,13 @@ export interface GameStats {
   longestTriviaStreak: number;
 }
 
+export interface SavedDeck {
+  id: string;
+  name: string;
+  cardIds: string[];
+  createdAt: string;
+}
+
 export const SCARCITY_CONFIG: Record<Scarcity, { label: string; color: string; maxSerial: number; bgClass: string }> = {
   common: { label: 'Common', color: '#6b7094', maxSerial: 9999, bgClass: 'bg-common' },
   uncommon: { label: 'Uncommon', color: '#22c55e', maxSerial: 1000, bgClass: 'bg-uncommon' },

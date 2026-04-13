@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, BattleRecord, TriviaRecord, GameStats } from '@/data/types';
+import { Card, BattleRecord, TriviaRecord, GameStats, SavedDeck } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
 
 // Local storage keys
@@ -14,6 +14,7 @@ const KEYS = {
   battleRecords: 'lorevault_battles',
   triviaRecords: 'lorevault_trivia',
   gameStats: 'lorevault_game_stats',
+  savedDecks: 'lorevault_decks',
 };
 
 function getItem<T>(key: string, fallback: T): T {
@@ -236,6 +237,30 @@ export function saveTriviaRecord(record: TriviaRecord) {
   setItem(KEYS.gameStats, stats);
 
   addXP(record.xpEarned);
+}
+
+// ===== Saved Decks =====
+
+export function getSavedDecks(): SavedDeck[] {
+  return getItem<SavedDeck[]>(KEYS.savedDecks, []);
+}
+
+export function saveDeck(name: string, cardIds: string[]): SavedDeck {
+  const decks = getSavedDecks();
+  const deck: SavedDeck = {
+    id: `deck-${Date.now()}`,
+    name,
+    cardIds,
+    createdAt: new Date().toISOString(),
+  };
+  decks.push(deck);
+  setItem(KEYS.savedDecks, decks);
+  return deck;
+}
+
+export function deleteDeck(id: string) {
+  const decks = getSavedDecks().filter(d => d.id !== id);
+  setItem(KEYS.savedDecks, decks);
 }
 
 // Generate a pack of cards (weighted by scarcity)
