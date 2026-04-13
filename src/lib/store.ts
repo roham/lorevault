@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, BattleRecord, TriviaRecord, GameStats, SavedDeck } from '@/data/types';
+import { Card, BattleRecord, TriviaRecord, GameStats, SavedDeck, CollectorLevel, XPSource, XP_VALUES, getLevelFromXP, getXPForLevel, getTierForLevel, EarnedAchievement } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
 
 // Local storage keys
@@ -15,6 +15,9 @@ const KEYS = {
   triviaRecords: 'lorevault_trivia',
   gameStats: 'lorevault_game_stats',
   savedDecks: 'lorevault_decks',
+  achievements: 'lorevault_achievements',
+  seasonProgress: 'lorevault_season_progress',
+  dailyMissions: 'lorevault_daily_missions',
 };
 
 function getItem<T>(key: string, fallback: T): T {
@@ -165,6 +168,113 @@ export function generateFirstPack(): Card[] {
   drawn.sort((a, b) => scarcityOrder[a.scarcity] - scarcityOrder[b.scarcity]);
 
   return drawn;
+}
+
+// ===== Collector Level System =====
+
+export function getCollectorLevel(): CollectorLevel {
+  const xp = getXP();
+  const level = getLevelFromXP(xp);
+  const tier = getTierForLevel(level);
+  const xpForCurrent = getXPForLevel(level);
+  const xpForNext = getXPForLevel(level + 1);
+  const progressPercent = xpForNext > xpForCurrent
+    ? Math.min(100, Math.round(((xp - xpForCurrent) / (xpForNext - xpForCurrent)) * 100))
+    : 100;
+
+  return {
+    level,
+    tier,
+    currentXP: xp,
+    xpForCurrentLevel: xpForCurrent,
+    xpForNextLevel: xpForNext,
+    progressPercent,
+  };
+}
+
+export function getCollectorXP(): number {
+  return getXP();
+}
+
+export function addCollectorXP(amount: number, source: XPSource): { previousLevel: number; newLevel: number; xpAdded: number } {
+  const prevXP = getXP();
+  const prevLevel = getLevelFromXP(prevXP);
+  const xpToAdd = amount || XP_VALUES[source];
+  addXP(xpToAdd);
+  const newXP = prevXP + xpToAdd;
+  const newLevel = getLevelFromXP(newXP);
+  return { previousLevel: prevLevel, newLevel, xpAdded: xpToAdd };
+}
+
+// ===== Achievement Storage =====
+
+export function getEarnedAchievements(): EarnedAchievement[] {
+  return getItem<EarnedAchievement[]>(KEYS.achievements, []);
+}
+
+export function earnAchievement(achievementId: string): boolean {
+  const earned = getEarnedAchievements();
+  if (earned.some(a => a.achievementId === achievementId)) return false;
+  earned.push({ achievementId, earnedAt: new Date().toISOString() });
+  setItem(KEYS.achievements, earned);
+  return true;
+}
+
+export function hasAchievement(achievementId: string): boolean {
+  return getEarnedAchievements().some(a => a.achievementId === achievementId);
+}
+
+// ===== Season / Battle Pass =====
+
+export function getSeasonTier(): number {
+  return getItem<number>(KEYS.seasonProgress, 0);
+}
+
+export function advanceSeasonTier(amount: number = 1): number {
+  const current = getSeasonTier();
+  const next = Math.min(current + amount, 30);
+  setItem(KEYS.seasonProgress, next);
+  return next;
+}
+
+// ===== Daily Missions =====
+
+export interface DailyMission {
+  id: string;
+  description: string;
+  target: number;
+  progress: number;
+  reward: string;
+  completed: boolean;
+}
+
+export function getDailyMissions(): DailyMission[] {
+  const stored = getItem<{ date: string; missions: DailyMission[] } | null>(KEYS.dailyMissions, null);
+  const today = new Date().toISOString().split('T')[0];
+  if (stored && stored.date === today) return stored.missions;
+
+  // Generate fresh missions each day
+  const missions: DailyMission[] = [
+    { id: 'daily-packs', description: 'Open 2 packs', target: 2, progress: 0, reward: '+1 Season Tier', completed: false },
+    { id: 'daily-battle', description: 'Win a card battle', target: 1, progress: 0, reward: '+1 Season Tier', completed: false },
+    { id: 'daily-trivia', description: 'Score 3+ in trivia', target: 3, progress: 0, reward: '+1 Season Tier', completed: false },
+  ];
+  setItem(KEYS.dailyMissions, { date: today, missions });
+  return missions;
+}
+
+export function updateDailyMission(missionId: string, progress: number) {
+  const today = new Date().toISOString().split('T')[0];
+  const stored = getItem<{ date: string; missions: DailyMission[] } | null>(KEYS.dailyMissions, null);
+  if (!stored || stored.date !== today) return;
+  const missions = stored.missions.map(m => {
+    if (m.id === missionId) {
+      const newProgress = Math.min(m.target, progress);
+      return { ...m, progress: newProgress, completed: newProgress >= m.target };
+    }
+    return m;
+  });
+  setItem(KEYS.dailyMissions, { date: today, missions });
 }
 
 // ===== Game State =====

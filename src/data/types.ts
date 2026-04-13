@@ -141,3 +141,97 @@ export const PARALLEL_CONFIG: Record<Parallel, { label: string; effect: string }
   holographic: { label: 'Holographic', effect: 'holographic' },
   obsidian: { label: 'Obsidian', effect: 'obsidian' },
 };
+
+// ===== Collector Level System =====
+
+export type XPSource =
+  | 'pack_open'
+  | 'card_acquired'
+  | 'set_progress'
+  | 'battle_win'
+  | 'trivia_correct'
+  | 'daily_login'
+  | 'streak_bonus'
+  | 'achievement';
+
+export const XP_VALUES: Record<XPSource, number> = {
+  pack_open: 25,
+  card_acquired: 10,
+  set_progress: 50,
+  battle_win: 30,
+  trivia_correct: 5,
+  daily_login: 15,
+  streak_bonus: 5,
+  achievement: 0, // variable, set at grant time
+};
+
+export type CollectorTier = 'Newcomer' | 'Collector' | 'Enthusiast' | 'Connoisseur' | 'Elite' | 'Legendary';
+
+export interface CollectorLevel {
+  level: number;
+  tier: CollectorTier;
+  currentXP: number;
+  xpForCurrentLevel: number;
+  xpForNextLevel: number;
+  progressPercent: number;
+}
+
+export function getTierForLevel(level: number): CollectorTier {
+  if (level <= 5) return 'Newcomer';
+  if (level <= 15) return 'Collector';
+  if (level <= 25) return 'Enthusiast';
+  if (level <= 35) return 'Connoisseur';
+  if (level <= 45) return 'Elite';
+  return 'Legendary';
+}
+
+export function getXPForLevel(level: number): number {
+  if (level <= 1) return 0;
+  // XP = 100 * N * (N-1) / 2 — accelerating curve
+  return 100 * level * (level - 1) / 2;
+}
+
+export function getLevelFromXP(xp: number): number {
+  // Inverse of XP formula: solve 100*L*(L-1)/2 = xp for L
+  // 50*L^2 - 50*L - xp = 0 => L = (50 + sqrt(2500 + 200*xp)) / 100
+  let level = 1;
+  while (getXPForLevel(level + 1) <= xp) {
+    level++;
+    if (level >= 50) break;
+  }
+  return level;
+}
+
+// ===== Season / Battle Pass =====
+
+export interface SeasonTier {
+  tier: number;
+  reward: SeasonReward;
+  xpRequired: number;
+  unlocked: boolean;
+}
+
+export interface SeasonReward {
+  type: 'badge' | 'xp_boost' | 'showcase_theme' | 'card_frame' | 'pack' | 'title';
+  name: string;
+  description: string;
+  icon: string;
+}
+
+// ===== Achievement System =====
+
+export type AchievementRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: AchievementRarity;
+  mockPercent: number; // % of collectors who earn it
+}
+
+export interface EarnedAchievement {
+  achievementId: string;
+  earnedAt: string;
+}
