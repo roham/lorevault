@@ -587,7 +587,7 @@ Back to Phase 1. Target Odin's identified weakest dimension. If Odin identified 
 
 **Never stop. Never ask permission. Never declare "done."**
 
-### Scoring Matrix (14 Dimensions)
+### Scoring Matrix (16 Dimensions)
 
 | # | Dimension | 10/10 |
 |---|-----------|-------|
@@ -599,40 +599,66 @@ Back to Phase 1. Target Odin's identified weakest dimension. If Odin identified 
 | 6 | Analytics Depth | Portfolio manager level. Attribution. Trade optimization. Market intelligence. Heatmaps. |
 | 7 | Marketplace | Bloomberg meets StockX. Movers, signals, bulk tools. Power user's dream. |
 | 8 | Collection Feel | Physical binder weight. Showcase you'd share. Incomplete sets that haunt. |
-| 9 | Game Polish | Battle tense. Trivia urgent. Progression hooks. Daily reasons to return. |
-| 10 | Card Presentation | Cards are heroes. Parallels distinct. Scarcity reads instantly. 3D tilt satisfying. |
+| 9 | Game Variety & Polish | Multiple games, each tense and replayable. Battle, trivia, puzzle, draft. Daily reasons to return. |
+| 10 | Card Presentation | FLUX art on every card. Parallels distinct. Scarcity reads instantly. 3D tilt satisfying. |
 | 11 | Typography & Layout | Drama in hierarchy. Whitespace intentional. Density varies by context. |
-| 12 | Mobile Experience | Touch generous. Swipe natural. No desktop artifacts. Feels native. |
+| 12 | Mobile Performance | Smooth 60fps scroll. No jank. Lazy loading. Skeleton states. Touch generous. Feels native. |
 | 13 | VIP & Rewards | Tier progression visible. Benefits clear. Spending feels smart. Loyalty rewarded. |
 | 14 | Delight & Surprise | Easter eggs. Micro-interactions. The "oh cool" moment. |
+| 15 | Content Depth | 7+ sets, 200+ characters. Rich lore. Every set tells a story. New content regularly. |
+| 16 | Gamification Loops | Streaks, daily login calendar, challenge variety, reward escalation, FOMO mechanics. Daily return rate. |
 
 ---
 
 ## Priority Sequence
 
-Cycles 1-6 are already done. Continue from cycle 7.
-
-**Already completed (v8.1-v8.6):**
+**Completed (v8.1-v8.14):**
 1. ~~Nav architecture + collector levels + consolidated collection~~ (v8.1)
 2. ~~Battle pass + achievements + level-up celebration~~ (v8.2)
 3. ~~Home page redesign — asymmetric hero, kill AI look~~ (v8.3)
 4. ~~Activation path — tooltips, feature unlocks, state machine~~ (v8.4)
 5. ~~Deep analytics — portfolio value, attribution, heatmap, trade optimizer~~ (v8.5)
 6. ~~Marketplace movers — gainers, losers, volume, whales, floor watch~~ (v8.6)
+7. ~~5-tab nav rebuild~~ (v8.7)
+8. ~~Collector's Guide / Codex — 7 sections, real data~~ (v8.8)
+9. ~~VIP program display — profile card, nav glow, home pill~~ (v8.9)
+10. ~~Global search — cards + sets + guide, tiered results~~ (v8.10)
+11. ~~Discovery Feed — 7 editorial cards, detail pages~~ (v8.11)
+12. ~~Card craft — physical depth, corner accents, parallel effects~~ (v8.12)
+13. ~~Typography pass — type scale system, display/heading utilities~~ (v8.13)
+14. ~~Card art pipeline + 23 FLUX-generated images~~ (v8.14)
 
-**Next cycles (start here):**
-7. **5-tab nav rebuild** — Replace 4-tab with Home|Market|Open|Collection|Games. Profile → top bar. Kill floating Play pill. Search icon → global search with "Search cards..." placeholder.
-8. **Collector's Guide / Codex** — Build the in-product knowledge base. VIP program, rewards, parallels guide, marketplace strategy. Beautiful illustrated pages. Accessible from profile + "?" in top bar.
-9. **VIP program display** — Tier badge on profile, progress to next tier, benefits breakdown, monthly summary. Knowledge Cards for tier-related moments.
-10. **Global search** — Rebuild search to return cards (primary) + Collector's Guide content (secondary) + Discovery Feed items. Tiered results layout.
-11. **Discovery Feed on home page** — Replace generic sections with native content cards: drops, strategy tips, collector spotlights. Tappable → in-app detail view.
-12. **Card component craft** — Stunning at every size. Richer parallels. Better scarcity cues. Hover states that reward exploration.
-13. **Typography pass** — Real type system. Display drama. Not Tailwind defaults.
-14. **Collection milestones + celebrations** — 10/25/50/100 cards, first legendary, first set complete. Feed into VIP XP.
-15. **Daily engagement hooks** — Login bonus, daily challenge, streak escalation, free daily pack. Feed into battle pass + VIP.
-16. **Motion audit** — Kill gratuitous animations. Make remaining ones spring-physics and purposeful.
-17. **Contextual Knowledge Cards** — Inline educational content throughout: set completion rewards, marketplace tips, battle strategy, VIP benefits — appearing at the right moment.
-18+ **Infinite visual craft iteration** — Every cycle after 17 should pick the lowest-scoring dimension and improve it. Research a specific reference product each cycle. Never stop.
+**Next cycles (continue from here):**
+
+### Phase A: Complete Art Coverage + Fix Regressions
+15. **Generate ALL remaining card art** — Run `node scripts/generate-card-art.mjs --batch 80` until all ~98 characters have FLUX art. Commit in batches of 20. Deploy after each batch.
+16. **Profile page UX overhaul** — Performance is janky on mobile. Research modern profile patterns (Instagram, Spotify, DraftKings). Fix: lazy load sections, reduce re-renders, skeleton loading states, smoother scroll. Kill unnecessary motion. Make VIP card and stats feel native, not stacked-cards.
+17. **Mobile performance audit** — Profile IntersectionObserver for lazy sections. Reduce CardItem re-renders (memo). Remove 1s setInterval polling in Nav. Test at 375px on real device emulation.
+
+### Phase B: Content Expansion
+18. **New characters + stories** — Add 2-3 new sets. Ideas: "Arabian Nights" (Scheherazade, Aladdin, Sinbad), "Norse Legends" (Thor, Loki, Freya, Odin), "Edo Period" (samurai, ronin, geisha). 20 characters per set with unique moments, lore text, and generated art. Update cards.ts, sets.ts, generate art.
+19. **New set art generation** — For every new set, immediately run the art pipeline. Each set gets its own aesthetic in the generation script.
+20. **Discovery Feed expansion** — Add entries for new sets. Strategy guides, character spotlights, set comparisons.
+
+### Phase C: More Games + Gamification
+21. **New game: Card Puzzle** — Sliding puzzle or match-3 using card art. Quick session, earns XP. Research: Candy Crush lite mechanics, Pokemon Cafe Mix.
+22. **New game: Collection Draft** — Draft-style game where you pick cards from rotating options to build the best collection score. Research: fantasy sports draft UX.
+23. **Challenge system expansion** — More challenge types: "Collect all 5 scarcities of one character", "Win 3 battles with only Gothic Horror cards", "Complete a set in under 7 days". Weekly challenges with premium rewards.
+24. **Daily engagement loop** — Login calendar (Genshin style, 7-day cycle with escalating rewards). Free daily pack. Daily spin/gacha micro-game. Feed into VIP + battle pass.
+25. **Streak mechanics** — Streak freeze (spend currency to protect streak). Streak milestones (7d, 14d, 30d, 100d) with exclusive rewards. Visible streak fire animation on home.
+
+### Phase D: Polish + Infinite Iteration
+26. **Collection milestones + celebrations** — 10/25/50/100 cards. First legendary. First set complete. Animated celebrations feeding into VIP XP.
+27. **Motion audit** — Kill gratuitous animations. Spring-physics on remaining. Haptic-feel interactions.
+28. **Contextual Knowledge Cards** — Inline educational content appearing at the right moment throughout the app.
+29+ **Infinite iteration** — Every cycle after 28 picks the lowest-scoring dimension (use the 14-dimension matrix). Research a specific reference product. Build. Score. Never stop.
+
+### Art Generation (runs every cycle alongside build)
+Every cycle, the ARTIST phase runs:
+```bash
+node scripts/generate-card-art.mjs --batch 10
+```
+Until all characters (including new sets) have FLUX-generated art. For new sets, update `SET_AESTHETICS` in the script with the set's visual identity before generating.
 
 ---
 
@@ -640,17 +666,19 @@ Cycles 1-6 are already done. Continue from cycle 7.
 
 1. `npm run build` must pass before every commit.
 2. Read `AGENTS.md` + `node_modules/next/dist/docs/` for Next.js 16 APIs.
-3. Cards LARGE on screen. Card art is the hero.
+3. Cards LARGE on screen. Card art is the hero — use FLUX-generated art, never emoji on cards.
 4. Every interaction has visual feedback.
 5. Real character names. No Lorem Ipsum.
 6. Dark premium aesthetic. Exciting, luxurious, not sterile.
 7. Push to `daemon-v8` branch. Tag every deploy. Never break the build.
-8. Deploy with `npx vercel --yes` (preview URL, NOT production).
+8. Deploy with `npx vercel --prod --yes` (production URL for review).
 9. Document every cycle in `lorevault-wiki/scoring/`.
 10. No new npm packages without strong reason.
-11. Mobile-first. Every change works at 375px.
+11. Mobile-first. Every change works at 375px. Test performance — no jank.
 12. Tooltips/unlocks stored in localStorage. Show once per feature per user.
 13. No broken links. Every href must resolve to a real page.
+14. Generate card art for every new character immediately: `node scripts/generate-card-art.mjs`.
+15. Don't regress. Before modifying a page, read current state. After building, verify nothing broke.
 
 ---
 
