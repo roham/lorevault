@@ -9,6 +9,40 @@ function getCardArtPath(card: Card): string {
   return `/cards/${id}.webp`;
 }
 
+function CardArt({ card, borderColor, size: s }: { card: Card; borderColor: string; size: typeof SIZE_MAP[keyof typeof SIZE_MAP] }) {
+  const [hasArt, setHasArt] = useState(true);
+  return (
+    <>
+      {hasArt && (
+        <img
+          src={getCardArtPath(card)}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={() => setHasArt(false)}
+          loading="lazy"
+        />
+      )}
+      {!hasArt && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span
+            className={`${s.initial} font-bold leading-none`}
+            style={{
+              color: `${borderColor}20`,
+              textShadow: `0 0 40px ${borderColor}10`,
+              fontFamily: 'Georgia, serif',
+            }}
+          >
+            {card.character[0]}
+          </span>
+          <span className={`${s.symbol} -mt-2 drop-shadow-lg relative z-10`} style={{ opacity: 0.9 }}>
+            {card.symbol}
+          </span>
+        </div>
+      )}
+    </>
+  );
+}
+
 interface CardItemProps {
   card: Card;
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -216,29 +250,8 @@ export default function CardItem({
             </div>
           )}
 
-          {/* Card art: real image or fallback monogram */}
-          <img
-            src={getCardArtPath(card)}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            loading="lazy"
-          />
-          <div className="absolute inset-0 flex flex-col items-center justify-center card-art-fallback">
-            <span
-              className={`${s.initial} font-bold leading-none`}
-              style={{
-                color: `${borderColor}20`,
-                textShadow: `0 0 40px ${borderColor}10`,
-                fontFamily: 'Georgia, serif',
-              }}
-            >
-              {card.character[0]}
-            </span>
-            <span className={`${s.symbol} -mt-2 drop-shadow-lg relative z-10`} style={{ opacity: 0.9 }}>
-              {card.symbol}
-            </span>
-          </div>
+          {/* Card art: real image with fallback */}
+          <CardArt card={card} borderColor={borderColor} size={s} />
 
           {/* Vignette */}
           <div className="absolute inset-0 pointer-events-none" style={{
