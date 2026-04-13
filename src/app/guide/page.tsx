@@ -67,7 +67,7 @@ export default function GuidePage() {
       <div className="px-4 pt-2 pb-4 max-w-lg mx-auto">
         <div className="flex items-center gap-3 mb-1">
           <Link href="/profile" className="text-muted hover:text-foreground transition-colors text-sm">&larr;</Link>
-          <h1 className="text-lg font-bold text-foreground">Collector&apos;s Guide</h1>
+          <h1 className="type-heading text-foreground">Collector&apos;s Guide</h1>
         </div>
         <p className="text-xs text-muted">Everything you need to know about collecting, trading, and competing.</p>
       </div>

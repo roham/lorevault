@@ -247,7 +247,7 @@ export default function TriviaPage() {
             {score > 3000 ? '🏆' : score > 1500 ? '🌟' : '📚'}
           </motion.span>
 
-          <h1 className="text-3xl font-bold mb-1">
+          <h1 className="type-display mb-1">
             {score > 3000 ? 'Lore Master!' : score > 1500 ? 'Well Played!' : 'Keep Learning!'}
           </h1>
 

@@ -472,7 +472,7 @@ export default function BattlePage() {
             {gameResult === 'win' ? '🏆' : '💀'}
           </motion.div>
 
-          <h1 className="text-3xl font-bold mb-1">
+          <h1 className="type-display mb-1">
             {gameResult === 'win' ? 'Victory!' : 'Defeated'}
           </h1>
           <p className="text-muted text-sm mb-1">

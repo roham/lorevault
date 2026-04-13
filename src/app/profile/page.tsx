@@ -102,7 +102,7 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-0.5">
-              <h1 className="text-xl font-bold">{PROFILE.username}</h1>
+              <h1 className="type-heading">{PROFILE.username}</h1>
             </div>
             <div className="flex items-center gap-2">
               <span

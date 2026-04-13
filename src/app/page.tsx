@@ -177,7 +177,7 @@ export default function Home() {
                   <div className="text-[10px] uppercase tracking-[0.08em] text-accent/70 mb-0.5">
                     {packs > 0 ? `${packs} Pack${packs > 1 ? 's' : ''} Ready` : 'Earn More Packs'}
                   </div>
-                  <div className="text-lg font-bold text-white tracking-tight">Open Packs</div>
+                  <div className="type-display text-white">Open Packs</div>
                   <div className="text-[11px] text-white/40 mt-0.5">Pull cards. Chase rarities.</div>
                 </div>
               </motion.div>

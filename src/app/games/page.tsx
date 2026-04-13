@@ -49,7 +49,7 @@ export default function GamesHub() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Games</h1>
+            <h1 className="type-heading">Games</h1>
             <p className="text-xs text-muted">Battle, quiz, and earn XP</p>
           </div>
           <div className="flex items-center gap-2">

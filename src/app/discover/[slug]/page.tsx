@@ -55,7 +55,7 @@ export default function DiscoverDetailPage({ params }: { params: Promise<{ slug:
           >
             {typeConfig.label}
           </span>
-          <h1 className="text-xl font-bold text-white leading-tight mb-1">{entry.title}</h1>
+          <h1 className="type-heading text-white mb-1">{entry.title}</h1>
           <p className="text-xs text-white/60">{entry.subtitle}</p>
           <p className="text-[10px] text-white/30 mt-1">
             {new Date(entry.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
