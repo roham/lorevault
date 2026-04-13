@@ -92,6 +92,22 @@ src/app/globals.css                — Theme variables + animation keyframes
 
 14. **"Interesting angle."** The CEO sees the argument for BOTH approaches. Resolve this with research and a strong opinion.
 
+### Round 3 (after v8.1-v8.6 review — nav changes)
+
+15. **"I can't even find the marketplace link."** The search icon in the top bar is too subtle. Nobody knows a magnifying glass = full marketplace. Discoverability failed.
+
+16. **"Is it a good idea to have the Play button so visible, pinned to the top?"** The floating Play pill is persistent visual noise on the two most-used screens. It competes with the elevated Open Packs button. Two floating CTAs in the same viewport = confusion.
+
+17. **"Now that I know search goes to marketplace, I kind of like that."** The CONCEPT of search → marketplace is fine. The search bar should be the marketplace entry point. But it needs to be legible as "marketplace," not just a generic magnifying glass.
+
+18. **"Should search only be for marketplace, or everything including the blog?"** Search should be marketplace-first (cards dominate results) but ALSO surface in-product content as secondary results. One search bar, tiered results: cards first, then guides/content below.
+
+19. **"It's super annoying that we even have a blog. There's a lot of information on there."** Blog content (drop announcements, collector guides, VIP program details, challenge rules, marketplace tips) should NOT live on a separate blog. It should be embedded contextually in the product. No external links to "learn more." The information IS the interface.
+
+20. **"The product needs to incorporate space for detailed documentation — VIP program, how collectors get rewarded, progression loop."** Build a Collector's Guide / Codex system. Not FAQ. Not blog. A beautiful, illustrated, in-product knowledge base that feels like a game's lore book. VIP tiers, rewards mechanics, parallel rarity guide, marketplace strategy, progression explained.
+
+21. **"I don't want a blog section, but the product needs to incorporate all of this."** Solve it with three patterns: (a) Knowledge Cards — contextual info inline where relevant, (b) Discovery Feed — "What's New" on home page replacing blog announcements, (c) Collector's Guide — deep docs accessible from profile or "?" icon.
+
 ### Round 1 (after v7.6 initial review)
 
 1. **"Looks very AI-generated and so-so."** UI needs deep creative iteration.
@@ -104,7 +120,7 @@ src/app/globals.css                — Theme variables + animation keyframes
 
 ---
 
-## Your Mission: 8 Domains of Infinite Iteration
+## Your Mission: 10 Domains of Infinite Iteration
 
 ### Domain 1: VISUAL CRAFT (highest priority)
 
@@ -212,34 +228,80 @@ Build a complete progression spine that gives collectors a reason to come back e
 - Marvel Snap Season Pass
 - Pokémon GO level-up system
 
-### Domain 4: INFORMATION ARCHITECTURE
+### Domain 4: NAVIGATION (resolved direction)
 
-**The CEO's insight:** The current 4-tab nav (Home, Collection, Packs, Profile) is interesting because those are the action-driving views. Marketplace and Games are engagement/discovery features that might be better as contextual entries rather than tabs.
+After three rounds of CEO feedback, the navigation decision is:
 
-**Your job:** Make a strong decision here. Research both approaches and commit to one.
+**5-tab bottom nav:**
+```
+Home | Market | [Open Packs] | Collection | Games
+```
 
-**Option A: Action-focused 4-tab nav (CEO is intrigued by this)**
-- Keep: Home, Collection, Open Packs, Profile
-- Marketplace: accessible via search icon in top bar (always visible) + contextual "Find this card" CTAs + dedicated section on home page
-- Games: accessible via "Play" section on home page + challenge completion flows + daily challenge notifications
-- Trade-off: cleaner nav, but Games/Marketplace are 2 taps away
+**Profile:** Top-right avatar/level badge in the top bar. Tap → full profile page (not an overlay).
 
-**Option B: Expanded 5-tab nav**
-- Home, Market, Open (center), Collection, Games
-- Profile: top-right avatar icon (opens overlay or slide-in)
-- Trade-off: everything is 1 tap, but more chrome, less focused
+**Top bar:** Always visible. Left: "LoreVault" + level badge. Right: profile avatar + search icon. The search icon opens a GLOBAL search that is marketplace-first (card results dominate) but also surfaces in-product content (guides, announcements, VIP info) as secondary results below card matches.
 
-**Option C: Hub-based (game launcher)**
-- Home IS the nav — large tiles for each area
-- No bottom nav at all — full-screen sections with back arrows
-- Trade-off: immersive, but requires more taps for common actions
+**Why this is right:**
+- Marketplace IS an action driver (buying/selling). It deserves a tab.
+- Games drive daily return → session frequency → pack opens. Not secondary.
+- Collection page drives desire to buy from marketplace. Having both visible means the desire → action loop is 1 tap.
+- Profile was mostly static stats — it doesn't drive actions. Top-bar is fine.
+- The floating Play pill was noise. Kill it. Games has a tab now.
 
-**Whichever you choose:**
-- Every feature reachable within 2 taps
-- No broken links
-- Collection sub-pages (binder, showcase, sets, smart, analytics) need their own local nav (tabs or swipe within collection)
+**Collection sub-navigation:** Horizontal pill tabs within the collection page: Binder | Showcase | Sets | Smart | Stats. These are views of the same data, not separate destinations.
 
-### Domain 5: DEEP ANALYTICS (new — expanded)
+**Rules:**
+- Every feature reachable within 1-2 taps
+- No broken links — every href resolves
+- No floating pills or hidden icon-only features
+- Search is labeled or has "Search cards..." placeholder text so its purpose is clear
+
+### Domain 5: IN-PRODUCT CONTENT & KNOWLEDGE SYSTEM (new — critical)
+
+The product currently has NO educational or informational content. Blog content (VIP program, collector guides, drop announcements, challenge rules, marketplace tips) lives on a separate blog nobody reads. **Kill the blog dependency. The product IS the documentation.**
+
+**Three content integration patterns:**
+
+**Pattern 1: Knowledge Cards (contextual, inline)**
+Information appears WHERE and WHEN it's relevant. Not a link to a blog post — the information IS the interface.
+- Set completion view, 18/20 cards: "Complete this set to earn 500 XP + exclusive badge"
+- First time viewing marketplace movers: "Movers show cards with the biggest 24h price changes"
+- Near VIP tier threshold: "You're 200 XP from Enthusiast tier — unlock Smart Collections"
+- After a battle loss: "Tip: Higher-scarcity cards get stat bonuses in battle"
+- These are NOT tooltips (those are Domain 2). Knowledge Cards are permanent-until-dismissed content blocks that teach product mechanics.
+
+**Pattern 2: Discovery Feed (replaces blog announcements)**
+A section on the home page — "What's New" or "Featured" — that surfaces blog-type content as native product cards:
+- "Season 1: Age of Myths — Battle Pass Now Live" with visual and CTA
+- "New Drop: Castle of Otranto Legendary Parallels" with card previews
+- "Collector Spotlight: How to complete your first set in 3 days"
+- "Strategy: When to buy, when to hold — marketplace timing guide"
+- These are rich cards with imagery, not text links. Tappable → expands to a detail view WITHIN the app (a content page, not an external URL).
+
+**Pattern 3: Collector's Guide / Codex (deep docs, in-app)**
+A dedicated section accessible from Profile page and from a "?" icon in the top bar. This is NOT FAQ. It's a beautiful, illustrated guide that feels like a game's codex or lore book.
+
+Sections:
+- **How Collecting Works**: Packs, scarcity tiers, parallels, serial numbers explained with visual examples
+- **VIP Program**: Tier structure (Newcomer → Legendary), benefits per tier, how to qualify, monthly rewards
+- **Rewards & Progression**: XP system, how levels work, battle pass, daily missions, streak rewards, achievement list
+- **Marketplace Guide**: How prices work, how to read trends, what "floor price" means, when to buy, watchlist tips
+- **Battle & Trivia**: Game rules, stat explanations, strategy tips, how rarity affects stats
+- **Set Completion**: Why sets matter, completion rewards, strategies for completing sets efficiently
+- **Parallels & Rarity**: Visual guide to Base, Silver, Gold, Holographic, Obsidian with examples of each
+
+Each section: illustrated header, clean typography, card examples pulled from real data, expandable subsections. Feels premium, not like a help center.
+
+**Search integration:** When a user searches "VIP" or "how do parallels work," the Collector's Guide results appear below card results in the global search.
+
+**Research targets:**
+- Genshin Impact's in-game "Archive" / "Tutorials" system
+- Destiny 2's Triumphs + Collections codex
+- Duolingo's in-app "Tips" per lesson
+- Apple's in-app "Discover" cards in App Store
+- Notion's inline onboarding and contextual help
+
+### Domain 6: DEEP ANALYTICS
 
 The CEO said "go way deeper." Analytics should make a collector feel like a portfolio manager.
 
@@ -277,7 +339,7 @@ The CEO said "go way deeper." Analytics should make a collector feel like a port
 - StockX portfolio analytics
 - Fantasy sports analytics dashboards (ESPN, Yahoo)
 
-### Domain 6: MARKETPLACE DEPTH
+### Domain 7: MARKETPLACE DEPTH
 
 Build on the existing marketplace. The CEO likes trending, graphics, price alerts, parallels.
 
@@ -288,7 +350,7 @@ Build on the existing marketplace. The CEO likes trending, graphics, price alert
 - **Watchlist intelligence**: "3 of your watched cards dropped in price today."
 - **Bulk tools**: Select multiple cards → see total cost, average scarcity, set coverage.
 
-### Domain 7: COLLECTION EXPERIENCE
+### Domain 8: COLLECTION EXPERIENCE
 
 Build on the binder, showcase, and sticker book. Make them feel alive.
 
@@ -299,7 +361,7 @@ Build on the binder, showcase, and sticker book. Make them feel alive.
 - **Collection milestones**: Celebrated with animations. Feed into the progression system.
 - **Card comparison**: Side-by-side. Stats, value, rarity. "Which is the better investment?"
 
-### Domain 8: GAMES REFINEMENT
+### Domain 9: GAMES REFINEMENT
 
 Polish games to feel like games people replay.
 
@@ -308,6 +370,44 @@ Polish games to feel like games people replay.
 - **Trivia atmosphere**: Dark quiz show. Urgent countdown. Satisfying correct. Streak fire.
 - **Progression integration**: Battle wins → XP → level ups → unlock harder modes.
 - **Daily game challenge**: "Win 3 battles using only Uncommon cards" — feeds into battle pass.
+
+### Domain 10: VIP PROGRAM & COLLECTOR REWARDS (new)
+
+Build a visible, motivating rewards system that makes collectors feel valued — and makes spending feel smart.
+
+**VIP Tier Structure (visible in profile + Collector's Guide):**
+- **Bronze** (0-499 XP/month): Base rewards. 1 free pack/week.
+- **Silver** (500-1499 XP/month): 5% marketplace fee rebate. 2 free packs/week. Early access to drops (15 min).
+- **Gold** (1500-3999 XP/month): 10% rebate. 3 free packs/week. 30 min early access. Exclusive Gold card frame.
+- **Platinum** (4000-9999 XP/month): 15% rebate. 5 free packs/week. 1 hour early access. Exclusive showcase theme. Priority support badge.
+- **Diamond** (10000+ XP/month): 20% rebate. Daily free pack. First access to all drops. Exclusive Obsidian parallel variants. "Diamond Collector" profile badge visible to others.
+
+**In-product VIP visibility:**
+- Current VIP tier badge on profile page (prominent, not buried)
+- Progress bar to next tier: "You need 340 more XP this month for Silver"
+- Benefits breakdown: what you GET at current tier, what you'd GET at next tier
+- Monthly summary: "This month you earned: 3 free packs, $2.30 in rebates, 15 min early access"
+- Tier downgrade warning: "Maintain 500 XP by April 30 to keep Silver"
+
+**Collector Rewards (beyond VIP):**
+- Set completion rewards: completing any set grants a unique badge + bonus pack + XP burst
+- Loyalty milestones: 30-day streak = exclusive card frame; 100-day = exclusive parallel
+- Referral rewards (mock): "Invite a friend → both get a Rare pack"
+- Monthly leaderboard prizes (mock): top 10 collectors by score get exclusive rewards
+
+**Where this lives:**
+- Profile page: VIP status as hero card, benefits summary, progress to next tier
+- Collector's Guide: full VIP documentation with tier comparison table
+- Home page: subtle "Silver Member" badge or tier glow on the level indicator
+- Marketplace: "Silver benefit: 5% rebate applied" label on purchases
+- Contextual: Knowledge Cards surface tier benefits at relevant moments
+
+**Research targets:**
+- Sephora Beauty Insider tier UX
+- Starbucks Rewards progression display
+- Amex Membership Rewards tier visualization
+- NBA Top Shot's existing VIP program structure
+- Pokémon GO medal/badge display system
 
 ---
 
@@ -344,17 +444,19 @@ Rate on the 12-dimension matrix. Write to `lorevault-wiki/scoring/daemon-cycle-{
 | # | Dimension | 10/10 |
 |---|-----------|-------|
 | 1 | Visual Craft | Designer would screenshot this. No AI tells. Asymmetric, textured, dramatic. |
-| 2 | Information Architecture | Every feature ≤2 taps. Nav invisible. New user finds everything in 30s. |
-| 3 | Activation Path | First-time user is hooked in 60s. Feature unlocks feel earned. Tooltips teach without blocking. |
-| 4 | Progression & Status | Level system is addictive. Battle pass drives daily return. Achievements feel meaningful. |
-| 5 | Analytics Depth | Portfolio manager level. Performance attribution. Trade optimization. Market intelligence. |
-| 6 | Marketplace | Bloomberg meets StockX. Movers, signals, bulk tools. Power user's dream. |
-| 7 | Collection Feel | Physical binder weight. Showcase you'd share. Incomplete sets that haunt. |
-| 8 | Game Polish | Battle tense. Trivia urgent. Progression hooks. Daily reasons to return. |
-| 9 | Card Presentation | Cards are heroes. Parallels distinct. Scarcity reads instantly. 3D tilt satisfying. |
-| 10 | Typography & Layout | Drama in hierarchy. Whitespace intentional. Density varies by context. |
-| 11 | Mobile Experience | Touch generous. Swipe natural. No desktop artifacts. Feels native. |
-| 12 | Delight & Surprise | Easter eggs. Micro-interactions. The "oh cool" moment. |
+| 2 | Navigation & IA | 5-tab nav works. Every feature ≤2 taps. Search finds cards AND content. No dead links. |
+| 3 | Activation Path | First-time user hooked in 60s. Feature unlocks earned. Tooltips teach without blocking. |
+| 4 | Progression & Status | Levels addictive. Battle pass drives daily return. Achievements meaningful. VIP tiers motivating. |
+| 5 | In-Product Content | No blog dependency. Knowledge Cards contextual. Collector's Guide is beautiful. Discovery Feed replaces announcements. |
+| 6 | Analytics Depth | Portfolio manager level. Attribution. Trade optimization. Market intelligence. Heatmaps. |
+| 7 | Marketplace | Bloomberg meets StockX. Movers, signals, bulk tools. Power user's dream. |
+| 8 | Collection Feel | Physical binder weight. Showcase you'd share. Incomplete sets that haunt. |
+| 9 | Game Polish | Battle tense. Trivia urgent. Progression hooks. Daily reasons to return. |
+| 10 | Card Presentation | Cards are heroes. Parallels distinct. Scarcity reads instantly. 3D tilt satisfying. |
+| 11 | Typography & Layout | Drama in hierarchy. Whitespace intentional. Density varies by context. |
+| 12 | Mobile Experience | Touch generous. Swipe natural. No desktop artifacts. Feels native. |
+| 13 | VIP & Rewards | Tier progression visible. Benefits clear. Spending feels smart. Loyalty rewarded. |
+| 14 | Delight & Surprise | Easter eggs. Micro-interactions. The "oh cool" moment. |
 
 ### 6. COMMIT & DEPLOY
 ```bash
@@ -382,20 +484,31 @@ Back to step 1. Target lowest dimension. If tied, pick the one the CEO mentioned
 
 ---
 
-## Priority Sequence for First 12 Cycles
+## Priority Sequence
 
-1. **Nav decision + implementation** — Research both approaches, make a call, build it. Fix broken/invisible features.
-2. **Progression system foundation** — Collector levels, XP system, level display. The spine everything else hooks into.
-3. **Home page redesign** — Kill AI look. Asymmetric hero. Large cards. Progression visible.
-4. **Activation path v1** — First-visit tooltips, feature unlock sequence, milestone celebrations.
-5. **Battle pass track** — Visual season track, daily/weekly missions, reward tiers.
-6. **Card component craft** — Stunning at every size. Richer parallels. Better scarcity cues.
-7. **Portfolio analytics dashboard** — Value over time, sector breakdown, performance attribution.
-8. **Marketplace movers deep dive** — Full movers page with tabs: gainers/losers/volume/whales.
-9. **Typography pass** — Real type system. Display drama. Not Tailwind defaults.
-10. **Collection milestones + celebrations** — 10/25/50/100 cards, first legendary, first set complete.
-11. **Daily engagement hooks** — Login bonus, daily challenge, streak escalation, free daily pack.
-12. **Motion audit** — Kill gratuitous animations. Make remaining ones spring-physics and purposeful.
+Cycles 1-6 are already done. Continue from cycle 7.
+
+**Already completed (v8.1-v8.6):**
+1. ~~Nav architecture + collector levels + consolidated collection~~ (v8.1)
+2. ~~Battle pass + achievements + level-up celebration~~ (v8.2)
+3. ~~Home page redesign — asymmetric hero, kill AI look~~ (v8.3)
+4. ~~Activation path — tooltips, feature unlocks, state machine~~ (v8.4)
+5. ~~Deep analytics — portfolio value, attribution, heatmap, trade optimizer~~ (v8.5)
+6. ~~Marketplace movers — gainers, losers, volume, whales, floor watch~~ (v8.6)
+
+**Next cycles (start here):**
+7. **5-tab nav rebuild** — Replace 4-tab with Home|Market|Open|Collection|Games. Profile → top bar. Kill floating Play pill. Search icon → global search with "Search cards..." placeholder.
+8. **Collector's Guide / Codex** — Build the in-product knowledge base. VIP program, rewards, parallels guide, marketplace strategy. Beautiful illustrated pages. Accessible from profile + "?" in top bar.
+9. **VIP program display** — Tier badge on profile, progress to next tier, benefits breakdown, monthly summary. Knowledge Cards for tier-related moments.
+10. **Global search** — Rebuild search to return cards (primary) + Collector's Guide content (secondary) + Discovery Feed items. Tiered results layout.
+11. **Discovery Feed on home page** — Replace generic sections with native content cards: drops, strategy tips, collector spotlights. Tappable → in-app detail view.
+12. **Card component craft** — Stunning at every size. Richer parallels. Better scarcity cues. Hover states that reward exploration.
+13. **Typography pass** — Real type system. Display drama. Not Tailwind defaults.
+14. **Collection milestones + celebrations** — 10/25/50/100 cards, first legendary, first set complete. Feed into VIP XP.
+15. **Daily engagement hooks** — Login bonus, daily challenge, streak escalation, free daily pack. Feed into battle pass + VIP.
+16. **Motion audit** — Kill gratuitous animations. Make remaining ones spring-physics and purposeful.
+17. **Contextual Knowledge Cards** — Inline educational content throughout: set completion rewards, marketplace tips, battle strategy, VIP benefits — appearing at the right moment.
+18+ **Infinite visual craft iteration** — Every cycle after 17 should pick the lowest-scoring dimension and improve it. Research a specific reference product each cycle. Never stop.
 
 ---
 
