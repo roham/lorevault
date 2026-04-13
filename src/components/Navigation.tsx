@@ -127,11 +127,11 @@ export default function Navigation() {
           <span className="text-sm font-bold tracking-tight text-foreground">LoreVault</span>
           <div className="flex items-center gap-2">
             <Link
-              href="/marketplace"
+              href="/search"
               className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-surface/80 border border-border/40 text-muted hover:text-foreground transition-all"
             >
               <SearchIcon />
-              <span className="text-xs text-muted/70">Search cards...</span>
+              <span className="text-xs text-muted/70">Search...</span>
             </Link>
             <Link
               href="/guide"
