@@ -9,6 +9,7 @@ import MarketStats from '@/components/marketplace/MarketStats';
 import FloorPriceTable from '@/components/marketplace/FloorPriceTable';
 import RecentActivity from '@/components/marketplace/RecentActivity';
 import CardQuickView from '@/components/marketplace/CardQuickView';
+import MarketMovers from '@/components/marketplace/MarketMovers';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { Card, Scarcity, Parallel, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
@@ -37,7 +38,7 @@ import {
 import { getOwnedCardIds, addOwnedCards } from '@/lib/store';
 
 type ViewMode = 'grid' | 'list' | 'table';
-type MarketTab = 'browse' | 'watchlist' | 'floors';
+type MarketTab = 'browse' | 'watchlist' | 'floors' | 'movers';
 type OwnershipFilter = 'all' | 'need' | 'own';
 
 export default function MarketplacePage() {
@@ -320,7 +321,7 @@ export default function MarketplacePage() {
 
         {/* TABS */}
         <div className="flex items-center gap-0.5 mb-3 border-b border-border/30 pb-0">
-          {([{ key: 'browse' as MarketTab, label: 'Browse', count: results.length }, { key: 'watchlist' as MarketTab, label: 'Watchlist', count: watchlist.length }, { key: 'floors' as MarketTab, label: 'Floors' }]).map(tab => (
+          {([{ key: 'browse' as MarketTab, label: 'Browse', count: results.length }, { key: 'movers' as MarketTab, label: 'Movers' }, { key: 'watchlist' as MarketTab, label: 'Watchlist', count: watchlist.length }, { key: 'floors' as MarketTab, label: 'Floors' }]).map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={`relative px-3 py-2 text-[11px] font-semibold transition-colors ${activeTab === tab.key ? 'text-accent' : 'text-muted hover:text-foreground'}`}>
               {tab.label}{tab.count !== undefined && tab.count > 0 && <span className={`ml-1 text-[9px] ${activeTab === tab.key ? 'text-accent/60' : 'text-muted/50'}`}>{tab.count}</span>}
               {activeTab === tab.key && <motion.div layoutId="market-tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
@@ -379,6 +380,9 @@ export default function MarketplacePage() {
 
         {/* FLOOR PRICES TAB */}
         {activeTab === 'floors' && <FloorPriceTable onCharacterClick={(character) => { setFilters(f => ({ ...f, query: character })); setActiveTab('browse'); }} />}
+
+        {/* MOVERS TAB */}
+        {activeTab === 'movers' && <MarketMovers />}
 
         {/* BROWSE TAB */}
         {activeTab === 'browse' && (<>
