@@ -11,7 +11,6 @@ export default function WelcomePage() {
 
   useEffect(() => {
     setMounted(true);
-    // If user has already opened their first pack, redirect to home
     if (!shouldShowWelcome()) {
       router.replace('/');
     }
@@ -26,103 +25,124 @@ export default function WelcomePage() {
 
   return (
     <div className="fixed inset-0 bg-background flex flex-col items-center justify-center overflow-hidden">
-      {/* Ambient particles */}
+      {/* Ambient particles — slow, ethereal */}
       <div className="absolute inset-0 pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {Array.from({ length: 30 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 rounded-full bg-accent/30"
+            className="absolute rounded-full"
+            style={{
+              width: 1 + Math.random() * 2,
+              height: 1 + Math.random() * 2,
+              background: `rgba(129, 140, 248, ${0.15 + Math.random() * 0.25})`,
+            }}
             initial={{
               x: `${Math.random() * 100}%`,
-              y: `${Math.random() * 100}%`,
+              y: `${50 + Math.random() * 50}%`,
               opacity: 0,
             }}
             animate={{
-              y: [`${50 + Math.random() * 50}%`, `${Math.random() * 50}%`],
+              y: [`${50 + Math.random() * 50}%`, `${Math.random() * 40}%`],
               opacity: [0, 0.6, 0],
             }}
             transition={{
-              duration: 4 + Math.random() * 4,
+              duration: 5 + Math.random() * 5,
               repeat: Infinity,
-              delay: Math.random() * 3,
+              delay: Math.random() * 4,
               ease: 'easeInOut',
             }}
           />
         ))}
       </div>
 
-      {/* Central glow */}
+      {/* Ambient glow behind pack */}
       <motion.div
         className="absolute pointer-events-none"
         animate={{
-          opacity: [0.15, 0.25, 0.15],
-          scale: [0.95, 1.05, 0.95],
+          opacity: [0.12, 0.22, 0.12],
+          scale: [0.95, 1.08, 0.95],
         }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         style={{
-          width: 400,
-          height: 400,
+          width: 500,
+          height: 500,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(129,140,248,0.2), transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(circle, rgba(129,140,248,0.25), transparent 70%)',
+          filter: 'blur(60px)',
         }}
       />
 
-      {/* Pack */}
+      {/* The sealed pack — floating, glowing */}
       <motion.div
-        initial={{ scale: 0.8, opacity: 0, y: 20 }}
+        initial={{ scale: 0.7, opacity: 0, y: 30 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="relative mb-10"
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="relative mb-12"
       >
         <motion.div
           animate={{
-            rotate: [0, -1.5, 1.5, -1, 1, 0],
-            y: [0, -4, 0, -2, 0],
+            rotate: [0, -1, 1.5, -1, 0.5, 0],
+            y: [0, -5, 0, -3, 0],
           }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-44 h-60 rounded-2xl border-2 border-accent/40 flex flex-col items-center justify-center relative overflow-hidden"
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-48 h-64 rounded-2xl border-2 border-accent/30 flex flex-col items-center justify-center relative overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, #1a103a 0%, #2d1b69 50%, #16213e 100%)',
-            boxShadow: '0 0 60px rgba(129,140,248,0.15), 0 20px 40px rgba(0,0,0,0.3)',
+            background: 'linear-gradient(135deg, #1a103a 0%, #2d1b69 40%, #16213e 100%)',
+            boxShadow: '0 0 80px rgba(129,140,248,0.12), 0 20px 60px rgba(0,0,0,0.4)',
           }}
         >
-          {/* Shimmer overlay */}
-          <div className="absolute inset-0 card-shimmer opacity-30" />
+          {/* Shimmer sweep */}
+          <div className="absolute inset-0 card-shimmer opacity-40" />
 
-          {/* Pack seal */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-accent/60" />
+          {/* Seal line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-accent/50" />
 
-          <span className="text-5xl mb-2 relative z-10">📜</span>
-          <span className="text-[10px] text-white/40 uppercase tracking-widest font-medium relative z-10">LoreVault</span>
-          <span className="text-[9px] text-accent/60 uppercase tracking-wider mt-1 relative z-10">Starter Pack</span>
+          {/* Pack content */}
+          <motion.span
+            className="text-6xl mb-3 relative z-10"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            📜
+          </motion.span>
+          <span className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-medium relative z-10">
+            LoreVault
+          </span>
+          <span className="text-[9px] text-accent/50 uppercase tracking-wider mt-1 relative z-10">
+            Starter Pack
+          </span>
+
+          {/* Inner glow */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'radial-gradient(ellipse at 50% 60%, rgba(129,140,248,0.08) 0%, transparent 70%)',
+          }} />
         </motion.div>
       </motion.div>
 
-      {/* Text */}
+      {/* Tagline */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.6 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
         className="text-center mb-10 px-8"
       >
-        <h1 className="text-2xl font-bold tracking-tight mb-2">
+        <h1 className="text-[22px] font-bold tracking-tight mb-2.5 text-white">
           Every legend begins with a single card.
         </h1>
-        <p className="text-sm text-muted max-w-xs mx-auto">
+        <p className="text-sm text-muted max-w-[280px] mx-auto leading-relaxed">
           Sherlock Holmes. Dracula. Zeus. The greatest characters ever written — now yours to collect.
         </p>
       </motion.div>
 
       {/* CTA */}
       <motion.button
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.4 }}
+        transition={{ delay: 1, duration: 0.5 }}
         whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
+        whileTap={{ scale: 0.96 }}
         onClick={handleStart}
-        className="px-10 py-4 rounded-2xl bg-accent text-white font-bold text-base shadow-xl shadow-accent/25 hover:shadow-accent/35 transition-shadow"
+        className="px-12 py-4 rounded-2xl bg-accent text-white font-bold text-[15px] shadow-xl shadow-accent/25 hover:shadow-accent/40 transition-shadow"
       >
         Open Your First Pack
       </motion.button>
@@ -130,8 +150,8 @@ export default function WelcomePage() {
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="text-[11px] text-muted/40 mt-6"
+        transition={{ delay: 1.5 }}
+        className="text-[11px] text-muted/30 mt-6"
       >
         3 free packs included
       </motion.p>

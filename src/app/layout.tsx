@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
@@ -15,7 +15,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "LoreVault — Collect the Legends",
-  description: "Premium digital collectible cards featuring the greatest characters from public domain literature, mythology, and folklore.",
+  description: "Open packs. Pull legends. Build your vault. Premium digital collectibles from the greatest stories ever told.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#0a0b14",
 };
 
 export default function RootLayout({
@@ -29,7 +37,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full bg-background text-foreground">
-        <main className="pb-24">
+        <main className="pb-20">
           {children}
         </main>
         <Navigation />
