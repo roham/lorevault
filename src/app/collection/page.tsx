@@ -410,6 +410,12 @@ export default function CollectionPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link
+            href="/collection/sets"
+            className="px-4 py-2 rounded-xl bg-surface text-foreground text-sm font-semibold hover:bg-surface-hover transition-all border border-border"
+          >
+            Set Completion
+          </Link>
+          <Link
             href="/collection/showcase"
             className="px-4 py-2 rounded-xl bg-gradient-to-r from-accent/20 to-purple-500/20 text-accent text-sm font-semibold hover:from-accent/30 hover:to-purple-500/30 transition-all border border-accent/20"
           >
