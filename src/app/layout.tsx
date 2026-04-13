@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import MarketplaceFAB from "@/components/marketplace/MarketplaceFAB";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
         <main className="pb-20">
           {children}
         </main>
+        <MarketplaceFAB />
         <Navigation />
       </body>
     </html>

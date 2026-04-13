@@ -1,23 +1,53 @@
 'use client';
 
-import { use, useState, useEffect } from 'react';
+import { use, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
+import PriceChart from '@/components/marketplace/PriceChart';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
 import { getOwnedCardIds, addOwnedCards } from '@/lib/store';
+import {
+  getCardMarketData,
+  isWatchlisted,
+  addToWatchlist,
+  removeFromWatchlist,
+} from '@/lib/marketData';
 
 export default function CardDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [isOwned, setIsOwned] = useState(false);
+  const [watched, setWatched] = useState(false);
+  const [bought, setBought] = useState(false);
 
   const card = ALL_CARDS.find(c => c.id === id);
+  const marketData = card ? getCardMarketData(card.id) : null;
 
   useEffect(() => {
     if (card) {
       setIsOwned(new Set(getOwnedCardIds()).has(card.id));
+      setWatched(isWatchlisted(card.id));
     }
+  }, [card]);
+
+  const toggleWatch = useCallback(() => {
+    if (!card) return;
+    if (watched) {
+      removeFromWatchlist(card.id);
+      setWatched(false);
+    } else {
+      addToWatchlist(card.id);
+      setWatched(true);
+    }
+  }, [card, watched]);
+
+  const handleBuy = useCallback(() => {
+    if (!card) return;
+    addOwnedCards([card.id]);
+    setIsOwned(true);
+    setBought(true);
+    setTimeout(() => setBought(false), 2000);
   }, [card]);
 
   if (!card) {
@@ -34,21 +64,42 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const parallelConfig = PARALLEL_CONFIG[card.parallel];
   const relatedCards = ALL_CARDS.filter(c => c.character === card.character && c.id !== card.id).slice(0, 6);
 
-  // Mock price history
-  const priceHistory = Array.from({ length: 30 }, (_, i) => ({
-    day: i + 1,
-    price: card.price * (0.7 + Math.random() * 0.6),
-  }));
-  const maxPrice = Math.max(...priceHistory.map(p => p.price));
-  const minPrice = Math.min(...priceHistory.map(p => p.price));
+  const renderTrend = (change: number, label: string) => {
+    const isUp = change > 0;
+    const color = Math.abs(change) < 0.5 ? 'text-muted' : isUp ? 'text-green-400' : 'text-red-400';
+    return (
+      <div className="text-center">
+        <div className={`text-sm font-mono font-bold ${color}`}>
+          {Math.abs(change) < 0.5 ? '--' : `${isUp ? '+' : ''}${change.toFixed(1)}%`}
+        </div>
+        <div className="text-[9px] text-muted uppercase">{label}</div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen pb-24">
       {/* Back button */}
-      <div className="px-4 pt-4 pb-2">
+      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
         <button onClick={() => window.history.back()} className="text-sm text-muted hover:text-foreground flex items-center gap-1">
           ← Back
         </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleWatch}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              watched ? 'bg-yellow-500/10 border border-yellow-500/20 text-yellow-400' : 'bg-surface border border-border text-muted hover:text-foreground'
+            }`}
+          >
+            {watched ? '★ Watching' : '☆ Watch'}
+          </button>
+          <Link
+            href="/marketplace"
+            className="px-3 py-1.5 rounded-lg bg-surface border border-border text-xs text-muted hover:text-foreground"
+          >
+            Marketplace
+          </Link>
+        </div>
       </div>
 
       {/* Card — large, centered */}
@@ -102,50 +153,107 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
             </span>
           </div>
 
-          {/* Price section */}
+          {/* Price + Market Data section */}
           <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <div className="text-[10px] text-muted uppercase tracking-wider">Price</div>
-                <div className="text-2xl font-bold text-green-400">${card.price.toFixed(2)}</div>
+                <div className="text-[10px] text-muted uppercase tracking-wider">Current Price</div>
+                <div className="text-2xl font-bold text-green-400">
+                  ${marketData ? marketData.currentPrice.toFixed(2) : card.price.toFixed(2)}
+                </div>
               </div>
-              <div className="text-right">
-                <div className="text-[10px] text-muted uppercase tracking-wider">30d Range</div>
-                <div className="text-xs font-mono text-muted">${minPrice.toFixed(2)} – ${maxPrice.toFixed(2)}</div>
-              </div>
+              {marketData && (
+                <div className="flex items-center gap-4">
+                  {renderTrend(marketData.change24h, '24h')}
+                  {renderTrend(marketData.change7d, '7d')}
+                  {renderTrend(marketData.change30d, '30d')}
+                </div>
+              )}
             </div>
 
-            {/* Mini chart */}
-            <div className="h-12 flex items-end gap-[1px] mb-2">
-              {priceHistory.map((p, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t-sm"
-                  style={{
-                    height: `${Math.max(((p.price - minPrice) / (maxPrice - minPrice)) * 100, 4)}%`,
-                    background: p.price >= card.price ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.4)',
-                    opacity: 0.5 + (i / priceHistory.length) * 0.5,
-                  }}
+            {/* Market stats row */}
+            {marketData && (
+              <div className="grid grid-cols-4 gap-2 mb-4 p-3 rounded-xl bg-background/50">
+                <div className="text-center">
+                  <div className="text-xs font-mono font-bold text-foreground">${marketData.floorPrice.toFixed(2)}</div>
+                  <div className="text-[9px] text-muted">Floor</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs font-mono font-bold text-foreground">${marketData.avgPrice7d.toFixed(2)}</div>
+                  <div className="text-[9px] text-muted">7d Avg</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs font-mono font-bold text-foreground">{marketData.volume7d}</div>
+                  <div className="text-[9px] text-muted">7d Vol</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs font-mono font-bold text-foreground">{marketData.totalListings}</div>
+                  <div className="text-[9px] text-muted">Listed</div>
+                </div>
+              </div>
+            )}
+
+            {/* Price chart */}
+            {marketData && (
+              <div className="mb-4">
+                <PriceChart
+                  data30d={marketData.priceHistory30d}
+                  data90d={marketData.priceHistory90d}
+                  currentPrice={marketData.currentPrice}
+                  height={100}
                 />
-              ))}
-            </div>
+              </div>
+            )}
+
+            {/* All-time range */}
+            {marketData && (
+              <div className="flex items-center justify-between px-1 mb-4">
+                <div className="text-[10px] text-muted">
+                  ATL: <span className="font-mono text-red-400">${marketData.lowAllTime.toFixed(2)}</span>
+                </div>
+                <div className="flex-1 mx-3 h-1 rounded-full bg-background relative">
+                  <div
+                    className="absolute top-0 h-full rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
+                    style={{
+                      left: '0%',
+                      width: `${Math.min(((marketData.currentPrice - marketData.lowAllTime) / (marketData.highAllTime - marketData.lowAllTime)) * 100, 100)}%`,
+                    }}
+                  />
+                </div>
+                <div className="text-[10px] text-muted">
+                  ATH: <span className="font-mono text-green-400">${marketData.highAllTime.toFixed(2)}</span>
+                </div>
+              </div>
+            )}
 
             {/* Buy/Own actions */}
-            {isOwned ? (
+            {bought ? (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="py-3 rounded-xl bg-green-500/10 border border-green-500/20 text-center"
+              >
+                <span className="text-green-400 font-bold text-sm">Added to your collection!</span>
+              </motion.div>
+            ) : isOwned ? (
               <div className="flex gap-2">
-                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover">
+                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
                   List for Sale
                 </button>
-                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover">
+                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
                   Offer Trade
                 </button>
               </div>
             ) : (
               <div className="flex gap-2">
-                <button className="flex-1 py-2.5 rounded-xl bg-accent text-white text-sm font-bold hover:bg-accent/90">
-                  Buy — ${card.price.toFixed(2)}
-                </button>
-                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleBuy}
+                  className="flex-1 py-2.5 rounded-xl bg-accent text-white text-sm font-bold hover:bg-accent/90 transition-colors"
+                >
+                  Buy — ${marketData ? marketData.currentPrice.toFixed(2) : card.price.toFixed(2)}
+                </motion.button>
+                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
                   Make Offer
                 </button>
               </div>
@@ -162,7 +270,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           {relatedCards.length > 0 && (
             <div className="mb-6">
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted mb-3">Other {card.character} Cards</h2>
-              <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                 {relatedCards.map((c, i) => (
                   <motion.div
                     key={c.id}
