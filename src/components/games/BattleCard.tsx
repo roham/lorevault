@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
-import { BattleStats, StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS, getCharacterStats, getEffectiveStat } from '@/data/stats';
+import { StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS, getCharacterStats, getEffectiveStat } from '@/data/stats';
 
 interface BattleCardProps {
   card: Card;
@@ -38,22 +38,41 @@ export default function BattleCard({
     <motion.div
       className="relative flex-shrink-0"
       style={{ width: 200, minHeight: showStats ? 340 : 260 }}
+      // Card entrance animation
+      initial={{ scale: 0.6, rotateY: 90, opacity: 0 }}
       animate={{
         scale: isActive ? 1.05 : 1,
+        rotateY: 0,
+        opacity: 1,
         y: isActive ? -8 : 0,
       }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
     >
-      {/* Result glow */}
+      {/* Result glow + pulse */}
       {result && result !== 'pending' && (
         <motion.div
           className="absolute -inset-2 rounded-2xl"
           initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 0.6, 0.3] }}
-          transition={{ duration: 0.6 }}
+          animate={{
+            opacity: [0, 0.6, 0.3, 0.5, 0.3],
+            scale: [1, 1.02, 1, 1.01, 1],
+          }}
+          transition={{ duration: 1.2 }}
           style={{
             background: `radial-gradient(ellipse, ${resultColor}30 0%, transparent 70%)`,
-            boxShadow: `0 0 30px ${resultColor}40`,
+            boxShadow: `0 0 40px ${resultColor}40`,
+          }}
+        />
+      )}
+
+      {/* Active breathing glow */}
+      {isActive && !result && (
+        <motion.div
+          className="absolute -inset-1 rounded-2xl pointer-events-none"
+          animate={{ opacity: [0.2, 0.5, 0.2] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            boxShadow: `0 0 20px ${scarcityConfig.color}40`,
           }}
         />
       )}
@@ -78,7 +97,13 @@ export default function BattleCard({
           >
             {card.character[0]}
           </span>
-          <span className="text-3xl -mt-1 drop-shadow-lg">{card.symbol}</span>
+          <motion.span
+            className="text-3xl -mt-1 drop-shadow-lg"
+            animate={isActive ? { y: [0, -3, 0] } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            {card.symbol}
+          </motion.span>
 
           {/* Vignette */}
           <div className="absolute inset-0 pointer-events-none"
@@ -102,7 +127,7 @@ export default function BattleCard({
         {/* Stats area */}
         {showStats && (
           <div className="bg-surface p-2 space-y-1">
-            {stats.map((stat) => {
+            {stats.map((stat, statIdx) => {
               const value = getStatValue(stat);
               const isSelected = selectedStat === stat;
               const isRevealed = revealedStat === stat;
@@ -120,6 +145,10 @@ export default function BattleCard({
                   onClick={() => canSelect && onSelectStat?.(stat)}
                   disabled={!canSelect}
                   whileTap={canSelect ? { scale: 0.97 } : undefined}
+                  // Staggered entrance for stat bars
+                  initial={{ opacity: 0, x: isPlayer ? -10 : 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 + statIdx * 0.06 }}
                 >
                   <span className="text-sm w-5">{STAT_ICONS[stat]}</span>
                   <span className="text-[10px] font-medium text-muted w-16">{STAT_LABELS[stat]}</span>
@@ -129,7 +158,13 @@ export default function BattleCard({
                       style={{ backgroundColor: STAT_COLORS[stat] }}
                       initial={{ width: 0 }}
                       animate={{ width: `${value}%` }}
-                      transition={{ delay: 0.1, duration: 0.5 }}
+                      transition={{
+                        delay: isRevealed ? 0.3 : 0.1 + statIdx * 0.08,
+                        duration: isRevealed ? 0.8 : 0.5,
+                        // "Race" effect on reveal
+                        type: isRevealed ? 'spring' : 'tween',
+                        stiffness: isRevealed ? 100 : undefined,
+                      }}
                     />
                   </div>
                   <AnimatePresence>
@@ -152,7 +187,7 @@ export default function BattleCard({
         )}
       </div>
 
-      {/* Win/Lose badge */}
+      {/* Win/Lose badge with enhanced animation */}
       <AnimatePresence>
         {result && result !== 'pending' && (
           <motion.div
@@ -162,7 +197,10 @@ export default function BattleCard({
               boxShadow: `0 0 20px ${resultColor}60`,
             }}
             initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
+            animate={{
+              scale: [0, 1.3, 1],
+              rotate: [180, -10, 0],
+            }}
             exit={{ scale: 0 }}
             transition={{ type: 'spring', stiffness: 500, damping: 25, delay: 0.3 }}
           >
@@ -170,6 +208,17 @@ export default function BattleCard({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Winner highlight glow line */}
+      {result === 'win' && (
+        <motion.div
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] rounded-full"
+          style={{ backgroundColor: '#22c55e' }}
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ width: '75%', opacity: [0, 1, 0.5] }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        />
+      )}
     </motion.div>
   );
 }
