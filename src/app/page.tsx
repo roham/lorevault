@@ -13,6 +13,8 @@ import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwn
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
+import { FEED_CONTENT } from '@/data/feed-content';
+import FeedCard from '@/components/FeedCard';
 
 const TIER_COLORS: Record<string, string> = {
   Newcomer: '#6b7094',
@@ -23,13 +25,11 @@ const TIER_COLORS: Record<string, string> = {
   Legendary: '#ef4444',
 };
 
-// Mock trending data
-const TRENDING = [
-  { name: 'Sherlock Holmes', moment: 'Reichenbach Falls', price: 47.50, change: +12.3 },
-  { name: 'Count Dracula', moment: 'The Eternal Night', price: 89.00, change: +8.7 },
-  { name: 'Zeus', moment: 'Lightning Crown', price: 62.00, change: -3.2 },
-  { name: 'Alice', moment: 'Rabbit Hole', price: 31.00, change: +5.1 },
-];
+const feedEntries = [...FEED_CONTENT].sort((a, b) => {
+  if (a.pinned && !b.pinned) return -1;
+  if (!a.pinned && b.pinned) return 1;
+  return new Date(b.date).getTime() - new Date(a.date).getTime();
+});
 
 export default function Home() {
   const router = useRouter();
@@ -245,36 +245,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ========== TRENDING / MARKET PULSE ========== */}
+      {/* ========== DISCOVERY FEED ========== */}
       <section className="px-4 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Market Pulse</span>
-          <Link href="/marketplace" className="text-[11px] text-accent hover:text-accent/80 transition-colors">
-            View All
-          </Link>
+          <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Discover</span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          {TRENDING.map((item, i) => (
+        <FeedCard entry={feedEntries[0]} variant="hero" />
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          {feedEntries.slice(1, 7).map((entry, i) => (
             <motion.div
-              key={item.name}
+              key={entry.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 + i * 0.06 }}
             >
-              <Link href="/marketplace">
-                <div className="p-3 rounded-xl bg-surface border border-border hover:bg-surface-hover transition-colors">
-                  <div className="text-xs font-semibold truncate">{item.name}</div>
-                  <div className="text-[9px] text-muted truncate mb-1.5">{item.moment}</div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold font-mono">${item.price.toFixed(0)}</span>
-                    <span className={`text-[10px] font-mono font-semibold ${
-                      item.change > 0 ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {item.change > 0 ? '+' : ''}{item.change.toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-              </Link>
+              <FeedCard entry={entry} variant="compact" />
             </motion.div>
           ))}
         </div>
