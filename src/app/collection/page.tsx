@@ -1,181 +1,434 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import {
   DndContext,
   closestCenter,
   DragEndEvent,
   DragStartEvent,
+  DragOverEvent,
   DragOverlay,
   useSensor,
   useSensors,
   PointerSensor,
+  TouchSensor,
+  UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
   SortableContext,
   useSortable,
   rectSortingStrategy,
+  arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
-import { Card, Scarcity, Parallel, SCARCITY_CONFIG } from '@/data/types';
-import { getOwnedCards, getShowcaseIds, setShowcaseIds as saveShowcaseIds, getPackCredits } from '@/lib/store';
-import { getOnboardingState, updateOnboarding } from '@/lib/onboarding';
+import { Card, Scarcity, SCARCITY_CONFIG } from '@/data/types';
+import { getOwnedCards } from '@/lib/store';
+import {
+  BinderState,
+  BinderPage,
+  getBinderState,
+  initBinderFromCards,
+  saveBinderState,
+  syncBinderWithOwned,
+  addBinderPage,
+  renameBinderPage,
+} from '@/lib/binder-store';
 
-function SortableShowcaseCard({ card, onRemove }: { card: Card; onRemove: (id: string) => void }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: card.id,
-  });
+// Page transition variants
+const pageVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0,
+    scale: 0.95,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 300 : -300,
+    opacity: 0,
+    scale: 0.95,
+  }),
+};
+
+// ---------------------------------------------------------------------------
+// Sortable card slot inside a binder page — HERO sized
+// ---------------------------------------------------------------------------
+function SortableBinderCard({
+  card,
+}: {
+  card: Card;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: card.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.2 : 1,
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="relative group">
-      <CardItem card={card} size="md" />
-      <button
-        onClick={(e) => { e.stopPropagation(); onRemove(card.id); }}
-        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500/80 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-      >
-        x
-      </button>
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="relative touch-manipulation cursor-grab active:cursor-grabbing"
+      whileHover={{ scale: 1.04, y: -6, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
+      whileTap={{ scale: 1.07 }}
+      layout
+    >
+      <CardItem card={card} size="lg" interactive={false} />
+      {/* Drag hint */}
+      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Empty slot — glassmorphism style
+// ---------------------------------------------------------------------------
+function EmptySlot({ index, isMissing, card }: { index: number; isMissing?: boolean; card?: Card }) {
+  if (isMissing && card) {
+    return (
+      <Link href="/packs">
+        <div className="w-[260px] h-[364px] rounded-xl flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden backdrop-blur-sm transition-all hover:scale-[1.02]"
+          style={{
+            background: `linear-gradient(145deg, ${card.gradientFrom}30, ${card.gradientTo}15)`,
+            border: '1px solid rgba(255,255,255,0.04)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
+          }}
+        >
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors" />
+
+          {/* Scan lines effect */}
+          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
+            background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)',
+          }} />
+
+          {/* Character silhouette */}
+          <span
+            className="text-[56px] font-bold leading-none relative z-10 opacity-[0.08] group-hover:opacity-[0.15] transition-opacity"
+            style={{ fontFamily: 'Georgia, serif', color: '#fff' }}
+          >
+            {card.character[0]}
+          </span>
+          <span className="text-4xl -mt-2 relative z-10 opacity-[0.08] group-hover:opacity-20 transition-opacity drop-shadow-lg">
+            {card.symbol}
+          </span>
+          <span className="text-[10px] text-white/15 group-hover:text-white/40 mt-3 relative z-10 text-center px-4 truncate max-w-full transition-colors font-medium">
+            {card.character}
+          </span>
+          <span className="text-[10px] text-accent/0 group-hover:text-accent font-semibold mt-2 relative z-10 transition-all group-hover:translate-y-0 translate-y-1">
+            Find this card
+          </span>
+
+          {/* Lock */}
+          <div className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-20 group-hover:opacity-50 transition-opacity z-10 border border-white/5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/60">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      className="w-[260px] h-[364px] rounded-xl flex items-center justify-center relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(145deg, rgba(18,20,31,0.3), rgba(10,11,20,0.2))',
+        border: '1px dashed rgba(31, 34, 55, 0.25)',
+      }}
+    >
+      {/* Subtle inner glow */}
+      <div className="absolute inset-0 rounded-xl" style={{
+        background: 'radial-gradient(ellipse at 50% 30%, rgba(129,140,248,0.02) 0%, transparent 70%)',
+      }} />
+      <span className="text-white/[0.06] text-lg font-mono">{index + 1}</span>
     </div>
   );
 }
 
+// ---------------------------------------------------------------------------
+// Editable page title with premium styling
+// ---------------------------------------------------------------------------
+function EditableTitle({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editing]);
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => {
+          setEditing(false);
+          if (draft.trim()) onChange(draft.trim());
+          else setDraft(value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setEditing(false);
+            if (draft.trim()) onChange(draft.trim());
+          }
+          if (e.key === 'Escape') {
+            setEditing(false);
+            setDraft(value);
+          }
+        }}
+        className="bg-surface/50 backdrop-blur-sm border border-accent/30 text-foreground text-base font-bold outline-none px-3 py-1.5 rounded-lg w-56"
+        maxLength={40}
+      />
+    );
+  }
+
+  return (
+    <button
+      onClick={() => { setDraft(value); setEditing(true); }}
+      className="text-base font-bold text-foreground hover:text-accent transition-colors flex items-center gap-2 group px-1"
+    >
+      {value}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted/0 group-hover:text-muted/50 transition-colors">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main Binder Collection Page — Premium Polish
+// ---------------------------------------------------------------------------
 export default function CollectionPage() {
   const [ownedCards, setOwnedCards] = useState<Card[]>([]);
-  const [showcaseIds, setShowcaseIds] = useState<string[]>([]);
+  const [binder, setBinder] = useState<BinderState | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [showFirstVisitBanner, setShowFirstVisitBanner] = useState(false);
-  const [packsRemaining, setPacksRemaining] = useState(0);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [filterSet, setFilterSet] = useState<string>('all');
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [dragOverPageIndex, setDragOverPageIndex] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Load data
   useEffect(() => {
     const owned = getOwnedCards();
     setOwnedCards(owned);
-    setPacksRemaining(getPackCredits());
 
-    const savedShowcase = getShowcaseIds();
-    if (savedShowcase.length > 0) {
-      setShowcaseIds(savedShowcase);
+    const ownedIds = owned.map(c => c.id);
+    let state = getBinderState();
+    if (!state) {
+      state = initBinderFromCards(ownedIds);
+    } else {
+      state = syncBinderWithOwned(state, ownedIds);
     }
-
-    // Check if this is the first visit to collection after opening first pack
-    const onboarding = getOnboardingState();
-    if (onboarding.hasOpenedFirstPack && !onboarding.hasSeenCollectionReveal) {
-      setShowFirstVisitBanner(true);
-      updateOnboarding({ hasSeenCollectionReveal: true });
-    }
-
+    setBinder(state);
     setLoaded(true);
   }, []);
 
-  // Persist showcase changes
-  useEffect(() => {
-    if (loaded) saveShowcaseIds(showcaseIds);
-  }, [showcaseIds, loaded]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [filterSet, setFilterSet] = useState<string>('all');
-  const [filterScarcity, setFilterScarcity] = useState<string>('all');
-  const [filterParallel, setFilterParallel] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('scarcity');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewSize, setViewSize] = useState<'sm' | 'md'>('sm');
-
+  // Sensors — touch and pointer
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 12 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
   );
 
-  const showcaseCards = useMemo(() => {
-    return showcaseIds
-      .map(id => ownedCards.find(c => c.id === id))
-      .filter(Boolean) as Card[];
-  }, [showcaseIds]);
+  // Card lookup
+  const cardMap = useMemo(() => {
+    const map = new Map<string, Card>();
+    for (const c of ownedCards) map.set(c.id, c);
+    return map;
+  }, [ownedCards]);
 
-  const filteredCards = useMemo(() => {
-    let cards = ownedCards.filter(c => !showcaseIds.includes(c.id));
-
-    if (filterSet !== 'all') cards = cards.filter(c => c.setSlug === filterSet);
-    if (filterScarcity !== 'all') cards = cards.filter(c => c.scarcity === filterScarcity);
-    if (filterParallel !== 'all') cards = cards.filter(c => c.parallel === filterParallel);
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      cards = cards.filter(c =>
-        c.name.toLowerCase().includes(q) ||
-        c.character.toLowerCase().includes(q) ||
-        c.set.toLowerCase().includes(q)
-      );
-    }
-
-    // Sort
-    switch (sortBy) {
-      case 'scarcity':
-        const order: Record<Scarcity, number> = { legendary: 0, epic: 1, rare: 2, uncommon: 3, common: 4 };
-        cards.sort((a, b) => order[a.scarcity] - order[b.scarcity]);
-        break;
-      case 'name':
-        cards.sort((a, b) => a.character.localeCompare(b.character));
-        break;
-      case 'set':
-        cards.sort((a, b) => a.set.localeCompare(b.set));
-        break;
-      case 'serial':
-        cards.sort((a, b) => a.serialNumber - b.serialNumber);
-        break;
-      case 'price':
-        cards.sort((a, b) => b.price - a.price);
-        break;
-    }
-
-    return cards;
-  }, [filterSet, filterScarcity, filterParallel, sortBy, searchQuery, showcaseIds, ownedCards]);
-
-  // Zeigarnik: show missing cards when filtering by a specific set
+  // Missing cards for Zeigarnik
   const missingCards = useMemo(() => {
-    if (filterSet === 'all' || filterScarcity !== 'all' || filterParallel !== 'all' || searchQuery) return [];
+    if (filterSet === 'all') return [];
     const ownedIds = new Set(ownedCards.map(c => c.id));
     return ALL_CARDS.filter(c => c.setSlug === filterSet && !ownedIds.has(c.id));
-  }, [filterSet, filterScarcity, filterParallel, searchQuery, ownedCards]);
+  }, [filterSet, ownedCards]);
 
+  // Filtered pages
+  const displayPages = useMemo(() => {
+    if (!binder) return [];
+    if (filterSet === 'all') return binder.pages;
+
+    const filteredIds: string[] = [];
+    for (const page of binder.pages) {
+      for (const cid of page.cardIds) {
+        const card = cardMap.get(cid);
+        if (card && card.setSlug === filterSet) filteredIds.push(cid);
+      }
+    }
+
+    const allIds = [...filteredIds, ...missingCards.map(c => `missing:${c.id}`)];
+    const pages: BinderPage[] = [];
+    for (let i = 0; i < allIds.length; i += 6) {
+      pages.push({
+        id: `virtual-${i}`,
+        name: SETS.find(s => s.slug === filterSet)?.name || 'Filtered',
+        cardIds: allIds.slice(i, i + 6),
+      });
+    }
+    if (pages.length === 0) {
+      pages.push({ id: 'virtual-empty', name: 'Empty', cardIds: [] });
+    }
+    return pages;
+  }, [binder, filterSet, cardMap, missingCards]);
+
+  // Clamp page index
+  useEffect(() => {
+    if (currentPageIndex >= displayPages.length) {
+      setCurrentPageIndex(Math.max(0, displayPages.length - 1));
+    }
+  }, [displayPages.length, currentPageIndex]);
+
+  const currentPage = displayPages[currentPageIndex] || null;
+  const isFiltered = filterSet !== 'all';
+
+  // Navigation with direction tracking for transitions
+  const goToPage = useCallback((idx: number) => {
+    const clamped = Math.max(0, Math.min(idx, displayPages.length - 1));
+    setDirection(clamped > currentPageIndex ? 1 : -1);
+    setCurrentPageIndex(clamped);
+  }, [displayPages.length, currentPageIndex]);
+
+  const prevPage = useCallback(() => goToPage(currentPageIndex - 1), [goToPage, currentPageIndex]);
+  const nextPage = useCallback(() => goToPage(currentPageIndex + 1), [goToPage, currentPageIndex]);
+
+  // Swipe gestures — mobile friendly
+  const handleDragEnd_swipe = useCallback(
+    (_: unknown, info: PanInfo) => {
+      const threshold = 60;
+      const velocity = 300;
+      if ((info.offset.x < -threshold || info.velocity.x < -velocity) && currentPageIndex < displayPages.length - 1) {
+        nextPage();
+      } else if ((info.offset.x > threshold || info.velocity.x > velocity) && currentPageIndex > 0) {
+        prevPage();
+      }
+    },
+    [currentPageIndex, displayPages.length, nextPage, prevPage]
+  );
+
+  // Keyboard nav
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') prevPage();
+      if (e.key === 'ArrowRight') nextPage();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [prevPage, nextPage]);
+
+  // DnD handlers
   function handleDragStart(event: DragStartEvent) {
-    setActiveId(event.active.id as string);
+    setActiveId(event.active.id);
   }
 
-  function handleDragEnd(event: DragEndEvent) {
+  function handleDragOver(event: DragOverEvent) {
+    if (!event.active.rect.current.translated) return;
+    const x = event.active.rect.current.translated.left;
+    const containerWidth = containerRef.current?.offsetWidth || 1000;
+    if (x < 80 && currentPageIndex > 0) {
+      setDragOverPageIndex(currentPageIndex - 1);
+    } else if (x > containerWidth - 80 && currentPageIndex < displayPages.length - 1) {
+      setDragOverPageIndex(currentPageIndex + 1);
+    } else {
+      setDragOverPageIndex(null);
+    }
+  }
+
+  function handleDragEndDnd(event: DragEndEvent) {
     const { active, over } = event;
     setActiveId(null);
 
-    if (!over) return;
+    if (!binder || isFiltered) return;
 
-    // If dragging within showcase, reorder
-    if (showcaseIds.includes(active.id as string) && showcaseIds.includes(over.id as string)) {
-      const oldIndex = showcaseIds.indexOf(active.id as string);
-      const newIndex = showcaseIds.indexOf(over.id as string);
-      const newIds = [...showcaseIds];
-      newIds.splice(oldIndex, 1);
-      newIds.splice(newIndex, 0, active.id as string);
-      setShowcaseIds(newIds);
+    if (dragOverPageIndex !== null && dragOverPageIndex !== currentPageIndex) {
+      const fromPage = binder.pages[currentPageIndex];
+      const toPage = binder.pages[dragOverPageIndex];
+      if (fromPage && toPage && toPage.cardIds.length < 6) {
+        const cardId = active.id as string;
+        const newFromIds = fromPage.cardIds.filter(id => id !== cardId);
+        const newToIds = [...toPage.cardIds, cardId];
+        const newPages = binder.pages.map(p => {
+          if (p.id === fromPage.id) return { ...p, cardIds: newFromIds };
+          if (p.id === toPage.id) return { ...p, cardIds: newToIds };
+          return p;
+        });
+        const next = { ...binder, pages: newPages };
+        saveBinderState(next);
+        setBinder(next);
+        setDragOverPageIndex(null);
+        setDirection(dragOverPageIndex > currentPageIndex ? 1 : -1);
+        setCurrentPageIndex(dragOverPageIndex);
+        return;
+      }
     }
+    setDragOverPageIndex(null);
+
+    if (!over || active.id === over.id) return;
+
+    const page = binder.pages[currentPageIndex];
+    if (!page) return;
+    const oldIdx = page.cardIds.indexOf(active.id as string);
+    const newIdx = page.cardIds.indexOf(over.id as string);
+    if (oldIdx === -1 || newIdx === -1) return;
+
+    const newIds = arrayMove(page.cardIds, oldIdx, newIdx);
+    const newPages = binder.pages.map(p =>
+      p.id === page.id ? { ...p, cardIds: newIds } : p
+    );
+    const next = { ...binder, pages: newPages };
+    saveBinderState(next);
+    setBinder(next);
   }
 
-  function addToShowcase(cardId: string) {
-    if (showcaseIds.length < 8 && !showcaseIds.includes(cardId)) {
-      setShowcaseIds([...showcaseIds, cardId]);
-    }
+  function handleAddPage() {
+    if (!binder) return;
+    const next = addBinderPage(binder, `My Collection ${binder.pages.length + 1}`);
+    setBinder(next);
+    setDirection(1);
+    setCurrentPageIndex(next.pages.length - 1);
   }
 
-  function removeFromShowcase(cardId: string) {
-    setShowcaseIds(showcaseIds.filter(id => id !== cardId));
+  function handleRenamePage(pageId: string, name: string) {
+    if (!binder) return;
+    setBinder(renameBinderPage(binder, pageId, name));
   }
 
-  const activeCard = activeId ? ownedCards.find(c => c.id === activeId) : null;
+  const activeCard = activeId ? cardMap.get(activeId as string) : null;
 
   // Stats
   const scarcityCounts = ownedCards.reduce((acc, c) => {
@@ -189,315 +442,417 @@ export default function CollectionPage() {
     owned: new Set(ownedCards.filter(c => c.setSlug === s.slug).map(c => c.character)).size,
   }));
 
+  if (!loaded || !binder) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <motion.div
+          className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+    <div ref={containerRef} className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+      {/* Header — responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div>
-          <h1 className="text-2xl font-bold">My Collection</h1>
-          <p className="text-sm text-muted">{ownedCards.length} cards collected</p>
+          <h1 className="text-xl sm:text-2xl font-bold">My Collection</h1>
+          <p className="text-xs sm:text-sm text-muted">
+            {ownedCards.length} cards &middot; {binder.pages.length} pages &middot; ${totalValue.toFixed(0)} value
+          </p>
         </div>
-        <div className="flex gap-2">
-          {Object.entries(scarcityCounts).map(([scarcity, count]) => (
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <Link href="/collection/analytics" className="px-3 py-1.5 rounded-lg bg-surface/80 backdrop-blur-sm text-foreground text-xs font-semibold hover:bg-surface-hover transition-all border border-border whitespace-nowrap">
+            Analytics
+          </Link>
+          <Link href="/collection/smart" className="px-3 py-1.5 rounded-lg bg-surface/80 backdrop-blur-sm text-foreground text-xs font-semibold hover:bg-surface-hover transition-all border border-border whitespace-nowrap">
+            Smart Views
+          </Link>
+          <Link href="/collection/sets" className="px-3 py-1.5 rounded-lg bg-surface/80 backdrop-blur-sm text-foreground text-xs font-semibold hover:bg-surface-hover transition-all border border-border whitespace-nowrap">
+            Sets
+          </Link>
+          <Link href="/collection/showcase" className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-accent/20 to-purple-500/20 text-accent text-xs font-semibold hover:from-accent/30 hover:to-purple-500/30 transition-all border border-accent/20 whitespace-nowrap">
+            Showcase
+          </Link>
+        </div>
+      </div>
+
+      {/* Scarcity badges — compact */}
+      <div className="flex gap-1.5 flex-wrap mb-4">
+        {(['legendary', 'epic', 'rare', 'uncommon', 'common'] as Scarcity[]).map(s => {
+          const count = scarcityCounts[s] || 0;
+          if (!count) return null;
+          return (
             <div
-              key={scarcity}
-              className="px-2 py-1 rounded-lg text-xs font-mono"
+              key={s}
+              className="px-2 py-0.5 rounded-md text-[10px] font-mono backdrop-blur-sm"
               style={{
-                color: SCARCITY_CONFIG[scarcity as Scarcity].color,
-                background: `${SCARCITY_CONFIG[scarcity as Scarcity].color}15`,
+                color: SCARCITY_CONFIG[s].color,
+                background: `${SCARCITY_CONFIG[s].color}12`,
+                border: `1px solid ${SCARCITY_CONFIG[s].color}15`,
               }}
             >
-              {count} {SCARCITY_CONFIG[scarcity as Scarcity].label}
+              {count} {SCARCITY_CONFIG[s].label}
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {/* Quick stats */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6">
-        <div className="p-3 rounded-xl bg-surface border border-border text-center">
-          <div className="text-lg font-bold text-accent">{ownedCards.length}</div>
-          <div className="text-[10px] text-muted">Cards</div>
-        </div>
-        <div className="p-3 rounded-xl bg-surface border border-border text-center">
-          <div className="text-lg font-bold text-green-400">${totalValue.toFixed(0)}</div>
-          <div className="text-[10px] text-muted">Value</div>
-        </div>
-        <div className="p-3 rounded-xl bg-surface border border-border text-center">
-          <div className="text-lg font-bold" style={{ color: SCARCITY_CONFIG.legendary.color }}>{scarcityCounts.legendary || 0}</div>
-          <div className="text-[10px] text-muted">Legendary</div>
-        </div>
-        {setCompletion.slice(0, 3).map(s => (
-          <div key={s.slug} className="p-3 rounded-xl bg-surface border border-border text-center">
-            <div className="text-lg font-bold text-foreground">{Math.round((s.owned / s.cardCount) * 100)}%</div>
-            <div className="text-[10px] text-muted truncate">{s.icon} {s.name.split(' ').slice(0, 2).join(' ')}</div>
-          </div>
-        ))}
-      </div>
-
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        {/* First visit celebration banner */}
-        {showFirstVisitBanner && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-accent/10 via-purple-500/10 to-accent/10 border border-accent/20 text-center"
-          >
-            <motion.span
-              className="text-3xl block mb-2"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              🎉
-            </motion.span>
-            <h3 className="text-base font-bold mb-1">Your collection has begun!</h3>
-            <p className="text-xs text-muted mb-3">
-              Tap the <span className="text-accent font-semibold">+</span> on any card below to add it to your showcase. Your showcase is how other collectors see you.
-            </p>
-            {packsRemaining > 0 && (
-              <Link
-                href="/packs"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent text-white text-xs font-semibold"
-              >
-                🎁 Open {packsRemaining} More Packs
-              </Link>
-            )}
-          </motion.div>
-        )}
-
-        {/* Showcase Section */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <span>✨</span> My Showcase
-              <span className="text-xs text-muted font-normal">({showcaseCards.length}/8 slots)</span>
-            </h2>
-            <p className="text-xs text-muted">Drag cards to rearrange your showcase</p>
-          </div>
-          <div className="p-6 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 min-h-[320px]">
-            <SortableContext items={showcaseIds} strategy={rectSortingStrategy}>
-              <div className="flex flex-wrap gap-4 justify-center">
-                {showcaseCards.map((card) => (
-                  <SortableShowcaseCard
-                    key={card.id}
-                    card={card}
-                    onRemove={removeFromShowcase}
-                  />
-                ))}
-                {/* Empty slots */}
-                {Array.from({ length: Math.max(0, 8 - showcaseCards.length) }).map((_, i) => (
-                  <div
-                    key={`empty-${i}`}
-                    className="w-[200px] h-[280px] rounded-xl border-2 border-dashed border-border/40 flex flex-col items-center justify-center text-muted/40 gap-2"
-                  >
-                    <span className="text-3xl">+</span>
-                    <span className="text-xs">Slot {showcaseCards.length + i + 1}</span>
-                  </div>
-                ))}
-              </div>
-            </SortableContext>
-          </div>
-        </section>
-
-        <DragOverlay>
-          {activeCard && <CardItem card={activeCard} size="md" />}
-        </DragOverlay>
-      </DndContext>
-
-      {/* Set tabs */}
-      <section className="mb-4">
-        <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+      {/* Set filter tabs — swipeable on mobile */}
+      <section className="mb-5">
+        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar -mx-3 px-3">
           <button
-            onClick={() => setFilterSet('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
-              filterSet === 'all' ? 'bg-accent text-white' : 'bg-surface text-muted hover:text-foreground border border-border'
+            onClick={() => { setFilterSet('all'); setCurrentPageIndex(0); setDirection(0); }}
+            className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
+              filterSet === 'all'
+                ? 'bg-accent text-white shadow-lg shadow-accent/25'
+                : 'bg-surface/80 backdrop-blur-sm text-muted hover:text-foreground border border-border'
             }`}
           >
-            All Sets ({ownedCards.length})
+            All ({ownedCards.length})
           </button>
           {SETS.map(s => {
             const count = ownedCards.filter(c => c.setSlug === s.slug).length;
+            const comp = setCompletion.find(sc => sc.slug === s.slug);
+            const pct = comp ? Math.round((comp.owned / comp.cardCount) * 100) : 0;
             return (
               <button
                 key={s.slug}
-                onClick={() => setFilterSet(s.slug)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                  filterSet === s.slug ? 'bg-accent text-white' : 'bg-surface text-muted hover:text-foreground border border-border'
+                onClick={() => { setFilterSet(s.slug); setCurrentPageIndex(0); setDirection(0); }}
+                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 ${
+                  filterSet === s.slug
+                    ? 'bg-accent text-white shadow-lg shadow-accent/25'
+                    : 'bg-surface/80 backdrop-blur-sm text-muted hover:text-foreground border border-border'
                 }`}
               >
-                <span>{s.icon}</span> {s.name} ({count})
+                <span>{s.icon}</span>
+                <span className="hidden sm:inline">{s.name}</span>
+                <span className="sm:hidden">{s.name.split(' ')[0]}</span>
+                <span className="opacity-50 text-[9px]">{pct}%</span>
               </button>
             );
           })}
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="mb-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search cards..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-foreground placeholder-muted focus:outline-none focus:border-accent/50 w-48"
-          />
+      {/* Binder */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEndDnd}
+      >
+        {/* Page nav bar */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={prevPage}
+              disabled={currentPageIndex === 0}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface/80 backdrop-blur-sm border border-border flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-15 disabled:cursor-not-allowed transition-all active:scale-90"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
 
-          <select
-            value={filterSet}
-            onChange={(e) => setFilterSet(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-foreground focus:outline-none focus:border-accent/50"
-          >
-            <option value="all">All Sets</option>
-            {SETS.map(s => <option key={s.slug} value={s.slug}>{s.name}</option>)}
-          </select>
+            {currentPage && !isFiltered && (
+              <EditableTitle
+                value={currentPage.name}
+                onChange={(name) => handleRenamePage(currentPage.id, name)}
+              />
+            )}
+            {currentPage && isFiltered && (
+              <span className="text-sm sm:text-base font-bold text-foreground flex items-center gap-2">
+                <span>{SETS.find(s => s.slug === filterSet)?.icon}</span>
+                <span className="hidden sm:inline">{SETS.find(s => s.slug === filterSet)?.name}</span>
+              </span>
+            )}
 
-          <select
-            value={filterScarcity}
-            onChange={(e) => setFilterScarcity(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-foreground focus:outline-none focus:border-accent/50"
-          >
-            <option value="all">All Scarcities</option>
-            <option value="common">Common</option>
-            <option value="uncommon">Uncommon</option>
-            <option value="rare">Rare</option>
-            <option value="epic">Epic</option>
-            <option value="legendary">Legendary</option>
-          </select>
+            <button
+              onClick={nextPage}
+              disabled={currentPageIndex >= displayPages.length - 1}
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface/80 backdrop-blur-sm border border-border flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-15 disabled:cursor-not-allowed transition-all active:scale-90"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+          </div>
 
-          <select
-            value={filterParallel}
-            onChange={(e) => setFilterParallel(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-foreground focus:outline-none focus:border-accent/50"
-          >
-            <option value="all">All Parallels</option>
-            <option value="base">Base</option>
-            <option value="silver">Silver Frame</option>
-            <option value="gold">Gold Frame</option>
-            <option value="holographic">Holographic</option>
-            <option value="obsidian">Obsidian</option>
-          </select>
-
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 rounded-lg bg-surface border border-border text-sm text-foreground focus:outline-none focus:border-accent/50"
-          >
-            <option value="scarcity">Sort: Scarcity</option>
-            <option value="name">Sort: Name</option>
-            <option value="set">Sort: Set</option>
-            <option value="serial">Sort: Serial #</option>
-            <option value="price">Sort: Price</option>
-          </select>
-
-          <div className="flex items-center gap-2 ml-auto">
-            <div className="flex rounded-lg border border-border overflow-hidden">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-[10px] sm:text-xs text-muted font-mono tabular-nums">
+              {currentPageIndex + 1}/{displayPages.length}
+            </span>
+            {!isFiltered && (
               <button
-                onClick={() => setViewSize('sm')}
-                className={`px-2 py-1.5 text-xs ${viewSize === 'sm' ? 'bg-accent text-white' : 'bg-surface text-muted'}`}
+                onClick={handleAddPage}
+                className="px-2.5 py-1.5 rounded-lg bg-accent/10 text-accent text-[10px] sm:text-xs font-semibold hover:bg-accent/20 transition-colors border border-accent/20 active:scale-95"
               >
-                Small
+                + Page
               </button>
-              <button
-                onClick={() => setViewSize('md')}
-                className={`px-2 py-1.5 text-xs ${viewSize === 'md' ? 'bg-accent text-white' : 'bg-surface text-muted'}`}
-              >
-                Large
-              </button>
-            </div>
-            <span className="text-xs text-muted">{filteredCards.length} cards</span>
+            )}
           </div>
         </div>
-      </section>
 
-      {/* Card Grid */}
-      <section>
-        <AnimatePresence mode="popLayout">
-          <div className="flex flex-wrap gap-4">
-            {filteredCards.map((card, i) => (
+        {/* Binder page with page transition animation */}
+        <div className="relative overflow-hidden rounded-2xl">
+          {/* Edge drag indicators */}
+          <AnimatePresence>
+            {activeId && currentPageIndex > 0 && (
               <motion.div
-                key={card.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2, delay: Math.min(i * 0.02, 0.3) }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: dragOverPageIndex === currentPageIndex - 1 ? 1 : 0.4, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="absolute left-0 top-0 bottom-0 w-16 z-20 flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(to right, rgba(129,140,248,0.25), transparent)',
+                }}
               >
-                <div className="relative">
-                  <Link href={`/card/${card.id}`}>
-                    <CardItem card={card} size={viewSize} />
-                  </Link>
-                  {showcaseIds.length < 8 && !showcaseIds.includes(card.id) && (
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onPointerDown={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        addToShowcase(card.id);
-                      }}
-                      className="absolute top-1.5 right-1.5 w-8 h-8 rounded-full bg-accent text-white text-base font-bold flex items-center justify-center z-30 shadow-lg cursor-pointer active:scale-90 transition-transform touch-manipulation"
-                      style={{ WebkitTapHighlightColor: 'transparent' }}
-                    >
-                      +
-                    </div>
-                  )}
-                </div>
+                <motion.svg
+                  width="20" height="20" viewBox="0 0 16 16" fill="none"
+                  animate={{ x: [-2, 2, -2] }}
+                  transition={{ repeat: Infinity, duration: 1 }}
+                >
+                  <path d="M10 12L6 8L10 4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </motion.svg>
               </motion.div>
-            ))}
-
-            {/* Zeigarnik empty slots — missing cards from this set */}
-            {missingCards.map((card, i) => (
+            )}
+            {activeId && currentPageIndex < displayPages.length - 1 && (
               <motion.div
-                key={`missing-${card.id}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: Math.min(filteredCards.length * 0.02 + i * 0.02, 0.5) }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: dragOverPageIndex === currentPageIndex + 1 ? 1 : 0.4, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="absolute right-0 top-0 bottom-0 w-16 z-20 flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(to left, rgba(129,140,248,0.25), transparent)',
+                }}
               >
-                <Link href={`/card/${card.id}`}>
-                  <div
-                    className={`${viewSize === 'sm' ? 'w-[140px] h-[196px]' : 'w-[200px] h-[280px]'} rounded-xl border-2 border-dashed border-border/30 flex flex-col items-center justify-center bg-surface/20 hover:bg-surface/40 transition-colors cursor-pointer group`}
-                  >
-                    <span className={`${viewSize === 'sm' ? 'text-2xl' : 'text-3xl'} opacity-20 group-hover:opacity-40 transition-opacity`}>
-                      {card.symbol}
-                    </span>
-                    <span className="text-[9px] text-muted/30 mt-1 group-hover:text-muted/50 text-center px-2 truncate max-w-full">
-                      {card.character}
-                    </span>
-                    <span className="text-[8px] text-accent/0 group-hover:text-accent/60 mt-1 transition-colors font-medium">
-                      Find →
-                    </span>
-                  </div>
-                </Link>
+                <motion.svg
+                  width="20" height="20" viewBox="0 0 16 16" fill="none"
+                  animate={{ x: [2, -2, 2] }}
+                  transition={{ repeat: Infinity, duration: 1 }}
+                >
+                  <path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                </motion.svg>
               </motion.div>
-            ))}
-          </div>
-        </AnimatePresence>
+            )}
+          </AnimatePresence>
 
-        {filteredCards.length === 0 && missingCards.length === 0 && ownedCards.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-60 text-center">
-            <span className="text-4xl mb-3">📦</span>
-            <h3 className="text-lg font-semibold mb-1">Your collection is empty</h3>
-            <p className="text-sm text-muted mb-4">Open packs to start building your collection of legendary characters.</p>
-            <Link
-              href="/packs"
-              className="px-6 py-2.5 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent/90 transition-colors"
+          {/* Swipeable binder page */}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentPageIndex}
+              custom={direction}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              drag={!activeId ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.15}
+              onDragEnd={handleDragEnd_swipe}
+              className="touch-pan-y"
             >
-              Open Your First Pack
-            </Link>
-          </div>
-        )}
-        {filteredCards.length === 0 && ownedCards.length > 0 && (
-          <div className="flex items-center justify-center h-40 text-muted text-sm">
-            No cards match your filters
-          </div>
-        )}
+              <div
+                className="p-4 sm:p-6 lg:p-8 rounded-2xl min-h-[420px] sm:min-h-[480px] relative"
+                style={{
+                  background: 'linear-gradient(165deg, rgba(18,20,31,0.9) 0%, rgba(12,13,22,0.95) 50%, rgba(18,20,31,0.85) 100%)',
+                  border: '1px solid rgba(255,255,255,0.04)',
+                  boxShadow: '0 4px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                {/* Subtle gradient glow */}
+                <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
+                  background: 'radial-gradient(ellipse at 50% -20%, rgba(129,140,248,0.04) 0%, transparent 50%)',
+                }} />
+
+                {/* Noise texture */}
+                <div className="absolute inset-0 rounded-2xl pointer-events-none opacity-[0.025]" style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+                }} />
+
+                {/* Binder rings */}
+                <div className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 flex flex-col gap-12 sm:gap-16 opacity-15">
+                  {[0, 1, 2].map(i => (
+                    <div key={i} className="w-2.5 sm:w-3 h-6 sm:h-8 rounded-full border-2 border-white/15" />
+                  ))}
+                </div>
+
+                {currentPage && (
+                  <SortableContext
+                    items={currentPage.cardIds.filter(id => !id.startsWith('missing:'))}
+                    strategy={rectSortingStrategy}
+                  >
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 justify-items-center ml-3 sm:ml-5">
+                      {currentPage.cardIds.map((cid, i) => {
+                        if (cid.startsWith('missing:')) {
+                          const realId = cid.replace('missing:', '');
+                          const card = ALL_CARDS.find(c => c.id === realId);
+                          return (
+                            <motion.div
+                              key={cid}
+                              initial={{ opacity: 0, y: 15 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 25 }}
+                            >
+                              <EmptySlot index={i} isMissing card={card} />
+                            </motion.div>
+                          );
+                        }
+                        const card = cardMap.get(cid);
+                        if (!card) return <EmptySlot key={cid} index={i} />;
+                        return (
+                          <motion.div
+                            key={card.id}
+                            initial={{ opacity: 0, y: 20, scale: 0.92 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{
+                              delay: i * 0.07,
+                              type: 'spring',
+                              stiffness: 250,
+                              damping: 22,
+                            }}
+                          >
+                            {isFiltered ? (
+                              <Link href={`/card/${card.id}`}>
+                                <CardItem card={card} size="lg" interactive={true} />
+                              </Link>
+                            ) : (
+                              <SortableBinderCard card={card} />
+                            )}
+                          </motion.div>
+                        );
+                      })}
+
+                      {/* Empty slots */}
+                      {Array.from({ length: Math.max(0, 6 - currentPage.cardIds.length) }).map((_, i) => (
+                        <motion.div
+                          key={`empty-${i}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: (currentPage.cardIds.length + i) * 0.06 }}
+                        >
+                          <EmptySlot index={currentPage.cardIds.length + i} />
+                        </motion.div>
+                      ))}
+                    </div>
+                  </SortableContext>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Drag overlay */}
+        <DragOverlay dropAnimation={{
+          duration: 250,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+        }}>
+          {activeCard && (
+            <motion.div
+              initial={{ scale: 1, rotate: 0 }}
+              animate={{ scale: 1.08, rotate: 2 }}
+              style={{
+                filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(129,140,248,0.15))',
+              }}
+            >
+              <CardItem card={activeCard} size="lg" interactive={false} />
+            </motion.div>
+          )}
+        </DragOverlay>
+      </DndContext>
+
+      {/* Page dots */}
+      <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-5 mb-4">
+        {displayPages.map((page, i) => (
+          <motion.button
+            key={page.id}
+            onClick={() => goToPage(i)}
+            className="rounded-full transition-all"
+            animate={{
+              width: i === currentPageIndex ? 28 : 8,
+              height: 8,
+              backgroundColor: i === currentPageIndex ? '#818cf8' : 'rgba(31,34,55,0.6)',
+            }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+            style={{
+              boxShadow: i === currentPageIndex ? '0 0 12px rgba(129,140,248,0.35)' : 'none',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Set completion strip */}
+      <section className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
+        {setCompletion.map((s, i) => {
+          const pct = Math.round((s.owned / s.cardCount) * 100);
+          return (
+            <motion.button
+              key={s.slug}
+              onClick={() => { setFilterSet(s.slug); setCurrentPageIndex(0); setDirection(0); }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.05 }}
+              className={`p-3 rounded-xl border transition-all active:scale-95 ${
+                filterSet === s.slug
+                  ? 'bg-accent/10 border-accent/30 shadow-lg shadow-accent/5'
+                  : 'bg-surface/60 backdrop-blur-sm border-border/50 hover:border-border'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 mb-2">
+                <span className="text-base sm:text-lg">{s.icon}</span>
+                <span className="text-[10px] sm:text-xs font-semibold truncate">{s.name.split(' ').slice(0, 2).join(' ')}</span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-border/20 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    background: pct === 100
+                      ? 'linear-gradient(90deg, #f59e0b, #fbbf24)'
+                      : pct > 50
+                      ? 'linear-gradient(90deg, #22c55e, #4ade80)'
+                      : 'linear-gradient(90deg, #818cf8, #a78bfa)',
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.8, delay: 0.4 + i * 0.1, ease: 'easeOut' }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-[9px] sm:text-[10px] text-muted">{s.owned}/{s.cardCount}</span>
+                <span className="text-[9px] sm:text-[10px] font-bold" style={{
+                  color: pct === 100 ? '#f59e0b' : pct > 50 ? '#22c55e' : '#818cf8',
+                }}>
+                  {pct}%
+                </span>
+              </div>
+            </motion.button>
+          );
+        })}
       </section>
+
+      {/* Empty state */}
+      {ownedCards.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center justify-center h-60 text-center mt-8"
+        >
+          <span className="text-5xl mb-4">📦</span>
+          <h3 className="text-lg font-bold mb-1">Your collection is empty</h3>
+          <p className="text-sm text-muted mb-5">Open packs to start building your collection of legendary characters.</p>
+          <Link
+            href="/packs"
+            className="px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent/90 transition-all active:scale-95 shadow-lg shadow-accent/20"
+          >
+            Open Your First Pack
+          </Link>
+        </motion.div>
+      )}
     </div>
   );
 }
