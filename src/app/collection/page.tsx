@@ -408,7 +408,18 @@ export default function CollectionPage() {
             {ownedCards.length} cards &middot; {binder.pages.length} pages &middot; ${totalValue.toFixed(0)} value
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap justify-end">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/collection/showcase"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-accent/20 to-purple-500/20 text-accent text-sm font-semibold hover:from-accent/30 hover:to-purple-500/30 transition-all border border-accent/20"
+          >
+            Showcase Builder
+          </Link>
+        </div>
+      </div>
+
+      {/* Scarcity badges */}
+      <div className="flex gap-2 flex-wrap mb-2">
           {(['legendary', 'epic', 'rare', 'uncommon', 'common'] as Scarcity[]).map(s => {
             const count = scarcityCounts[s] || 0;
             if (!count) return null;
@@ -425,7 +436,6 @@ export default function CollectionPage() {
               </div>
             );
           })}
-        </div>
       </div>
 
       {/* Set filter tabs */}

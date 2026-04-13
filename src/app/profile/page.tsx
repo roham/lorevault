@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { ALL_CARDS } from '@/data/cards';
 import { PROFILE } from '@/data/profile';
 import { SCARCITY_CONFIG, Scarcity, Card } from '@/data/types';
 import { SETS } from '@/data/sets';
 import { getOwnedCards, getShowcaseIds, getXP, getStreak, getPackCredits, resetAll, addPackCredits } from '@/lib/store';
+import { getShowcases, getActiveShowcaseId, SHOWCASE_THEMES, ShowcaseTheme } from '@/lib/showcase-store';
 
 export default function ProfilePage() {
   const [ownedCards, setOwnedCards] = useState<Card[]>([]);
@@ -16,11 +18,28 @@ export default function ProfilePage() {
   const [streak, setStreak] = useState(0);
   const [packs, setPacks] = useState(0);
 
+  const [activeShowcaseTheme, setActiveShowcaseTheme] = useState<ShowcaseTheme>('dark-glass');
+
   useEffect(() => {
     const owned = getOwnedCards();
     setOwnedCards(owned);
-    const sIds = getShowcaseIds();
-    setShowcaseCards(sIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[]);
+
+    // Try new showcase store first, fall back to legacy
+    const showcases = getShowcases();
+    const activeId = getActiveShowcaseId();
+    const activeShowcase = showcases.find(s => s.id === activeId) || showcases[0];
+    if (activeShowcase) {
+      setShowcaseCards(
+        activeShowcase.slots
+          .map(s => owned.find(c => c.id === s.cardId))
+          .filter(Boolean) as Card[]
+      );
+      setActiveShowcaseTheme(activeShowcase.theme);
+    } else {
+      const sIds = getShowcaseIds();
+      setShowcaseCards(sIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[]);
+    }
+
     setXp(getXP());
     setStreak(getStreak());
     setPacks(getPackCredits());
@@ -77,23 +96,44 @@ export default function ProfilePage() {
         </div>
       </motion.div>
 
-      {/* Showcase */}
+      {/* Showcase Hero */}
       {showcaseCards.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <span>✨</span> Showcase
-          </h2>
-          <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'none' }}>
-            {showcaseCards.map((card, i) => (
-              <motion.div
-                key={card.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-              >
-                <CardItem card={card} size="md" />
-              </motion.div>
-            ))}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold flex items-center gap-2">
+              <span>✨</span> Showcase
+            </h2>
+            <Link
+              href="/collection/showcase"
+              className="text-xs text-accent hover:text-accent/80 transition-colors"
+            >
+              Edit Showcase
+            </Link>
+          </div>
+          <div
+            className="p-6 rounded-2xl overflow-hidden relative"
+            style={{
+              background: SHOWCASE_THEMES[activeShowcaseTheme].bg,
+              border: `1px solid ${SHOWCASE_THEMES[activeShowcaseTheme].border}`,
+            }}
+          >
+            {/* Noise texture */}
+            <div className="absolute inset-0 rounded-2xl pointer-events-none opacity-[0.03]" style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+            }} />
+            <div className="flex gap-4 overflow-x-auto pb-2 relative z-10 no-scrollbar">
+              {showcaseCards.map((card, i) => (
+                <motion.div
+                  key={card.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.1, duration: 0.4 }}
+                  className="flex-shrink-0"
+                >
+                  <CardItem card={card} size="lg" />
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
       )}
