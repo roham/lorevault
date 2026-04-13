@@ -75,16 +75,17 @@ export default function CardItem({
     }
   };
 
-  const getBoxShadow = () => {
-    const base = '0 8px 32px rgba(0,0,0,0.4)';
-    switch (card.parallel) {
-      case 'silver': return `${base}, 0 0 15px rgba(192,192,192,0.15)`;
-      case 'gold': return `${base}, 0 0 25px rgba(255,215,0,0.2), 0 0 50px rgba(255,215,0,0.08)`;
-      case 'holographic': return `${base}, 0 0 30px rgba(255,110,199,0.15), 0 0 60px rgba(128,0,255,0.08)`;
-      case 'obsidian': return `${base}, 0 0 30px rgba(100,100,255,0.12), inset 0 0 30px rgba(0,0,0,0.4)`;
-      default: return base;
+  // Corner accent size by scarcity
+  const getCornerSize = (): number | null => {
+    switch (card.scarcity) {
+      case 'legendary': return 14;
+      case 'epic': return 10;
+      case 'rare': return 8;
+      default: return null;
     }
   };
+
+  const noiseOpacity = card.scarcity === 'common' || card.scarcity === 'uncommon' ? 0.07 : 0.04;
 
   return (
     <motion.div
@@ -113,11 +114,10 @@ export default function CardItem({
       >
         {/* FRONT */}
         <div
-          className="absolute inset-0 rounded-xl overflow-hidden"
+          className="absolute inset-0 rounded-xl overflow-hidden card-depth card-edge-bottom"
           style={{
             backfaceVisibility: 'hidden',
             border: `${borderWidth}px solid ${borderColor}`,
-            boxShadow: getBoxShadow(),
           }}
         >
           {/* Background gradient */}
@@ -126,22 +126,58 @@ export default function CardItem({
             style={{ background: `linear-gradient(145deg, ${card.gradientFrom} 0%, ${card.gradientTo} 100%)` }}
           />
 
-          {/* Noise texture */}
+          {/* Noise texture — louder for common/uncommon */}
           <div
-            className="absolute inset-0 opacity-[0.04] pointer-events-none"
+            className="absolute inset-0 pointer-events-none"
             style={{
+              opacity: noiseOpacity,
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
             }}
           />
 
+          {/* Edge highlight */}
+          <div className="absolute inset-0 pointer-events-none rounded-xl card-edge-light" />
+
           {/* Parallel overlay */}
-          {card.parallel !== 'base' && card.parallel !== 'obsidian' && (
-            <div className={`absolute inset-0 pointer-events-none ${getParallelClass()}`} />
+          {card.parallel === 'silver' && (
+            <div className="absolute inset-0 pointer-events-none silver-effect" />
+          )}
+          {card.parallel === 'gold' && (
+            <>
+              <div className="absolute inset-0 pointer-events-none gold-ambient" />
+              <div className="absolute inset-0 pointer-events-none gold-effect" />
+            </>
+          )}
+          {card.parallel === 'holographic' && (
+            <>
+              <div className="absolute inset-0 pointer-events-none holo-effect" />
+              <div className="absolute inset-0 pointer-events-none holo-lines" />
+            </>
           )}
           {card.parallel === 'obsidian' && (
             <>
+              <div className="absolute inset-0 pointer-events-none obsidian-depth" />
               <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(100,100,255,0.15) 0%, transparent 60%)' }} />
-              <div className="absolute inset-[2px] pointer-events-none rounded-[10px] border border-indigo-500/20" />
+              <div
+                className="absolute inset-[2px] pointer-events-none rounded-[10px]"
+                style={{ border: '1px solid rgba(99,102,241,0.15)', animation: 'obsidian-pulse 4s ease-in-out infinite' }}
+              />
+            </>
+          )}
+
+          {/* Corner accents for rare+ */}
+          {getCornerSize() && (
+            <>
+              {['tl', 'tr', 'bl', 'br'].map((pos) => (
+                <span
+                  key={pos}
+                  className={`corner-accent corner-${pos}`}
+                  style={{
+                    '--accent-size': `${getCornerSize()}px`,
+                    '--accent-color': `${borderColor}${card.scarcity === 'legendary' ? 'cc' : '80'}`,
+                  } as React.CSSProperties}
+                />
+              ))}
             </>
           )}
 
@@ -235,7 +271,7 @@ export default function CardItem({
             transform: 'rotateY(180deg)',
             border: `${borderWidth}px solid ${borderColor}`,
             background: `linear-gradient(145deg, ${card.gradientFrom} 0%, ${card.gradientTo} 100%)`,
-            boxShadow: getBoxShadow(),
+            boxShadow: '0 1px 2px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.35), 0 12px 40px rgba(0,0,0,0.25)',
           }}
         >
           <div className="h-1" style={{ background: borderColor }} />
