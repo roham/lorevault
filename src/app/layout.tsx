@@ -38,7 +38,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full bg-background text-foreground">
-        <main className="pt-12 pb-20">
+        <main className="pt-12 pb-[76px]">
           {children}
         </main>
         <UnlockCelebration />
