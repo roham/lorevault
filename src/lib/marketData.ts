@@ -548,3 +548,52 @@ export function getCompletionRecommendations(ownedCardIds: string[], limit = 10)
 
   return recommendations.slice(0, limit);
 }
+
+// ===== UNDERVALUED CARDS =====
+export function getUndervaluedCards(limit = 10): Array<Card & { discount: number; avgPrice: number }> {
+  return ALL_CARDS
+    .map(card => {
+      const data = getCardMarketData(card.id);
+      if (!data) return null;
+      const discount = ((data.avgPrice7d - data.currentPrice) / data.avgPrice7d) * 100;
+      return { ...card, discount, avgPrice: data.avgPrice7d };
+    })
+    .filter((c): c is Card & { discount: number; avgPrice: number } => c !== null && c.discount > 5)
+    .sort((a, b) => b.discount - a.discount)
+    .slice(0, limit);
+}
+
+// ===== PRICE ALERTS (mock) =====
+const PRICE_ALERTS_KEY = 'lorevault_price_alerts';
+
+export interface PriceAlert {
+  cardId: string;
+  targetPrice: number;
+  direction: 'below' | 'above';
+  createdAt: string;
+  triggered: boolean;
+}
+
+export function getPriceAlerts(): PriceAlert[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = localStorage.getItem(PRICE_ALERTS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function addPriceAlert(cardId: string, targetPrice: number, direction: 'below' | 'above'): PriceAlert[] {
+  const alerts = getPriceAlerts();
+  const newAlert: PriceAlert = { cardId, targetPrice, direction, createdAt: new Date().toISOString(), triggered: false };
+  const updated = [newAlert, ...alerts].slice(0, 20);
+  localStorage.setItem(PRICE_ALERTS_KEY, JSON.stringify(updated));
+  return updated;
+}
+
+export function removePriceAlert(cardId: string): PriceAlert[] {
+  const updated = getPriceAlerts().filter(a => a.cardId !== cardId);
+  localStorage.setItem(PRICE_ALERTS_KEY, JSON.stringify(updated));
+  return updated;
+}

@@ -27,6 +27,7 @@ import {
   isWatchlisted,
   getTrendingCards,
   getCompletionRecommendations,
+  getUndervaluedCards,
   getSavedSearches,
   saveSearch,
   deleteSavedSearch,
@@ -39,7 +40,10 @@ type OwnershipFilter = 'all' | 'need' | 'own';
 
 export default function MarketplacePage() {
   const [filters, setFilters] = useState<MarketFilters>(DEFAULT_FILTERS);
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return 'table';
+    return 'grid';
+  });
   const [activeTab, setActiveTab] = useState<MarketTab>('browse');
   const [showFilters, setShowFilters] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -75,6 +79,7 @@ export default function MarketplacePage() {
   const facets = useMemo(() => getFacetCounts(ALL_CARDS, filters), [filters]);
   const trending = useMemo(() => getTrendingCards(8), []);
   const completionRecs = useMemo(() => loaded ? getCompletionRecommendations(Array.from(ownedIds), 8) : [], [ownedIds, loaded]);
+  const undervalued = useMemo(() => getUndervaluedCards(8), []);
 
   const handleSearchChange = useCallback((value: string) => {
     setFilters(f => ({ ...f, query: value }));
@@ -394,6 +399,23 @@ export default function MarketplacePage() {
                     <motion.div key={card.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="flex-shrink-0 relative cursor-pointer" onClick={() => setQuickViewCard(card)}>
                       <CardItem card={card} size="sm" showPrice interactive={false} />
                       <div className="absolute bottom-[68px] left-0 right-0 px-1"><div className="px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-sm text-center"><span className="text-[8px] text-accent font-medium">{card.reason}</span></div></div>
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+            )}
+            {/* Undervalued */}
+            {undervalued.length > 0 && (
+              <section className="mb-5">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5 mb-2"><span className="text-green-400">💰</span> Below Average Price</h2>
+                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                  {undervalued.map((card, i) => (
+                    <motion.div key={card.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="flex-shrink-0 relative cursor-pointer" onClick={() => setQuickViewCard(card)}>
+                      <CardItem card={card} size="sm" showPrice interactive={false} />
+                      <div className="absolute top-1.5 left-7 px-1.5 py-0.5 rounded bg-green-500/80 backdrop-blur-sm z-10">
+                        <span className="text-[9px] font-mono font-bold text-white">-{card.discount.toFixed(0)}%</span>
+                      </div>
+                      {renderOwnedBadge(card.id)}
                     </motion.div>
                   ))}
                 </div>
