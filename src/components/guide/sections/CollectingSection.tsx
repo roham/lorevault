@@ -46,11 +46,20 @@ export default function CollectingSection() {
         <div className="grid grid-cols-5 gap-2">
           {(Object.keys(PARALLEL_CONFIG) as Array<keyof typeof PARALLEL_CONFIG>).map((p) => {
             const cfg = PARALLEL_CONFIG[p];
+            const colors: Record<string, string> = {
+              base: '#1a1d2e',
+              silver: 'linear-gradient(135deg, #e0e0e0, #808080)',
+              gold: 'linear-gradient(135deg, #ffd700, #b8860b)',
+              holographic: 'linear-gradient(135deg, #ff6ec7, #7c3aed, #3b82f6)',
+              obsidian: 'linear-gradient(135deg, #0a0a1a, #1a1a3e)',
+            };
+            const bg = colors[p] || '#1a1d2e';
             return (
               <div key={p} className="text-center">
-                <div className="w-full aspect-square rounded-lg bg-surface/80 border border-border/40 flex items-center justify-center text-xs font-mono text-muted">
-                  {cfg.effect === 'none' ? '—' : cfg.effect.slice(0, 3)}
-                </div>
+                <div
+                  className="w-full aspect-square rounded-lg border border-border/40 flex items-center justify-center"
+                  style={{ background: bg }}
+                />
                 <span className="text-[10px] text-muted mt-1 block">{cfg.label}</span>
               </div>
             );

@@ -19,23 +19,27 @@ export default function BattleSection() {
       <div>
         <h3 className="text-[11px] uppercase tracking-[0.08em] text-muted mb-3">Battle Stats</h3>
         <div className="space-y-2">
-          {STAT_ORDER.map((stat) => (
-            <div key={stat} className="flex items-center gap-3 p-3 rounded-xl bg-surface/60">
-              <span className="text-lg w-8 text-center">{STAT_ICONS[stat]}</span>
-              <span className="text-sm font-semibold flex-1" style={{ color: STAT_COLORS[stat] }}>
-                {STAT_LABELS[stat]}
-              </span>
-              <div className="w-20 h-2 rounded-full bg-border/40 overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    backgroundColor: STAT_COLORS[stat],
-                    width: `${60 + Math.random() * 40}%`,
-                  }}
-                />
+          {STAT_ORDER.map((stat, i) => {
+            // Representative bar widths showing stat diversity (not random)
+            const barWidths = [85, 70, 60, 90, 75];
+            return (
+              <div key={stat} className="flex items-center gap-3 p-3 rounded-xl bg-surface/60">
+                <span className="text-lg w-8 text-center">{STAT_ICONS[stat]}</span>
+                <span className="text-sm font-semibold flex-1" style={{ color: STAT_COLORS[stat] }}>
+                  {STAT_LABELS[stat]}
+                </span>
+                <div className="w-20 h-2 rounded-full bg-border/40 overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      backgroundColor: STAT_COLORS[stat],
+                      width: `${barWidths[i]}%`,
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
