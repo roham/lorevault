@@ -7,19 +7,24 @@ import CardItem from '@/components/CardItem';
 import PriceChart from '@/components/marketplace/PriceChart';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getOwnedCardIds, addOwnedCards } from '@/lib/store';
+import { getOwnedCardIds, addOwnedCards, getBattleRecords } from '@/lib/store';
 import {
   getCardMarketData,
   isWatchlisted,
   addToWatchlist,
   removeFromWatchlist,
 } from '@/lib/marketData';
+import {
+  StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS,
+  getCharacterStats, getEffectiveStat,
+} from '@/data/stats';
 
 export default function CardDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [isOwned, setIsOwned] = useState(false);
   const [watched, setWatched] = useState(false);
   const [bought, setBought] = useState(false);
+  const [cardBattleStats, setCardBattleStats] = useState<{ wins: number; total: number }>({ wins: 0, total: 0 });
 
   const card = ALL_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
@@ -28,6 +33,20 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
     if (card) {
       setIsOwned(new Set(getOwnedCardIds()).has(card.id));
       setWatched(isWatchlisted(card.id));
+
+      // Calculate per-card battle record
+      const records = getBattleRecords();
+      let wins = 0;
+      let total = 0;
+      for (const record of records) {
+        for (const round of record.rounds) {
+          if (round.playerCardId === card.id) {
+            total++;
+            if (round.playerWon) wins++;
+          }
+        }
+      }
+      setCardBattleStats({ wins, total });
     }
   }, [card]);
 
@@ -259,6 +278,56 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               </div>
             )}
           </div>
+
+          {/* Battle Stats */}
+          {(() => {
+            const baseStats = getCharacterStats(card.character);
+            const stats: StatKey[] = ['power', 'intelligence', 'mystery', 'legend', 'charm'];
+            return (
+              <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-[10px] text-muted uppercase tracking-wider">Battle Stats</div>
+                  {cardBattleStats.total > 0 && (
+                    <div className="text-[10px] text-muted">
+                      <span className="text-green-400 font-bold">{cardBattleStats.wins}</span>
+                      {' '}wins / {cardBattleStats.total} battles
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {stats.map(stat => {
+                    const value = getEffectiveStat(baseStats, stat, card.scarcity, card.parallel);
+                    return (
+                      <div key={stat} className="flex items-center gap-2">
+                        <span className="text-sm w-5">{STAT_ICONS[stat]}</span>
+                        <span className="text-[10px] font-medium text-muted w-20">{STAT_LABELS[stat]}</span>
+                        <div className="flex-1 h-2 rounded-full bg-background overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ backgroundColor: STAT_COLORS[stat] }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${value}%` }}
+                            transition={{ delay: 0.3, duration: 0.5 }}
+                          />
+                        </div>
+                        <span className="text-xs font-mono font-bold w-6 text-right" style={{ color: STAT_COLORS[stat] }}>
+                          {value}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                {isOwned && (
+                  <Link
+                    href="/games/battle"
+                    className="block mt-3 text-center py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors"
+                  >
+                    ⚔️ Take to Battle
+                  </Link>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Lore text */}
           <div className="p-4 rounded-2xl bg-surface/50 border border-border/50 mb-6">

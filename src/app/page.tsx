@@ -132,6 +132,38 @@ export default function Home() {
         </section>
       )}
 
+      {/* Play Games CTA */}
+      <section className="px-4 mb-8">
+        <Link href="/games">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative overflow-hidden rounded-2xl p-5 border border-red-500/20"
+            style={{
+              background: 'linear-gradient(135deg, #1a0a0a 0%, #2d0a1b 50%, #12141f 100%)',
+            }}
+          >
+            <div className="absolute inset-0 opacity-15">
+              <div className="absolute inset-0 card-shimmer" />
+            </div>
+            <div className="relative flex items-center justify-between">
+              <div>
+                <p className="text-xs text-red-400 font-medium uppercase tracking-wider mb-1">Card Games</p>
+                <h2 className="text-xl font-bold text-white mb-0.5">Play</h2>
+                <p className="text-sm text-white/50">Battle, trivia, and earn XP.</p>
+              </div>
+              <motion.div
+                animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                className="text-4xl"
+              >
+                ⚔️
+              </motion.div>
+            </div>
+          </motion.div>
+        </Link>
+      </section>
+
       {/* Active Missions */}
       <section className="px-4 mb-8">
         <div className="flex items-center justify-between mb-3">
