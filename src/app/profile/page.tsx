@@ -12,6 +12,7 @@ import { SETS } from '@/data/sets';
 import { getOwnedCards, getShowcaseIds, getXP, getStreak, getPackCredits, resetAll, addPackCredits, getCollectorLevel, getEarnedAchievements } from '@/lib/store';
 import { getShowcases, getActiveShowcaseId, SHOWCASE_THEMES, ShowcaseTheme } from '@/lib/showcase-store';
 import { ACHIEVEMENTS, getAchievementRarityColor } from '@/lib/achievements';
+import { getVipState, type VipState } from '@/lib/vip';
 
 const TIER_COLORS: Record<string, string> = {
   Newcomer: '#6b7094',
@@ -31,6 +32,7 @@ export default function ProfilePage() {
   const [activeShowcaseTheme, setActiveShowcaseTheme] = useState<ShowcaseTheme>('dark-glass');
   const [collectorLevel, setCollectorLevel] = useState({ level: 1, tier: 'Newcomer' as string, progressPercent: 0, currentXP: 0, xpForNextLevel: 100, xpForCurrentLevel: 0 });
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set());
+  const [vip, setVip] = useState<VipState | null>(null);
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -56,6 +58,7 @@ export default function ProfilePage() {
     setPacks(getPackCredits());
     setCollectorLevel(getCollectorLevel());
     setEarnedIds(new Set(getEarnedAchievements().map(a => a.achievementId)));
+    setVip(getVipState());
   }, []);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
@@ -150,6 +153,86 @@ export default function ProfilePage() {
           ))}
         </div>
       </motion.div>
+
+      {/* VIP Status Card */}
+      {vip && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-6 rounded-2xl overflow-hidden"
+          style={{ border: `1px solid ${vip.tier.color}25` }}
+        >
+          {/* VIP Header */}
+          <div
+            className="p-4"
+            style={{ background: `linear-gradient(135deg, ${vip.tier.color}08, ${vip.tier.color}15)` }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                style={{ backgroundColor: `${vip.tier.color}20`, color: vip.tier.color, border: `1.5px solid ${vip.tier.color}40` }}
+              >
+                VIP
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold" style={{ color: vip.tier.color }}>{vip.tier.name}</span>
+                  <span className="text-[10px] text-muted">Member</span>
+                </div>
+                {vip.nextTierName && (
+                  <div className="text-[10px] text-muted">
+                    <span className="font-mono" style={{ color: vip.tier.color }}>{vip.xpToNextTier.toLocaleString()}</span> XP to {vip.nextTierName}
+                  </div>
+                )}
+              </div>
+              <Link href="/guide#vip" className="text-[10px] text-muted hover:text-foreground transition-colors">
+                Details &rarr;
+              </Link>
+            </div>
+
+            {/* Progress to next tier */}
+            {vip.nextTierName && (
+              <div className="w-full h-1.5 rounded-full bg-border/30 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ backgroundColor: vip.tier.color }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${vip.progressToNextTier}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                />
+              </div>
+            )}
+
+            {/* Maintain warning */}
+            {vip.maintainWarning && (
+              <div className="mt-2 text-[10px] text-amber-400 font-medium">
+                {vip.maintainWarning}
+              </div>
+            )}
+          </div>
+
+          {/* Benefits row */}
+          <div className="grid grid-cols-3 divide-x divide-border/20 bg-surface/30">
+            <div className="p-3 text-center">
+              <div className="text-xs font-bold font-mono">{vip.packsPerWeek}/wk</div>
+              <div className="text-[9px] text-muted uppercase tracking-wider">Free Packs</div>
+            </div>
+            <div className="p-3 text-center">
+              <div className="text-xs font-bold font-mono" style={{ color: vip.rebatePercent > 0 ? vip.tier.color : undefined }}>
+                {vip.rebatePercent > 0 ? `${vip.rebatePercent}%` : '—'}
+              </div>
+              <div className="text-[9px] text-muted uppercase tracking-wider">Rebate</div>
+            </div>
+            <div className="p-3 text-center">
+              <div className="text-xs font-bold font-mono">
+                {vip.earlyAccessMinutes > 0 ? `${vip.earlyAccessMinutes}m` : '—'}
+              </div>
+              <div className="text-[9px] text-muted uppercase tracking-wider">Early Access</div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Collector's Guide link */}
       <Link href="/guide" className="block mb-6 p-4 rounded-xl bg-accent/5 border border-accent/20 hover:bg-accent/10 transition-all">

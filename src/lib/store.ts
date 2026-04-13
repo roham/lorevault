@@ -2,6 +2,7 @@
 
 import { Card, BattleRecord, TriviaRecord, GameStats, SavedDeck, CollectorLevel, XPSource, XP_VALUES, getLevelFromXP, getXPForLevel, getTierForLevel, EarnedAchievement } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
+import { recordMonthlyXP } from '@/lib/vip';
 
 // Local storage keys
 const KEYS = {
@@ -109,6 +110,7 @@ export function resetAll() {
   if (typeof window === 'undefined') return;
   Object.values(KEYS).forEach(key => localStorage.removeItem(key));
   localStorage.removeItem('lorevault_onboarding');
+  localStorage.removeItem('lorevault_vip_monthly');
 }
 
 export function recordVisit() {
@@ -201,6 +203,7 @@ export function addCollectorXP(amount: number, source: XPSource): { previousLeve
   const prevLevel = getLevelFromXP(prevXP);
   const xpToAdd = amount || XP_VALUES[source];
   addXP(xpToAdd);
+  recordMonthlyXP(xpToAdd);
   const newXP = prevXP + xpToAdd;
   const newLevel = getLevelFromXP(newXP);
   return { previousLevel: prevLevel, newLevel, xpAdded: xpToAdd };

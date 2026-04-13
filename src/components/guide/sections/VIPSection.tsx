@@ -1,35 +1,11 @@
-const VIP_TIERS = [
-  {
-    name: 'Bronze',
-    color: '#CD7F32',
-    xp: '0-499',
-    benefits: ['1 free pack/week', 'Base rewards'],
-  },
-  {
-    name: 'Silver',
-    color: '#C0C0C0',
-    xp: '500-1,499',
-    benefits: ['2 free packs/week', '5% marketplace rebate', '15 min early access'],
-  },
-  {
-    name: 'Gold',
-    color: '#FFD700',
-    xp: '1,500-3,999',
-    benefits: ['3 free packs/week', '10% rebate', '30 min early access', 'Gold card frame'],
-  },
-  {
-    name: 'Platinum',
-    color: '#E5E4E2',
-    xp: '4,000-9,999',
-    benefits: ['5 free packs/week', '15% rebate', '1 hour early access', 'Exclusive showcase theme', 'Priority support'],
-  },
-  {
-    name: 'Diamond',
-    color: '#B9F2FF',
-    xp: '10,000+',
-    benefits: ['Daily free pack', '20% rebate', 'First access to all drops', 'Obsidian parallel variants', 'Diamond profile badge'],
-  },
-];
+import { VIP_TIERS as TIERS } from '@/lib/vip';
+
+const VIP_TIERS = TIERS.map((t) => ({
+  name: t.name,
+  color: t.color,
+  xp: t.maxXP === Infinity ? `${t.minXP.toLocaleString()}+` : `${t.minXP.toLocaleString()}-${t.maxXP.toLocaleString()}`,
+  benefits: t.benefits,
+}));
 
 export default function VIPSection() {
   return (

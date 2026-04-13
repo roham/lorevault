@@ -12,6 +12,7 @@ import { Card, getTierForLevel } from '@/data/types';
 import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
+import { getVipState } from '@/lib/vip';
 
 const TIER_COLORS: Record<string, string> = {
   Newcomer: '#6b7094',
@@ -38,6 +39,7 @@ export default function Home() {
   const [ready, setReady] = useState(false);
   const [collectorLevel, setCollectorLevel] = useState({ level: 1, tier: 'Newcomer' as string, progressPercent: 0, currentXP: 0, xpForNextLevel: 100, xpForCurrentLevel: 0 });
   const [dailyMission, setDailyMission] = useState<{ description: string; progress: number; target: number; reward: string } | null>(null);
+  const [vipTier, setVipTier] = useState<{ name: string; color: string }>({ name: 'Bronze', color: '#CD7F32' });
 
   useEffect(() => {
     if (shouldShowWelcome()) {
@@ -51,6 +53,8 @@ export default function Home() {
     setStreak(getStreak());
     setCollectorLevel(getCollectorLevel());
 
+    const vs = getVipState();
+    setVipTier({ name: vs.tier.name, color: vs.tier.color });
     const missions = getDailyMissions();
     const incomplete = missions.find(m => !m.completed);
     if (incomplete) setDailyMission(incomplete);
@@ -138,8 +142,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Streak + Cards */}
-            <div className="flex gap-2 mb-3">
+            {/* Streak + Cards + VIP */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              <div
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg"
+                style={{ backgroundColor: `${vipTier.color}10`, border: `1px solid ${vipTier.color}25` }}
+              >
+                <span className="text-[10px] font-bold font-mono" style={{ color: vipTier.color }}>{vipTier.name}</span>
+              </div>
               {streak > 0 && (
                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20">
                   <span className="text-[10px] font-bold font-mono text-orange-400">{streak}d streak</span>

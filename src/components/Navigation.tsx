@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { getPackCredits, getCollectorLevel } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
+import { getVipState } from '@/lib/vip';
 
 // SVG icon components — 24px standard, filled active / stroke inactive
 function HomeIcon({ active }: { active: boolean }) {
@@ -91,11 +92,13 @@ export default function Navigation() {
   const [packs, setPacks] = useState(0);
   const [hidden, setHidden] = useState(true);
   const [level, setLevel] = useState(1);
+  const [vipColor, setVipColor] = useState('#CD7F32');
 
   useEffect(() => {
     setPacks(getPackCredits());
     const cl = getCollectorLevel();
     setLevel(cl.level);
+    setVipColor(getVipState().tier.color);
     setHidden(shouldShowWelcome() || pathname === '/welcome');
   }, [pathname]);
 
@@ -103,6 +106,7 @@ export default function Navigation() {
     const handleStorage = () => {
       setPacks(getPackCredits());
       setLevel(getCollectorLevel().level);
+      setVipColor(getVipState().tier.color);
     };
     window.addEventListener('storage', handleStorage);
     const interval = setInterval(handleStorage, 1000);
@@ -137,7 +141,14 @@ export default function Navigation() {
             </Link>
             <Link
               href="/profile"
-              className="relative w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center text-accent text-[11px] font-bold shrink-0"
+              className="relative w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0"
+              style={{
+                backgroundColor: `${vipColor}15`,
+                borderWidth: 1.5,
+                borderColor: `${vipColor}50`,
+                color: vipColor,
+                boxShadow: `0 0 8px ${vipColor}25`,
+              }}
             >
               {level}
             </Link>
