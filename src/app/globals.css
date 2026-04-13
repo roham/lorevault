@@ -226,3 +226,52 @@ body {
 /* Hide scrollbar on horizontal scroll areas */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+/* ======= BINDER & COLLECTION POLISH ======= */
+
+/* Glassmorphism panel */
+.glass-panel {
+  background: linear-gradient(165deg, rgba(18,20,31,0.9) 0%, rgba(12,13,22,0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 4px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Card slot hover glow */
+.card-slot-glow {
+  transition: box-shadow 0.3s ease;
+}
+.card-slot-glow:hover {
+  box-shadow: 0 0 20px rgba(129, 140, 248, 0.08);
+}
+
+/* Page turn shadow effect */
+.page-shadow {
+  box-shadow:
+    -4px 0 12px rgba(0,0,0,0.2),
+    inset 4px 0 12px rgba(0,0,0,0.1);
+}
+
+/* Smooth page transitions for mobile */
+@media (max-width: 640px) {
+  .touch-pan-y {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Responsive card grid for mobile */
+@media (max-width: 640px) {
+  .binder-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+/* Premium text gradient */
+.text-gradient-premium {
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
