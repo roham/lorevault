@@ -59,6 +59,8 @@ export default function MarketplacePage() {
   const [ownedIds, setOwnedIds] = useState<Set<string>>(new Set());
   const [ownershipFilter, setOwnershipFilter] = useState<OwnershipFilter>('all');
   const [loaded, setLoaded] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const [focusedIdx, setFocusedIdx] = useState(-1);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -112,6 +114,21 @@ export default function MarketplacePage() {
     addOwnedCards([card.id]); setOwnedIds(prev => new Set([...prev, card.id]));
   }, []);
 
+  const handleBuyBulk = useCallback(() => {
+    const ids = Array.from(bulkSelected);
+    addOwnedCards(ids);
+    setOwnedIds(prev => new Set([...prev, ...ids]));
+    setBulkSelected(new Set());
+    setBulkMode(false);
+  }, [bulkSelected]);
+
+  const handleBuyAllWatchlist = useCallback(() => {
+    const ids = watchlist.filter(id => !ownedIds.has(id));
+    if (ids.length === 0) return;
+    addOwnedCards(ids);
+    setOwnedIds(prev => new Set([...prev, ...ids]));
+  }, [watchlist, ownedIds]);
+
   const handleSaveSearch = useCallback(() => {
     if (!saveSearchName.trim()) return;
     setSavedSearches(saveSearch(saveSearchName.trim(), filters)); setShowSaveSearch(false); setSaveSearchName('');
@@ -126,12 +143,20 @@ export default function MarketplacePage() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === '/' && !searchFocused && document.activeElement?.tagName !== 'INPUT') { e.preventDefault(); searchRef.current?.focus(); }
-      if (e.key === 'Escape') { setSearchFocused(false); setQuickViewCard(null); searchRef.current?.blur(); }
+      const isInput = document.activeElement?.tagName === 'INPUT';
+      if (e.key === '/' && !searchFocused && !isInput) { e.preventDefault(); searchRef.current?.focus(); }
+      if (e.key === 'Escape') { setSearchFocused(false); setQuickViewCard(null); searchRef.current?.blur(); setFocusedIdx(-1); }
+      // J/K navigation through results
+      if (!isInput && !quickViewCard && activeTab === 'browse') {
+        if (e.key === 'j' || e.key === 'ArrowDown') { e.preventDefault(); setFocusedIdx(prev => Math.min(prev + 1, results.length - 1)); }
+        if (e.key === 'k' || e.key === 'ArrowUp') { e.preventDefault(); setFocusedIdx(prev => Math.max(prev - 1, 0)); }
+        if (e.key === 'Enter' && focusedIdx >= 0 && focusedIdx < results.length) { e.preventDefault(); setQuickViewCard(results[focusedIdx]); }
+        if (e.key === 'w' && focusedIdx >= 0 && focusedIdx < results.length) { e.preventDefault(); toggleWatchlist(results[focusedIdx].id); }
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [searchFocused]);
+  }, [searchFocused, quickViewCard, activeTab, results, focusedIdx, toggleWatchlist]);
 
   const isSearchActive = !!(filters.query.trim() || filters.sets.length || filters.scarcities.length || filters.parallels.length);
 
@@ -174,6 +199,7 @@ export default function MarketplacePage() {
                   <button key={key} onClick={() => setOwnershipFilter(key)} className={`px-2 py-1.5 text-[10px] font-semibold transition-colors ${ownershipFilter === key ? (key === 'need' ? 'bg-orange-500/80 text-white' : key === 'own' ? 'bg-green-500/80 text-white' : 'bg-accent text-white') : 'bg-surface text-muted hover:text-foreground'}`}>{label}</button>
                 ))}
               </div>
+              <button onClick={() => setCompact(!compact)} className={`px-2 py-1.5 rounded-lg text-[10px] font-semibold transition-colors ${compact ? 'bg-accent text-white' : 'bg-surface border border-border text-muted hover:text-foreground'}`} title="Compact mode">{compact ? 'Dense' : 'Comfy'}</button>
               <button onClick={() => { setBulkMode(!bulkMode); setBulkSelected(new Set()); }} className={`px-2 py-1.5 rounded-lg text-[10px] font-semibold transition-colors ${bulkMode ? 'bg-accent text-white' : 'bg-surface border border-border text-muted hover:text-foreground'}`}>{bulkMode ? `${bulkSelected.size} sel` : 'Bulk'}</button>
               <div className="flex rounded-lg border border-border overflow-hidden">
                 {([{ mode: 'grid' as ViewMode, icon: '▦' }, { mode: 'list' as ViewMode, icon: '☰' }, { mode: 'table' as ViewMode, icon: '▤' }]).map(({ mode, icon }) => (
@@ -247,6 +273,12 @@ export default function MarketplacePage() {
         {/* WATCHLIST TAB */}
         {activeTab === 'watchlist' && (
           <div>
+            {watchlist.length > 0 && (
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-muted">{watchlist.length} cards watched</span>
+                <button onClick={handleBuyAllWatchlist} className="px-3 py-1.5 rounded-lg bg-accent text-white text-[10px] font-bold hover:bg-accent/90 transition-colors">Buy All Not Owned</button>
+              </div>
+            )}
             {watchlist.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-60 text-center">
                 <span className="text-4xl mb-3">★</span><h3 className="text-lg font-semibold mb-1">No watched cards</h3>
@@ -431,28 +463,29 @@ export default function MarketplacePage() {
                 <span className="text-xs font-mono text-muted">{results.length} results</span>
                 {ownershipFilter !== 'all' && <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${ownershipFilter === 'need' ? 'bg-orange-500/10 text-orange-400' : 'bg-green-500/10 text-green-400'}`}>{ownershipFilter === 'need' ? 'Need only' : 'Owned only'}</span>}
               </div>
-              {bulkMode && bulkSelected.size > 0 && <button className="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-bold">Buy {bulkSelected.size} cards</button>}
+              {bulkMode && bulkSelected.size > 0 && <button onClick={handleBuyBulk} className="px-3 py-1.5 rounded-lg bg-accent text-white text-xs font-bold hover:bg-accent/90 transition-colors">Buy {bulkSelected.size} cards</button>}
             </div>
           )}
 
           {/* GRID VIEW — LARGE CARDS */}
           {viewMode === 'grid' && (
-            <div className="flex flex-wrap gap-4 justify-center sm:justify-start">
+            <div className={`flex flex-wrap ${compact ? 'gap-2' : 'gap-4'} justify-center sm:justify-start`}>
               <AnimatePresence mode="popLayout">
                 {results.map((card, i) => {
                   const data = getCardMarketData(card.id); const watched = watchlist.includes(card.id); const inBulk = bulkSelected.has(card.id);
                   const owned = ownedIds.has(card.id);
                   const isHotDeal = data && data.currentPrice < data.floorPrice * 1.05;
+                  const isFocused = focusedIdx === i;
                   return (
-                    <motion.div key={card.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.15, delay: Math.min(i * 0.012, 0.3) }} className="relative group">
+                    <motion.div key={card.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.15, delay: Math.min(i * 0.012, 0.3) }} className={`relative group ${isFocused ? 'ring-2 ring-accent ring-offset-1 ring-offset-background rounded-xl' : ''}`}>
                       {bulkMode ? (
                         <div onClick={() => toggleBulkSelect(card.id)} className={`cursor-pointer rounded-xl transition-all ${inBulk ? 'ring-2 ring-accent ring-offset-2 ring-offset-background' : ''}`}>
-                          <CardItem card={card} size="lg" showPrice interactive={false} />
+                          <CardItem card={card} size={compact ? 'md' : 'lg'} showPrice interactive={false} />
                           {inBulk && <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-accent text-white text-sm flex items-center justify-center z-10 font-bold">✓</div>}
                         </div>
                       ) : (
                         <div className="cursor-pointer" onClick={() => setQuickViewCard(card)}>
-                          <CardItem card={card} size="lg" showPrice interactive={false} />
+                          <CardItem card={card} size={compact ? 'md' : 'lg'} showPrice interactive={false} />
                           {/* Hover overlay with market data */}
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col justify-end p-3 pointer-events-none group-hover:pointer-events-auto">
                             <div className="flex items-end justify-between">
@@ -529,42 +562,45 @@ export default function MarketplacePage() {
                 <thead>
                   <tr className="bg-surface border-b border-border text-muted uppercase tracking-wider text-[9px]">
                     {bulkMode && <th className="px-2 py-2 text-left w-6"></th>}
+                    <th className="w-1"></th>
                     <th className="px-2.5 py-2 text-left">Card</th>
                     <th className="px-2.5 py-2 text-left hidden lg:table-cell">Set</th>
                     <th className="px-2.5 py-2 text-left">Scarcity</th>
                     <th className="px-2.5 py-2 text-left hidden md:table-cell">Parallel</th>
-                    <th className="px-2.5 py-2 text-right hidden sm:table-cell">Serial</th>
+                    <th className="px-2.5 py-2 text-right hidden sm:table-cell cursor-pointer hover:text-accent" onClick={() => setFilters(f => ({ ...f, sortBy: f.sortBy === 'serial-asc' ? 'serial-desc' : 'serial-asc' }))}>Serial {filters.sortBy === 'serial-asc' ? '↑' : filters.sortBy === 'serial-desc' ? '↓' : ''}</th>
                     <th className="px-2.5 py-2 text-right cursor-pointer hover:text-accent" onClick={() => setFilters(f => ({ ...f, sortBy: f.sortBy === 'price-asc' ? 'price-desc' : 'price-asc' }))}>Price {filters.sortBy === 'price-asc' ? '↑' : filters.sortBy === 'price-desc' ? '↓' : ''}</th>
                     <th className="px-2.5 py-2 text-right">24h</th>
                     <th className="px-2.5 py-2 text-center hidden sm:table-cell">7d</th>
-                    <th className="px-2.5 py-2 text-right hidden md:table-cell">Vol</th>
+                    <th className="px-2.5 py-2 text-right hidden md:table-cell cursor-pointer hover:text-accent" onClick={() => setFilters(f => ({ ...f, sortBy: 'popular' }))}>Vol {filters.sortBy === 'popular' ? '↓' : ''}</th>
                     <th className="px-2.5 py-2 text-center w-7">★</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((card) => {
+                  {results.map((card, ri) => {
                     const data = getCardMarketData(card.id); const watched = watchlist.includes(card.id); const inBulk = bulkSelected.has(card.id); const owned = ownedIds.has(card.id);
+                    const isFocused = focusedIdx === ri;
                     return (
-                      <tr key={card.id} className={`border-b border-border/30 hover:bg-surface-hover transition-colors cursor-pointer ${inBulk ? 'bg-accent/5' : ''}`} onClick={() => { if (bulkMode) toggleBulkSelect(card.id); else setQuickViewCard(card); }}>
+                      <tr key={card.id} className={`border-b border-border/30 hover:bg-surface-hover transition-colors cursor-pointer ${inBulk ? 'bg-accent/5' : ''} ${isFocused ? 'bg-accent/10' : ''}`} onClick={() => { if (bulkMode) toggleBulkSelect(card.id); else setQuickViewCard(card); }}>
                         {bulkMode && <td className="px-2 py-1.5"><div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center text-[7px] ${inBulk ? 'bg-accent border-accent text-white' : 'border-border'}`}>{inBulk && '✓'}</div></td>}
-                        <td className="px-2.5 py-1.5">
+                        <td className="w-1 p-0"><div className="w-1 h-full" style={{ background: SCARCITY_CONFIG[card.scarcity].color }} /></td>
+                        <td className={compact ? 'px-2 py-1' : 'px-2.5 py-1.5'}>
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-8 rounded flex-shrink-0 flex items-center justify-center text-xs" style={{ background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`, border: `1px solid ${SCARCITY_CONFIG[card.scarcity].color}40` }}>{card.symbol}</div>
+                            {!compact && <div className="w-6 h-8 rounded flex-shrink-0 flex items-center justify-center text-xs" style={{ background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`, border: `1px solid ${SCARCITY_CONFIG[card.scarcity].color}40` }}>{card.symbol}</div>}
                             <div className="min-w-0">
-                              <div className="font-semibold text-foreground truncate flex items-center gap-1">{card.character}{owned && <span className="text-[7px] px-1 rounded bg-green-500/10 text-green-400 font-bold">OWN</span>}</div>
-                              <div className="text-[9px] text-muted truncate">{card.moment}</div>
+                              <div className="font-semibold text-foreground truncate flex items-center gap-1">{compact && <span className="text-xs">{card.symbol}</span>}{card.character}{owned && <span className="text-[7px] px-1 rounded bg-green-500/10 text-green-400 font-bold">OWN</span>}</div>
+                              {!compact && <div className="text-[9px] text-muted truncate">{card.moment}</div>}
                             </div>
                           </div>
                         </td>
-                        <td className="px-2.5 py-1.5 text-muted hidden lg:table-cell">{card.set}</td>
-                        <td className="px-2.5 py-1.5"><span className="font-mono font-bold uppercase" style={{ color: SCARCITY_CONFIG[card.scarcity].color }}>{SCARCITY_CONFIG[card.scarcity].label}</span></td>
-                        <td className="px-2.5 py-1.5 text-muted capitalize hidden md:table-cell">{card.parallel === 'base' ? '-' : PARALLEL_CONFIG[card.parallel].label}</td>
-                        <td className="px-2.5 py-1.5 text-right font-mono text-muted hidden sm:table-cell">{card.scarcity !== 'common' ? `#${card.serialNumber}/${card.maxSerial}` : '-'}</td>
-                        <td className="px-2.5 py-1.5 text-right font-mono font-bold text-green-400">${card.price.toFixed(2)}</td>
-                        <td className="px-2.5 py-1.5 text-right">{data && renderTrend(data.change24h)}</td>
-                        <td className="px-2.5 py-1.5 text-center hidden sm:table-cell">{renderSparkline(card.id)}</td>
-                        <td className="px-2.5 py-1.5 text-right font-mono text-muted hidden md:table-cell">{data?.volume7d || 0}</td>
-                        <td className="px-2.5 py-1.5 text-center"><button onClick={(e) => { e.stopPropagation(); toggleWatchlist(card.id); }} className={`text-sm ${watched ? 'text-yellow-400' : 'text-muted/20 hover:text-muted'}`}>{watched ? '★' : '☆'}</button></td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-muted hidden lg:table-cell`}>{card.set}</td>
+                        <td className={compact ? 'px-2 py-1' : 'px-2.5 py-1.5'}><span className="font-mono font-bold uppercase" style={{ color: SCARCITY_CONFIG[card.scarcity].color }}>{compact ? SCARCITY_CONFIG[card.scarcity].label[0] : SCARCITY_CONFIG[card.scarcity].label}</span></td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-muted capitalize hidden md:table-cell`}>{card.parallel === 'base' ? '-' : compact ? card.parallel[0].toUpperCase() : PARALLEL_CONFIG[card.parallel].label}</td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-right font-mono text-muted hidden sm:table-cell`}>{card.scarcity !== 'common' ? `#${card.serialNumber}/${card.maxSerial}` : '-'}</td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-right font-mono font-bold text-green-400`}>${card.price.toFixed(2)}</td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-right`}>{data && renderTrend(data.change24h)}</td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-center hidden sm:table-cell`}>{renderSparkline(card.id)}</td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-right font-mono text-muted hidden md:table-cell`}>{data?.volume7d || 0}</td>
+                        <td className={`${compact ? 'px-2 py-1' : 'px-2.5 py-1.5'} text-center`}><button onClick={(e) => { e.stopPropagation(); toggleWatchlist(card.id); }} className={`text-sm ${watched ? 'text-yellow-400' : 'text-muted/20 hover:text-muted'}`}>{watched ? '★' : '☆'}</button></td>
                       </tr>
                     );
                   })}
