@@ -1,6 +1,6 @@
 # Craft Daemon State
 Round: 3
-Current prototype: play
+Current prototype: chase
 
 ## Scoring Correction (Round 3 daemon)
 Previous daemon recorded raw scores as composite. Composite = (Raw/140)×100.
@@ -18,6 +18,8 @@ Actual R2 composites: play=46.4, story=47.9, chase=47.9. Target: 60+ (raw ≥ 84
 | play      | 2     | 6 | 5 | 4  | 4  | 4 | 4 | 4 | 65  | 46.4      |
 | story     | 2     | 6 | 5 | 4  | 4  | 4 | 5 | 5 | 67  | 47.9      |
 | chase     | 2     | 6 | 5 | 4  | 5  | 4 | 5 | 3 | 67  | 47.9      |
+| play      | 3     | 8 | 7 | 5  | 5  | 6 | 7 | 6 | 90  | 64.3      |
+| story     | 3     | 8 | 7 | 5  | 5  | 5 | 7 | 6 | 88  | 62.9      |
 
 ## Round 1 Synopsis
 - All three prototypes: emoji symbols replaced with actual card art images

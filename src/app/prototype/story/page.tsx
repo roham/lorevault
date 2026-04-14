@@ -288,12 +288,53 @@ export default function StoryPrototype() {
 
     return (
       <div
-        className="min-h-screen px-4 pt-4"
+        className="min-h-screen relative overflow-hidden"
         style={{
           paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
-          background: `radial-gradient(ellipse at 50% 0%, ${selectedWorld.gradientFrom}80 0%, #080c18 40%, #000000 100%)`,
+          background: '#050810',
         }}
       >
+        {/* Atmospheric fog layers — world-specific */}
+        {(() => {
+          const atmos = {
+            olympus: { fog1: 'rgba(245,158,11,0.06)', fog2: 'rgba(234,179,8,0.04)', particle: '#fbbf24', count: 12 },
+            'enchanted-kingdom': { fog1: 'rgba(168,85,247,0.06)', fog2: 'rgba(139,0,139,0.04)', particle: '#c084fc', count: 10 },
+            'baker-street': { fog1: 'rgba(59,130,246,0.05)', fog2: 'rgba(99,102,241,0.04)', particle: '#60a5fa', count: 8 },
+          }[selectedWorld.id] || { fog1: 'rgba(255,255,255,0.03)', fog2: 'rgba(255,255,255,0.02)', particle: '#888', count: 6 };
+          return (
+            <>
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/4 w-[500px] h-[500px] rounded-full"
+                  style={{ background: `radial-gradient(circle, ${atmos.fog1}, transparent 70%)`, filter: 'blur(80px)' }} />
+                <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] rounded-full"
+                  style={{ background: `radial-gradient(circle, ${atmos.fog2}, transparent 70%)`, filter: 'blur(60px)' }} />
+                <div className="absolute top-1/3 right-0 translate-x-1/4 w-[300px] h-[300px] rounded-full"
+                  style={{ background: `radial-gradient(circle, ${atmos.fog1}, transparent 70%)`, filter: 'blur(70px)', opacity: 0.5 }} />
+              </div>
+              {/* Vignette */}
+              <div className="absolute inset-0 pointer-events-none"
+                style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%)' }} />
+              {/* Ambient particles */}
+              {Array.from({ length: atmos.count }).map((_, i) => {
+                const size = 2 + (i % 3);
+                const left = 10 + ((i * 37 + 13) % 80);
+                const startTop = 20 + ((i * 53 + 7) % 60);
+                return (
+                  <motion.div
+                    key={`particle-${i}`}
+                    className="absolute rounded-full pointer-events-none"
+                    style={{ width: size, height: size, background: atmos.particle, left: `${left}%`, top: `${startTop}%` }}
+                    animate={{ y: [0, -(30 + (i % 4) * 15)], opacity: [0, 0.6, 0] }}
+                    transition={{ duration: 4 + (i % 3), repeat: Infinity, delay: (i * 0.7) % 5, ease: 'easeInOut' }}
+                  />
+                );
+              })}
+            </>
+          );
+        })()}
+
+        {/* Content */}
+        <div className="relative z-10 px-4 pt-4">
         {/* Header — progress */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -318,8 +359,14 @@ export default function StoryPrototype() {
           </div>
         </div>
 
-        {/* Story nodes — vertical timeline */}
-        <div className="space-y-3 max-w-md mx-auto">
+        {/* Story nodes — vertical timeline with connecting path */}
+        <div className="max-w-md mx-auto relative">
+          {/* Vertical journey path */}
+          <div
+            className="absolute left-[36px] top-4 bottom-4 w-px"
+            style={{ background: `linear-gradient(to bottom, transparent, ${selectedWorld.accentColor}25 5%, ${selectedWorld.accentColor}15 95%, transparent)` }}
+          />
+          <div className="space-y-3">
           {selectedWorld.chapters.map((chapter, i) => {
             const isUnlocked = unlocked.has(chapter.id);
             const isNext = nextLocked?.id === chapter.id;
@@ -343,6 +390,7 @@ export default function StoryPrototype() {
               </motion.div>
             );
           })}
+          </div>
         </div>
 
         {/* Open packs CTA — only if there are locked chapters */}
@@ -368,6 +416,7 @@ export default function StoryPrototype() {
             </button>
           </motion.div>
         )}
+        </div>
       </div>
     );
   }
@@ -410,21 +459,31 @@ function StoryNodeCard({
   return (
     <Wrapper className="w-full block text-left">
       <div
-        className="p-4 rounded-xl transition-all"
+        className="p-4 rounded-xl transition-all relative overflow-hidden"
         style={{
           background: isUnlocked
             ? `linear-gradient(135deg, ${worldGradientFrom}, ${accentColor}08)`
             : isNext
-              ? 'rgba(28, 28, 42, 0.8)'
+              ? 'rgba(28, 28, 42, 0.85)'
               : 'rgba(20, 20, 30, 0.4)',
           border: isUnlocked
             ? `1px solid ${accentColor}30`
             : isNext
-              ? '1px solid rgba(255,255,255,0.08)'
+              ? `1px solid ${accentColor}20`
               : '1px solid rgba(255,255,255,0.03)',
-          opacity: !isUnlocked && !isNext ? 0.4 : 1,
+          opacity: !isUnlocked && !isNext ? 0.5 : 1,
+          boxShadow: isNext ? `0 0 25px ${accentColor}10` : 'none',
         }}
       >
+        {/* Shimmer for next locked chapter */}
+        {isNext && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-xl"
+            style={{ background: `linear-gradient(105deg, transparent 40%, ${accentColor}08 50%, transparent 60%)` }}
+            animate={{ x: [-300, 300] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
+          />
+        )}
         {/* Chapter header */}
         <div className="flex items-center gap-3">
           {/* Chapter thumbnail — card art of first required character */}
@@ -448,10 +507,12 @@ function StoryNodeCard({
                   </>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted/30">
-                      <rect x="3" y="11" width="18" height="11" rx="2" />
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
+                    <motion.div
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ background: accentColor, boxShadow: `0 0 8px ${accentColor}60` }}
+                      animate={{ opacity: [0.3, 0.7, 0.3] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                    />
                   </div>
                 )}
               </div>
