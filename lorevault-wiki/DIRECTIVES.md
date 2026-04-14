@@ -138,6 +138,28 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 
 ---
 
+## Growth Phase — Post-100 Directives
+
+_Collectibility Score maxed at 100/100. New optimization target: Growth Score (Retention × Viral Coefficient × Conversion). These directives ship the mechanics that turn a great product into a product with millions of users._
+
+### DIRECTIVE-017: Daily Engagement Engine + Retention Hooks
+- **Priority**: P0
+- **Source**: Growth Phase — Retention (D1/D7/D30 hooks)
+- **What to build**: (A) Daily free pack — one free pack every 24h, countdown timer on `/packs` page. Resets at midnight UTC. Stored in `lorevault_daily_pack`. More valuable than standard pack (guaranteed uncommon+). (B) Daily Missions — 3 rotating daily tasks: "Win a battle", "Open a pack", "Forge a card", "React to 3 pulse events", "Visit the Codex". Rewards: XP + exclusive daily badge. Mission state in `lorevault_daily_missions`. (C) Login Calendar — 7-day visual calendar on Home page. Each consecutive day unlocks a reward (XP → card → rare card → pack → exclusive card → exclusive badge → legendary pack on day 7). Streak resets on miss. (D) Return notification hook — `ServiceWorker` registration for push notification permission prompt after 3rd session. No actual backend push, but permission + UI scaffold ready for backend integration.
+- **Why**: The #1 retention driver in collectible games is the daily login reward. Users return not from desire but from loss aversion (streak reset) and anticipation (what's tomorrow's reward?). Free daily pack converts dormant users into daily actives. Missions give purpose to each session. The login calendar creates a commitment device with escalating investment.
+- **Acceptance criteria**: Daily free pack with countdown. 3 daily missions with progress tracking. 7-day login calendar with escalating rewards. Service worker registered. All localStorage-based.
+- **Status**: PENDING
+
+### DIRECTIVE-018: Viral Sharing + Social Growth Mechanics
+- **Priority**: P0
+- **Source**: Growth Phase — Viral Coefficient (K-factor)
+- **What to build**: (A) Enhanced Share Card — generate a card image snapshot with OG metadata for social preview. Deep link `/card/[id]` with proper `<meta>` tags for Twitter Card + Open Graph. Share buttons: Twitter, copy link, download image. (B) Pack Opening Replay — after opening a pack, "Share This Pull" button generates a 3-second animated GIF/video-like sequence of the reveal. Sharable URL. (C) Referral System — unique referral code per collector. Referred user gets bonus starter pack. Referrer gets exclusive "Recruiter" badge + 1 free rare card per referral. `lorevault_referral_code` + `lorevault_referrals` in localStorage. Display on profile. (D) Challenge Links — "I bet you can't beat my score" sharable challenge URLs for Battle and Trivia modes. Recipient sees challenger's score and tries to beat it. (E) PWA Install Prompt — manifest.json + service worker + "Add to Home Screen" banner after 2nd visit.
+- **Why**: Viral coefficient currently at ~0 — no sharing mechanism that actually reaches non-users. Every pack open is a potential social media post. Every legendary pull is a flex moment that recruits new users. Referral codes convert passive word-of-mouth into tracked growth. PWA installability turns web visitors into retained app users. Deep links with rich previews convert social impressions into visits.
+- **Acceptance criteria**: Share button generates card image with social metadata. Pack opening share generates shareable URL. Referral codes generate and track. Challenge links encode scores. manifest.json + SW registration. OG/Twitter meta tags on card detail pages.
+- **Status**: PENDING
+
+---
+
 ## Completed Directives
 
 - **DIRECTIVE-001**: Complete sealed/reveal UX — DONE (v8.21, 2026-04-14). Score: 33→43 (+10).
