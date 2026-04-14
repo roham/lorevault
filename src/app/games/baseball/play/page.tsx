@@ -42,6 +42,7 @@ import { StealReveal } from '@/components/baseball/StealReveal';
 import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records';
 import { checkAchievements } from '@/lib/achievements';
 import { earnAchievement } from '@/lib/store';
+import BaseballShareCard from '@/components/baseball/BaseballShareCard';
 
 // ===== Animation Phase State Machine =====
 
@@ -641,6 +642,7 @@ function ControlRollDisplay({
 export default function PlayPage() {
   const [state, dispatch] = useReducer(boardReducer, initialState);
   const [selectedInnings, setSelectedInnings] = useState<3 | 9>(3);
+  const [showShare, setShowShare] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1576,9 +1578,17 @@ export default function PlayPage() {
 
                   {/* Actions */}
                   <div className="space-y-2">
-                    <Link href="/games/baseball/play" className="block w-full py-3.5 rounded-xl bg-accent text-bg text-sm font-bold hover:bg-accent/90 transition-colors text-center" onClick={() => window.location.reload()}>
-                      Play Again
-                    </Link>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link href="/games/baseball/play" className="block w-full py-3.5 rounded-xl bg-accent text-bg text-sm font-bold hover:bg-accent/90 transition-colors text-center" onClick={() => window.location.reload()}>
+                        Play Again
+                      </Link>
+                      <button
+                        onClick={() => setShowShare(true)}
+                        className="w-full py-3.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 text-sm font-bold hover:bg-blue-500/25 transition-colors"
+                      >
+                        Share
+                      </button>
+                    </div>
                     <Link href="/games/baseball/lineup" className="block w-full py-3 rounded-xl bg-surface border border-border/30 text-sm font-bold text-muted hover:text-white transition-colors text-center">
                       Edit Lineup
                     </Link>
@@ -1591,6 +1601,18 @@ export default function PlayPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Share Card Modal */}
+        {showShare && game && summary && (
+          <BaseballShareCard
+            game={game}
+            summary={summary}
+            difficulty={state.difficulty || 'rookie'}
+            playerTeam={state.playerRoster?.name || 'Your Team'}
+            aiTeam={state.aiRoster?.name || 'AI Team'}
+            onClose={() => setShowShare(false)}
+          />
+        )}
 
         {/* ===== Action Buttons ===== */}
         <div className="sticky bottom-0 p-4 bg-bg/90 backdrop-blur-sm border-t border-border/20">
