@@ -54,7 +54,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Deterministic population generator: `totalMinted` per card derived from rarity tier (Legendary 15-49, Epic 100-499, Rare 500-1999, Common 2000-9999) via seeded hash of card ID. `currentOwners` as percentage of `totalMinted` with daily noise. (B) Population counter on card detail page: "47 minted · 38 collectors own this." For legendaries <50 minted, dot visualization. (C) Enhanced serial badge on card tile: #1 = "Genesis" holographic, #2-10 = "Low Serial" gold, #11-100 = silver. (D) Rarity labels enhanced: "Legendary · 47 Exist" everywhere rarity appears.
 - **Why**: Population counters anchor scarcity with concrete numbers. "1 of 47" is psychologically processed through real scarcity circuits regardless of simulation. Trivial effort, broad surface area. Projects Social Proof +1, Scarcity Legibility 8→9.
 - **Acceptance criteria**: Every card has a deterministic `totalMinted` and `currentOwners` count. Card detail page shows population counter. Card tiles show serial number badge with tier-appropriate styling. Rarity labels include population count. All computed from card ID seed — no new localStorage.
-- **Status**: PENDING
+- **Status**: DONE — commit dc60a3f, v8.26
 
 ---
 
@@ -64,4 +64,5 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-002**: Build Norse Mythology set (Asgard Unleashed) — DONE (v8.22, 2026-04-14). Score: 43→46 (+3).
 - **DIRECTIVE-003**: Add card aging visual effects — DONE (v8.23, 2026-04-14). Score: 46→60 (+14).
 - **DIRECTIVE-004**: Card provenance — Journey Timeline + Origin Badges — DONE (v8.24, 2026-04-14). Score: 60→71 (+11).
-- **DIRECTIVE-005**: Achievement badge system + collector profile — DONE (v8.25, 2026-04-14).
+- **DIRECTIVE-005**: Achievement badge system + collector profile — DONE (v8.25, 2026-04-14). Score: 71→74 (+3).
+- **DIRECTIVE-006**: Population counters + serial number enhancement — DONE (v8.26, 2026-04-14).
