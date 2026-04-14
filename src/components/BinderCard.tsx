@@ -26,8 +26,10 @@ export default function BinderCard({ card }: { card: Card }) {
 
   return (
     <div
-      className="binder-card relative select-none flex-shrink-0 w-full max-w-[260px] aspect-[5/7]"
+      className="binder-card relative select-none flex-shrink-0"
       style={{
+        width: 260,
+        height: 364,
         contain: 'layout style paint',
         borderRadius: '0.75rem',
       }}
