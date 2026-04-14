@@ -180,7 +180,7 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **What to build**: (A) Limited-Time Events — weekly "Featured Set" spotlight that gives 2x XP for opening packs from that set + a time-limited event badge for completing the set during event week. Event banner on home page with countdown timer. Rotation through all 6 sets on 6-week cycle. (B) 7-Day Challenge Chain — a single multi-day challenge that builds across the week (Day 1: open 2 packs, Day 2: win a battle, Day 3: forge a card, etc.). Completing all 7 days grants an exclusive weekly reward (rare card + "Weekly Warrior" badge). Chain state in localStorage with weekKey. (C) Battle/Trivia Result Cards — when sharing game results to Twitter, generate a visual "result card" div showing score, cards used, and outcome. More compelling than plain text shares. (D) Invite Flow — after completing a challenge or winning a battle, show "Challenge a friend?" prompt with referral link pre-filled. Not forced, just surfaced at moments of achievement.
 - **Why**: D7 at 8 means users log in daily but don't have a 7-day commitment arc. Weekly challenges create it (D019 started this, D021 deepens with chain mechanics). The event rotation keeps content fresh without new cards. Battle result sharing converts viral impressions from plain text to visual, increasing click-through. The invite flow surfaces referrals at peak emotional moments (just won, just completed something).
 - **Acceptance criteria**: Featured set event with 2x XP + countdown + event badge. 7-day challenge chain with sequential daily requirements. Visual battle/trivia result sharing. Post-achievement invite prompt. All localStorage-based.
-- **Status**: PENDING
+- **Status**: DONE — commit 0fe77da, v8.41
 
 ### DIRECTIVE-022: Endgame + Month-End FOMO + Leaderboard Resets
 - **Priority**: P0
@@ -213,4 +213,5 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **DIRECTIVE-017**: Daily Engagement Engine + Retention Hooks — DONE (v8.37, 2026-04-14). Score: 100/100 maintained. Growth: 6→17/50.
 - **DIRECTIVE-018**: Viral Sharing + Social Growth + PWA — DONE (v8.38, 2026-04-14). Growth: 17→31/50.
 - **DIRECTIVE-019**: Long-Term Progression + Monthly Cycles — DONE (v8.39, 2026-04-14). Growth: 31→39/50.
-- **DIRECTIVE-020**: Onboarding Funnel + Conversion Optimization — DONE (v8.40, 2026-04-14). Growth: 39→44/50.
+- **DIRECTIVE-020**: Onboarding Funnel + Conversion Optimization — DONE (v8.40, 2026-04-14). Growth: 39→42/50.
+- **DIRECTIVE-021**: Weekly Events + D7 Engagement Depth — DONE (v8.41, 2026-04-14). Growth: 42→45/50.
