@@ -78,7 +78,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Simulated price sparkline on card detail from deterministic market curves. Rarity base × age multiplier × population scarcity factor. Legendaries trend up, commons fluctuate. (B) LineageStamp in Journey Timeline: pack origin → reveal → battles → achievements → age milestones. Vertical chain of stamped events. (C) Legacy Score: composite number from lineage length + age + battles. Higher legacy = more prominent glow. Displayed on card detail.
 - **Why**: Financial gambler-collectors read price charts instinctively. Simulated value history creates paper-gain endowment. Legacy Score makes every action accumulate into visible prestige.
 - **Acceptance criteria**: Card detail shows sparkline price history. Lineage chain renders all tracked events. Curves deterministic from card seed. Legacy Score displayed and feeds visual flair. Legendary cards show appreciating curves.
-- **Status**: PENDING
+- **Status**: DONE — commit c9e3820, v8.29
 
 ---
 
@@ -91,4 +91,5 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-005**: Achievement badge system + collector profile — DONE (v8.25, 2026-04-14). Score: 71→74 (+3).
 - **DIRECTIVE-006**: Population counters + serial number enhancement — DONE (v8.26, 2026-04-14). Score: 74→77 (+3).
 - **DIRECTIVE-007**: Social Showcase & Leaderboards — DONE (v8.27, 2026-04-14). Score: 77→80 (+3).
-- **DIRECTIVE-008**: Interactive Lore Engine — DONE (v8.28, 2026-04-14). Score: 80→TBD.
+- **DIRECTIVE-008**: Interactive Lore Engine — DONE (v8.28, 2026-04-14). Score: 80→86 (+6).
+- **DIRECTIVE-009**: Provenance Deepening — DONE (v8.29, 2026-04-14). Score: 86→TBD.

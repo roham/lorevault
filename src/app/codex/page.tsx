@@ -86,12 +86,10 @@ export default function CodexPage() {
 
   const handleNodeClick = (node: LoreNode) => {
     const isUnlocked = unlockedIds.has(node.id);
-    if (isUnlocked) {
-      if (!revealedNode || revealedNode !== node.id) {
-        setRevealedNode(node.id);
-      }
-      setSelectedNode(node);
+    if (isUnlocked && (!revealedNode || revealedNode !== node.id)) {
+      setRevealedNode(node.id);
     }
+    setSelectedNode(node);
   };
 
   // Find missing characters for a locked node
@@ -216,9 +214,7 @@ export default function CodexPage() {
             >
               <button
                 onClick={() => handleNodeClick(pos.node)}
-                className={`group relative flex flex-col items-center gap-1 transition-all ${
-                  isUnlocked ? 'cursor-pointer' : 'cursor-default'
-                }`}
+                className="group relative flex flex-col items-center gap-1 transition-all cursor-pointer"
               >
                 {/* Node circle */}
                 <div
