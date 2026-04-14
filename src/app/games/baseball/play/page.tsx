@@ -41,7 +41,7 @@ import { ScreenShake } from '@/components/baseball/ScreenShake';
 import { StealReveal } from '@/components/baseball/StealReveal';
 import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records';
 import { checkAchievements } from '@/lib/achievements';
-import { earnAchievement } from '@/lib/store';
+import { earnAchievement, addCollectorXP } from '@/lib/store';
 import BaseballShareCard from '@/components/baseball/BaseballShareCard';
 
 // ===== Animation Phase State Machine =====
@@ -718,10 +718,14 @@ export default function PlayPage() {
       const xp = awardGameXP(state.game, gameSummary);
       dispatch({ type: 'SET_XP', xpBreakdown: xp });
 
+      // Award global LoreVault XP
+      const isWin = gameSummary.winner === 'home';
+      addCollectorXP(0, isWin ? 'baseball_win' : 'baseball_loss');
+
       // Check achievements after saving record
       checkAchievements();
       // legend-slayer: check directly since it needs current game context
-      if (state.difficulty === 'legend' && gameSummary.winner === 'home') {
+      if (state.difficulty === 'legend' && isWin) {
         earnAchievement('legend-slayer');
       }
     }
@@ -1550,9 +1554,15 @@ export default function PlayPage() {
                         ))}
                       </div>
                       <div className="px-4 py-2 border-t border-border/20 flex justify-between">
-                        <span className="text-[10px] text-muted/40">Total</span>
+                        <span className="text-[10px] text-muted/40">Baseball XP</span>
                         <span className="text-[11px] font-black text-amber-400">
                           +{state.xpBreakdown.reduce((sum, xp) => sum + xp.total, 0)} XP
+                        </span>
+                      </div>
+                      <div className="px-4 py-1.5 border-t border-border/10 flex justify-between">
+                        <span className="text-[10px] text-muted/40">Collector XP</span>
+                        <span className="text-[10px] font-bold text-accent">
+                          +{summary && summary.winner === 'home' ? 40 : 15} XP
                         </span>
                       </div>
                     </motion.div>

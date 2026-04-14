@@ -165,7 +165,9 @@ export type XPSource =
   | 'trivia_correct'
   | 'daily_login'
   | 'streak_bonus'
-  | 'achievement';
+  | 'achievement'
+  | 'baseball_win'
+  | 'baseball_loss';
 
 export const XP_VALUES: Record<XPSource, number> = {
   pack_open: 25,
@@ -176,6 +178,8 @@ export const XP_VALUES: Record<XPSource, number> = {
   daily_login: 15,
   streak_bonus: 5,
   achievement: 0, // variable, set at grant time
+  baseball_win: 40,
+  baseball_loss: 15,
 };
 
 export type CollectorTier = 'Newcomer' | 'Collector' | 'Enthusiast' | 'Connoisseur' | 'Elite' | 'Legendary';
