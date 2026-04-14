@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { getGameHistory, getWinLossRecord, getTopCharacters } from '@/lib/baseball/records';
 
 interface SavedLineup {
   name: string;
@@ -21,9 +22,13 @@ function getSavedLineups(): SavedLineup[] {
 
 export default function BaseballHub() {
   const [lineups, setLineups] = useState<SavedLineup[]>([]);
+  const [record, setRecord] = useState({ wins: 0, losses: 0 });
+  const [recentGames, setRecentGames] = useState<ReturnType<typeof getGameHistory>>([]);
 
   useEffect(() => {
     setLineups(getSavedLineups());
+    setRecord(getWinLossRecord());
+    setRecentGames(getGameHistory().slice(0, 5));
   }, []);
 
   return (
@@ -36,7 +41,14 @@ export default function BaseballHub() {
           </Link>
         </div>
         <h1 className="text-2xl font-bold mb-1">Public Domain Baseball</h1>
-        <p className="text-xs text-muted mb-8">MLB Showdown-inspired d20 baseball with literary legends</p>
+        <div className="flex items-center gap-3 mb-8">
+          <p className="text-xs text-muted">MLB Showdown-inspired d20 baseball with literary legends</p>
+          {(record.wins > 0 || record.losses > 0) && (
+            <span className="text-[10px] font-bold text-muted/60 bg-surface px-2 py-0.5 rounded-full border border-border/30">
+              {record.wins}W-{record.losses}L
+            </span>
+          )}
+        </div>
       </motion.div>
 
       {/* Main Actions */}
@@ -137,6 +149,47 @@ export default function BaseballHub() {
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* Recent Games */}
+      {recentGames.length > 0 && (
+        <div className="mt-8 mb-8">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted mb-3">
+            Recent Games
+          </h2>
+          <div className="space-y-2">
+            {recentGames.map((game, i) => (
+              <motion.div
+                key={game.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 + i * 0.05 }}
+                className={`p-3 rounded-xl bg-surface border ${
+                  game.result === 'win' ? 'border-green-500/15' : 'border-red-500/15'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
+                      game.result === 'win' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+                    }`}>
+                      {game.result === 'win' ? 'W' : 'L'}
+                    </span>
+                    <span className="text-sm font-bold tabular-nums">
+                      {game.finalScore.away}—{game.finalScore.home}
+                    </span>
+                    <span className="text-[10px] text-muted/40">vs {game.aiTeamName}</span>
+                  </div>
+                  <div className="text-right">
+                    {game.mvp.character && (
+                      <span className="text-[10px] text-amber-400/50">MVP: {game.mvp.character}</span>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       )}
 

@@ -39,6 +39,7 @@ import { OutcomeReveal } from '@/components/baseball/OutcomeReveal';
 import { ParticleBurst } from '@/components/baseball/ParticleBurst';
 import { ScreenShake } from '@/components/baseball/ScreenShake';
 import { StealReveal } from '@/components/baseball/StealReveal';
+import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records';
 
 // ===== Animation Phase State Machine =====
 
@@ -82,6 +83,8 @@ interface BoardState {
   aiRoster: Roster | null;
   shakeTrigger: number;
   particleBurst: boolean;
+  // XP breakdown (set on game over)
+  xpBreakdown: XPBreakdown[];
 }
 
 type BoardAction =
@@ -93,6 +96,7 @@ type BoardAction =
   | { type: 'START_STEAL_ROLL'; stealData: StealData }
   | { type: 'STEAL_DICE_LANDED' }
   | { type: 'STEAL_RESOLVED'; game: GameState; isHalfInningOver: boolean; isGameOver: boolean }
+  | { type: 'SET_XP'; xpBreakdown: XPBreakdown[] }
   | { type: 'RETURN_IDLE' }
   | { type: 'HALF_INNING_DONE' };
 
@@ -117,6 +121,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         stealData: null,
         shakeTrigger: 0,
         particleBurst: false,
+        xpBreakdown: [],
       };
 
     case 'START_CONTROL_ROLL':
@@ -175,6 +180,9 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         shakeTrigger: state.stealData && !state.stealData.success ? state.shakeTrigger + 1 : state.shakeTrigger,
       };
 
+    case 'SET_XP':
+      return { ...state, xpBreakdown: action.xpBreakdown };
+
     case 'RETURN_IDLE':
       return {
         ...state,
@@ -221,6 +229,7 @@ const initialState: BoardState = {
   aiRoster: null,
   shakeTrigger: 0,
   particleBurst: false,
+  xpBreakdown: [],
 };
 
 // ===== Diamond SVG with animated runners =====
@@ -504,6 +513,23 @@ export default function PlayPage() {
   useEffect(() => {
     if (state.currentOutcome && logRef.current) logRef.current.scrollTop = 0;
   }, [state.currentOutcome]);
+
+  // Save game record + award XP on game over
+  const gameRecordSaved = useRef(false);
+  useEffect(() => {
+    if (state.animPhase === 'game-over' && state.game && !gameRecordSaved.current) {
+      gameRecordSaved.current = true;
+      const gameSummary = generateGameSummary(state.game);
+      saveGameRecord(
+        state.game,
+        gameSummary,
+        state.playerRoster?.name || 'Your Team',
+        state.aiRoster?.name || 'AI Team',
+      );
+      const xp = awardGameXP(state.game, gameSummary);
+      dispatch({ type: 'SET_XP', xpBreakdown: xp });
+    }
+  }, [state.animPhase, state.game, state.playerRoster, state.aiRoster]);
 
   // ===== Pending resolution ref =====
   const pendingResolution = useRef<{
@@ -999,29 +1025,103 @@ export default function PlayPage() {
         {/* Game Over */}
         <AnimatePresence>
           {state.animPhase === 'game-over' && summary && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center px-4">
-              <motion.div initial={{ scale: 0.85, y: 30 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 22 }} className="w-full max-w-sm text-center">
-                <p className="text-[10px] text-muted/40 uppercase tracking-[0.2em] mb-3">Game Over</p>
-                <p className="text-5xl font-black mb-2 tabular-nums">{game.score.away} — {game.score.home}</p>
-                <motion.p className={`text-sm font-black mb-8 ${summary.winner === 'home' ? 'text-green-400' : 'text-red-400'}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}>
-                  {summary.winner === 'home' ? 'YOU WIN!' : 'YOU LOSE'}
-                </motion.p>
-                {summary.mvp.character && (
-                  <motion.div className="p-4 rounded-2xl bg-surface border border-amber-500/20 mb-6" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-                    <p className="text-[10px] text-amber-400/50 uppercase tracking-widest">MVP</p>
-                    <p className="text-base font-black mt-0.5">{summary.mvp.character}</p>
-                    <p className="text-[11px] text-muted/50 mt-1">{summary.mvp.hits} hits, {summary.mvp.rbis} RBIs</p>
-                  </motion.div>
-                )}
-                <div className="space-y-2">
-                  <Link href="/games/baseball/play" className="block w-full py-3.5 rounded-xl bg-accent text-bg text-sm font-bold hover:bg-accent/90 transition-colors" onClick={() => window.location.reload()}>
-                    Play Again
-                  </Link>
-                  <Link href="/games/baseball" className="block text-xs text-muted/40 hover:text-white transition-colors py-2">
-                    Back to Baseball Hub
-                  </Link>
-                </div>
-              </motion.div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-50 bg-black/90 overflow-y-auto">
+              <div className="min-h-screen flex items-center justify-center px-4 py-8">
+                <motion.div initial={{ scale: 0.85, y: 30 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 22 }} className="w-full max-w-sm">
+                  {/* Score + Result */}
+                  <div className="text-center mb-6">
+                    <p className="text-[10px] text-muted/40 uppercase tracking-[0.2em] mb-3">Game Over</p>
+                    <p className="text-5xl font-black mb-2 tabular-nums">{game.score.away} — {game.score.home}</p>
+                    <motion.p className={`text-sm font-black ${summary.winner === 'home' ? 'text-green-400' : 'text-red-400'}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}>
+                      {summary.winner === 'home' ? 'YOU WIN!' : 'YOU LOSE'}
+                    </motion.p>
+                  </div>
+
+                  {/* MVP Card */}
+                  {summary.mvp.character && (
+                    <motion.div className="p-4 rounded-2xl bg-surface border border-amber-500/20 mb-4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+                      <p className="text-[10px] text-amber-400/50 uppercase tracking-widest">MVP</p>
+                      <p className="text-base font-black mt-0.5">{summary.mvp.character}</p>
+                      <p className="text-[11px] text-muted/50 mt-1">{summary.mvp.hits} hits, {summary.mvp.rbis} RBIs</p>
+                    </motion.div>
+                  )}
+
+                  {/* XP Breakdown */}
+                  {state.xpBreakdown.length > 0 && (
+                    <motion.div
+                      className="rounded-2xl bg-surface/50 border border-border/30 mb-4 overflow-hidden"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                    >
+                      <div className="px-4 py-2 border-b border-border/20">
+                        <p className="text-[10px] text-muted/50 uppercase tracking-widest">XP Earned</p>
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {state.xpBreakdown.filter(xp => xp.character && xp.character !== 'Unknown').slice(0, 9).map((xp, i) => (
+                          <motion.div
+                            key={xp.cardId || i}
+                            className={`flex items-center justify-between px-4 py-2 border-b border-border/10 last:border-0 ${
+                              xp.mvpBonus > 0 ? 'bg-amber-500/5' : ''
+                            }`}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.8 + i * 0.05 }}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-[11px] font-bold truncate">{xp.character}</span>
+                              {xp.mvpBonus > 0 && <span className="text-[8px] text-amber-400 font-bold">MVP</span>}
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[10px] text-muted/50 shrink-0">
+                              {xp.hrBonus > 0 && <span className="text-amber-400">+{xp.hrBonus}HR</span>}
+                              {xp.tripleBonus > 0 && <span className="text-green-400">+{xp.tripleBonus}3B</span>}
+                              {xp.rbiBonus > 0 && <span className="text-blue-400">+{xp.rbiBonus}RBI</span>}
+                              <span className="text-white font-bold ml-1">+{xp.total}</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                      <div className="px-4 py-2 border-t border-border/20 flex justify-between">
+                        <span className="text-[10px] text-muted/40">Total</span>
+                        <span className="text-[11px] font-black text-amber-400">
+                          +{state.xpBreakdown.reduce((sum, xp) => sum + xp.total, 0)} XP
+                        </span>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Key Plays */}
+                  {summary.keyPlays.length > 0 && (
+                    <motion.div
+                      className="rounded-2xl bg-surface/30 border border-border/20 mb-6 p-3"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.9 }}
+                    >
+                      <p className="text-[10px] text-muted/40 uppercase tracking-widest mb-2">Key Plays</p>
+                      {summary.keyPlays.slice(0, 5).map((play, i) => (
+                        <p key={i} className="text-[10px] text-muted/50 py-0.5">
+                          <span className="font-mono text-muted/30">{play.half === 'top' ? 'T' : 'B'}{play.inning}</span>
+                          {' '}{play.description}
+                        </p>
+                      ))}
+                    </motion.div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="space-y-2">
+                    <Link href="/games/baseball/play" className="block w-full py-3.5 rounded-xl bg-accent text-bg text-sm font-bold hover:bg-accent/90 transition-colors text-center" onClick={() => window.location.reload()}>
+                      Play Again
+                    </Link>
+                    <Link href="/games/baseball/lineup" className="block w-full py-3 rounded-xl bg-surface border border-border/30 text-sm font-bold text-muted hover:text-white transition-colors text-center">
+                      Edit Lineup
+                    </Link>
+                    <Link href="/games/baseball" className="block text-xs text-muted/40 hover:text-white transition-colors py-2 text-center">
+                      Back to Baseball Hub
+                    </Link>
+                  </div>
+                </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
