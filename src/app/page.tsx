@@ -9,7 +9,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 import { Card, getTierForLevel } from '@/data/types';
-import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, getCollectorPass, COLLECTOR_PASS_TIERS, getWeeklyChallenges, getFeaturedSetEvent, getChallengeChain, type LoginCalendarState, type CollectorPassState, type WeeklyChallenge, type FeaturedSetEvent, type ChallengeChainState } from '@/lib/store';
+import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, getCollectorPass, COLLECTOR_PASS_TIERS, getWeeklyChallenges, getFeaturedSetEvent, getChallengeChain, getMonthlyLeaderboard, getMonthEndBonus, getSmartCTA, getPendingActions, type LoginCalendarState, type CollectorPassState, type WeeklyChallenge, type FeaturedSetEvent, type ChallengeChainState, type LeaderboardEntry, type SmartCTA } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
@@ -54,6 +54,10 @@ function HomeContent() {
   const [featuredEvent, setFeaturedEvent] = useState<FeaturedSetEvent | null>(null);
   const [challengeChain, setChallengeChain] = useState<ChallengeChainState | null>(null);
   const [eventCountdown, setEventCountdown] = useState('');
+  const [leaderboard, setLeaderboard] = useState<{ entries: LeaderboardEntry[]; playerRank: number; daysLeft: number } | null>(null);
+  const [monthEndBonus, setMonthEndBonus] = useState<{ active: boolean; multiplier: number; daysLeft: number; label: string }>({ active: false, multiplier: 1, daysLeft: 0, label: '' });
+  const [smartCta, setSmartCta] = useState<SmartCTA | null>(null);
+  const [morningToast, setMorningToast] = useState<string[]>([]);
 
   useEffect(() => {
     // Capture referral code before any redirect — new users get forwarded to /welcome
@@ -93,6 +97,16 @@ function HomeContent() {
     setWeeklyChallenges(getWeeklyChallenges());
     setFeaturedEvent(getFeaturedSetEvent());
     setChallengeChain(getChallengeChain());
+    const lb = getMonthlyLeaderboard();
+    setLeaderboard({ entries: lb.entries, playerRank: lb.playerRank, daysLeft: lb.daysLeft });
+    setMonthEndBonus(getMonthEndBonus());
+    setSmartCta(getSmartCTA());
+    const pending = getPendingActions();
+    if (pending.length > 0 && !sessionStorage.getItem('lorevault_toast_shown')) {
+      setMorningToast(pending);
+      sessionStorage.setItem('lorevault_toast_shown', '1');
+      setTimeout(() => setMorningToast([]), 5000);
+    }
     const missions = getDailyMissions();
     const incomplete = missions.find(m => !m.completed);
     if (incomplete) setDailyMission(incomplete);
@@ -134,6 +148,36 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen">
+      {/* ========== MORNING TOAST ========== */}
+      {morningToast.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="mx-4 mb-3 p-3 rounded-xl bg-accent/8 border border-accent/20"
+        >
+          <div className="text-xs font-semibold text-accent mb-1">{morningToast.length} thing{morningToast.length > 1 ? 's' : ''} waiting for you today</div>
+          {morningToast.map((action, i) => (
+            <div key={i} className="text-[10px] text-muted flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-accent" />
+              {action}
+            </div>
+          ))}
+        </motion.div>
+      )}
+
+      {/* ========== MONTH-END FOMO BANNER ========== */}
+      {monthEndBonus.active && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mx-4 mb-3 p-3 rounded-xl bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 text-center"
+        >
+          <div className="text-xs font-bold text-orange-400">{monthEndBonus.label}</div>
+          <div className="text-[10px] text-muted">{monthEndBonus.daysLeft === 0 ? 'Last day!' : `${monthEndBonus.daysLeft} day${monthEndBonus.daysLeft > 1 ? 's' : ''} left this month`}</div>
+        </motion.div>
+      )}
+
       {/* ========== HERO — Asymmetric Layout ========== */}
       <section className="relative px-4 pt-4 pb-6 overflow-hidden">
         {/* Background gradient */}
@@ -214,8 +258,8 @@ function HomeContent() {
               </div>
             </div>
 
-            {/* Open Packs CTA — primary action */}
-            <Link href="/packs">
+            {/* Smart CTA — context-aware primary action */}
+            <Link href={smartCta?.link || '/packs'}>
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
@@ -229,10 +273,9 @@ function HomeContent() {
                 </div>
                 <div className="relative">
                   <div className="text-[10px] uppercase tracking-[0.08em] text-accent/70 mb-0.5">
-                    {packs > 0 ? `${packs} Pack${packs > 1 ? 's' : ''} Ready` : 'Earn More Packs'}
+                    {smartCta?.icon || '📦'} {smartCta?.sublabel || 'Pull cards. Chase rarities.'}
                   </div>
-                  <div className="type-display text-white">Open Packs</div>
-                  <div className="text-[11px] text-white/40 mt-0.5">Pull cards. Chase rarities.</div>
+                  <div className="type-display text-white">{smartCta?.label || 'Open Packs'}</div>
                 </div>
               </motion.div>
             </Link>
@@ -401,7 +444,7 @@ function HomeContent() {
             {(() => {
               const current = challengeChain.days.find(d => !d.completed && (d.day === 1 || challengeChain.days[d.day - 2]?.completed));
               if (challengeChain.allComplete) {
-                return <div className="text-center text-[10px] text-emerald-400 font-semibold">Chain complete! Rare card + "Weekly Warrior" badge earned</div>;
+                return <div className="text-center text-[10px] text-emerald-400 font-semibold">Chain complete! Pack + 500 XP + Weekly Warrior badge earned</div>;
               }
               if (current) {
                 return <div className="text-center text-[10px] text-muted">Today: <span className="text-accent font-semibold">{current.description}</span></div>;
@@ -633,6 +676,44 @@ function HomeContent() {
           </Link>
         </motion.div>
       </section>
+
+      {/* ========== MONTHLY LEADERBOARD ========== */}
+      {leaderboard && leaderboard.entries.length > 0 && (
+        <section className="px-4 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Monthly Leaderboard</span>
+            <span className="text-[10px] text-muted font-mono">{leaderboard.daysLeft}d left</span>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-xl bg-surface border border-border overflow-hidden"
+          >
+            {leaderboard.entries.slice(0, 5).map((entry, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-3 px-3 py-2 ${entry.isPlayer ? 'bg-accent/8 border-l-2 border-accent' : ''} ${i > 0 ? 'border-t border-border/30' : ''}`}
+              >
+                <span className={`text-xs font-bold font-mono w-5 ${i === 0 ? 'text-yellow-400' : i === 1 ? 'text-gray-300' : i === 2 ? 'text-orange-400' : 'text-muted'}`}>
+                  #{i + 1}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <span className={`text-xs font-semibold truncate ${entry.isPlayer ? 'text-accent' : 'text-foreground'}`}>{entry.name}</span>
+                </div>
+                <span className="text-[10px] text-muted font-mono">{entry.xp.toLocaleString()} XP</span>
+              </div>
+            ))}
+            {leaderboard.playerRank > 5 && (
+              <div className="flex items-center gap-3 px-3 py-2 bg-accent/8 border-l-2 border-accent border-t border-border/30">
+                <span className="text-xs font-bold font-mono w-5 text-accent">#{leaderboard.playerRank}</span>
+                <span className="text-xs font-semibold text-accent flex-1">You</span>
+                <span className="text-[10px] text-muted font-mono">{leaderboard.entries.find(e => e.isPlayer)?.xp.toLocaleString() || 0} XP</span>
+              </div>
+            )}
+          </motion.div>
+        </section>
+      )}
 
       {/* ========== COLLECTION SNAPSHOT ========== */}
       {ownedCards.length > 0 && (

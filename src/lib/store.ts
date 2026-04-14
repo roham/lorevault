@@ -1427,11 +1427,15 @@ export interface FeaturedSetEvent {
 export function getFeaturedSetEvent(): FeaturedSetEvent | null {
   if (typeof window === 'undefined') return null;
   const weekKey = getWeekKey();
-  // Deterministic rotation: hash weekKey to pick set index
+  // Deterministic rotation: hash weekKey to pick set index, avoid consecutive repeats
   let hash = 0;
   for (let i = 0; i < weekKey.length; i++) hash = ((hash << 5) - hash + weekKey.charCodeAt(i)) | 0;
-  const idx = Math.abs(hash) % SET_ROTATION.length;
+  let idx = Math.abs(hash) % SET_ROTATION.length;
+  // Check previous week to avoid repeat
+  const prevSlug = getItem<string>('lorevault_prev_event_set', '');
+  if (SET_ROTATION[idx] === prevSlug) idx = (idx + 1) % SET_ROTATION.length;
   const slug = SET_ROTATION[idx];
+  setItem('lorevault_prev_event_set', slug);
 
   // Calculate next Monday for countdown
   const now = new Date();
@@ -1546,5 +1550,130 @@ export function claimChainReward(): boolean {
   addPackCredits(1);
   addXP(500);
   addPassXP(500);
+  earnEventBadge(state.weekKey, 'weekly-warrior');
   return true;
+}
+
+// ===== Monthly Leaderboard =====
+
+export interface LeaderboardEntry {
+  name: string;
+  xp: number;
+  level: number;
+  tier: string;
+  isPlayer: boolean;
+}
+
+export function getMonthlyLeaderboard(): { monthKey: string; entries: LeaderboardEntry[]; playerRank: number; daysLeft: number } {
+  if (typeof window === 'undefined') return { monthKey: '', entries: [], playerRank: 0, daysLeft: 0 };
+  const now = new Date();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const daysLeft = lastDay - now.getDate();
+
+  // Get player's monthly XP from collector pass
+  const pass = getCollectorPass();
+  const playerXP = pass.xpEarned;
+  const playerLevel = getCollectorLevel();
+
+  // Generate seeded AI leaderboard entries (deterministic per month)
+  const names = ['VaultMaster', 'LoreKeeper', 'CardSage', 'MythHunter', 'GhostPuller', 'SetKing', 'RarityChaser', 'ForgeHero', 'PackRat', 'LegendSeeker', 'CardShark', 'LoreWitch', 'VaultBoss', 'MythWalker'];
+  let seed = 0;
+  for (let i = 0; i < monthKey.length; i++) seed = ((seed << 5) - seed + monthKey.charCodeAt(i)) | 0;
+  const aiEntries: LeaderboardEntry[] = [];
+  for (let i = 0; i < 9; i++) {
+    seed = (seed * 16807) % 2147483647;
+    const xp = 500 + Math.abs(seed) % 4000;
+    const lvl = Math.floor(xp / 200) + 1;
+    aiEntries.push({
+      name: names[Math.abs(seed) % names.length] + (Math.abs(seed) % 99 + 1),
+      xp,
+      level: lvl,
+      tier: lvl >= 15 ? 'Elite' : lvl >= 10 ? 'Connoisseur' : lvl >= 5 ? 'Enthusiast' : 'Collector',
+      isPlayer: false,
+    });
+  }
+
+  const playerEntry: LeaderboardEntry = {
+    name: 'You',
+    xp: playerXP,
+    level: playerLevel.level,
+    tier: playerLevel.tier,
+    isPlayer: true,
+  };
+
+  const allEntries = [...aiEntries, playerEntry].sort((a, b) => b.xp - a.xp);
+  const playerRank = allEntries.findIndex(e => e.isPlayer) + 1;
+
+  return { monthKey, entries: allEntries.slice(0, 10), playerRank, daysLeft };
+}
+
+// ===== Month-End FOMO =====
+
+export function getMonthEndBonus(): { active: boolean; multiplier: number; daysLeft: number; label: string } {
+  if (typeof window === 'undefined') return { active: false, multiplier: 1, daysLeft: 0, label: '' };
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const daysLeft = lastDay - now.getDate();
+
+  if (daysLeft <= 2) {
+    return { active: true, multiplier: 1.5, daysLeft, label: 'Final Sprint — 1.5x XP' };
+  }
+  return { active: false, multiplier: 1, daysLeft, label: '' };
+}
+
+// ===== Smart CTA =====
+
+export interface SmartCTA {
+  label: string;
+  sublabel: string;
+  link: string;
+  icon: string;
+  priority: number;
+}
+
+export function getSmartCTA(): SmartCTA {
+  if (typeof window === 'undefined') return { label: 'Open Packs', sublabel: 'Pull cards. Chase rarities.', link: '/packs', icon: '📦', priority: 0 };
+
+  const packs = getPackCredits();
+  const calendar = getLoginCalendar();
+  const missions = getDailyMissions();
+  const incompleteMission = missions.find(m => !m.completed);
+
+  // Priority: unclaimed login > available packs > incomplete mission > default
+  if (calendar && !calendar.claimedToday && calendar.currentDay < 7) {
+    return { label: 'Claim Today\'s Reward', sublabel: `Day ${calendar.currentDay + 1} login reward waiting`, link: '/', icon: '🎁', priority: 3 };
+  }
+  if (packs > 0) {
+    return { label: `Open ${packs} Pack${packs > 1 ? 's' : ''}`, sublabel: 'Your packs are ready to open', link: '/packs', icon: '📦', priority: 2 };
+  }
+  if (incompleteMission) {
+    return { label: incompleteMission.description, sublabel: `${incompleteMission.progress}/${incompleteMission.target} — ${incompleteMission.reward}`, link: '/challenges', icon: '🎯', priority: 1 };
+  }
+  return { label: 'Earn More Packs', sublabel: 'Complete challenges to earn packs', link: '/challenges', icon: '⭐', priority: 0 };
+}
+
+// ===== Morning Toast =====
+
+export function getPendingActions(): string[] {
+  if (typeof window === 'undefined') return [];
+  const actions: string[] = [];
+
+  const calendar = getLoginCalendar();
+  if (calendar && !calendar.claimedToday && calendar.currentDay < 7) {
+    actions.push('Unclaimed login reward');
+  }
+
+  const dailyPack = getDailyPackState();
+  if (dailyPack.available) {
+    actions.push('Daily free pack available');
+  }
+
+  const missions = getDailyMissions();
+  const incomplete = missions.filter(m => !m.completed);
+  if (incomplete.length > 0) {
+    actions.push(`${incomplete.length} daily mission${incomplete.length > 1 ? 's' : ''} to complete`);
+  }
+
+  return actions;
 }
