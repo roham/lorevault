@@ -148,7 +148,7 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **What to build**: (A) Daily free pack — one free pack every 24h, countdown timer on `/packs` page. Resets at midnight UTC. Stored in `lorevault_daily_pack`. More valuable than standard pack (guaranteed uncommon+). (B) Daily Missions — 3 rotating daily tasks: "Win a battle", "Open a pack", "Forge a card", "React to 3 pulse events", "Visit the Codex". Rewards: XP + exclusive daily badge. Mission state in `lorevault_daily_missions`. (C) Login Calendar — 7-day visual calendar on Home page. Each consecutive day unlocks a reward (XP → card → rare card → pack → exclusive card → exclusive badge → legendary pack on day 7). Streak resets on miss. (D) Return notification hook — `ServiceWorker` registration for push notification permission prompt after 3rd session. No actual backend push, but permission + UI scaffold ready for backend integration.
 - **Why**: The #1 retention driver in collectible games is the daily login reward. Users return not from desire but from loss aversion (streak reset) and anticipation (what's tomorrow's reward?). Free daily pack converts dormant users into daily actives. Missions give purpose to each session. The login calendar creates a commitment device with escalating investment.
 - **Acceptance criteria**: Daily free pack with countdown. 3 daily missions with progress tracking. 7-day login calendar with escalating rewards. Service worker registered. All localStorage-based.
-- **Status**: PENDING
+- **Status**: DONE — commit 9e0be56, v8.37
 
 ### DIRECTIVE-018: Viral Sharing + Social Growth Mechanics
 - **Priority**: P0
@@ -178,3 +178,4 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **DIRECTIVE-014**: Collector Prestige — Meta-Completion Layer — DONE (v8.34, 2026-04-14). Score: 97→98 (+1).
 - **DIRECTIVE-015**: Scarcity Gradient Ascension — Parallel Transmute + Burn + Population Decay — DONE (v8.35, 2026-04-14). Score: 98→99 (+1).
 - **DIRECTIVE-016**: Discovery Cascade + Narrative Fusion + Chronicle — DONE (v8.36, 2026-04-14). Score: 99→100 (+1).
+- **DIRECTIVE-017**: Daily Engagement Engine + Retention Hooks — DONE (v8.37, 2026-04-14). Score: 100/100 maintained. Growth: 6→17/50.
