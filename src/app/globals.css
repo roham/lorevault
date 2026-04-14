@@ -484,6 +484,32 @@ table tbody tr {
   animation: mutation-halo-gold 4s ease-in-out infinite;
 }
 
+/* Prestige animated gradient border */
+@keyframes prestige-rotate {
+  0% { --prestige-angle: 0deg; }
+  100% { --prestige-angle: 360deg; }
+}
+@property --prestige-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.prestige-border {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.prestige-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--prestige-angle), #ffd700, #ff8c00, #ffd700, #ffaa00, #ffd700);
+  z-index: -1;
+  animation: prestige-rotate 4s linear infinite;
+  opacity: 0.4;
+}
+
 /* Marketplace filter panel backdrop */
 .filter-panel-bg {
   background: linear-gradient(180deg, var(--color-surface) 0%, rgba(18, 20, 31, 0.95) 100%);

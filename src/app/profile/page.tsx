@@ -16,6 +16,7 @@ import { AchievementCategory } from '@/data/types';
 import { getVipState, type VipState } from '@/lib/vip';
 import { getPlayerActivityEvents, REACTION_TYPES, type PulseEvent } from '@/lib/pulse';
 import { SOCIAL_FEED_CONFIG } from '@/data/social-feed';
+import { getPrestigeState, PRESTIGE_CHALLENGES, type PrestigeState } from '@/lib/store';
 
 function LazySection({ children, height }: { children: React.ReactNode; height: number }) {
   const [visible, setVisible] = useState(false);
@@ -51,6 +52,7 @@ export default function ProfilePage() {
   const [activeCategory, setActiveCategory] = useState<AchievementCategory | 'all'>('all');
   const [vip, setVip] = useState<VipState | null>(null);
   const [activityEvents, setActivityEvents] = useState<PulseEvent[]>([]);
+  const [prestige, setPrestige] = useState<PrestigeState | null>(null);
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -79,6 +81,7 @@ export default function ProfilePage() {
     setPinnedBadgeIds(getPinnedBadges());
     setVip(getVipState());
     setActivityEvents(getPlayerActivityEvents().slice(0, 10));
+    setPrestige(getPrestigeState());
   }, []);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
@@ -99,10 +102,10 @@ export default function ProfilePage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
       {/* Collector Level Hero — no entrance animation for instant render */}
       <div
-        className="p-6 rounded-2xl mb-6"
+        className={`p-6 rounded-2xl mb-6 ${prestige?.unlocked ? 'prestige-border' : ''}`}
         style={{
-          background: `linear-gradient(135deg, rgba(18,20,31,0.95), ${tierColor}08)`,
-          border: `1px solid ${tierColor}20`,
+          background: `linear-gradient(135deg, rgba(18,20,31,0.95), ${prestige?.unlocked ? 'rgba(255,215,0,0.04)' : `${tierColor}08`})`,
+          border: prestige?.unlocked ? undefined : `1px solid ${tierColor}20`,
         }}
       >
         <div className="flex items-center gap-4 mb-4">
@@ -120,6 +123,7 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-0.5">
+              {prestige?.unlocked && <span className="text-xl">👑</span>}
               <h1 className="type-heading">{PROFILE.username}</h1>
             </div>
             <div className="flex items-center gap-2">
@@ -129,6 +133,14 @@ export default function ProfilePage() {
               >
                 {collectorLevel.tier}
               </span>
+              {prestige?.unlocked && (
+                <span
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-md"
+                  style={{ color: '#ffd700', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)' }}
+                >
+                  Prestige {prestige.level}
+                </span>
+              )}
               <span className="text-xs text-muted">Since {new Date(PROFILE.joinedDate).toLocaleDateString()}</span>
             </div>
             {/* Pinned Badge Strip */}
@@ -502,6 +514,37 @@ export default function ProfilePage() {
         </div>
       </section>
       </LazySection>
+
+      {/* Prestige Challenges — visible only after prestige unlock */}
+      {prestige?.unlocked && (
+        <LazySection height={180}>
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] uppercase tracking-[0.08em] text-amber-400">Prestige Challenges</span>
+            <span className="text-[10px] text-muted">{prestige.challengesCompleted.length}/{PRESTIGE_CHALLENGES.length}</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {PRESTIGE_CHALLENGES.map(ch => {
+              const done = prestige.challengesCompleted.includes(ch.id);
+              return (
+                <div
+                  key={ch.id}
+                  className="p-3 rounded-xl text-center"
+                  style={{
+                    background: done ? 'rgba(255,215,0,0.08)' : 'rgba(18,20,31,0.5)',
+                    border: `1px solid ${done ? 'rgba(255,215,0,0.2)' : 'rgba(31,34,55,0.3)'}`,
+                  }}
+                >
+                  <div className="text-lg mb-1" style={{ opacity: done ? 1 : 0.3 }}>{ch.icon}</div>
+                  <div className="text-[10px] font-semibold" style={{ color: done ? '#ffd700' : '#3a3d5c' }}>{ch.name}</div>
+                  <div className="text-[8px] text-muted mt-0.5">{ch.description}</div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+        </LazySection>
+      )}
 
       {/* Set Completion — lazy loaded, compact rows */}
       <LazySection height={220}>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import UnlockCelebration from "@/components/UnlockCelebration";
 import LivePulse from "@/components/LivePulse";
+import PrestigeCelebration from "@/components/PrestigeCelebration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
           {children}
         </main>
         <UnlockCelebration />
+        <PrestigeCelebration />
         <LivePulse />
         <Navigation />
       </body>

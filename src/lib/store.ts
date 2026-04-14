@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardEvent, BattleRecord, TriviaRecord, GameStats, SavedDeck, CollectorLevel, XPSource, XP_VALUES, getLevelFromXP, getXPForLevel, getTierForLevel, EarnedAchievement } from '@/data/types';
-import { ALL_CARDS } from '@/data/cards';
+import { ALL_CARDS, GHOST_CARDS, isGhostCard } from '@/data/cards';
 import { recordMonthlyXP } from '@/lib/vip';
 
 // Local storage keys
@@ -61,7 +61,7 @@ export function getOwnedCardIds(): string[] {
 
 export function getOwnedCards(): Card[] {
   const ids = new Set(getOwnedCardIds());
-  return ALL_CARDS.filter(c => ids.has(c.id));
+  return [...ALL_CARDS, ...GHOST_CARDS].filter(c => ids.has(c.id));
 }
 
 export function addOwnedCards(cardIds: string[]) {
@@ -615,7 +615,6 @@ function incrementPacksOpened(): number {
 }
 
 // ===== Ghost Card Pull Conditions =====
-import { GHOST_CARDS, isGhostCard } from '@/data/cards';
 import { getForgeHistory } from '@/lib/seasonal-vault';
 
 function checkGhostConditions(): Card | null {
@@ -629,8 +628,8 @@ function checkGhostConditions(): Card | null {
   const conditions: [string, boolean][] = [
     // Ghost 0: 13th pack opened
     ['ghost-void-odin', packsOpened === 13],
-    // Ghost 1: owning exactly 5 legendaries
-    ['ghost-mirror-sherlock', ownedLegendaries === 5],
+    // Ghost 1: owning 5+ legendaries
+    ['ghost-mirror-sherlock', ownedLegendaries >= 5],
     // Ghost 2: pulling on day-of-week matching set hash
     ['ghost-crimson-dracula', (() => {
       const dayHash = Math.abs('gothic-horror'.split('').reduce((h, c) => ((h << 5) - h) + c.charCodeAt(0), 0)) % 7;
@@ -747,4 +746,148 @@ export function getCodexCompletionPercent(): number {
 
 export function getLoreNodesForCard(character: string): LoreNode[] {
   return LORE_GRAPH.filter(node => node.requiredCharacters.includes(character));
+}
+
+// ===== Collector Prestige =====
+
+export interface PrestigeState {
+  unlocked: boolean;
+  level: number;
+  unlockedAt: string | null;
+  challengesCompleted: string[];
+}
+
+const PRESTIGE_KEY = 'lorevault_prestige';
+
+export function getPrestigeState(): PrestigeState {
+  return getItem<PrestigeState>(PRESTIGE_KEY, {
+    unlocked: false,
+    level: 0,
+    unlockedAt: null,
+    challengesCompleted: [],
+  });
+}
+
+function setPrestigeState(state: PrestigeState): void {
+  setItem(PRESTIGE_KEY, state);
+}
+
+export function checkPrestigeUnlock(): boolean {
+  const prestige = getPrestigeState();
+  if (prestige.unlocked) return false; // already unlocked
+
+  const earned = getEarnedAchievements();
+  // All non-prestige achievements earned (33 standard + ghost-finder = 34, excluding collector-prestige itself)
+  const allEarned = earned.length >= 34;
+
+  const codexPercent = getCodexCompletionPercent();
+  const codexComplete = codexPercent >= 100;
+
+  const owned = getOwnedCards();
+  const setsBySlug: Record<string, Set<string>> = {};
+  for (const c of owned) {
+    if (!setsBySlug[c.setSlug]) setsBySlug[c.setSlug] = new Set();
+    setsBySlug[c.setSlug].add(c.character);
+  }
+  const setsComplete = Object.values(setsBySlug).filter(chars => chars.size >= 20).length;
+
+  if (allEarned && codexComplete && setsComplete >= 4) {
+    setPrestigeState({
+      unlocked: true,
+      level: 1,
+      unlockedAt: new Date().toISOString(),
+      challengesCompleted: [],
+    });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('prestige-unlock'));
+    }
+    return true;
+  }
+  return false;
+}
+
+export type PrestigeChallenge = {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+};
+
+export const PRESTIGE_CHALLENGES: PrestigeChallenge[] = [
+  { id: 'forge-legendary', name: 'Master Forger', description: 'Forge a Legendary card', icon: '🔨' },
+  { id: 'all-parallels', name: 'Parallel Collector', description: 'Own all 4 parallel types', icon: '◈' },
+  { id: 'ancient-legendary', name: 'Timeless Legend', description: 'Own a Legendary card aged 60+ days', icon: '⏳' },
+  { id: 'ghost-collector', name: 'Phantom Keeper', description: 'Own 3+ Ghost cards', icon: '◐' },
+  { id: 'hall-apex', name: 'Apex Predator', description: 'Reach top 3 on any leaderboard', icon: '👑' },
+  { id: 'max-legacy', name: 'Living Legend', description: 'Own a card with Legacy Score 90+', icon: '✦' },
+];
+
+export function checkPrestigeChallenges(): string[] {
+  const prestige = getPrestigeState();
+  if (!prestige.unlocked) return [];
+
+  const newlyCompleted: string[] = [];
+  const completed = new Set(prestige.challengesCompleted);
+  const owned = getOwnedCards();
+
+  function tryComplete(id: string, condition: boolean) {
+    if (!completed.has(id) && condition) {
+      newlyCompleted.push(id);
+    }
+  }
+
+  // forge-legendary: check forge history for legendary output
+  tryComplete('forge-legendary', (() => {
+    try {
+      const history = JSON.parse(localStorage.getItem('lorevault_forge_history') || '[]');
+      return history.some((h: { outputRarity: string }) => h.outputRarity === 'legendary');
+    } catch { return false; }
+  })());
+
+  // all-parallels: own base + silver + gold + holographic or obsidian
+  const parallels = new Set(owned.map(c => c.parallel));
+  tryComplete('all-parallels', parallels.has('silver') && parallels.has('gold') && (parallels.has('holographic') || parallels.has('obsidian')));
+
+  // ancient-legendary: legendary card aged 60+ days
+  tryComplete('ancient-legendary', (() => {
+    const meta = getCardMeta();
+    return owned.some(c => {
+      if (c.scarcity !== 'legendary') return false;
+      const m = meta[c.id];
+      if (!m?.acquiredAt) return false;
+      const days = Math.floor((Date.now() - new Date(m.acquiredAt).getTime()) / 86400000);
+      return days >= 60;
+    });
+  })());
+
+  // ghost-collector: 3+ ghost cards
+  tryComplete('ghost-collector', owned.filter(c => isGhostCard(c.id)).length >= 3);
+
+  // hall-apex: top 3 leaderboard (check stored rank)
+  tryComplete('hall-apex', (() => {
+    try {
+      const rank = JSON.parse(localStorage.getItem('lorevault_hall_rank') || '0');
+      return rank > 0 && rank <= 3;
+    } catch { return false; }
+  })());
+
+  // max-legacy: legacy score 90+
+  tryComplete('max-legacy', (() => {
+    const meta = getCardMeta();
+    return owned.some(c => {
+      const m = meta[c.id];
+      if (!m) return false;
+      const days = m.acquiredAt ? Math.floor((Date.now() - new Date(m.acquiredAt).getTime()) / 86400000) : 0;
+      const legacy = Math.min(100, Math.floor((m.history?.length || 0) * 3 + days * 0.5 + (m.battleCount || 0) * 0.8));
+      return legacy >= 90;
+    });
+  })());
+
+  if (newlyCompleted.length > 0) {
+    const updated = { ...prestige, challengesCompleted: [...prestige.challengesCompleted, ...newlyCompleted] };
+    updated.level = 1 + updated.challengesCompleted.length;
+    setPrestigeState(updated);
+  }
+
+  return newlyCompleted;
 }

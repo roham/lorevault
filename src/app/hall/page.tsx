@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { generatePhantomCollectors, getCollectorRank, RANK_CONFIG, type PhantomCollector, type CollectorRank } from '@/data/leaderboard-seeds';
-import { getOwnedCards, getStreak, getEarnedAchievements, getCollectorLevel, getCodexCompletionPercent } from '@/lib/store';
+import { getOwnedCards, getStreak, getEarnedAchievements, getCollectorLevel, getCodexCompletionPercent, getPrestigeState } from '@/lib/store';
 import { ACHIEVEMENTS, getAchievementRarityColor, getAchievementById } from '@/lib/achievements';
 import { PROFILE } from '@/data/profile';
 
-type LeaderboardTab = 'cards' | 'rare' | 'age' | 'badges' | 'codex';
+type LeaderboardTab = 'cards' | 'rare' | 'age' | 'badges' | 'codex' | 'prestige';
 
 interface LeaderboardEntry {
   id: string;
@@ -26,6 +26,7 @@ const TAB_CONFIG: { id: LeaderboardTab; label: string; icon: string; unit: strin
   { id: 'age', label: 'Oldest Card', icon: '⏳', unit: 'days' },
   { id: 'badges', label: 'Achievements', icon: '🏆', unit: 'badges' },
   { id: 'codex', label: 'Lore Codex', icon: '📖', unit: '%' },
+  { id: 'prestige', label: 'Prestige', icon: '👑', unit: 'level' },
 ];
 
 export default function HallPage() {
@@ -46,6 +47,7 @@ export default function HallPage() {
     setPlayerRank(pRank);
 
     const codexPct = getCodexCompletionPercent();
+    const prestige = getPrestigeState();
     const phantoms = generatePhantomCollectors();
     const playerEntry: LeaderboardEntry = {
       id: 'player',
@@ -62,14 +64,14 @@ export default function HallPage() {
       const pEntries = phantoms.map(p => ({
         id: p.id,
         username: p.username,
-        value: t === 'cards' ? p.totalCards : t === 'rare' ? p.rareCards : t === 'age' ? p.oldestCardDays : t === 'codex' ? p.codexPercent : p.achievementCount,
+        value: t === 'cards' ? p.totalCards : t === 'rare' ? p.rareCards : t === 'age' ? p.oldestCardDays : t === 'codex' ? p.codexPercent : t === 'prestige' ? (p.achievementCount > 25 ? Math.floor(p.achievementCount / 5) : 0) : p.achievementCount,
         rank: p.rank,
         isPlayer: false,
         lastActive: p.lastActive,
         pinnedBadges: p.pinnedBadges,
       }));
 
-      const pVal = t === 'cards' ? owned.length : t === 'rare' ? rareCount : t === 'age' ? oldestDays : t === 'codex' ? codexPct : earned.length;
+      const pVal = t === 'cards' ? owned.length : t === 'rare' ? rareCount : t === 'age' ? oldestDays : t === 'codex' ? codexPct : t === 'prestige' ? (prestige.unlocked ? prestige.level : 0) : earned.length;
       const all = [...pEntries, { ...playerEntry, value: pVal }];
       all.sort((a, b) => b.value - a.value);
       return all;
@@ -183,6 +185,7 @@ export default function HallPage() {
               {/* Name + badges */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
+                  {tab === 'prestige' && entry.value > 0 && <span className="text-[10px]">👑</span>}
                   <span className={`text-xs font-semibold truncate ${entry.isPlayer ? 'text-accent' : 'text-foreground'}`}>
                     {entry.username}
                   </span>

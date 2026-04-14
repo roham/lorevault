@@ -362,6 +362,12 @@ function CardItemInteractive({
   const scarcityConfig = SCARCITY_CONFIG[card.scarcity];
   const parallelConfig = PARALLEL_CONFIG[card.parallel];
   const cardRef = useRef<HTMLDivElement>(null);
+  const [meta] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const allMeta = getCardMeta();
+    return allMeta[card.id] || null;
+  });
+  const isSealed = meta?.sealed ?? false;
   const [agingTiers] = useState<AgingTiers | null>(() => {
     if (typeof window === 'undefined') return null;
     return getAgingTiers(card.id);
@@ -588,7 +594,7 @@ function CardItemInteractive({
           )}
 
           {/* Ghost card sealed state — black overlay + white border pulse */}
-          {isGhost && (
+          {isGhost && isSealed && (
             <div className="absolute inset-0 z-[19] rounded-xl overflow-hidden ghost-sealed-border" style={{ border: '2px solid rgba(255,255,255,0.3)' }}>
               <div className="absolute inset-0 bg-black/70" />
               <div className="relative z-10 flex flex-col items-center justify-center h-full">

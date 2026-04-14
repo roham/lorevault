@@ -1,7 +1,7 @@
 'use client';
 
 import { Achievement, AchievementRarity, AchievementCategory } from '@/data/types';
-import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge, getCardMeta, getUnlockedLoreNodes } from '@/lib/store';
+import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge, getCardMeta, getUnlockedLoreNodes, checkPrestigeUnlock, checkPrestigeChallenges } from '@/lib/store';
 import { getSecretNodes } from '@/data/lore-graph';
 import { isGhostCard } from '@/data/cards';
 
@@ -318,6 +318,16 @@ export const ACHIEVEMENTS: Achievement[] = [
     mockPercent: 0.5,
     hidden: true,
   },
+  // Collector Prestige — visible from day one as the lighthouse
+  {
+    id: 'collector-prestige',
+    name: 'Collector Prestige',
+    description: 'Unlock Prestige: all achievements + 100% Codex + 4 sets complete',
+    icon: '👑',
+    rarity: 'legendary',
+    category: 'special',
+    mockPercent: 0.1,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -404,6 +414,15 @@ export function checkAchievements(): string[] {
   tryEarn('lore-master', unlockedLore.length >= 30);
   tryEarn('secret-thread', secretNodes.some(n => unlockedLore.includes(n.id)));
   tryEarn('codex-complete', unlockedLore.length >= 48);
+
+  // Prestige — check unlock after all other achievements
+  const prestigeUnlocked = checkPrestigeUnlock();
+  if (prestigeUnlocked) {
+    tryEarn('collector-prestige', true);
+  }
+
+  // Check prestige challenges if unlocked
+  checkPrestigeChallenges();
 
   return newlyEarned;
 }
