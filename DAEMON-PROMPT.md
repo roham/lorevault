@@ -413,18 +413,27 @@ Build a visible, motivating rewards system that makes collectors feel valued —
 
 ## Iteration Protocol — Multi-Agent (Frigga + Odin)
 
-Every cycle dispatches two specialist sub-agents, then builds. You are the orchestrator AND the builder.
+Every cycle dispatches two specialist sub-agents, then builds. You are the builder.
+
+**IMPORTANT: Read `lorevault-wiki/DIRECTIVES.md` at the start of every cycle.** This file contains build orders from Odin (the strategy daemon). If there are PENDING directives, execute the highest-priority one INSTEAD of picking from the priority sequence below. Mark the directive IN_PROGRESS when you start, DONE (with commit hash) when you finish.
+
+The strategy daemon (Odin) researches, decides, and writes directives. You build. The bridge is `DIRECTIVES.md`. This is not optional.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ CYCLE N                                                  │
+│                                                          │
+│  Phase 0: CHECK DIRECTIVES                               │
+│  Read lorevault-wiki/DIRECTIVES.md                       │
+│  If PENDING directives exist → execute highest priority   │
+│  If no directives → fall through to Phase 1              │
 │                                                          │
 │  Phase 1: OBSERVE                                        │
 │  Read files. Identify target domain. Determine cycle N.  │
 │                                                          │
 │  Phase 2: FRIGGA + ODIN (parallel)                       │
 │  ├── Frigga (research): WebSearch reference products     │
-│  └── Odin (reasoning): score 14 dimensions, plan build   │
+│  └── Odin (reasoning): score dimensions, plan build      │
 │       (Odin gets current file contents as context)       │
 │                                                          │
 │  Phase 3: SYNTHESIZE                                     │
