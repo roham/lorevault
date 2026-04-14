@@ -408,6 +408,7 @@ export function getDailyMissions(): DailyMission[] {
     { id: 'daily-packs', description: 'Open 2 packs', target: 2, progress: 0, reward: '+1 Season Tier', completed: false },
     { id: 'daily-battle', description: 'Win a card battle', target: 1, progress: 0, reward: '+1 Season Tier', completed: false },
     { id: 'daily-trivia', description: 'Score 3+ in trivia', target: 3, progress: 0, reward: '+1 Season Tier', completed: false },
+    { id: 'daily-baseball', description: 'Win a baseball game', target: 1, progress: 0, reward: '+1 Season Tier', completed: false },
   ];
   setItem(KEYS.dailyMissions, { date: today, missions });
   return missions;
@@ -1096,6 +1097,7 @@ export function progressDailyMission(missionId: string, amount: number = 1) {
     'open-pack': 'daily-packs',
     'win-battle': 'daily-battle',
     'play-trivia': 'daily-trivia',
+    'win-baseball': 'daily-baseball',
   };
   const mapped = idMap[missionId] || missionId;
   const missions = getDailyMissions();

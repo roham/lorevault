@@ -18,16 +18,19 @@ const DEFAULT_STATS: GameStats = {
 };
 
 // Daily challenge — changes each day based on date
-function getDailyChallenge(): { title: string; desc: string; game: 'battle' | 'trivia'; bonus: number } {
+function getDailyChallenge(): { title: string; desc: string; game: 'battle' | 'trivia' | 'baseball'; bonus: number } {
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
   const challenges = [
     { title: 'Battle Royale', desc: 'Win a battle on Hard difficulty', game: 'battle' as const, bonus: 50 },
     { title: 'Trivia Sprint', desc: 'Score 2000+ in trivia', game: 'trivia' as const, bonus: 40 },
-    { title: 'Streak Builder', desc: 'Win 3 battles in a row', game: 'battle' as const, bonus: 60 },
+    { title: 'Grand Slam', desc: 'Win a baseball game with 5+ runs', game: 'baseball' as const, bonus: 60 },
     { title: 'Perfect Round', desc: 'Get 5 trivia answers right in a row', game: 'trivia' as const, bonus: 45 },
-    { title: 'Underdog Victory', desc: 'Win a battle with all Common cards', game: 'battle' as const, bonus: 70 },
+    { title: 'Legend Challenge', desc: 'Beat a Legend difficulty team', game: 'baseball' as const, bonus: 80 },
     { title: 'Speed Demon', desc: 'Answer 8+ trivia questions correctly', game: 'trivia' as const, bonus: 55 },
     { title: 'Domination', desc: 'Win a battle 3-0', game: 'battle' as const, bonus: 50 },
+    { title: 'Shutout Artist', desc: 'Win a baseball game without allowing runs', game: 'baseball' as const, bonus: 70 },
+    { title: 'Streak Builder', desc: 'Win 3 battles in a row', game: 'battle' as const, bonus: 60 },
+    { title: 'Iron Man', desc: 'Win a full 9-inning baseball game', game: 'baseball' as const, bonus: 65 },
   ];
   return challenges[dayOfYear % challenges.length];
 }
@@ -70,7 +73,7 @@ export default function GamesHub() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Link href={daily.game === 'battle' ? '/games/battle' : '/games/trivia'}>
+        <Link href={daily.game === 'baseball' ? '/games/baseball' : daily.game === 'battle' ? '/games/battle' : '/games/trivia'}>
           <div className="relative overflow-hidden rounded-2xl p-5 mb-6 border border-yellow-500/20"
             style={{
               background: 'linear-gradient(135deg, #2d1b00 0%, #1a1400 50%, #12141f 100%)',

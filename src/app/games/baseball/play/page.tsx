@@ -41,7 +41,7 @@ import { ScreenShake } from '@/components/baseball/ScreenShake';
 import { StealReveal } from '@/components/baseball/StealReveal';
 import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records';
 import { checkAchievements } from '@/lib/achievements';
-import { earnAchievement, addCollectorXP } from '@/lib/store';
+import { earnAchievement, addCollectorXP, progressDailyMission } from '@/lib/store';
 import BaseballShareCard from '@/components/baseball/BaseballShareCard';
 
 // ===== Animation Phase State Machine =====
@@ -721,6 +721,11 @@ export default function PlayPage() {
       // Award global LoreVault XP
       const isWin = gameSummary.winner === 'home';
       addCollectorXP(0, isWin ? 'baseball_win' : 'baseball_loss');
+
+      // Progress daily mission
+      if (isWin) {
+        progressDailyMission('win-baseball');
+      }
 
       // Check achievements after saving record
       checkAchievements();
