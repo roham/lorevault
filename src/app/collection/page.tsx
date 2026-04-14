@@ -104,7 +104,7 @@ function EmptySlot({ index, isMissing, card }: { index: number; isMissing?: bool
   if (isMissing && card) {
     return (
       <Link href="/packs">
-        <div className="w-[260px] h-[364px] rounded-xl flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden transition-all hover:scale-[1.02]"
+        <div className="w-full max-w-[260px] aspect-[5/7] rounded-xl flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden transition-all hover:scale-[1.02]"
           style={{
             background: `linear-gradient(145deg, ${card.gradientFrom}30, ${card.gradientTo}15)`,
             border: '1px solid rgba(255,255,255,0.04)',
@@ -144,7 +144,7 @@ function EmptySlot({ index, isMissing, card }: { index: number; isMissing?: bool
 
   return (
     <div
-      className="w-[260px] h-[364px] rounded-xl flex items-center justify-center relative overflow-hidden"
+      className="w-full max-w-[260px] aspect-[5/7] rounded-xl flex items-center justify-center relative overflow-hidden"
       style={{
         background: 'linear-gradient(145deg, rgba(18,20,31,0.3), rgba(10,11,20,0.2))',
         border: '1px dashed rgba(31, 34, 55, 0.25)',
@@ -426,7 +426,7 @@ export default function CollectionPage() {
   }
 
   return (
-    <div ref={containerRef} className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+    <div ref={containerRef} className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6" style={{ touchAction: 'manipulation' }}>
       {/* Header */}
       <div className="flex flex-col gap-3 mb-4">
         <div className="flex items-center justify-between">
@@ -514,7 +514,7 @@ export default function CollectionPage() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 sm:gap-3">
                 <button onClick={prevPage} disabled={currentPageIndex === 0}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface/80 backdrop-blur-sm border border-border flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-15 disabled:cursor-not-allowed transition-all active:scale-90">
+                  className="w-11 h-11 sm:w-10 sm:h-10 rounded-xl bg-surface/80 backdrop-blur-sm border border-border flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-15 disabled:cursor-not-allowed transition-all active:scale-90">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
                 {currentPage && !isFiltered && (
@@ -527,7 +527,7 @@ export default function CollectionPage() {
                   </span>
                 )}
                 <button onClick={nextPage} disabled={currentPageIndex >= displayPages.length - 1}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface/80 backdrop-blur-sm border border-border flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-15 disabled:cursor-not-allowed transition-all active:scale-90">
+                  className="w-11 h-11 sm:w-10 sm:h-10 rounded-xl bg-surface/80 backdrop-blur-sm border border-border flex items-center justify-center text-foreground hover:bg-surface-hover disabled:opacity-15 disabled:cursor-not-allowed transition-all active:scale-90">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
               </div>
