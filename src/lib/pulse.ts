@@ -59,6 +59,22 @@ const PHANTOM_ACTIONS: { template: string; type: SocialFeedType; icon: string }[
 const SET_NAMES = ['Baker Street', 'Enchanted Kingdom', 'Wonderland', 'Gothic Horror', 'Olympus', 'Asgard'];
 const LEGENDARY_CARDS = ['Zeus', 'Odin', 'Sherlock', 'Dracula', 'Snow White', 'Alice', 'Thor', 'Medusa', 'Hades', 'Loki'];
 
+// Narrative Fusion Events — cross-set character interactions
+const NARRATIVE_FUSIONS: { text: string; subtext: string }[] = [
+  { text: 'Odin met Sherlock Holmes at the crossroads of worlds', subtext: 'The All-Father asked a question. The detective answered with silence.' },
+  { text: 'Dracula challenged Zeus to a game of shadows', subtext: 'Lightning met darkness. The shadows won.' },
+  { text: 'Alice found a door in the Enchanted Forest', subtext: 'Red Riding Hood warned her not to open it. She opened it anyway.' },
+  { text: 'Thor and Hercules argued over whose father was worse', subtext: 'Neither won. Both were right.' },
+  { text: 'The Cheshire Cat appeared in Baker Street', subtext: '"We\'re all mad here," he told Watson. Watson agreed.' },
+  { text: 'Loki offered Rumpelstiltskin a deal', subtext: 'For the first time, the spinner refused.' },
+  { text: 'Medusa gazed into the Evil Queen\'s mirror', subtext: 'The mirror cracked. But not from the gaze — from the truth.' },
+  { text: 'Odysseus traded stories with Sherlock Holmes', subtext: 'One sailed the world to find home. The other never left home to find the world.' },
+  { text: 'Frankenstein\'s Monster met the Beast', subtext: 'They spoke of what it means to be made, not born.' },
+  { text: 'Snow White visited the Underworld', subtext: 'Hades offered her a pomegranate. She knew better.' },
+  { text: 'The Jabberwock flew over Asgard', subtext: 'Fenrir howled. The nonsense beast howled back.' },
+  { text: 'Prometheus shared fire with the Mad Hatter', subtext: 'Time unfroze for exactly one second. The Hatter wept.' },
+];
+
 // ===== Pulse Event =====
 export interface PulseEvent {
   id: string;
@@ -122,6 +138,27 @@ export function generatePulseEvents(count: number = 20): PulseEvent[] {
       text,
       icon: action.icon,
       accent: config.color,
+      timestamp,
+      reactions: generatePhantomReactions(eventId, dateSeed),
+    });
+  }
+
+  // Inject 2-3 narrative fusion events (cross-set character interactions)
+  const fusionCount = 2 + (dateSeed % 2); // 2 or 3 per day
+  const fusionRand = seeded(dateSeed + 777);
+  for (let i = 0; i < fusionCount; i++) {
+    const fusionIdx = Math.floor(fusionRand() * NARRATIVE_FUSIONS.length);
+    const fusion = NARRATIVE_FUSIONS[fusionIdx];
+    const minutesAgo = 5 + Math.floor(fusionRand() * 90);
+    const timestamp = minutesAgo < 60 ? `${minutesAgo}m ago` : `${Math.floor(minutesAgo / 60)}h ago`;
+    const eventId = `fusion-${dateSeed}-${i}`;
+    events.push({
+      id: eventId,
+      type: 'milestone' as SocialFeedType,
+      text: fusion.text,
+      subtext: fusion.subtext,
+      icon: '📜',
+      accent: '#a855f7',
       timestamp,
       reactions: generatePhantomReactions(eventId, dateSeed),
     });

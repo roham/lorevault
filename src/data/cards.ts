@@ -376,6 +376,57 @@ export function getGhostCardById(id: string): Card | undefined {
   return GHOST_CARDS.find(c => c.id === id);
 }
 
+// Ghost Card Whispers: each ghost reveals a cryptic hint for a related ghost
+export interface GhostWhisper {
+  fromGhostId: string;
+  toGhostId: string;
+  hint: string;
+  conditionHint: string; // vague hint about how to find the target ghost
+}
+
+export const GHOST_WHISPERS: GhostWhisper[] = [
+  {
+    fromGhostId: 'ghost-void-odin',
+    toGhostId: 'ghost-inverse-zeus',
+    hint: 'In the void, the All-Father glimpsed another throne — a lightning bolt that refuses to fall.',
+    conditionHint: 'The sky-king hides his shame beneath the mountain',
+  },
+  {
+    fromGhostId: 'ghost-mirror-sherlock',
+    toGhostId: 'ghost-crimson-dracula',
+    hint: 'The impossible deduction led to a castle where the mirrors show no reflection.',
+    conditionHint: 'Legends know one who never dies',
+  },
+  {
+    fromGhostId: 'ghost-crimson-dracula',
+    toGhostId: 'ghost-true-queen',
+    hint: 'The first night whispered of another who looked into a mirror and saw not beauty, but a crown.',
+    conditionHint: 'Complete an enchanted collection to see the truth',
+  },
+  {
+    fromGhostId: 'ghost-inverse-zeus',
+    toGhostId: 'ghost-void-odin',
+    hint: 'The unthrown bolt once resonated with a distant hum — a one-eyed god staring into the dark between branches.',
+    conditionHint: 'The void opens on the thirteenth attempt',
+  },
+  {
+    fromGhostId: 'ghost-forgotten-alice',
+    toGhostId: 'ghost-mirror-sherlock',
+    hint: 'Behind the door she never opened was a room where every deduction led to the same impossible conclusion.',
+    conditionHint: 'A weekly pattern hides the detective\'s secret',
+  },
+  {
+    fromGhostId: 'ghost-true-queen',
+    toGhostId: 'ghost-forgotten-alice',
+    hint: 'The true queen\'s mirror showed a girl falling — not down, but sideways through a door that shouldn\'t exist.',
+    conditionHint: 'Devotion across seven days reveals the forgotten',
+  },
+];
+
+export function getWhispersForGhost(ghostId: string): GhostWhisper[] {
+  return GHOST_WHISPERS.filter(w => w.fromGhostId === ghostId);
+}
+
 export function isGhostCard(cardId: string): boolean {
   return cardId.startsWith('ghost-');
 }

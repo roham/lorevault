@@ -312,6 +312,21 @@ export default function ProfilePage() {
         </div>
       </Link>
 
+      {/* Chronicle link */}
+      <Link
+        href="/chronicle"
+        className="block mb-6 p-3 rounded-xl bg-gradient-to-r from-emerald-500/5 to-teal-500/5 border border-emerald-500/15 hover:border-emerald-500/30 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-xl">📜</span>
+          <div className="flex-1">
+            <div className="text-xs font-bold text-foreground">Chronicle</div>
+            <div className="text-[10px] text-muted">Your collecting journey, told as a story</div>
+          </div>
+          <span className="text-muted text-xs">→</span>
+        </div>
+      </Link>
+
       {/* Forge link */}
       <Link
         href="/forge"

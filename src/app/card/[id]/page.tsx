@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import PriceChart from '@/components/marketplace/PriceChart';
-import { ALL_CARDS } from '@/data/cards';
+import { ALL_CARDS, GHOST_CARDS, isGhostCard, getWhispersForGhost } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getOwnedCardIds, addOwnedCards, getBattleRecords, getCardMeta, getAgingTiers, getPopulationData, type AgingTiers, type PopulationData } from '@/lib/store';
+import { getOwnedCardIds, addOwnedCards, getBattleRecords, getCardMeta, getAgingTiers, getPopulationData, burnCard, type AgingTiers, type PopulationData } from '@/lib/store';
 import CardJourney from '@/components/CardJourney';
 import LoreFragment from '@/components/LoreFragment';
 import { CardEvent } from '@/data/types';
@@ -38,8 +38,11 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [legacyData, setLegacyData] = useState<LegacyData | null>(null);
   const [valueHistory, setValueHistory] = useState<ValuePoint[]>([]);
   const [cardDNA, setCardDNA] = useState<CardDNA | null>(null);
+  const [burnConfirm, setBurnConfirm] = useState(false);
+  const [burned, setBurned] = useState(false);
+  const [burnXP, setBurnXP] = useState(0);
 
-  const card = ALL_CARDS.find(c => c.id === id);
+  const card = ALL_CARDS.find(c => c.id === id) || GHOST_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
 
   useEffect(() => {
@@ -379,14 +382,55 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               >
                 <span className="text-green-400 font-bold text-sm">Added to your collection!</span>
               </motion.div>
+            ) : burned ? (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center"
+              >
+                <span className="text-red-400 font-bold text-sm">Burned for +{burnXP} XP</span>
+              </motion.div>
             ) : isOwned ? (
-              <div className="flex gap-2">
-                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
-                  List for Sale
-                </button>
-                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
-                  Offer Trade
-                </button>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
+                    List for Sale
+                  </button>
+                  <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
+                    Offer Trade
+                  </button>
+                </div>
+                {burnConfirm ? (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        const result = burnCard(card.id);
+                        if (result) {
+                          setBurned(true);
+                          setBurnXP(result.xpGained);
+                          setIsOwned(false);
+                        }
+                        setBurnConfirm(false);
+                      }}
+                      className="flex-1 py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-bold"
+                    >
+                      Confirm Burn (irreversible)
+                    </button>
+                    <button
+                      onClick={() => setBurnConfirm(false)}
+                      className="flex-1 py-2 rounded-xl bg-surface border border-border text-muted text-xs font-semibold"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setBurnConfirm(true)}
+                    className="w-full py-2 rounded-xl bg-surface/40 border border-red-500/10 text-red-400/60 text-xs font-semibold hover:bg-red-500/5 transition-colors"
+                  >
+                    🔥 Burn for XP
+                  </button>
+                )}
               </div>
             ) : (
               <div className="flex gap-2">
@@ -559,6 +603,34 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
             <p className="text-sm text-foreground/70 italic leading-relaxed">{card.loreText}</p>
             <LoreFragment character={card.character} />
           </div>
+
+          {/* Ghost Card Whispers — breadcrumbs to related ghosts */}
+          {isOwned && isGhostCard(card.id) && (() => {
+            const whispers = getWhispersForGhost(card.id);
+            if (whispers.length === 0) return null;
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="p-4 rounded-2xl mb-6 border"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(129,140,248,0.05))',
+                  borderColor: 'rgba(129,140,248,0.15)',
+                }}
+              >
+                <div className="text-[10px] uppercase tracking-wider mb-3 text-purple-400">Whispers from the Void</div>
+                <div className="space-y-3">
+                  {whispers.map(w => (
+                    <div key={w.toGhostId} className="pl-3 border-l-2 border-purple-500/20">
+                      <p className="text-xs text-foreground/60 italic leading-relaxed">&ldquo;{w.hint}&rdquo;</p>
+                      <p className="text-[10px] text-muted/50 mt-1">{w.conditionHint}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })()}
 
           {/* Related cards */}
           {relatedCards.length > 0 && (

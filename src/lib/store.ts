@@ -748,6 +748,46 @@ export function getLoreNodesForCard(character: string): LoreNode[] {
   return LORE_GRAPH.filter(node => node.requiredCharacters.includes(character));
 }
 
+// Cascade: nodes adjacent to any unlocked node become "hinted" (visible silhouette + requirements)
+export function getHintedLoreNodes(): string[] {
+  const unlocked = new Set(getUnlockedLoreNodes());
+  const hinted = new Set<string>();
+
+  for (const node of LORE_GRAPH) {
+    if (unlocked.has(node.id)) {
+      // All connections of an unlocked node become hinted
+      for (const connId of node.connections) {
+        if (!unlocked.has(connId)) {
+          hinted.add(connId);
+        }
+      }
+    }
+  }
+
+  return Array.from(hinted);
+}
+
+// Track newly unlocked lore nodes and fire events
+export function checkLoreUnlocks(): string[] {
+  if (typeof window === 'undefined') return [];
+  const current = getUnlockedLoreNodes();
+  const prevKey = 'lorevault_lore_unlocked';
+  const prev: string[] = getItem(prevKey, [] as string[]);
+  const newUnlocks = current.filter(id => !prev.includes(id));
+
+  if (newUnlocks.length > 0) {
+    setItem(prevKey, current);
+    for (const nodeId of newUnlocks) {
+      const node = LORE_GRAPH.find(n => n.id === nodeId);
+      if (node) {
+        window.dispatchEvent(new CustomEvent('lore-unlock', { detail: { nodeId, title: node.title, secret: !!node.secret } }));
+      }
+    }
+  }
+
+  return newUnlocks;
+}
+
 // ===== Collector Prestige =====
 
 export interface PrestigeState {
@@ -907,13 +947,16 @@ export function getNextParallel(current: string): string | null {
 
 export function canTransmute(cardIds: string[], owned: Card[]): { valid: boolean; reason?: string } {
   if (cardIds.length !== 3) return { valid: false, reason: 'Select 3 cards' };
+  if (new Set(cardIds).size !== 3) return { valid: false, reason: 'Select 3 different cards' };
   const cards = cardIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[];
   if (cards.length !== 3) return { valid: false, reason: 'Cards not found' };
 
   const character = cards[0].character;
   const parallel = cards[0].parallel;
+  const scarcity = cards[0].scarcity;
   if (!cards.every(c => c.character === character)) return { valid: false, reason: 'Must be same character' };
   if (!cards.every(c => c.parallel === parallel)) return { valid: false, reason: 'Must be same parallel' };
+  if (!cards.every(c => c.scarcity === scarcity)) return { valid: false, reason: 'Must be same scarcity' };
   if (!getNextParallel(parallel)) return { valid: false, reason: 'Already max parallel' };
 
   return { valid: true };

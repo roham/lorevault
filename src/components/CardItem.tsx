@@ -3,7 +3,7 @@
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getCardMeta, getAgingTiers, getOriginBadge, getPopulationData, type AgingTiers, type OriginBadge, type PopulationData } from '@/lib/store';
+import { getCardMeta, getAgingTiers, getOriginBadge, getPopulationData, getPopulationDecayTier, type AgingTiers, type OriginBadge, type PopulationData } from '@/lib/store';
 import { generateCardDNA, type CardDNA } from '@/lib/card-dna';
 import { getSeasonalCardIds } from '@/data/seasonal-cards';
 import { isSeasonActive } from '@/lib/seasonal-vault';
@@ -211,6 +211,10 @@ function CardItemStatic({
     if (typeof window === 'undefined') return 'none';
     return getMutationState(card.id);
   });
+  const [decayTier] = useState<'bright' | 'normal' | 'faded'>(() => {
+    if (typeof window === 'undefined') return 'normal';
+    return getPopulationDecayTier(card);
+  });
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
   const borderWidth = card.scarcity === 'legendary' ? 3 : card.scarcity === 'epic' ? 2.5 : 2;
@@ -227,11 +231,13 @@ function CardItemStatic({
     switch (card.scarcity) { case 'legendary': return 14; case 'epic': return 10; case 'rare': return 8; default: return null; }
   };
   const mutationClass = mutation === 'ascended' ? 'mutation-halo-gold' : mutation === 'awakened' ? 'mutation-halo' : '';
+  const decayFilter = decayTier === 'bright' ? 'saturate(1.15) brightness(1.05)' : decayTier === 'faded' ? 'saturate(0.7) brightness(0.92)' : '';
+  const combinedFilter = [getAgingFilter(agingTiers), decayFilter].filter(Boolean).join(' ') || undefined;
 
   return (
     <div
       className={`relative select-none flex-shrink-0 ${getGlowClass()} ${mutationClass}`}
-      style={{ width: s.w, height: s.h, filter: getAgingFilter(agingTiers), borderRadius: '0.75rem' }}
+      style={{ width: s.w, height: s.h, filter: combinedFilter, borderRadius: '0.75rem' }}
       onClick={() => onClick?.(card)}
     >
       <div className="w-full h-full relative">

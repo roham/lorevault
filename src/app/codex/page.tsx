@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { LORE_GRAPH, getLoreNodesBySet, getSecretNodes, type LoreNode } from '@/data/lore-graph';
-import { getUnlockedLoreNodes, getCodexCompletionPercent, getOwnedCards } from '@/lib/store';
+import { getUnlockedLoreNodes, getHintedLoreNodes, getCodexCompletionPercent, getOwnedCards, checkLoreUnlocks } from '@/lib/store';
 import { SETS } from '@/data/sets';
 
 type CodexTab = 'all' | 'baker-street' | 'enchanted-kingdom' | 'wonderland' | 'gothic-horror' | 'olympus' | 'asgard' | 'secret';
@@ -29,14 +29,35 @@ interface NodePosition {
 export default function CodexPage() {
   const [tab, setTab] = useState<CodexTab>('all');
   const [unlockedIds, setUnlockedIds] = useState<Set<string>>(new Set());
+  const [hintedIds, setHintedIds] = useState<Set<string>>(new Set());
   const [codexPercent, setCodexPercent] = useState(0);
   const [selectedNode, setSelectedNode] = useState<LoreNode | null>(null);
   const [revealedNode, setRevealedNode] = useState<string | null>(null);
+  const [cascadeFlash, setCascadeFlash] = useState<string[]>([]);
 
   useEffect(() => {
     const ids = getUnlockedLoreNodes();
     setUnlockedIds(new Set(ids));
+    setHintedIds(new Set(getHintedLoreNodes()));
     setCodexPercent(getCodexCompletionPercent());
+    // Fire lore unlock events + track newly hinted cascade nodes
+    const newUnlocks = checkLoreUnlocks();
+    if (newUnlocks.length > 0) {
+      // Flash cascade: highlight newly hinted nodes from the fresh unlocks
+      const freshHinted: string[] = [];
+      for (const uid of newUnlocks) {
+        const node = LORE_GRAPH.find(n => n.id === uid);
+        if (node) {
+          for (const connId of node.connections) {
+            if (!ids.includes(connId)) freshHinted.push(connId);
+          }
+        }
+      }
+      if (freshHinted.length > 0) {
+        setCascadeFlash(freshHinted);
+        setTimeout(() => setCascadeFlash([]), 2000);
+      }
+    }
   }, []);
 
   const filteredNodes = useMemo(() => {
@@ -176,7 +197,9 @@ export default function CodexPage() {
                 const target = nodePositions.find(p => p.node.id === connId);
                 if (!target) return null;
                 const targetUnlocked = unlockedIds.has(target.node.id);
+                const targetHinted = hintedIds.has(target.node.id);
                 const lineActive = isUnlocked && targetUnlocked;
+                const lineCascade = isUnlocked && targetHinted;
                 return (
                   <line
                     key={`${pos.node.id}-${connId}`}
@@ -184,9 +207,9 @@ export default function CodexPage() {
                     y1={pos.y + 24}
                     x2={`${target.x}%`}
                     y2={target.y + 24}
-                    stroke={lineActive ? '#818cf880' : '#3a3d5c30'}
-                    strokeWidth={lineActive ? 1.5 : 0.5}
-                    strokeDasharray={lineActive ? 'none' : '4 4'}
+                    stroke={lineActive ? '#818cf880' : lineCascade ? '#f59e0b50' : '#3a3d5c30'}
+                    strokeWidth={lineActive ? 1.5 : lineCascade ? 1 : 0.5}
+                    strokeDasharray={lineActive ? 'none' : lineCascade ? '6 3' : '4 4'}
                   />
                 );
               });
@@ -196,8 +219,11 @@ export default function CodexPage() {
         {/* Nodes */}
         {nodePositions.map((pos, idx) => {
           const isUnlocked = unlockedIds.has(pos.node.id);
+          const isHinted = !isUnlocked && hintedIds.has(pos.node.id);
+          const isHidden = !isUnlocked && !isHinted;
           const isSecret = pos.node.secret;
           const isSelected = selectedNode?.id === pos.node.id;
+          const isCascading = cascadeFlash.includes(pos.node.id);
 
           return (
             <motion.div
@@ -223,12 +249,16 @@ export default function CodexPage() {
                       ? isSecret
                         ? 'bg-purple-500/20 border-purple-500/40 shadow-lg shadow-purple-500/10'
                         : 'bg-accent/15 border-accent/30 shadow-lg shadow-accent/10'
-                      : 'bg-surface/60 border-border/40'
+                      : isHinted
+                        ? 'bg-amber-500/10 border-amber-500/30 shadow-md shadow-amber-500/5'
+                        : 'bg-surface/60 border-border/40'
                   } border`}
-                  style={isSelected ? { boxShadow: `0 0 20px ${isSecret ? '#a855f7' : '#818cf8'}40` } : {}}
+                  style={isSelected ? { boxShadow: `0 0 20px ${isSecret ? '#a855f7' : isHinted ? '#f59e0b' : '#818cf8'}40` } : {}}
                 >
                   {isUnlocked ? (
                     <span>{pos.node.icon}</span>
+                  ) : isHinted ? (
+                    <span className="text-amber-400/70">?</span>
                   ) : (
                     <span className="text-muted/40">🔒</span>
                   )}
@@ -238,9 +268,11 @@ export default function CodexPage() {
                 <span className={`text-[9px] max-w-[80px] text-center leading-tight ${
                   isUnlocked
                     ? isSecret ? 'text-purple-300 font-semibold' : 'text-foreground/80'
-                    : 'text-muted/40'
+                    : isHinted
+                      ? 'text-amber-400/60'
+                      : 'text-muted/40'
                 }`}>
-                  {isUnlocked ? pos.node.title : isSecret ? '???' : pos.node.title}
+                  {isUnlocked ? pos.node.title : isHinted ? (isSecret ? '???' : pos.node.title) : isSecret ? '???' : pos.node.title}
                 </span>
 
                 {/* Unlock glow pulse */}
@@ -251,6 +283,17 @@ export default function CodexPage() {
                     transition={{ duration: 1 }}
                     className="absolute inset-0 rounded-xl"
                     style={{ background: isSecret ? '#a855f720' : '#818cf820' }}
+                  />
+                )}
+
+                {/* Cascade flash — newly revealed hint nodes pulse amber */}
+                {isCascading && (
+                  <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: [0.5, 2, 2.5], opacity: [0, 0.8, 0] }}
+                    transition={{ duration: 1.5 }}
+                    className="absolute inset-0 rounded-xl"
+                    style={{ background: '#f59e0b20' }}
                   />
                 )}
               </button>
@@ -300,13 +343,14 @@ export default function CodexPage() {
                 {selectedNode.connections.map(connId => {
                   const connNode = LORE_GRAPH.find(n => n.id === connId);
                   const connUnlocked = connNode && unlockedIds.has(connId);
+                  const connHinted = connNode && hintedIds.has(connId);
                   return connNode ? (
                     <button
                       key={connId}
-                      onClick={() => connUnlocked && setSelectedNode(connNode)}
-                      className={`text-[9px] mr-1 ${connUnlocked ? 'text-accent hover:underline' : 'text-muted/40'}`}
+                      onClick={() => (connUnlocked || connHinted) && setSelectedNode(connNode)}
+                      className={`text-[9px] mr-1 ${connUnlocked ? 'text-accent hover:underline' : connHinted ? 'text-amber-400/60 hover:underline' : 'text-muted/40'}`}
                     >
-                      {connUnlocked ? connNode.title : '???'}
+                      {connUnlocked ? connNode.title : connHinted ? connNode.title : '???'}
                     </button>
                   ) : null;
                 })}
@@ -316,7 +360,7 @@ export default function CodexPage() {
         )}
       </AnimatePresence>
 
-      {/* Locked Node Hint */}
+      {/* Locked / Hinted Node Detail */}
       <AnimatePresence mode="wait">
         {selectedNode && !unlockedIds.has(selectedNode.id) && (
           <motion.div
@@ -324,11 +368,26 @@ export default function CodexPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mt-4 p-4 rounded-xl bg-surface/60 border border-border/40"
+            className="mt-4 p-4 rounded-xl border"
+            style={{
+              background: hintedIds.has(selectedNode.id)
+                ? 'linear-gradient(135deg, rgba(245,158,11,0.05), rgba(245,158,11,0.1))'
+                : 'rgba(var(--surface), 0.6)',
+              borderColor: hintedIds.has(selectedNode.id) ? '#f59e0b25' : 'rgba(var(--border), 0.4)',
+            }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xl opacity-40">🔒</span>
-              <h3 className="text-sm font-bold text-muted">Locked Node</h3>
+              <span className="text-xl" style={{ opacity: hintedIds.has(selectedNode.id) ? 0.7 : 0.4 }}>
+                {hintedIds.has(selectedNode.id) ? '?' : '🔒'}
+              </span>
+              <div>
+                <h3 className="text-sm font-bold" style={{ color: hintedIds.has(selectedNode.id) ? '#f59e0b' : 'var(--muted)' }}>
+                  {hintedIds.has(selectedNode.id) ? 'Hinted Node' : 'Locked Node'}
+                </h3>
+                {hintedIds.has(selectedNode.id) && (
+                  <span className="text-[9px] text-amber-400/70">A nearby node revealed this path</span>
+                )}
+              </div>
             </div>
             <p className="text-xs text-muted mb-2">Collect these characters to unlock:</p>
             <div className="flex flex-wrap gap-1">
@@ -343,10 +402,14 @@ export default function CodexPage() {
       </AnimatePresence>
 
       {/* Legend */}
-      <div className="mt-4 flex items-center gap-4 text-[9px] text-muted">
+      <div className="mt-4 flex items-center gap-3 text-[9px] text-muted flex-wrap">
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded bg-accent/15 border border-accent/30" />
           <span>Unlocked</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 rounded bg-amber-500/10 border border-amber-500/30" />
+          <span>Hinted</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded bg-surface/60 border border-border/40" />

@@ -71,6 +71,7 @@ export default function ForgePage() {
   const [mode, setMode] = useState<ForgeMode>('forge');
   const [filterParallel, setFilterParallel] = useState<string>('base');
   const [burnConfirm, setBurnConfirm] = useState<string | null>(null);
+  const [forgeError, setForgeError] = useState<string | null>(null);
 
   useEffect(() => {
     setOwnedCards(getOwnedCards());
@@ -118,16 +119,17 @@ export default function ForgePage() {
     let outputCard: Card | undefined;
 
     if (mode === 'transmute') {
-      // Transmute: same character, next parallel tier
+      // Transmute: same character, next parallel tier, same scarcity
       const inputCharacter = inputCards[0]?.character;
-      const targetParallel = nextParallel;
+      const inputScarcity = inputCards[0]?.scarcity;
+      const targetParallel = getNextParallel(inputCards[0]?.parallel || filterParallel);
       if (!targetParallel) { setForging(false); return; }
 
-      // Find candidate: same character + target parallel
+      // Find candidate: same character + target parallel + same scarcity
       outputCard = ALL_CARDS.find(
-        c => c.character === inputCharacter && c.parallel === targetParallel && !ownedCards.some(o => o.id === c.id)
+        c => c.character === inputCharacter && c.parallel === targetParallel && c.scarcity === inputScarcity && !ownedCards.some(o => o.id === c.id)
       ) || ALL_CARDS.find(
-        c => c.setSlug === inputSet && c.parallel === targetParallel && !ownedCards.some(o => o.id === c.id)
+        c => c.setSlug === inputSet && c.parallel === targetParallel && c.scarcity === inputScarcity && !ownedCards.some(o => o.id === c.id)
       );
     } else {
       if (!nextRarity) { setForging(false); return; }
@@ -142,6 +144,8 @@ export default function ForgePage() {
 
     if (!outputCard) {
       setForging(false);
+      setForgeError(mode === 'transmute' ? 'No matching card at the next parallel tier. You may already own all variants.' : 'No higher-rarity card available to forge.');
+      setTimeout(() => setForgeError(null), 4000);
       return;
     }
 
@@ -171,7 +175,9 @@ export default function ForgePage() {
         });
       }
     }
-    localStorage.setItem('lorevault_card_meta', JSON.stringify(meta));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lorevault_card_meta', JSON.stringify(meta));
+    }
 
     if (mode === 'transmute') {
       addTransmuteEntry({
@@ -484,8 +490,12 @@ export default function ForgePage() {
       {/* Card grid */}
       {forgeableCards.length === 0 ? (
         <div className="p-8 rounded-xl bg-surface/30 border border-border/20 text-center">
-          <span className="text-3xl block mb-2">🔨</span>
-          <p className="text-sm text-muted">No {SCARCITY_CONFIG[filterRarity].label} cards to forge</p>
+          <span className="text-3xl block mb-2">{mode === 'transmute' ? '◈' : '🔨'}</span>
+          <p className="text-sm text-muted">
+            {mode === 'transmute'
+              ? `No ${PARALLEL_CONFIG[filterParallel as keyof typeof PARALLEL_CONFIG]?.label || filterParallel} cards to transmute`
+              : `No ${SCARCITY_CONFIG[filterRarity].label} cards to forge`}
+          </p>
           <p className="text-xs text-muted/60 mt-1">Open more packs to find cards</p>
         </div>
       ) : (
@@ -539,6 +549,20 @@ export default function ForgePage() {
           : forgeValidation.reason || (mode === 'transmute' ? 'Select 3 same-character, same-parallel cards' : `Select ${forgeCost} cards of the same rarity`)
         }
       </motion.button>
+
+      {/* Forge error */}
+      <AnimatePresence>
+        {forgeError && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mt-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center"
+          >
+            <p className="text-xs text-red-400">{forgeError}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Forge history */}
       {history.length > 0 && (
