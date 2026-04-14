@@ -1113,7 +1113,7 @@ export interface LoginCalendarState {
   claimedToday: boolean;
 }
 
-const LOGIN_REWARDS: { day: number; label: string; icon: string; xp: number }[] = [
+export const LOGIN_REWARDS: { day: number; label: string; icon: string; xp: number }[] = [
   { day: 1, label: '50 XP', icon: '✨', xp: 50 },
   { day: 2, label: '100 XP', icon: '⭐', xp: 100 },
   { day: 3, label: '200 XP', icon: '💫', xp: 200 },
@@ -1123,10 +1123,10 @@ const LOGIN_REWARDS: { day: number; label: string; icon: string; xp: number }[] 
   { day: 7, label: 'Legendary Pack', icon: '👑', xp: 500 },
 ];
 
-export { LOGIN_REWARDS };
-
 export function getLoginCalendar(): LoginCalendarState {
   if (typeof window === 'undefined') return { weekStart: '', days: Array(7).fill(false), currentDay: 0, claimedToday: false };
+  // Ensure streak is current before reading it
+  recordVisit();
   const todayUTC = new Date().toISOString().slice(0, 10);
   const streak = getStreak();
   let state = getItem<LoginCalendarState>('lorevault_login_calendar', {
@@ -1136,9 +1136,10 @@ export function getLoginCalendar(): LoginCalendarState {
     claimedToday: false,
   });
 
-  // If streak is 0 or reset, start fresh
+  // If streak is 0 or reset, start fresh and persist
   if (streak === 0 || (streak === 1 && !state.claimedToday)) {
     state = { weekStart: todayUTC, days: Array(7).fill(false), currentDay: 0, claimedToday: false };
+    setItem('lorevault_login_calendar', state);
   }
 
   // Check if already claimed today
@@ -1159,7 +1160,7 @@ export function claimLoginDay(): { reward: typeof LOGIN_REWARDS[number]; newStat
   if (lastClaimDate === todayUTC) return null; // Already claimed
 
   const state = getLoginCalendar();
-  if (state.currentDay >= 7) {
+  if (state.currentDay === 7) {
     // Reset calendar for next cycle
     state.days = Array(7).fill(false);
     state.currentDay = 0;

@@ -9,7 +9,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 import { Card, getTierForLevel } from '@/data/types';
-import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, type LoginCalendarState } from '@/lib/store';
+import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, type LoginCalendarState } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
@@ -52,6 +52,7 @@ export default function Home() {
       return;
     }
 
+    recordVisit(); // Update streak before reading it
     const owned = getOwnedCards();
     setOwnedCards(owned);
     setPacks(getPackCredits());
@@ -212,7 +213,6 @@ export default function Home() {
               {LOGIN_REWARDS.map((reward, idx) => {
                 const claimed = loginCalendar.days[idx];
                 const isCurrent = idx === loginCalendar.currentDay && !loginCalendar.claimedToday;
-                const isLocked = idx > loginCalendar.currentDay || (idx === loginCalendar.currentDay && loginCalendar.claimedToday);
 
                 return (
                   <button

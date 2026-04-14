@@ -6,7 +6,7 @@ import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { SETS } from '@/data/sets';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
-import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addOwnedCards, addXP, getOwnedCardIds, revealCard, getDailyPackState, claimDailyPack, progressDailyMission } from '@/lib/store';
+import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addPackCredits, addOwnedCards, addXP, getOwnedCardIds, revealCard, getDailyPackState, claimDailyPack, progressDailyMission } from '@/lib/store';
 import { getOnboardingState, updateOnboarding, checkUnlocks } from '@/lib/onboarding';
 import { checkAchievements, getAchievementById } from '@/lib/achievements';
 import AchievementCelebration from '@/components/AchievementCelebration';
@@ -119,6 +119,27 @@ function PacksContent() {
       openPack('mixed', true);
     }
   }, [isFirstPack]);
+
+  // Daily pack countdown timer
+  useEffect(() => {
+    if (dailyPackAvailable) return;
+    const tick = () => {
+      const dp = getDailyPackState();
+      if (dp.available) {
+        setDailyPackAvailable(true);
+        setDailyCountdown('');
+        return;
+      }
+      const ms = dp.nextResetMs;
+      const h = Math.floor(ms / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      setDailyCountdown(`${h}h ${m}m ${s}s`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [dailyPackAvailable]);
 
   const openPack = useCallback((setSlug: string, rigged: boolean = false) => {
     if (!usePackCredit()) return;
@@ -640,6 +661,8 @@ function PacksContent() {
             if (claimDailyPack()) {
               setDailyPackAvailable(false);
               progressDailyMission('open-pack');
+              // Grant 1 free credit so openPack's usePackCredit() succeeds
+              addPackCredits(1);
               openPack('mixed');
             }
           }}
@@ -660,7 +683,7 @@ function PacksContent() {
             <span className="text-xl opacity-50">🎁</span>
             <div className="flex-1">
               <div className="text-xs text-muted">Daily pack claimed</div>
-              <div className="text-[10px] text-muted/50">Next pack at midnight UTC</div>
+              <div className="text-[10px] text-muted/50">{dailyCountdown ? `Next pack in ${dailyCountdown}` : 'Next pack at midnight UTC'}</div>
             </div>
           </div>
         </div>
