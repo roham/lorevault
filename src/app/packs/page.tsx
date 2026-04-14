@@ -12,6 +12,81 @@ import { checkAchievements, getAchievementById } from '@/lib/achievements';
 import AchievementCelebration from '@/components/AchievementCelebration';
 import { Achievement } from '@/data/types';
 import { useSearchParams } from 'next/navigation';
+import { isSeasonActive, getSeasonTimeRemaining, CURRENT_SEASON } from '@/lib/seasonal-vault';
+import { SEASONAL_CARDS } from '@/data/seasonal-cards';
+
+function SeasonBanner() {
+  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 });
+  const [active, setActive] = useState(true);
+
+  useEffect(() => {
+    setActive(isSeasonActive());
+    setTime(getSeasonTimeRemaining());
+    const interval = setInterval(() => {
+      setTime(getSeasonTimeRemaining());
+      setActive(isSeasonActive());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-6 p-4 rounded-2xl overflow-hidden relative"
+      style={{
+        background: active
+          ? `linear-gradient(135deg, ${CURRENT_SEASON.gradientFrom}20, ${CURRENT_SEASON.gradientTo}20)`
+          : 'linear-gradient(135deg, rgba(107,112,148,0.1), rgba(107,112,148,0.05))',
+        border: active ? `1px solid ${CURRENT_SEASON.gradientFrom}30` : '1px solid rgba(107,112,148,0.2)',
+      }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">{active ? CURRENT_SEASON.icon : '🔒'}</span>
+          <div>
+            <div className="text-xs font-bold" style={{ color: active ? '#f97316' : '#6b7094' }}>
+              {CURRENT_SEASON.subtitle}
+            </div>
+            <div className="text-[10px] text-muted">
+              {active ? '3 exclusive legendaries — only available this season' : 'Season ended — vault sealed'}
+            </div>
+          </div>
+        </div>
+        {active && time.total > 0 && (
+          <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/20">
+            <span className="text-[10px] font-bold font-mono text-red-400">
+              {time.days}d {time.hours}h {time.minutes}m {time.seconds}s
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Seasonal card preview */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar">
+        {SEASONAL_CARDS.map((card) => (
+          <div key={card.id} className="relative shrink-0">
+            <CardItem card={card} size="sm" interactive={false} />
+            {!active && (
+              <div className="absolute inset-0 rounded-xl bg-black/60 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-lg">🔒</span>
+                  <div className="text-[8px] font-bold text-muted mt-0.5">VAULT SEALED</div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {active && (
+        <Link href="/forge" className="mt-3 block text-center text-[10px] text-orange-400 hover:text-orange-300 font-bold">
+          Forge cards at seasonal discount (2 instead of 3) →
+        </Link>
+      )}
+    </motion.div>
+  );
+}
 
 function PacksContent() {
   const searchParams = useSearchParams();
@@ -549,7 +624,10 @@ function PacksContent() {
           <span className="text-sm font-bold text-accent">{packCredits}</span>
         </div>
       </div>
-      <p className="text-xs text-muted mb-6">5 cards per pack. Guaranteed 1 Uncommon+. Cards added permanently.</p>
+      <p className="text-xs text-muted mb-4">5 cards per pack. Guaranteed 1 Uncommon+. Cards added permanently.</p>
+
+      {/* Season Countdown + Exclusive Cards */}
+      <SeasonBanner />
 
       {packCredits <= 0 && (
         <div className="mb-6 p-4 rounded-2xl bg-surface border border-border text-center">

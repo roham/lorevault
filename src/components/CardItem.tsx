@@ -5,6 +5,8 @@ import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
 import { getCardMeta, getAgingTiers, getOriginBadge, getPopulationData, type AgingTiers, type OriginBadge, type PopulationData } from '@/lib/store';
 import { generateCardDNA, type CardDNA } from '@/lib/card-dna';
+import { getSeasonalCardIds } from '@/data/seasonal-cards';
+import { isSeasonActive } from '@/lib/seasonal-vault';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -274,6 +276,19 @@ function CardItemStatic({
                 </div>
                 <div className={`${size === 'lg' || size === 'xl' ? 'text-xs' : s.serial} font-mono font-bold uppercase`} style={{ color: borderColor }}>{scarcityConfig.label}</div>
                 <div className={`${size === 'lg' || size === 'xl' ? 'text-xs' : s.serial} text-white/30 mt-0.5`}>Sealed</div>
+              </div>
+            </div>
+          )}
+
+          {/* Vault Sealed overlay — seasonal cards after expiry */}
+          {!isSealed && typeof window !== 'undefined' && getSeasonalCardIds().includes(card.id) && !isSeasonActive() && (
+            <div className="absolute inset-0 z-[18] flex items-center justify-center rounded-xl overflow-hidden">
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+              <div className="relative text-center z-10">
+                <span className={`${size === 'xl' || size === 'lg' ? 'text-2xl' : 'text-lg'}`}>🔒</span>
+                <div className={`${size === 'lg' || size === 'xl' ? 'text-[9px]' : 'text-[7px]'} font-bold text-amber-400 uppercase tracking-wider mt-0.5`}>
+                  Vault Sealed
+                </div>
               </div>
             </div>
           )}

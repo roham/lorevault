@@ -300,6 +300,21 @@ export default function ProfilePage() {
         </div>
       </Link>
 
+      {/* Forge link */}
+      <Link
+        href="/forge"
+        className="block mb-6 p-3 rounded-xl bg-gradient-to-r from-orange-500/5 to-red-500/5 border border-orange-500/15 hover:border-orange-500/30 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-xl">🔨</span>
+          <div className="flex-1">
+            <div className="text-xs font-bold text-foreground">Forge</div>
+            <div className="text-[10px] text-muted">Combine cards to forge higher rarities</div>
+          </div>
+          <span className="text-muted text-xs">→</span>
+        </div>
+      </Link>
+
       {/* Your Activity */}
       {activityEvents.length > 0 && (
         <section className="mb-8">
