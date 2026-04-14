@@ -6,7 +6,7 @@ import { Card, SCARCITY_CONFIG } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS, getCharacterStats, getEffectiveStat } from '@/data/stats';
-import { getOwnedCards, addOwnedCards, getPackCredits } from '@/lib/store';
+import { getOwnedCards, addOwnedCards } from '@/lib/store';
 
 type Phase = 'intro' | 'pre-battle' | 'battle' | 'round-result' | 'battle-result' | 'collection';
 
@@ -196,7 +196,7 @@ export default function PlayPrototype() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            Your cards. Your stats. Your battle.
+            Battle to build your collection.
           </motion.p>
           <motion.h1
             className="type-display text-foreground mb-8"
@@ -204,7 +204,7 @@ export default function PlayPrototype() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            Play.
+            Battle.
             <br />
             Win.
             <br />
