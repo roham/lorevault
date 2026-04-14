@@ -126,7 +126,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Parallel Transmutation system in `/forge`: own 3 same-character cards of one parallel → transmute to next parallel tier (base→silver→gold→holographic→obsidian). Each transmute consumes the 3 inputs. Adds `lorevault_transmute_history`. (B) Population Decay visual: cards with serial numbers above 75th percentile of `totalMinted` show subtle desaturation in marketplace view. Below 25th percentile glow brighter. (C) Scarcity Badges on showcase frames — unlock unique showcase borders based on rarity milestones (10 Epics, 5 Legendaries, 1 Obsidian). (D) "Burn" mechanic: permanently sacrifice a card for 2× its XP value + "Sacrificed" origin badge on all remaining copies of that character.
 - **Why**: Scarcity at 10 mechanically but Loss Aversion at 9 lacks irreversible decisions with emotional weight. Burn + transmute create real sacrifice. Population decay makes serial position psychologically felt. Pushes Loss Aversion 9→10.
 - **Acceptance criteria**: Parallel transmute on forge page with 3-card input. Burn button on card detail. Population decay visual on marketplace. Scarcity badges in showcase. Transmute history persisted.
-- **Status**: PENDING
+- **Status**: DONE — commit 8e026ff, v8.35
 
 ### DIRECTIVE-016: Discovery Cascade + Narrative Fusion
 - **Priority**: P0
@@ -153,4 +153,5 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-011**: Live Pulse Feed + Collector Reactions — DONE (v8.31, 2026-04-14). Score: 91→93 (+2).
 - **DIRECTIVE-012**: Seasonal Vault + Countdown Forge — DONE (v8.32, 2026-04-14). Score: 93→95 (+2).
 - **DIRECTIVE-013**: Ghost Cards + Hidden Pull Mechanics — DONE (v8.33, 2026-04-14). Score: 95→97 (+2).
-- **DIRECTIVE-014**: Collector Prestige — Meta-Completion Layer — DONE (v8.34, 2026-04-14). Score: 97→TBD.
+- **DIRECTIVE-014**: Collector Prestige — Meta-Completion Layer — DONE (v8.34, 2026-04-14). Score: 97→98 (+1).
+- **DIRECTIVE-015**: Scarcity Gradient Ascension — Parallel Transmute + Burn + Population Decay — DONE (v8.35, 2026-04-14). Score: 98→99 (+1).
