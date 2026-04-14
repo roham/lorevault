@@ -88,13 +88,14 @@ interface BoardState {
   xpBreakdown: XPBreakdown[];
   // Difficulty + cards registry for pregame
   difficulty: Difficulty | null;
+  gameLength: 3 | 9;
   preCards: CardRegistry; // cards loaded at pregame, before game init
   prePlayerRoster: Roster | null;
 }
 
 type BoardAction =
   | { type: 'PREGAME_READY'; cards: CardRegistry; playerRoster: Roster }
-  | { type: 'SELECT_DIFFICULTY'; difficulty: Difficulty; game: GameState; playerRoster: Roster; aiRoster: Roster; cards: CardRegistry }
+  | { type: 'SELECT_DIFFICULTY'; difficulty: Difficulty; gameLength: 3 | 9; game: GameState; playerRoster: Roster; aiRoster: Roster; cards: CardRegistry }
   | { type: 'INIT_GAME'; game: GameState; playerRoster: Roster; aiRoster: Roster; cards: CardRegistry }
   | { type: 'START_CONTROL_ROLL'; value: number; result: 'pitcher' | 'hitter'; batterName: string; pitcherName: string }
   | { type: 'CONTROL_LANDED' }
@@ -123,6 +124,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         game: action.game,
         animPhase: 'idle',
         difficulty: action.difficulty,
+        gameLength: action.gameLength,
         playerRoster: action.playerRoster,
         aiRoster: action.aiRoster,
         cards: action.cards,
@@ -283,6 +285,7 @@ const initialState: BoardState = {
   particleBurst: false,
   xpBreakdown: [],
   difficulty: null,
+  gameLength: 3,
   preCards: new Map(),
   prePlayerRoster: null,
 };
@@ -635,6 +638,7 @@ function ControlRollDisplay({
 
 export default function PlayPage() {
   const [state, dispatch] = useReducer(boardReducer, initialState);
+  const [selectedInnings, setSelectedInnings] = useState<3 | 9>(3);
   const logRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -670,7 +674,7 @@ export default function PlayPage() {
   }, []);
 
   // Handle difficulty selection — generates AI lineup and starts game
-  const handleSelectDifficulty = useCallback((difficulty: Difficulty) => {
+  const handleSelectDifficulty = useCallback((difficulty: Difficulty, innings: 3 | 9 = 3) => {
     if (!state.prePlayerRoster || state.preCards.size === 0) return;
     const playerRoster = state.prePlayerRoster;
     const cards = state.preCards;
@@ -680,8 +684,8 @@ export default function PlayPage() {
       playerRoster.pitcher,
     ]);
     const aiRoster = generateAILineup(difficulty, playerIds, Date.now());
-    const game = createGame(aiRoster, playerRoster, 3);
-    dispatch({ type: 'SELECT_DIFFICULTY', difficulty, game, playerRoster, aiRoster, cards });
+    const game = createGame(aiRoster, playerRoster, innings);
+    dispatch({ type: 'SELECT_DIFFICULTY', difficulty, gameLength: innings, game, playerRoster, aiRoster, cards });
   }, [state.prePlayerRoster, state.preCards]);
 
   // Cleanup timers
@@ -1112,6 +1116,37 @@ export default function PlayPage() {
           <p className="text-xs text-muted/50">Select difficulty to begin</p>
         </motion.div>
 
+        {/* Game Length Toggle */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="w-full max-w-sm mb-4"
+        >
+          <div className="flex items-center rounded-xl bg-surface/50 border border-border/30 p-1">
+            <button
+              onClick={() => setSelectedInnings(3)}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+                selectedInnings === 3
+                  ? 'bg-accent/15 text-accent border border-accent/20'
+                  : 'text-muted/40 hover:text-muted/60 border border-transparent'
+              }`}
+            >
+              3 Innings <span className="text-[10px] font-normal opacity-60">Quick</span>
+            </button>
+            <button
+              onClick={() => setSelectedInnings(9)}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+                selectedInnings === 9
+                  ? 'bg-accent/15 text-accent border border-accent/20'
+                  : 'text-muted/40 hover:text-muted/60 border border-transparent'
+              }`}
+            >
+              9 Innings <span className="text-[10px] font-normal opacity-60">Full</span>
+            </button>
+          </div>
+        </motion.div>
+
         <div className="w-full max-w-sm space-y-3">
           {difficultyOptions.map((opt, i) => (
             <motion.button
@@ -1119,7 +1154,7 @@ export default function PlayPage() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 + i * 0.08 }}
-              onClick={() => handleSelectDifficulty(opt.key)}
+              onClick={() => handleSelectDifficulty(opt.key, selectedInnings)}
               className={`w-full text-left rounded-2xl border transition-all cursor-pointer ${opt.borderColor}`}
               style={{ background: opt.bgGrad }}
               whileTap={{ scale: 0.98 }}
@@ -1211,6 +1246,11 @@ export default function PlayPage() {
                 'bg-green-500/10 text-green-400'
               }`}>
                 {state.difficulty}
+              </span>
+            )}
+            {state.gameLength === 9 && (
+              <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">
+                9 INN
               </span>
             )}
           </div>
@@ -1391,7 +1431,7 @@ export default function PlayPage() {
                 <motion.div initial={{ scale: 0.85, y: 30 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 22 }} className="w-full max-w-sm">
                   {/* Score + Result */}
                   <div className="text-center mb-6">
-                    <p className="text-[10px] text-muted/40 uppercase tracking-[0.2em] mb-3">Game Over</p>
+                    <p className="text-[10px] text-muted/40 uppercase tracking-[0.2em] mb-3">Game Over {game.innings === 9 ? '— Full Game' : ''}</p>
                     <p className="text-5xl font-black mb-2 tabular-nums">{game.score.away} — {game.score.home}</p>
                     <motion.p className={`text-sm font-black ${summary.winner === 'home' ? 'text-green-400' : 'text-red-400'}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}>
                       {summary.winner === 'home' ? 'YOU WIN!' : 'YOU LOSE'}
@@ -1406,6 +1446,61 @@ export default function PlayPage() {
                       <p className="text-[11px] text-muted/50 mt-1">{summary.mvp.hits} hits, {summary.mvp.rbis} RBIs</p>
                     </motion.div>
                   )}
+
+                  {/* Box Score */}
+                  {game.log.length > 0 && (() => {
+                    // Compute per-batter stats from log
+                    const batters = new Map<string, { ab: number; h: number; hr: number; rbi: number; bb: number }>();
+                    for (const entry of game.log) {
+                      if (entry.half !== 'bottom') continue; // player is home
+                      if (!entry.batter) continue;
+                      const s = batters.get(entry.batter) || { ab: 0, h: 0, hr: 0, rbi: 0, bb: 0 };
+                      if (entry.outcome === 'walk') { s.bb++; }
+                      else { s.ab++; }
+                      if (['single', 'double', 'triple', 'homerun'].includes(entry.outcome)) s.h++;
+                      if (entry.outcome === 'homerun') s.hr++;
+                      s.rbi += entry.runsScored;
+                      batters.set(entry.batter, s);
+                    }
+                    if (batters.size === 0) return null;
+                    const rows = Array.from(batters.entries()).sort((a, b) => (b[1].h + b[1].bb) - (a[1].h + a[1].bb));
+                    return (
+                      <motion.div
+                        className="rounded-2xl bg-surface/50 border border-border/30 mb-4 overflow-hidden"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.55 }}
+                      >
+                        <div className="px-4 py-2 border-b border-border/20">
+                          <p className="text-[10px] text-muted/50 uppercase tracking-widest">Box Score</p>
+                        </div>
+                        <table className="w-full text-[10px]">
+                          <thead>
+                            <tr className="text-muted/30 border-b border-border/10">
+                              <th className="text-left px-4 py-1 font-bold">Player</th>
+                              <th className="text-center px-1 py-1 font-bold">AB</th>
+                              <th className="text-center px-1 py-1 font-bold">H</th>
+                              <th className="text-center px-1 py-1 font-bold">HR</th>
+                              <th className="text-center px-1 py-1 font-bold">RBI</th>
+                              <th className="text-center px-1 py-1 font-bold">BB</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {rows.map(([name, s]) => (
+                              <tr key={name} className="border-b border-border/5 last:border-0">
+                                <td className="px-4 py-1.5 font-bold text-[11px] truncate max-w-[120px]">{name}</td>
+                                <td className="text-center px-1 py-1.5 tabular-nums text-muted/50">{s.ab}</td>
+                                <td className="text-center px-1 py-1.5 tabular-nums font-bold">{s.h}</td>
+                                <td className={`text-center px-1 py-1.5 tabular-nums ${s.hr > 0 ? 'text-amber-400 font-bold' : 'text-muted/30'}`}>{s.hr}</td>
+                                <td className={`text-center px-1 py-1.5 tabular-nums ${s.rbi > 0 ? 'text-blue-400 font-bold' : 'text-muted/30'}`}>{s.rbi}</td>
+                                <td className="text-center px-1 py-1.5 tabular-nums text-muted/30">{s.bb}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </motion.div>
+                    );
+                  })()}
 
                   {/* XP Breakdown */}
                   {state.xpBreakdown.length > 0 && (
