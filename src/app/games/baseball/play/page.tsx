@@ -105,6 +105,8 @@ interface BoardState {
   crowdReaction: CrowdReactionType | null;
   // Evolution tiers per card (only player hitters)
   cardEvolutions: Map<string, number>;
+  // Tier-ups detected after game (character evolved during this game)
+  tierUps: { character: string; newTier: number }[];
 }
 
 type BoardAction =
@@ -121,7 +123,8 @@ type BoardAction =
   | { type: 'SET_XP'; xpBreakdown: XPBreakdown[] }
   | { type: 'RETURN_IDLE' }
   | { type: 'HALF_INNING_DONE' }
-  | { type: 'SET_CROWD'; crowdReaction: CrowdReactionType | null };
+  | { type: 'SET_CROWD'; crowdReaction: CrowdReactionType | null }
+  | { type: 'SET_TIER_UPS'; tierUps: { character: string; newTier: number }[] };
 
 function boardReducer(state: BoardState, action: BoardAction): BoardState {
   switch (action.type) {
@@ -268,6 +271,9 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
     case 'SET_CROWD':
       return { ...state, crowdReaction: action.crowdReaction };
 
+    case 'SET_TIER_UPS':
+      return { ...state, tierUps: action.tierUps };
+
     default:
       return state;
   }
@@ -312,6 +318,7 @@ const initialState: BoardState = {
   stadiumTheme: null,
   crowdReaction: null,
   cardEvolutions: new Map(),
+  tierUps: [],
 };
 
 // ===== Build evolution map from XP data =====
@@ -796,8 +803,29 @@ function PlayPageInner() {
         state.aiRoster?.name || 'AI Team',
         state.difficulty || undefined,
       );
+      // Snapshot pre-game evolution tiers
+      const preGameTiers = state.cardEvolutions;
       const xp = awardGameXP(state.game, gameSummary);
       dispatch({ type: 'SET_XP', xpBreakdown: xp });
+
+      // Detect tier-ups: compare pre-game tier with post-game XP
+      const postGameXPData = getCharacterXP();
+      const tierUps: { character: string; newTier: number }[] = [];
+      for (const xpEntry of xp) {
+        if (!xpEntry.cardId || xpEntry.character === 'Unknown') continue;
+        const preTier = preGameTiers.get(xpEntry.cardId) || 0;
+        const postXP = postGameXPData.get(xpEntry.cardId);
+        if (postXP) {
+          const postTier = getEvolutionTier(postXP.totalXP);
+          if (postTier > preTier) {
+            tierUps.push({ character: xpEntry.character, newTier: postTier });
+          }
+        }
+      }
+      if (tierUps.length > 0) {
+        dispatch({ type: 'SET_TIER_UPS', tierUps });
+        gameAudio.play('organ_riff');
+      }
 
       // Award global LoreVault XP
       const isWin = gameSummary.winner === 'home';
@@ -1087,6 +1115,20 @@ function PlayPageInner() {
       batterName: batterCard.character, pitcherName: pitcherCard.character,
     });
   }, [state.game, state.animPhase, state.cards]);
+
+  // ===== Auto-advance AI at-bats =====
+  const handleRollRef = useRef<(() => void) | undefined>(undefined);
+  handleRollRef.current = handleRoll;
+  useEffect(() => {
+    if (state.animPhase !== 'idle' || !state.game) return;
+    const isAIBatting = getBattingTeam(state.game) === 'away';
+    if (!isAIBatting) return;
+    // Auto-roll after 800ms delay when AI is batting
+    const autoTimer = setTimeout(() => {
+      handleRollRef.current?.();
+    }, 800);
+    return () => clearTimeout(autoTimer);
+  }, [state.animPhase, state.game]);
 
   // ===== Handle Steal button =====
   const handleSteal = useCallback((fromBase: 'first' | 'second') => {
@@ -1423,12 +1465,12 @@ function PlayPageInner() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" aria-live="polite" aria-atomic="true">
             <div className="text-center">
               <span className="text-[9px] text-muted/50 uppercase block">{state.aiRoster?.name || 'Away'}</span>
               <span className="text-lg font-bold tabular-nums">{game.score.away}</span>
             </div>
-            <span className="text-muted/20 text-xs">vs</span>
+            <span className="text-muted/20 text-xs" aria-hidden="true">vs</span>
             <div className="text-center">
               <span className="text-[9px] text-muted/50 uppercase block">{state.playerRoster?.name || 'Home'}</span>
               <span className="text-lg font-bold tabular-nums">{game.score.home}</span>
@@ -1758,6 +1800,41 @@ function PlayPageInner() {
                     </motion.div>
                   )}
 
+                  {/* Evolution Tier-Ups */}
+                  {state.tierUps.length > 0 && (
+                    <motion.div
+                      className="rounded-2xl border border-amber-500/20 mb-4 overflow-hidden"
+                      style={{ background: 'linear-gradient(135deg, rgba(255,215,0,0.05), rgba(205,127,50,0.05))' }}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.0, type: 'spring', stiffness: 200 }}
+                    >
+                      <div className="px-4 py-2 border-b border-amber-500/10">
+                        <p className="text-[10px] text-amber-400/60 uppercase tracking-widest font-bold">Evolution</p>
+                      </div>
+                      {state.tierUps.map((tu, i) => {
+                        const tierDef = EVOLUTION_TIERS[tu.newTier];
+                        return (
+                          <motion.div
+                            key={tu.character}
+                            className="flex items-center justify-between px-4 py-3 border-b border-amber-500/5 last:border-0"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 1.1 + i * 0.1 }}
+                          >
+                            <span className="text-sm font-bold">{tu.character}</span>
+                            <span
+                              className="text-[9px] font-black tracking-wider px-2 py-1 rounded-full"
+                              style={{ color: tierDef.borderColor, backgroundColor: `${tierDef.borderColor}15`, border: `1px solid ${tierDef.borderColor}40` }}
+                            >
+                              {tierDef.label}
+                            </span>
+                          </motion.div>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+
                   {/* Key Plays */}
                   {summary.keyPlays.length > 0 && (
                     <motion.div
@@ -1857,28 +1934,35 @@ function PlayPageInner() {
               </AnimatePresence>
 
               {/* Roll Button */}
-              <motion.button
-                onClick={handleRoll}
-                disabled={state.animPhase !== 'idle'}
-                className={`flex-1 py-4 rounded-xl text-base font-black tracking-wider transition-all ${
-                  state.animPhase === 'idle'
-                    ? 'bg-accent text-bg cursor-pointer'
-                    : 'bg-surface/50 text-muted/20 border border-border/20 cursor-not-allowed'
-                }`}
-                animate={
-                  state.animPhase === 'idle'
-                    ? { boxShadow: ['0 0 0px rgba(251,191,36,0)', '0 0 20px rgba(251,191,36,0.15)', '0 0 0px rgba(251,191,36,0)'] }
-                    : {}
-                }
-                transition={
-                  state.animPhase === 'idle'
-                    ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
-                    : {}
-                }
-                whileTap={state.animPhase === 'idle' ? { scale: 0.97 } : {}}
-              >
-                {state.animPhase === 'idle' ? 'ROLL' : ''}
-              </motion.button>
+              {(() => {
+                const aiAutoRolling = state.animPhase === 'idle' && state.game && getBattingTeam(state.game) === 'away';
+                return (
+                  <motion.button
+                    onClick={handleRoll}
+                    disabled={state.animPhase !== 'idle' || !!aiAutoRolling}
+                    className={`flex-1 py-4 rounded-xl text-base font-black tracking-wider transition-all active:translate-y-[2px] ${
+                      state.animPhase === 'idle' && !aiAutoRolling
+                        ? 'bg-accent text-bg cursor-pointer'
+                        : aiAutoRolling
+                          ? 'bg-surface/50 text-muted/30 border border-amber-500/10 cursor-default'
+                          : 'bg-surface/50 text-muted/20 border border-border/20 cursor-not-allowed'
+                    }`}
+                    animate={
+                      state.animPhase === 'idle' && !aiAutoRolling
+                        ? { boxShadow: ['0 0 0px rgba(251,191,36,0)', '0 0 20px rgba(251,191,36,0.15)', '0 0 0px rgba(251,191,36,0)'] }
+                        : {}
+                    }
+                    transition={
+                      state.animPhase === 'idle' && !aiAutoRolling
+                        ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+                        : {}
+                    }
+                    whileTap={state.animPhase === 'idle' && !aiAutoRolling ? { scale: 0.97 } : {}}
+                  >
+                    {aiAutoRolling ? 'AI BATTING...' : state.animPhase === 'idle' ? 'ROLL' : ''}
+                  </motion.button>
+                );
+              })()}
             </div>
           )}
         </div>
