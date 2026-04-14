@@ -106,6 +106,32 @@ export default function BaseballHub() {
             </div>
           </Link>
         </motion.div>
+
+        {/* Tournament */}
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Link href="/games/baseball/tournament">
+            <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 hover:border-amber-500/40 transition-all group">
+              <div className="p-5" style={{ background: 'linear-gradient(135deg, #1a1400 0%, #12141f 100%)' }}>
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-2xl flex-shrink-0">
+                    &#127942;
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold mb-0.5">Tournament</h3>
+                    <p className="text-xs text-muted">
+                      3-game gauntlet. Rookie → Veteran → Legend. One loss = elimination.
+                    </p>
+                  </div>
+                  <div className="text-muted text-xl group-hover:text-amber-400 transition-colors">&rarr;</div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
       </div>
 
       {/* Saved Lineups */}
