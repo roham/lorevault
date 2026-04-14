@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { STORY_WORLDS, StoryWorld, getUnlockedChapters, getNextLockedChapter } from '@/data/story-maps';
+import { ALL_CARDS } from '@/data/cards';
 import { getOwnedCards } from '@/lib/store';
 
 type Phase = 'intro' | 'select-world' | 'story-map';
@@ -232,6 +233,8 @@ export default function StoryPrototype() {
                   isNext={isNext}
                   accentColor={selectedWorld.accentColor}
                   worldGradientFrom={selectedWorld.gradientFrom}
+                  ownedCharacters={ownedCharacters}
+                  setSlug={selectedWorld.setSlug}
                 />
               </motion.div>
             );
@@ -269,7 +272,7 @@ export default function StoryPrototype() {
 }
 
 // ═══════════════════════════════════════════
-// Story Node Card — locked door with visible title
+// Story Node Card — locked door with visible title + card silhouettes
 // ═══════════════════════════════════════════
 function StoryNodeCard({
   chapter,
@@ -277,12 +280,16 @@ function StoryNodeCard({
   isNext,
   accentColor,
   worldGradientFrom,
+  ownedCharacters,
+  setSlug,
 }: {
   chapter: import('@/data/story-maps').StoryNode;
   isUnlocked: boolean;
   isNext: boolean;
   accentColor: string;
   worldGradientFrom: string;
+  ownedCharacters: Set<string>;
+  setSlug: string;
 }) {
   const Wrapper = isUnlocked
     ? ({ children, ...props }: { children: React.ReactNode; className?: string }) => (
@@ -292,9 +299,12 @@ function StoryNodeCard({
         <div {...props}>{children}</div>
       );
 
+  // For "next locked" chapter: look up card data for each required character
+  const ownedCount = chapter.requiredCharacters.filter(c => ownedCharacters.has(c)).length;
+  const totalRequired = chapter.requiredCharacters.length;
+
   return (
     <Wrapper className="w-full block text-left">
-
       <div
         className="p-4 rounded-xl transition-all"
         style={{
@@ -335,34 +345,108 @@ function StoryNodeCard({
             </div>
           </div>
 
-          {/* Read indicator */}
-          {isUnlocked && (
+          {/* Read indicator (unlocked) or key counter (next locked) */}
+          {isUnlocked ? (
             <svg
               width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke={accentColor} strokeWidth="2"
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-          )}
+          ) : isNext ? (
+            <span
+              className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+              style={{
+                background: ownedCount > 0 ? `${accentColor}15` : 'rgba(255,255,255,0.03)',
+                color: ownedCount > 0 ? accentColor : 'var(--color-muted)',
+              }}
+            >
+              {ownedCount}/{totalRequired}
+            </span>
+          ) : null}
         </div>
 
-        {/* Teaser (locked) or hint about required cards */}
+        {/* Next locked chapter: teaser + card silhouettes */}
         {!isUnlocked && isNext && (
-          <div className="mt-2 ml-13">
-            <p className="text-[11px] text-muted/50 italic">{chapter.teaser}</p>
-            <div className="flex flex-wrap gap-1 mt-2">
-              {chapter.requiredCharacters.map(char => (
-                <span
-                  key={char}
-                  className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-muted/40"
-                >
-                  {char}
-                </span>
-              ))}
+          <div className="mt-3 ml-[52px]">
+            <p className="text-[11px] text-muted/50 italic mb-3">{chapter.teaser}</p>
+
+            {/* Card silhouettes — mini cards showing owned vs missing */}
+            <div className="flex gap-2">
+              {chapter.requiredCharacters.map(charName => {
+                const isOwned = ownedCharacters.has(charName);
+                // Look up card for this character's symbol + gradients
+                const cardData = ALL_CARDS.find(c => c.character === charName && c.setSlug === setSlug);
+                const symbol = cardData?.symbol || '?';
+                const gradFrom = cardData?.gradientFrom || '#1a1a2e';
+                const gradTo = cardData?.gradientTo || '#0a0b14';
+
+                return (
+                  <div key={charName} className="flex flex-col items-center gap-1">
+                    <div
+                      className="w-8 h-11 rounded-md flex items-center justify-center relative overflow-hidden"
+                      style={{
+                        background: isOwned
+                          ? `linear-gradient(145deg, ${gradFrom}, ${gradTo})`
+                          : 'rgba(15, 15, 25, 0.8)',
+                        border: isOwned
+                          ? `1.5px solid ${accentColor}50`
+                          : '1.5px solid rgba(255,255,255,0.06)',
+                        boxShadow: isOwned ? `0 0 8px ${accentColor}15` : 'none',
+                      }}
+                    >
+                      <span
+                        className="text-sm"
+                        style={{
+                          opacity: isOwned ? 0.8 : 0.15,
+                          filter: isOwned ? 'none' : 'grayscale(1)',
+                        }}
+                      >
+                        {symbol}
+                      </span>
+                      {/* Checkmark overlay for owned */}
+                      {isOwned && (
+                        <div
+                          className="absolute -bottom-px -right-px w-3.5 h-3.5 rounded-tl-md flex items-center justify-center"
+                          style={{ background: accentColor }}
+                        >
+                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <span
+                      className="text-[8px] max-w-[40px] text-center truncate leading-tight"
+                      style={{
+                        color: isOwned ? accentColor : 'var(--color-muted)',
+                        opacity: isOwned ? 0.8 : 0.35,
+                      }}
+                    >
+                      {charName.split(' ').pop()}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+
+            {/* Progress hint */}
+            {ownedCount > 0 && ownedCount < totalRequired && (
+              <p className="text-[10px] mt-2" style={{ color: `${accentColor}80` }}>
+                {totalRequired - ownedCount} more {totalRequired - ownedCount === 1 ? 'card' : 'cards'} to unlock
+              </p>
+            )}
           </div>
         )}
 
+        {/* Distant locked chapters: just show character count */}
+        {!isUnlocked && !isNext && (
+          <div className="mt-1 ml-[52px]">
+            <span className="text-[9px] text-muted/25">
+              {totalRequired} {totalRequired === 1 ? 'card' : 'cards'} needed
+            </span>
+          </div>
+        )}
       </div>
     </Wrapper>
   );
