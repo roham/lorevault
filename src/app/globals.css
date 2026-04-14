@@ -578,3 +578,13 @@ table tbody tr {
 .sortable-binder-card:active {
   transform: scale(1.05);
 }
+
+/* During drag — promote all binder cards to compositor layers */
+.binder-grid-dragging .binder-card {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+/* When not dragging — reclaim GPU memory */
+.binder-card {
+  will-change: auto;
+}

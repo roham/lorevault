@@ -329,7 +329,13 @@ export default function CollectionPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [prevPage, nextPage]);
 
-  function handleDragStart(event: DragStartEvent) { setActiveId(event.active.id); }
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id);
+    // Haptic feedback on drag start (mobile)
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+  }
 
   function handleDragOver(event: DragOverEvent) {
     if (!event.active.rect.current.translated) return;
@@ -534,7 +540,7 @@ export default function CollectionPage() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-2xl">
+            <div className="relative overflow-hidden rounded-2xl" style={{ overscrollBehavior: 'none' }}>
               <AnimatePresence>
                 {activeId && currentPageIndex > 0 && (
                   <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: dragOverPageIndex === currentPageIndex - 1 ? 1 : 0.4, x: 0 }} exit={{ opacity: 0, x: -20 }}
@@ -571,10 +577,9 @@ export default function CollectionPage() {
                 >
                   <div className="p-4 sm:p-6 lg:p-8 rounded-2xl min-h-[420px] sm:min-h-[480px] relative"
                     style={{
-                      background: 'linear-gradient(165deg, rgba(18,20,31,0.9) 0%, rgba(12,13,22,0.95) 50%, rgba(18,20,31,0.85) 100%)',
+                      background: 'linear-gradient(165deg, rgba(18,20,31,0.95) 0%, rgba(12,13,22,0.98) 50%, rgba(18,20,31,0.92) 100%)',
                       border: '1px solid rgba(255,255,255,0.04)',
                       boxShadow: '0 4px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
-                      backdropFilter: 'blur(20px)',
                     }}>
                     <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
                       background: 'radial-gradient(ellipse at 50% -20%, rgba(129,140,248,0.04) 0%, transparent 50%)',
@@ -589,13 +594,13 @@ export default function CollectionPage() {
                     </div>
                     {currentPage && (
                       <SortableContext items={currentPage.cardIds.filter(id => !id.startsWith('missing:'))} strategy={rectSortingStrategy}>
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 justify-items-center ml-3 sm:ml-5" style={{ contain: 'layout style' }}>
+                        <div className={`grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 justify-items-center ml-3 sm:ml-5 ${activeId ? 'binder-grid-dragging' : ''}`} style={{ contain: 'layout style' }}>
                           {currentPage.cardIds.map((cid, i) => {
                             if (cid.startsWith('missing:')) {
                               const realId = cid.replace('missing:', '');
                               const card = ALL_CARDS.find(c => c.id === realId);
                               return (
-                                <motion.div key={cid} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 25 }}>
+                                <motion.div key={cid} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.2, ease: 'easeOut' }}>
                                   <EmptySlot index={i} isMissing card={card} />
                                 </motion.div>
                               );
@@ -603,7 +608,7 @@ export default function CollectionPage() {
                             const card = cardMap.get(cid);
                             if (!card) return <EmptySlot key={cid} index={i} />;
                             return (
-                              <motion.div key={card.id} initial={{ opacity: 0, y: 20, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: i * 0.07, type: 'spring', stiffness: 250, damping: 22 }}>
+                              <motion.div key={card.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.2, ease: 'easeOut' }}>
                                 {isFiltered ? (
                                   <Link href={`/card/${card.id}`}><CardItem card={card} size="lg" interactive={true} /></Link>
                                 ) : (
@@ -613,7 +618,7 @@ export default function CollectionPage() {
                             );
                           })}
                           {Array.from({ length: Math.max(0, 6 - currentPage.cardIds.length) }).map((_, i) => (
-                            <motion.div key={`empty-${i}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: (currentPage.cardIds.length + i) * 0.06 }}>
+                            <motion.div key={`empty-${i}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: (currentPage.cardIds.length + i) * 0.04, duration: 0.15 }}>
                               <EmptySlot index={currentPage.cardIds.length + i} />
                             </motion.div>
                           ))}
