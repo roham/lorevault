@@ -23,6 +23,7 @@ import {
   StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS,
   getCharacterStats, getEffectiveStat,
 } from '@/data/stats';
+import { generateCardDNA, getDNATraitString, type CardDNA } from '@/lib/card-dna';
 
 export default function CardDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -36,6 +37,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [showShare, setShowShare] = useState(false);
   const [legacyData, setLegacyData] = useState<LegacyData | null>(null);
   const [valueHistory, setValueHistory] = useState<ValuePoint[]>([]);
+  const [cardDNA, setCardDNA] = useState<CardDNA | null>(null);
 
   const card = ALL_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
@@ -61,6 +63,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
       setAgingTiers(getAgingTiers(card.id));
       setPopData(getPopulationData(card));
       setValueHistory(generateValueHistory(card));
+      setCardDNA(generateCardDNA(card.id, card.serialNumber));
       if (isOwned) {
         setLegacyData(computeLegacyScore(card.id, card));
       }
@@ -226,6 +229,19 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#d4a030', background: '#d4a03015', border: '1px solid #d4a03025' }}>⏳ Ancient</span>
             )}
           </div>
+
+          {/* Card DNA trait strip */}
+          {cardDNA && (
+            <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-xl bg-surface/30 border border-border/30">
+              <span className="text-[9px] text-muted uppercase tracking-wider shrink-0">DNA</span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent/80">{cardDNA.background.label}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent/80">{cardDNA.border.label}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent/80">{cardDNA.particle.label}</span>
+              </div>
+              <span className="text-sm ml-auto opacity-20">{cardDNA.watermark}</span>
+            </div>
+          )}
 
           {/* Population counter */}
           {popData && (

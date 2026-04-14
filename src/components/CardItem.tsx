@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
 import { getCardMeta, getAgingTiers, getOriginBadge, getPopulationData, type AgingTiers, type OriginBadge, type PopulationData } from '@/lib/store';
+import { generateCardDNA, type CardDNA } from '@/lib/card-dna';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -115,6 +116,44 @@ function AgingOverlays({ tiers }: { tiers: AgingTiers | null }) {
   );
 }
 
+function DNAOverlay({ dna, size }: { dna: CardDNA | null; size: string }) {
+  if (!dna || size === 'sm') return null; // Skip DNA on sm cards for performance
+  return (
+    <>
+      {/* Background pattern SVG at low opacity */}
+      <div className="absolute inset-0 pointer-events-none z-[13] overflow-hidden" style={{ opacity: 0.04 }}>
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 16 16"
+          preserveAspectRatio="none"
+          style={{ filter: `hue-rotate(${dna.hueShift}deg)` }}
+        >
+          <pattern id={`dna-bg-${dna.background.id}`} x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+            <path d={dna.background.svg} fill="none" stroke="white" strokeWidth="0.5" />
+          </pattern>
+          <rect width="100%" height="100%" fill={`url(#dna-bg-${dna.background.id})`} />
+        </svg>
+      </div>
+      {/* Hue shift filter on card */}
+      <div
+        className="absolute inset-0 pointer-events-none z-[12]"
+        style={{ filter: `hue-rotate(${dna.hueShift}deg)`, mixBlendMode: 'color', opacity: 0.15 }}
+      />
+      {/* Border motif gradient overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none z-[14] rounded-xl"
+        style={{ background: `linear-gradient(${dna.border.gradient})`, opacity: 0.6 }}
+      />
+      {/* Watermark glyph */}
+      {(size === 'lg' || size === 'xl') && (
+        <div className="absolute bottom-8 right-2 pointer-events-none z-[13] text-white/[0.03] text-4xl">
+          {dna.watermark}
+        </div>
+      )}
+    </>
+  );
+}
+
 function getSerialColor(tier: PopulationData['serialTier']): string {
   switch (tier) {
     case 'genesis': return '#ffd700';
@@ -158,6 +197,10 @@ function CardItemStatic({
   const [popData] = useState<PopulationData | null>(() => {
     if (typeof window === 'undefined') return null;
     return getPopulationData(card);
+  });
+  const [dna] = useState<CardDNA | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return generateCardDNA(card.id, card.serialNumber);
   });
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
@@ -203,6 +246,9 @@ function CardItemStatic({
 
           {/* Aging visual effects — behind sealed overlay */}
           <AgingOverlays tiers={agingTiers} />
+
+          {/* Card DNA — procedural visual identity */}
+          <DNAOverlay dna={dna} size={size} />
 
           {/* Origin badge — provenance marker */}
           {!isSealed && originBadge && (
@@ -291,6 +337,10 @@ function CardItemInteractive({
   const [popData] = useState<PopulationData | null>(() => {
     if (typeof window === 'undefined') return null;
     return getPopulationData(card);
+  });
+  const [dna] = useState<CardDNA | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return generateCardDNA(card.id, card.serialNumber);
   });
   const s = SIZE_MAP[size];
 
@@ -478,6 +528,9 @@ function CardItemInteractive({
 
           {/* Aging visual effects */}
           <AgingOverlays tiers={agingTiers} />
+
+          {/* Card DNA — procedural visual identity */}
+          <DNAOverlay dna={dna} size={size} />
 
           {/* Origin badge — provenance marker */}
           {originBadge && (
