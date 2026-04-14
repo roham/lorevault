@@ -103,7 +103,7 @@ Each scored 1-10. Threshold: any dimension below 5 = do not ship. Overall below 
 
 | Cycle | Single-Verb | First-Minute | Progressive Disclosure | Attention Hierarchy | Aha-Moment | Feature:Emotion | Mobile | Total |
 |-------|:-----------:|:------------:|:---------------------:|:-------------------:|:----------:|:---------------:|:------:|:-----:|
-| — | — | — | — | — | — | — | — | 0/70 |
+| 21 | 7 | 6 | 8 | 6 | 7 | 5 | 7 | 46/70 |
 
 ---
 
