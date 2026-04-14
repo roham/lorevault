@@ -1,5 +1,3 @@
-'use client';
-
 // Referral system — generates unique referral codes, tracks referrals, rewards referrers
 
 export interface ReferralState {
@@ -38,19 +36,7 @@ function generateReferralCode(): string {
   return code;
 }
 
-// Seed phantom referrals for social proof
-function seedPhantomReferrals(state: ReferralState): ReferralState {
-  if (state.referrals.length > 0) return state;
-  const today = new Date();
-  const phantomCount = 2 + Math.floor(Math.random() * 3); // 2-4 phantom referrals
-  for (let i = 0; i < phantomCount; i++) {
-    const daysAgo = Math.floor(Math.random() * 14) + 1;
-    const date = new Date(today.getTime() - daysAgo * 86400000).toISOString().slice(0, 10);
-    state.referrals.push({ date, phantom: true });
-  }
-  state.totalReferred = state.referrals.length;
-  return state;
-}
+// No phantom referrals — only real referrals count
 
 export function getReferralState(): ReferralState {
   if (typeof window === 'undefined') return { code: '', referrals: [], totalReferred: 0, rewardsClaimed: 0 };
@@ -65,7 +51,6 @@ export function getReferralState(): ReferralState {
   // Generate code on first access
   if (!state.code) {
     state.code = generateReferralCode();
-    state = seedPhantomReferrals(state);
     setItem(REFERRAL_KEY, state);
   }
 

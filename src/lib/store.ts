@@ -1180,3 +1180,226 @@ export function claimLoginDay(): { reward: typeof LOGIN_REWARDS[number]; newStat
 
   return { reward, newState: state };
 }
+
+// ===== Monthly Collector Pass =====
+
+export interface CollectorPassTier {
+  tier: number;
+  xpRequired: number;
+  freeReward: { label: string; icon: string };
+  premiumReward?: { label: string; icon: string };
+}
+
+export const COLLECTOR_PASS_TIERS: CollectorPassTier[] = Array.from({ length: 30 }, (_, i) => {
+  const tier = i + 1;
+  const xpRequired = tier * 150; // 150, 300, 450, ... 4500
+  const freeRewards = [
+    { label: '25 XP', icon: '✨' }, { label: '50 XP', icon: '⭐' }, { label: 'Common Card', icon: '🃏' },
+    { label: '75 XP', icon: '💫' }, { label: 'Uncommon Card', icon: '🎴' }, { label: '100 XP', icon: '🔥' },
+    { label: '150 XP', icon: '💎' }, { label: 'Rare Card', icon: '🃏' }, { label: '200 XP', icon: '⚡' },
+    { label: 'Pack Credit', icon: '📦' },
+  ];
+  const premiumRewards = [
+    null, { label: 'Silver Parallel', icon: '🥈' }, null,
+    { label: 'Gold Parallel', icon: '🥇' }, null, { label: 'Exclusive Badge', icon: '🏅' },
+    null, null, { label: 'Holo Parallel', icon: '🌈' }, { label: 'Epic Card', icon: '💜' },
+  ];
+  return {
+    tier,
+    xpRequired,
+    freeReward: freeRewards[(tier - 1) % 10],
+    premiumReward: tier === 30
+      ? { label: 'Legendary Card', icon: '👑' }
+      : premiumRewards[(tier - 1) % 10] || undefined,
+  };
+});
+
+export interface CollectorPassState {
+  monthKey: string; // "2026-04"
+  xpEarned: number;
+  currentTier: number;
+  claimedTiers: number[];
+}
+
+export function getCollectorPass(): CollectorPassState {
+  if (typeof window === 'undefined') return { monthKey: '', xpEarned: 0, currentTier: 0, claimedTiers: [] };
+  const monthKey = new Date().toISOString().slice(0, 7); // "2026-04"
+  let state = getItem<CollectorPassState>('lorevault_collector_pass', {
+    monthKey,
+    xpEarned: 0,
+    currentTier: 0,
+    claimedTiers: [],
+  });
+
+  // Monthly reset
+  if (state.monthKey !== monthKey) {
+    state = { monthKey, xpEarned: 0, currentTier: 0, claimedTiers: [] };
+    setItem('lorevault_collector_pass', state);
+  }
+
+  // Derive current tier from total XP
+  let tier = 0;
+  let totalRequired = 0;
+  for (const t of COLLECTOR_PASS_TIERS) {
+    totalRequired += t.xpRequired;
+    if (state.xpEarned >= totalRequired) tier = t.tier;
+    else break;
+  }
+  state.currentTier = tier;
+
+  return state;
+}
+
+export function addPassXP(amount: number) {
+  if (typeof window === 'undefined') return;
+  const state = getCollectorPass();
+  state.xpEarned += amount;
+  // Recalculate tier
+  let tier = 0;
+  let totalRequired = 0;
+  for (const t of COLLECTOR_PASS_TIERS) {
+    totalRequired += t.xpRequired;
+    if (state.xpEarned >= totalRequired) tier = t.tier;
+    else break;
+  }
+  state.currentTier = tier;
+  setItem('lorevault_collector_pass', state);
+}
+
+export function claimPassTier(tier: number): boolean {
+  if (typeof window === 'undefined') return false;
+  const state = getCollectorPass();
+  if (state.currentTier < tier || state.claimedTiers.includes(tier)) return false;
+  state.claimedTiers.push(tier);
+  setItem('lorevault_collector_pass', state);
+  return true;
+}
+
+// ===== Weekly Challenges =====
+
+export interface WeeklyChallenge {
+  id: string;
+  description: string;
+  target: number;
+  progress: number;
+  reward: string;
+  completed: boolean;
+  icon: string;
+}
+
+const WEEKLY_CHALLENGE_POOL = [
+  { id: 'win-5-battles', description: 'Win 5 battles', target: 5, reward: 'Bonus Pack', icon: '⚔️' },
+  { id: 'collect-3-set', description: 'Collect 3 cards from one set', target: 3, reward: 'Rare Pack', icon: '📚' },
+  { id: 'codex-50', description: 'Reach 50% codex completion', target: 50, reward: 'XP Boost', icon: '📖' },
+  { id: 'open-10-packs', description: 'Open 10 packs', target: 10, reward: 'Epic Pack', icon: '📦' },
+  { id: 'forge-3', description: 'Forge 3 cards', target: 3, reward: 'Gold Parallel', icon: '🔨' },
+  { id: 'trivia-5000', description: 'Score 5000+ in trivia', target: 5000, reward: 'Badge', icon: '🧠' },
+  { id: 'burn-5', description: 'Burn 5 cards', target: 5, reward: 'Legendary Pack', icon: '🔥' },
+  { id: 'earn-500xp', description: 'Earn 500 XP', target: 500, reward: 'Bonus Pack', icon: '⭐' },
+];
+
+function getWeekKey(): string {
+  const now = new Date();
+  const jan1 = new Date(now.getFullYear(), 0, 1);
+  const week = Math.ceil(((now.getTime() - jan1.getTime()) / 86400000 + jan1.getDay() + 1) / 7);
+  return `${now.getFullYear()}-W${week}`;
+}
+
+export function getWeeklyChallenges(): WeeklyChallenge[] {
+  if (typeof window === 'undefined') return [];
+  const weekKey = getWeekKey();
+  const stateKey = 'lorevault_weekly_challenges';
+  const stored = getItem<{ weekKey: string; challenges: WeeklyChallenge[] }>(stateKey, { weekKey: '', challenges: [] });
+
+  if (stored.weekKey !== weekKey) {
+    // Generate 3 challenges for this week from pool using week-seeded selection
+    let seed = 0;
+    for (let i = 0; i < weekKey.length; i++) seed = ((seed << 5) - seed + weekKey.charCodeAt(i)) | 0;
+    const pool = [...WEEKLY_CHALLENGE_POOL];
+    const selected: WeeklyChallenge[] = [];
+    for (let i = 0; i < 3 && pool.length > 0; i++) {
+      seed = (seed * 16807) % 2147483647;
+      const idx = Math.abs(seed) % pool.length;
+      const ch = pool.splice(idx, 1)[0];
+      selected.push({ ...ch, progress: 0, completed: false });
+    }
+    const newState = { weekKey, challenges: selected };
+    setItem(stateKey, newState);
+    return selected;
+  }
+
+  return stored.challenges;
+}
+
+export function updateWeeklyChallenge(challengeId: string, progress: number) {
+  if (typeof window === 'undefined') return;
+  const weekKey = getWeekKey();
+  const stateKey = 'lorevault_weekly_challenges';
+  const stored = getItem<{ weekKey: string; challenges: WeeklyChallenge[] }>(stateKey, { weekKey, challenges: [] });
+  if (stored.weekKey !== weekKey) return;
+  const ch = stored.challenges.find(c => c.id === challengeId);
+  if (ch) {
+    ch.progress = Math.min(progress, ch.target);
+    ch.completed = ch.progress >= ch.target;
+    setItem(stateKey, stored);
+  }
+}
+
+// ===== Collector Milestones =====
+
+export interface CollectorMilestone {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  titlePrefix: string; // e.g., "Vault Keeper" prefix shown on profile
+  check: () => boolean;
+}
+
+export function getCollectorMilestones(): { milestone: CollectorMilestone; earned: boolean }[] {
+  if (typeof window === 'undefined') return [];
+
+  const owned = getOwnedCards();
+  const xp = getXP();
+  const level = getCollectorLevel();
+  const forgeHistory = typeof window !== 'undefined' ? getItem<unknown[]>('lorevault_forge_history', []) : [];
+  const burnHistory = getBurnHistory();
+  const streak = getStreak();
+
+  const milestones: CollectorMilestone[] = [
+    { id: 'century', title: 'Century', description: 'Own 100 cards', icon: '💯', titlePrefix: 'Centurion', check: () => owned.length >= 100 },
+    { id: 'vault-keeper', title: 'Vault Keeper', description: 'Own 200 cards', icon: '🏛️', titlePrefix: 'Vault Keeper', check: () => owned.length >= 200 },
+    { id: 'xp-king', title: 'XP Sovereign', description: 'Reach Level 20', icon: '👑', titlePrefix: 'Sovereign', check: () => level.level >= 20 },
+    { id: 'forge-master', title: 'Forge Master', description: 'Forge 10 cards', icon: '🔨', titlePrefix: 'Forge Master', check: () => forgeHistory.length >= 10 },
+    { id: 'pyromaniac', title: 'Pyromaniac', description: 'Burn 10 cards', icon: '🔥', titlePrefix: 'Pyromaniac', check: () => burnHistory.length >= 10 },
+    { id: 'dedicated', title: 'Dedicated', description: '14-day login streak', icon: '📅', titlePrefix: 'Dedicated', check: () => streak >= 14 },
+    { id: 'legendary-hoarder', title: 'Legendary Hoarder', description: 'Own 10 Legendary cards', icon: '⚡', titlePrefix: 'Legendary', check: () => owned.filter(c => c.scarcity === 'legendary').length >= 10 },
+    { id: 'set-collector', title: 'Set Collector', description: 'Complete 3 sets', icon: '📚', titlePrefix: 'Set Collector', check: () => {
+      const sets = new Map<string, Set<string>>();
+      for (const c of owned) {
+        if (!sets.has(c.setSlug)) sets.set(c.setSlug, new Set());
+        sets.get(c.setSlug)!.add(c.character);
+      }
+      let complete = 0;
+      for (const chars of sets.values()) if (chars.size >= 15) complete++;
+      return complete >= 3;
+    }},
+    { id: 'all-scarcity', title: 'Full Spectrum', description: 'Own every scarcity tier', icon: '🌈', titlePrefix: 'Prismatic', check: () => {
+      const tiers = new Set(owned.map(c => c.scarcity));
+      return tiers.size >= 5;
+    }},
+    { id: 'marathon', title: 'Marathon', description: '30-day login streak', icon: '🏃', titlePrefix: 'Marathon', check: () => streak >= 30 },
+  ];
+
+  return milestones.map(m => ({ milestone: m, earned: m.check() }));
+}
+
+export function getActiveTitlePrefix(): string {
+  if (typeof window === 'undefined') return '';
+  return getItem<string>('lorevault_title_prefix', '');
+}
+
+export function setActiveTitlePrefix(prefix: string) {
+  if (typeof window === 'undefined') return;
+  setItem('lorevault_title_prefix', prefix);
+}

@@ -190,7 +190,7 @@ export default function ShareCard({ card, onClose }: ShareCardProps) {
               <button
                 onClick={() => {
                   const text = `Check out my ${scarcityConfig.label} ${card.character} #${card.serialNumber}/${popData.totalMinted} on LoreVault!`;
-                  const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/card/${card.id}`;
+                  const url = `${window.location.origin}/card/${card.id}`;
                   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
                 }}
                 className="py-2.5 rounded-xl bg-[#1da1f2]/10 border border-[#1da1f2]/20 text-[#1da1f2] text-xs font-bold"
@@ -200,7 +200,10 @@ export default function ShareCard({ card, onClose }: ShareCardProps) {
               <button
                 onClick={() => {
                   const url = `${window.location.origin}/card/${card.id}`;
-                  navigator.clipboard.writeText(url);
+                  navigator.clipboard.writeText(url).catch(() => {
+                    // Fallback: prompt user to copy manually
+                    window.prompt('Copy this link:', url);
+                  });
                   setLinkCopied(true);
                   setTimeout(() => setLinkCopied(false), 2000);
                 }}

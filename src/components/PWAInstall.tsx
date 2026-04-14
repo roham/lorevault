@@ -18,9 +18,14 @@ export default function PWAInstall() {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
-    // Only show after 2nd visit
-    const visits = parseInt(localStorage.getItem('lorevault_visit_count') || '0', 10) + 1;
-    localStorage.setItem('lorevault_visit_count', String(visits));
+    // Only count once per session, show after 2nd session
+    const alreadyCounted = sessionStorage.getItem('lorevault_visited');
+    let visits = parseInt(localStorage.getItem('lorevault_visit_count') || '0', 10);
+    if (!alreadyCounted) {
+      visits += 1;
+      localStorage.setItem('lorevault_visit_count', String(visits));
+      sessionStorage.setItem('lorevault_visited', '1');
+    }
     const dismissed = localStorage.getItem('lorevault_pwa_dismissed');
 
     if (visits < 2 || dismissed) return;

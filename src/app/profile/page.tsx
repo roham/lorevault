@@ -365,7 +365,10 @@ export default function ProfilePage() {
             </div>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(getReferralLink());
+                const link = getReferralLink();
+                navigator.clipboard.writeText(link).catch(() => {
+                  window.prompt('Copy this link:', link);
+                });
                 setReferralCopied(true);
                 setTimeout(() => setReferralCopied(false), 2000);
               }}
