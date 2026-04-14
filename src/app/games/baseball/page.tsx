@@ -95,7 +95,7 @@ export default function BaseballHub() {
                   <div className="flex-1">
                     <h3 className="text-lg font-bold mb-0.5">Play Ball</h3>
                     <p className="text-xs text-muted">
-                      3-inning quick match vs AI. Uses your latest saved lineup.
+                      3-inning quick match. Choose difficulty: Rookie, Veteran, or Legend.
                     </p>
                   </div>
                   <div className="text-muted text-xl group-hover:text-red-400 transition-colors">&rarr;</div>

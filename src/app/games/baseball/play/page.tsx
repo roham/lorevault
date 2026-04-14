@@ -32,7 +32,7 @@ import {
   generateGameSummary,
 } from '@/lib/baseball/engine';
 import { BASEBALL_CARDS, buildCardRegistry } from '@/data/baseball-stats';
-import { generateAILineup } from '@/lib/baseball/ai';
+import { generateAILineup, getAIStealDecision, getAITaunt, Difficulty, AI_TEAM_TEMPLATES, getTemplatesForDifficulty } from '@/lib/baseball/ai';
 import { CardRegistry } from '@/lib/baseball/game';
 import { DiceRoller } from '@/components/baseball/DiceRoller';
 import { OutcomeReveal } from '@/components/baseball/OutcomeReveal';
@@ -44,6 +44,7 @@ import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records
 // ===== Animation Phase State Machine =====
 
 type AnimPhase =
+  | 'pregame'           // difficulty selection before game starts
   | 'idle'
   | 'control-rolling'
   | 'control-landed'
@@ -85,9 +86,15 @@ interface BoardState {
   particleBurst: boolean;
   // XP breakdown (set on game over)
   xpBreakdown: XPBreakdown[];
+  // Difficulty + cards registry for pregame
+  difficulty: Difficulty | null;
+  preCards: CardRegistry; // cards loaded at pregame, before game init
+  prePlayerRoster: Roster | null;
 }
 
 type BoardAction =
+  | { type: 'PREGAME_READY'; cards: CardRegistry; playerRoster: Roster }
+  | { type: 'SELECT_DIFFICULTY'; difficulty: Difficulty; game: GameState; playerRoster: Roster; aiRoster: Roster; cards: CardRegistry }
   | { type: 'INIT_GAME'; game: GameState; playerRoster: Roster; aiRoster: Roster; cards: CardRegistry }
   | { type: 'START_CONTROL_ROLL'; value: number; result: 'pitcher' | 'hitter'; batterName: string; pitcherName: string }
   | { type: 'CONTROL_LANDED' }
@@ -102,6 +109,37 @@ type BoardAction =
 
 function boardReducer(state: BoardState, action: BoardAction): BoardState {
   switch (action.type) {
+    case 'PREGAME_READY':
+      return {
+        ...state,
+        animPhase: 'pregame',
+        preCards: action.cards,
+        prePlayerRoster: action.playerRoster,
+      };
+
+    case 'SELECT_DIFFICULTY':
+      return {
+        ...state,
+        game: action.game,
+        animPhase: 'idle',
+        difficulty: action.difficulty,
+        playerRoster: action.playerRoster,
+        aiRoster: action.aiRoster,
+        cards: action.cards,
+        controlRollValue: null,
+        controlResult: null,
+        outcomeRollValue: null,
+        currentOutcome: null,
+        currentBatterName: '',
+        currentPitcherName: '',
+        currentRunsScored: 0,
+        currentDescription: '',
+        stealData: null,
+        shakeTrigger: 0,
+        particleBurst: false,
+        xpBreakdown: [],
+      };
+
     case 'INIT_GAME':
       return {
         ...state,
@@ -214,7 +252,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
 
 const initialState: BoardState = {
   game: null,
-  animPhase: 'idle',
+  animPhase: 'pregame',
   controlRollValue: null,
   controlResult: null,
   outcomeRollValue: null,
@@ -230,6 +268,9 @@ const initialState: BoardState = {
   shakeTrigger: 0,
   particleBurst: false,
   xpBreakdown: [],
+  difficulty: null,
+  preCards: new Map(),
+  prePlayerRoster: null,
 };
 
 // ===== Diamond SVG with animated runners =====
@@ -467,7 +508,7 @@ export default function PlayPage() {
   const logRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Initialize game on mount
+  // Initialize pregame on mount — load cards + player roster, defer AI until difficulty chosen
   useEffect(() => {
     const cards = buildCardRegistry();
 
@@ -495,14 +536,23 @@ export default function PlayPage() {
       playerRoster = { ...ai, name: 'Your Team' };
     }
 
+    dispatch({ type: 'PREGAME_READY', cards, playerRoster });
+  }, []);
+
+  // Handle difficulty selection — generates AI lineup and starts game
+  const handleSelectDifficulty = useCallback((difficulty: Difficulty) => {
+    if (!state.prePlayerRoster || state.preCards.size === 0) return;
+    const playerRoster = state.prePlayerRoster;
+    const cards = state.preCards;
+
     const playerIds = new Set([
       ...playerRoster.hitters.map(h => h.cardId),
       playerRoster.pitcher,
     ]);
-    const aiRoster = generateAILineup('veteran', playerIds, 12345);
+    const aiRoster = generateAILineup(difficulty, playerIds, Date.now());
     const game = createGame(aiRoster, playerRoster, 3);
-    dispatch({ type: 'INIT_GAME', game, playerRoster, aiRoster, cards });
-  }, []);
+    dispatch({ type: 'SELECT_DIFFICULTY', difficulty, game, playerRoster, aiRoster, cards });
+  }, [state.prePlayerRoster, state.preCards]);
 
   // Cleanup timers
   useEffect(() => {
@@ -530,6 +580,68 @@ export default function PlayPage() {
       dispatch({ type: 'SET_XP', xpBreakdown: xp });
     }
   }, [state.animPhase, state.game, state.playerRoster, state.aiRoster]);
+
+  // ===== AI Steal Decision =====
+  // When AI is batting and state is idle, check if AI wants to steal
+  const aiStealChecked = useRef<string>(''); // track last game state to avoid double-trigger
+  useEffect(() => {
+    if (state.animPhase !== 'idle' || !state.game || !state.difficulty) return;
+    const game = state.game;
+    const isAIBatting = getBattingTeam(game) === 'away';
+    if (!isAIBatting) return;
+
+    // Dedup: only check once per unique game log length
+    const stateKey = `${game.log.length}-${game.inning.inning}-${game.inning.half}`;
+    if (aiStealChecked.current === stateKey) return;
+    aiStealChecked.current = stateKey;
+
+    // AI steal decision
+    const scoreDiff = game.score.away - game.score.home; // positive = AI leading
+    const rand = () => Math.random();
+    const decision = getAIStealDecision(
+      game.bases,
+      game.inning.outs,
+      game.inning.inning,
+      game.innings,
+      scoreDiff,
+      state.difficulty,
+      rand,
+    );
+
+    if (decision) {
+      // Trigger steal after a short delay (AI "thinking")
+      timerRef.current = setTimeout(() => {
+        const runner = decision.fromBase === 'first' ? game.bases.first : game.bases.second;
+        if (!runner) return;
+        const runnerCard = state.cards.get(runner.cardId);
+        if (!runnerCard || runnerCard.stats.type !== 'hitter') return;
+
+        const fieldingRoster = game.homeRoster; // player fields when AI bats
+        const catcherSlot = fieldingRoster.hitters.find(h => h.position === 'C');
+        const catcherCard = catcherSlot ? state.cards.get(catcherSlot.cardId) : null;
+        const catcherDefense = catcherCard && catcherCard.stats.type === 'hitter'
+          ? (catcherCard.stats as HitterStats).defense : 3;
+
+        const runnerSpeed = (runnerCard.stats as HitterStats).speed;
+        const threshold = runnerSpeed - catcherDefense;
+        const roll = rollD20();
+        const stealResult = resolveSteal(roll, runnerSpeed, catcherDefense, runnerCard.character, decision.fromBase);
+
+        dispatch({
+          type: 'START_STEAL_ROLL',
+          stealData: {
+            runnerName: runnerCard.character,
+            fromBase: decision.fromBase,
+            rollValue: roll,
+            threshold,
+            runnerSpeed,
+            catcherDefense,
+            success: stealResult.success,
+          },
+        });
+      }, 600);
+    }
+  }, [state.animPhase, state.game, state.difficulty, state.cards]);
 
   // ===== Pending resolution ref =====
   const pendingResolution = useRef<{
@@ -628,13 +740,27 @@ export default function PlayPage() {
     const newScore = { ...game.score };
     newScore[battingTeam === 'away' ? 'away' : 'home'] += runsScored;
 
+    let desc = runsScored > 0
+      ? `${description} ${runsScored} run${runsScored > 1 ? 's' : ''} score!`
+      : description;
+
+    // AI taunt injection
+    if (state.difficulty) {
+      const isAIBatting = battingTeam === 'away';
+      let tauntCtx: 'hr' | 'strikeout' | null = null;
+      if (isAIBatting && outcome === 'homerun') tauntCtx = 'hr';
+      if (!isAIBatting && outcome === 'strikeout') tauntCtx = 'strikeout';
+      if (tauntCtx) {
+        const taunt = getAITaunt(state.difficulty, tauntCtx, () => Math.random());
+        if (taunt) desc = `${desc} "${taunt}"`;
+      }
+    }
+
     const logEntry: PlayLogEntry = {
       inning: game.inning.inning, half: game.inning.half,
       batter: batterCard.character, pitcher: pitcherCard.character,
       controlRoll, controlResult, outcomeRoll, outcome, runsScored,
-      description: runsScored > 0
-        ? `${description} ${runsScored} run${runsScored > 1 ? 's' : ''} score!`
-        : description,
+      description: desc,
     };
 
     let newState: GameState = {
@@ -816,6 +942,83 @@ export default function PlayPage() {
 
   // ===== Render =====
 
+  // Pregame difficulty selection
+  if (state.animPhase === 'pregame') {
+    const difficultyOptions: { key: Difficulty; label: string; tagline: string; color: string; borderColor: string; bgGrad: string }[] = [
+      {
+        key: 'rookie',
+        label: 'Rookie',
+        tagline: 'Suboptimal lineups. No steals. A warm-up.',
+        color: 'text-green-400',
+        borderColor: 'border-green-500/30 hover:border-green-500/60',
+        bgGrad: 'linear-gradient(135deg, #0a1f0a 0%, #12141f 100%)',
+      },
+      {
+        key: 'veteran',
+        label: 'Veteran',
+        tagline: 'Balanced teams. Smart steals. Solid competition.',
+        color: 'text-amber-400',
+        borderColor: 'border-amber-500/30 hover:border-amber-500/60',
+        bgGrad: 'linear-gradient(135deg, #1f1a0a 0%, #12141f 100%)',
+      },
+      {
+        key: 'legend',
+        label: 'Legend',
+        tagline: 'Optimized rosters. Aggressive steals. No mercy.',
+        color: 'text-red-400',
+        borderColor: 'border-red-500/30 hover:border-red-500/60',
+        bgGrad: 'linear-gradient(135deg, #1f0a0a 0%, #12141f 100%)',
+      },
+    ];
+
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-2xl font-black mb-2">Choose Your Opponent</h1>
+          <p className="text-xs text-muted/50">Select difficulty to begin</p>
+        </motion.div>
+
+        <div className="w-full max-w-sm space-y-3">
+          {difficultyOptions.map((opt, i) => (
+            <motion.button
+              key={opt.key}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 + i * 0.08 }}
+              onClick={() => handleSelectDifficulty(opt.key)}
+              className={`w-full text-left rounded-2xl border transition-all cursor-pointer ${opt.borderColor}`}
+              style={{ background: opt.bgGrad }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className={`text-lg font-black ${opt.color}`}>{opt.label}</h3>
+                  <span className="text-muted/20 text-lg">&rarr;</span>
+                </div>
+                <p className="text-xs text-muted/50">{opt.tagline}</p>
+              </div>
+            </motion.button>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-8"
+        >
+          <Link href="/games/baseball" className="text-xs text-muted/30 hover:text-muted transition-colors">
+            &larr; Back to Baseball Hub
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
+
   if (!state.game) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -863,6 +1066,15 @@ export default function PlayPage() {
             <span className="text-[10px] font-bold uppercase text-muted/60">
               {game.inning.half === 'top' ? 'TOP' : 'BOT'} {game.inning.inning}
             </span>
+            {state.difficulty && (
+              <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded ${
+                state.difficulty === 'legend' ? 'bg-red-500/10 text-red-400' :
+                state.difficulty === 'veteran' ? 'bg-amber-500/10 text-amber-400' :
+                'bg-green-500/10 text-green-400'
+              }`}>
+                {state.difficulty}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-4">
             <div className="text-center">
