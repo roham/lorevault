@@ -22,7 +22,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: 20 characters in `cards.ts` (Odin, Thor, Loki, Freya, Fenrir, Valkyries, Heimdall, Baldur, Hel, Jormungandr, Tyr, Sigurd, Brynhildr, Ragnar, Norns, Huginn/Muninn, Sif, Idun, Skadi, Surtr). New set entry in `sets.ts`. Generate all art via `scripts/generate-card-art.mjs` with Norse aesthetic. Add Discovery Feed entries.
 - **Why**: Norse scores 56/60 on IP potential. Marvel/God of War primed massive fandom. Zero trademark risk.
 - **Acceptance criteria**: 20 characters × 2 cards = 40 new cards. All with FLUX art. Set appears in collection, marketplace, guide. Discovery Feed has Norse spotlight entry.
-- **Status**: IN_PROGRESS
+- **Status**: DONE — commit 303c49c, v8.22
 
 ### DIRECTIVE-003: Add card aging visual effects
 - **Priority**: P1
@@ -37,3 +37,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 ## Completed Directives
 
 - **DIRECTIVE-001**: Complete sealed/reveal UX — DONE (v8.21, 2026-04-14). Score: 33→43 (+10).
+- **DIRECTIVE-002**: Build Norse Mythology set (Asgard Unleashed) — DONE (v8.22, 2026-04-14). Score: 43→46 (+3).
