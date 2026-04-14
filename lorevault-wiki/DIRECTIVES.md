@@ -86,7 +86,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Deterministic `CardDNA` generator in `src/lib/card-dna.ts`. Hash card ID + serial + acquiredAt into a 6-trait genome: background pattern (12 variants: runes, circuits, nebula, scales, etc.), accent hue shift (-30 to +30 degrees off rarity base), border motif (8 variants: thorned, gilded, frost, ember, etc.), signature particle (6 types: embers, snow, lightning, petals, void dust, starfield), watermark glyph (20 character-linked symbols), and card-back art (6 variants per set). All derived from seeded hash — no new localStorage. (B) Apply DNA layers in `CardItem.tsx`: CSS custom properties for hue shift, background pattern as subtle SVG overlay at 4% opacity, border motif as gradient-mask on card edge, signature particle as idle CSS animation (1-3 particles, performant). (C) Card detail page (`/card/[id]`) shows "Card DNA" info strip: lists the 6 trait names, e.g., "Nebula / Frost / Lightning." (D) Two cards of the same character + rarity now look visibly distinct at md size and above.
 - **Why**: Instance Identity at 8 means two copies of "Legendary Odin #3" and "Legendary Odin #7" are functionally distinguishable only by serial number. Procedural DNA makes every card visually one-of-one without manual art — the same psychological mechanism that makes PFP traits work in NFTs. The trait combination itself becomes a collector conversation point ("I have the Ember/Thorned Odin"). Pushes Instance Identity 8→9.
 - **Acceptance criteria**: Every owned card renders with a unique visual combination derived from its ID seed. Two copies of the same character at the same rarity display visibly different background pattern, hue, and border. Card detail page shows DNA trait strip. No new localStorage writes. Particle animations run at <2% GPU on mobile (CSS-only, no canvas). Card DNA is deterministic — same card always renders identically.
-- **Status**: PENDING
+- **Status**: DONE — commit c279330, v8.30
 
 ### DIRECTIVE-011: Live Pulse Feed + Collector Reactions
 - **Priority**: P0
@@ -117,3 +117,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-007**: Social Showcase & Leaderboards — DONE (v8.27, 2026-04-14). Score: 77→80 (+3).
 - **DIRECTIVE-008**: Interactive Lore Engine — DONE (v8.28, 2026-04-14). Score: 80→86 (+6).
 - **DIRECTIVE-009**: Provenance Deepening — DONE (v8.29, 2026-04-14). Score: 86→90 (+4).
+- **DIRECTIVE-010**: Card DNA — Procedural Visual Identity — DONE (v8.30, 2026-04-14). Score: 90→TBD.
