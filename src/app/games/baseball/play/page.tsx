@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useReducer, useCallback, useRef } from 'react';
+import { useState, useEffect, useReducer, useCallback, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   GameState,
   Roster,
@@ -658,7 +659,8 @@ function ControlRollDisplay({
 
 // ===== Main Game Board =====
 
-export default function PlayPage() {
+function PlayPageInner() {
+  const searchParams = useSearchParams();
   const [state, dispatch] = useReducer(boardReducer, initialState);
   const [selectedInnings, setSelectedInnings] = useState<3 | 9>(3);
   const [showShare, setShowShare] = useState(false);
@@ -666,8 +668,24 @@ export default function PlayPage() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Initialize pregame on mount — load cards + player roster, defer AI until difficulty chosen
+  // If ?drafted=true, load draft rosters and skip pregame
   useEffect(() => {
     const cards = buildCardRegistry();
+    const isDrafted = searchParams.get('drafted') === 'true';
+
+    if (isDrafted) {
+      // Load drafted rosters from localStorage
+      try {
+        const playerRoster: Roster = JSON.parse(localStorage.getItem('pdb-draft-player') || 'null');
+        const aiRoster: Roster = JSON.parse(localStorage.getItem('pdb-draft-ai') || 'null');
+        const draftDifficulty = (localStorage.getItem('pdb-draft-difficulty') || 'veteran') as Difficulty;
+        if (playerRoster && aiRoster) {
+          const game = createGame(aiRoster, playerRoster, 3);
+          dispatch({ type: 'SELECT_DIFFICULTY', difficulty: draftDifficulty, gameLength: 3, game, playerRoster, aiRoster, cards });
+          return;
+        }
+      } catch { /* fall through to normal flow */ }
+    }
 
     let playerRoster: Roster;
     try {
@@ -694,7 +712,7 @@ export default function PlayPage() {
     }
 
     dispatch({ type: 'PREGAME_READY', cards, playerRoster });
-  }, []);
+  }, [searchParams]);
 
   // Handle difficulty selection — generates AI lineup and starts game
   const handleSelectDifficulty = useCallback((difficulty: Difficulty, innings: 3 | 9 = 3) => {
@@ -1766,5 +1784,19 @@ export default function PlayPage() {
         </div>
       </div>
     </ScreenShake>
+  );
+}
+
+export default function PlayPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.p className="text-muted text-sm" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }}>
+          Loading game...
+        </motion.p>
+      </div>
+    }>
+      <PlayPageInner />
+    </Suspense>
   );
 }

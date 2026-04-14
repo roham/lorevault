@@ -123,10 +123,36 @@ export default function BaseballHub() {
                   <div className="flex-1">
                     <h3 className="text-lg font-bold mb-0.5">Tournament</h3>
                     <p className="text-xs text-muted">
-                      3-game gauntlet. Rookie → Veteran → Legend. One loss = elimination.
+                      3-game gauntlet. Rookie &rarr; Veteran &rarr; Legend. One loss = elimination.
                     </p>
                   </div>
                   <div className="text-muted text-xl group-hover:text-amber-400 transition-colors">&rarr;</div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
+
+        {/* Snake Draft */}
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <Link href="/games/baseball/draft">
+            <div className="relative overflow-hidden rounded-2xl border border-purple-500/20 hover:border-purple-500/40 transition-all group">
+              <div className="p-5" style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #12141f 100%)' }}>
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-2xl flex-shrink-0">
+                    &#128220;
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold mb-0.5">Snake Draft</h3>
+                    <p className="text-xs text-muted">
+                      Take turns picking from the full pool. Build your team pick by pick.
+                    </p>
+                  </div>
+                  <div className="text-muted text-xl group-hover:text-purple-400 transition-colors">&rarr;</div>
                 </div>
               </div>
             </div>
