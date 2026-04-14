@@ -4,6 +4,7 @@ import { Achievement, AchievementRarity, AchievementCategory } from '@/data/type
 import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge, getCardMeta, getUnlockedLoreNodes, checkPrestigeUnlock, checkPrestigeChallenges } from '@/lib/store';
 import { getSecretNodes } from '@/data/lore-graph';
 import { isGhostCard } from '@/data/cards';
+import { getWinLossRecord, getGameHistory } from '@/lib/baseball/records';
 
 // ---------------------------------------------------------------------------
 // Achievement definitions — 33 achievements across 5 categories
@@ -318,6 +319,61 @@ export const ACHIEVEMENTS: Achievement[] = [
     mockPercent: 0.5,
     hidden: true,
   },
+  // Baseball achievements
+  {
+    id: 'first-game',
+    name: 'Play Ball!',
+    description: 'Play your first baseball game',
+    icon: '\u26BE',
+    rarity: 'common',
+    category: 'battle',
+    mockPercent: 40,
+  },
+  {
+    id: 'first-baseball-win',
+    name: 'Opening Day',
+    description: 'Win your first baseball game',
+    icon: 'W',
+    rarity: 'common',
+    category: 'battle',
+    mockPercent: 35,
+  },
+  {
+    id: 'five-baseball-wins',
+    name: 'Pennant Race',
+    description: 'Win 5 baseball games',
+    icon: '5',
+    rarity: 'uncommon',
+    category: 'battle',
+    mockPercent: 18,
+  },
+  {
+    id: 'legend-slayer',
+    name: 'Legend Slayer',
+    description: 'Beat a Legend difficulty team',
+    icon: '\u2620',
+    rarity: 'rare',
+    category: 'battle',
+    mockPercent: 8,
+  },
+  {
+    id: 'full-game-win',
+    name: 'Iron Man',
+    description: 'Win a full 9-inning game',
+    icon: '9',
+    rarity: 'uncommon',
+    category: 'battle',
+    mockPercent: 12,
+  },
+  {
+    id: 'shutout',
+    name: 'Shutout',
+    description: 'Win a baseball game without allowing any runs',
+    icon: '0',
+    rarity: 'rare',
+    category: 'battle',
+    mockPercent: 5,
+  },
   // Collector Prestige — visible from day one as the lighthouse
   {
     id: 'collector-prestige',
@@ -405,6 +461,16 @@ export function checkAchievements(): string[] {
 
   // Ghost card finder
   tryEarn('ghost-finder', owned.some(c => isGhostCard(c.id)));
+
+  // Baseball
+  const bbRecord = getWinLossRecord();
+  const bbHistory = getGameHistory();
+  tryEarn('first-game', bbHistory.length >= 1);
+  tryEarn('first-baseball-win', bbRecord.wins >= 1);
+  tryEarn('five-baseball-wins', bbRecord.wins >= 5);
+  tryEarn('full-game-win', bbHistory.some(g => g.result === 'win' && g.innings === 9));
+  tryEarn('shutout', bbHistory.some(g => g.result === 'win' && g.finalScore.away === 0));
+  tryEarn('legend-slayer', bbHistory.some(g => g.result === 'win' && g.difficulty === 'legend'));
 
   // Lore Codex
   const unlockedLore = getUnlockedLoreNodes();

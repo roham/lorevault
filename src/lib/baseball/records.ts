@@ -12,6 +12,7 @@ export interface GameRecord {
   result: 'win' | 'loss';
   finalScore: { away: number; home: number };
   innings: number;
+  difficulty?: string;        // rookie | veteran | legend
   mvp: { character: string; hits: number; rbis: number };
   keyPlays: string[];        // descriptions of scoring plays
   playerTeamName: string;
@@ -71,6 +72,7 @@ export function saveGameRecord(
   summary: GameSummary,
   playerTeamName: string,
   aiTeamName: string,
+  difficulty?: string,
 ): GameRecord {
   const record: GameRecord = {
     id: game.id,
@@ -78,6 +80,7 @@ export function saveGameRecord(
     result: summary.winner === 'home' ? 'win' : 'loss',
     finalScore: summary.finalScore,
     innings: summary.totalInnings,
+    difficulty,
     mvp: summary.mvp,
     keyPlays: summary.keyPlays.map(p => p.description),
     playerTeamName,

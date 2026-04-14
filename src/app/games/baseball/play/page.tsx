@@ -40,6 +40,8 @@ import { ParticleBurst } from '@/components/baseball/ParticleBurst';
 import { ScreenShake } from '@/components/baseball/ScreenShake';
 import { StealReveal } from '@/components/baseball/StealReveal';
 import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records';
+import { checkAchievements } from '@/lib/achievements';
+import { earnAchievement } from '@/lib/store';
 
 // ===== Animation Phase State Machine =====
 
@@ -709,11 +711,19 @@ export default function PlayPage() {
         gameSummary,
         state.playerRoster?.name || 'Your Team',
         state.aiRoster?.name || 'AI Team',
+        state.difficulty || undefined,
       );
       const xp = awardGameXP(state.game, gameSummary);
       dispatch({ type: 'SET_XP', xpBreakdown: xp });
+
+      // Check achievements after saving record
+      checkAchievements();
+      // legend-slayer: check directly since it needs current game context
+      if (state.difficulty === 'legend' && gameSummary.winner === 'home') {
+        earnAchievement('legend-slayer');
+      }
     }
-  }, [state.animPhase, state.game, state.playerRoster, state.aiRoster]);
+  }, [state.animPhase, state.game, state.playerRoster, state.aiRoster, state.difficulty]);
 
   // ===== AI Steal Decision =====
   // When AI is batting and state is idle, check if AI wants to steal
