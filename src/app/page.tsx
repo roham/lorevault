@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
 import { FEED_CONTENT } from '@/data/feed-content';
 import FeedCard from '@/components/FeedCard';
+import SocialFeed from '@/components/SocialFeed';
 
 const TIER_COLORS: Record<string, string> = {
   Newcomer: '#6b7094',
@@ -256,6 +257,18 @@ export default function Home() {
             <FeedCard key={entry.id} entry={entry} variant="story" />
           ))}
         </div>
+      </section>
+
+      {/* ========== LIVE FEED — social proof, FOMO, competition ========== */}
+      <section className="px-4 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Live</span>
+          <span className="text-[10px] text-green-400 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            Active now
+          </span>
+        </div>
+        <SocialFeed />
       </section>
 
       {/* ========== SEASON TRACK PREVIEW ========== */}
