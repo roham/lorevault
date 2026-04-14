@@ -17,17 +17,20 @@ function getCardArtPath(card: Card): string {
 function CardArt({ card, borderColor, size: s }: { card: Card; borderColor: string; size: typeof SIZE_MAP[keyof typeof SIZE_MAP] }) {
   const [hasArt, setHasArt] = useState(true);
   return (
-    <>
+    <div className="absolute inset-0">
       {hasArt && (
-        <Image
-          src={getCardArtPath(card)}
-          alt=""
-          fill
-          sizes={SIZES_ATTR}
-          quality={70}
-          className="object-cover"
-          onError={() => setHasArt(false)}
-        />
+        <div className="relative w-full h-full">
+          <Image
+            src={getCardArtPath(card)}
+            alt={card.character}
+            fill
+            sizes={SIZES_ATTR}
+            quality={70}
+            className="object-cover"
+            onError={() => setHasArt(false)}
+            unoptimized
+          />
+        </div>
       )}
       {!hasArt && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -46,7 +49,7 @@ function CardArt({ card, borderColor, size: s }: { card: Card; borderColor: stri
           </span>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
