@@ -248,8 +248,7 @@ export default function StoryPrototype() {
           >
             <button
               onClick={() => {
-                // In full product: navigate to pack opening filtered to this set
-                window.location.href = '/packs';
+                window.location.href = '/prototype/story/pack';
               }}
               className="w-full py-4 rounded-2xl text-sm font-bold tracking-wide text-center"
               style={{
