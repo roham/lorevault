@@ -7,6 +7,43 @@ import { SETS } from '@/data/sets';
 import { ALL_CARDS } from '@/data/cards';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
 import { getOwnedCards, getPackCredits, generatePack, addOwnedCards, usePackCredit } from '@/lib/store';
+import { getCardArtPath, getCardBasePath } from '@/lib/card-image';
+
+/** Get first 3 unique character cards from a set for hero art */
+function getSetHeroCards(setSlug: string): Card[] {
+  const seen = new Set<string>();
+  const heroes: Card[] = [];
+  for (const c of ALL_CARDS) {
+    if (c.setSlug === setSlug && !seen.has(c.character)) {
+      seen.add(c.character);
+      heroes.push(c);
+      if (heroes.length >= 3) break;
+    }
+  }
+  return heroes;
+}
+
+/** Card art with fallback */
+function ChaseCardArt({ card }: { card: Card }) {
+  const artPath = getCardArtPath(card);
+  const basePath = getCardBasePath(card);
+  const [src, setSrc] = useState(artPath);
+  const [hasArt, setHasArt] = useState(true);
+  if (!hasArt) return null;
+  return (
+    <img
+      src={src}
+      alt=""
+      className="absolute inset-0 w-full h-full object-cover"
+      onError={() => {
+        if (src !== basePath) setSrc(basePath);
+        else setHasArt(false);
+      }}
+      loading="lazy"
+      draggable={false}
+    />
+  );
+}
 
 type Phase = 'intro' | 'select-set' | 'binder' | 'pack-ready' | 'pack-opening' | 'pack-reveal' | 'pack-summary';
 
@@ -155,9 +192,27 @@ export default function ChasePrototype() {
                   border: '1px solid rgba(255,255,255,0.06)',
                 }}
               >
-                {/* Set icon */}
-                <div className="text-3xl mb-2">{set.icon}</div>
-                <div className="text-xs font-semibold text-foreground truncate">{set.name}</div>
+                {/* Hero card art background */}
+                {(() => {
+                  const heroes = getSetHeroCards(set.slug);
+                  return heroes.map((hero, hi) => (
+                    <motion.div
+                      key={hero.id}
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        opacity: hi === 0 ? 0.25 : 0.12,
+                        transform: `rotate(${(hi - 1) * 8}deg) scale(${1.1 + hi * 0.05})`,
+                      }}
+                      animate={{ y: [0, -3, 0] }}
+                      transition={{ duration: 3 + hi * 0.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <ChaseCardArt card={hero} />
+                    </motion.div>
+                  ));
+                })()}
+                {/* Dark overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
+                <div className="relative z-10 text-xs font-semibold text-foreground truncate">{set.name}</div>
                 <div className="text-[10px] text-muted/60 mt-0.5">
                   {ownedCount}/{totalCount} collected
                 </div>
@@ -203,7 +258,9 @@ export default function ChasePrototype() {
         <div className="flex items-center justify-between mb-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-lg">{selectedSet.icon}</span>
+              <div className="relative w-7 h-7 rounded overflow-hidden flex-shrink-0">
+                <ChaseCardArt card={getSetHeroCards(selectedSet.slug)[0]} />
+              </div>
               <h2 className="text-sm font-semibold text-foreground">{selectedSet.name}</h2>
             </div>
             <p className="text-[10px] text-muted/50 mt-0.5 ml-7">
@@ -254,16 +311,16 @@ export default function ChasePrototype() {
               {missingCards.map(card => (
                 <div key={card.character} className="flex flex-col items-center gap-1">
                   <div
-                    className="w-12 h-[67px] rounded-lg flex items-center justify-center relative"
+                    className="w-12 h-[67px] rounded-lg overflow-hidden relative"
                     style={{
-                      background: 'rgba(15, 15, 25, 0.8)',
-                      border: '1.5px solid rgba(255,255,255,0.1)',
+                      background: 'rgba(12, 12, 22, 0.9)',
+                      border: '1.5px solid rgba(255,255,255,0.08)',
                       boxShadow: '0 0 12px rgba(245, 158, 11, 0.08)',
                     }}
                   >
-                    <span className="text-xl" style={{ opacity: 0.15, filter: 'grayscale(1)' }}>
-                      {card.symbol}
-                    </span>
+                    <div className="absolute inset-0 opacity-10">
+                      <ChaseCardArt card={card} />
+                    </div>
                     <motion.div
                       className="absolute inset-0 rounded-lg"
                       style={{ border: '1px solid rgba(245, 158, 11, 0.15)' }}
@@ -302,22 +359,17 @@ export default function ChasePrototype() {
                     style={{
                       background: isOwned
                         ? `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`
-                        : 'rgba(15, 15, 25, 0.6)',
+                        : 'rgba(12, 12, 22, 0.8)',
                       border: isOwned
                         ? `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`
-                        : '1.5px dashed rgba(255,255,255,0.06)',
+                        : '1.5px solid rgba(255,255,255,0.04)',
                     }}
                   >
                     {isOwned ? (
                       <>
-                        {/* Owned card — symbol + vignette */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-2xl" style={{ opacity: 0.8 }}>{card.symbol}</span>
-                        </div>
-                        <div
-                          className="absolute inset-0"
-                          style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,0.4) 100%)' }}
-                        />
+                        {/* Owned card — full art */}
+                        <ChaseCardArt card={card} />
+                        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 40%)' }} />
                         {/* Scarcity indicator */}
                         <div
                           className="absolute bottom-0 left-0 right-0 h-[2px]"
@@ -326,20 +378,12 @@ export default function ChasePrototype() {
                       </>
                     ) : (
                       <>
-                        {/* Empty slot — silhouette with faded symbol */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span
-                            className="text-2xl"
-                            style={{ opacity: 0.08, filter: 'grayscale(1)' }}
-                          >
-                            {card.symbol}
-                          </span>
+                        {/* Empty slot — dark silhouette with blurred art hint */}
+                        <div className="absolute inset-0 opacity-[0.06]">
+                          <ChaseCardArt card={card} />
                         </div>
-                        {/* Dashed border corner accents */}
-                        <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/8 rounded-tl" />
-                        <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-white/8 rounded-tr" />
-                        <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-white/8 rounded-bl" />
-                        <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/8 rounded-br" />
+                        {/* Subtle inner border */}
+                        <div className="absolute inset-[3px] rounded border border-white/[0.03]" />
                       </>
                     )}
                   </div>
@@ -389,12 +433,10 @@ export default function ChasePrototype() {
                     boxShadow: `0 0 40px ${SCARCITY_CONFIG[inspectedCard.scarcity].color}25`,
                   }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-6xl" style={{ opacity: 0.7 }}>{inspectedCard.symbol}</span>
-                  </div>
+                  <ChaseCardArt card={inspectedCard} />
                   <div
                     className="absolute inset-0"
-                    style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,0.5) 100%)' }}
+                    style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%)' }}
                   />
                   <div
                     className="absolute bottom-0 left-0 right-0 px-3 py-2.5"
@@ -498,12 +540,26 @@ export default function ChasePrototype() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
         >
+          {/* Pack art — fanned hero cards with breathing animation */}
           <motion.div
-            className="text-6xl mb-4"
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            className="relative w-44 h-56 mb-4"
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           >
-            {selectedSet.icon}
+            {getSetHeroCards(selectedSet.slug).map((hero, hi) => (
+              <div
+                key={hero.id}
+                className="absolute inset-0 rounded-xl overflow-hidden"
+                style={{
+                  transform: `rotate(${(hi - 1) * 10}deg) translateY(${hi * -4}px)`,
+                  zIndex: 3 - hi,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                }}
+              >
+                <ChaseCardArt card={hero} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              </div>
+            ))}
           </motion.div>
           <h2 className="type-subheading text-foreground mb-2">{selectedSet.name} Pack</h2>
           <p className="text-[10px] text-muted/40">Tap to open</p>
@@ -519,14 +575,23 @@ export default function ChasePrototype() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <motion.div
-          className="text-6xl"
+          className="relative w-44 h-56 rounded-xl overflow-hidden"
           animate={{
             scale: [1, 1.3, 0.8, 1.4, 1],
             rotate: [0, 8, -8, 4, 0],
           }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
+          style={{ boxShadow: `0 0 60px ${selectedSet.gradientFrom}80` }}
         >
-          {selectedSet.icon}
+          {(() => {
+            const hero = getSetHeroCards(selectedSet.slug)[0];
+            return hero ? (
+              <>
+                <ChaseCardArt card={hero} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              </>
+            ) : null;
+          })()}
         </motion.div>
       </div>
     );
@@ -589,24 +654,20 @@ export default function ChasePrototype() {
             exit={{ opacity: 0, scale: 0.9, y: -30 }}
             transition={{ duration: 0.5, delay: 0.15, type: 'spring', stiffness: 200, damping: 20 }}
           >
-            {/* Card visual */}
+            {/* Card visual — full art */}
             <div
-              className="relative w-48 aspect-[5/7] rounded-xl overflow-hidden mb-4"
+              className="relative w-52 aspect-[5/7] rounded-xl overflow-hidden mb-4"
               style={{
+                background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
                 border: `2px solid ${scarcityConfig.color}`,
-                boxShadow: `0 0 30px ${scarcityConfig.color}20`,
+                boxShadow: `0 0 40px ${scarcityConfig.color}25, 0 8px 32px rgba(0,0,0,0.5)`,
               }}
             >
-              <div
-                className="absolute inset-0"
-                style={{ background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})` }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-5xl opacity-60">{card.symbol}</span>
-              </div>
+              <ChaseCardArt card={card} />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 30%, transparent 60%)' }} />
               <div
                 className="absolute bottom-2 left-2 right-2 text-center py-1 rounded-lg"
-                style={{ background: `${scarcityConfig.color}20` }}
+                style={{ background: `${scarcityConfig.color}20`, backdropFilter: 'blur(4px)' }}
               >
                 <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: scarcityConfig.color }}>
                   {card.scarcity}
@@ -727,7 +788,7 @@ export default function ChasePrototype() {
                     opacity: card.setSlug === selectedSet.slug ? 1 : 0.4,
                   }}
                 >
-                  <span className="text-sm">{card.symbol}</span>
+                  <ChaseCardArt card={card} />
                   {isNew && (
                     <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-500 flex items-center justify-center">
                       <span className="text-[6px] text-white font-bold">+</span>

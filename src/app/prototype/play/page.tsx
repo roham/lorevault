@@ -7,6 +7,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS, getCharacterStats, getEffectiveStat } from '@/data/stats';
 import { getOwnedCards, addOwnedCards } from '@/lib/store';
+import { getCardArtPath, getCardBasePath } from '@/lib/card-image';
 
 type Phase = 'intro' | 'pre-battle' | 'battle' | 'round-result' | 'battle-result' | 'collection';
 
@@ -60,6 +61,28 @@ function pickAICards(exclude: Set<string>): Card[] {
     }
   }
   return picks;
+}
+
+/** Card art image with fallback chain: variant → base → gradient only */
+function CardArtImg({ card }: { card: Card }) {
+  const artPath = getCardArtPath(card);
+  const basePath = getCardBasePath(card);
+  const [src, setSrc] = useState(artPath);
+  const [hasArt, setHasArt] = useState(true);
+  if (!hasArt) return null;
+  return (
+    <img
+      src={src}
+      alt={card.character}
+      className="absolute inset-0 w-full h-full object-cover"
+      onError={() => {
+        if (src !== basePath) setSrc(basePath);
+        else setHasArt(false);
+      }}
+      loading="lazy"
+      draggable={false}
+    />
+  );
 }
 
 export default function PlayPrototype() {
@@ -182,10 +205,42 @@ export default function PlayPrototype() {
   // INTRO — the hook
   // ═══════════════════════════════════════════
   if (phase === 'intro') {
+    // Pick 3 showcase cards for the background
+    const showcaseCards = playerDeck.slice(0, 3);
+
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-8">
+      <div className="min-h-screen flex flex-col items-center justify-center px-8 relative overflow-hidden">
+        {/* Atmospheric background — radial gradient */}
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 40%, #1a1028 0%, #080c18 50%, #000000 100%)' }} />
+
+        {/* Floating card art behind text — fanned arrangement */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          {showcaseCards.map((card, i) => (
+            <motion.div
+              key={card.id}
+              className="absolute w-[140px] aspect-[5/7] rounded-xl overflow-hidden"
+              style={{
+                background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
+                border: `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}20`,
+                left: `${(i - 1) * 60 - 70}px`,
+                top: `${Math.abs(i - 1) * 15 - 100}px`,
+                transform: `rotate(${(i - 1) * 8}deg)`,
+                opacity: 0.15,
+                filter: 'blur(1px)',
+              }}
+              animate={{
+                y: [0, -8, 0],
+                rotate: [(i - 1) * 8, (i - 1) * 8 + 2, (i - 1) * 8],
+              }}
+              transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <CardArtImg card={card} />
+            </motion.div>
+          ))}
+        </div>
+
         <motion.div
-          className="text-center"
+          className="text-center relative z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2 }}
@@ -212,7 +267,7 @@ export default function PlayPrototype() {
           </motion.h1>
           <motion.button
             onClick={startBattle}
-            className="text-sm font-bold tracking-wide py-3 px-8 rounded-xl"
+            className="text-sm font-bold tracking-wide py-4 px-10 rounded-xl"
             style={{
               background: 'linear-gradient(135deg, #ef444430, #ef444415)',
               border: '1.5px solid #ef444440',
@@ -312,7 +367,6 @@ export default function PlayPrototype() {
         <div className="flex justify-center gap-3 flex-1 items-center">
           {battle.playerCards.map((card, i) => {
             const used = i < battle.currentRound;
-            const stats = getCharacterStats(card.character);
 
             return (
               <motion.button
@@ -324,21 +378,23 @@ export default function PlayPrototype() {
                 style={{ opacity: used ? 0.25 : 1 }}
               >
                 <div
-                  className="w-[100px] aspect-[5/7] rounded-xl overflow-hidden relative"
+                  className="w-[110px] aspect-[5/7] rounded-xl overflow-hidden relative"
                   style={{
                     background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
-                    border: `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`,
+                    border: `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}50`,
+                    boxShadow: `0 4px 24px ${card.gradientFrom}60, 0 0 12px ${SCARCITY_CONFIG[card.scarcity].color}15`,
                   }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-3xl" style={{ opacity: 0.6 }}>{card.symbol}</span>
-                  </div>
+                  <CardArtImg card={card} />
                   <div
                     className="absolute inset-0"
-                    style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,0.5) 100%)' }}
+                    style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 40%, transparent 60%)' }}
                   />
-                  <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5 bg-black/50">
-                    <div className="text-[9px] text-white/80 truncate font-medium">{card.character}</div>
+                  <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5">
+                    <div className="text-[9px] text-white/90 truncate font-semibold drop-shadow-lg">{card.character}</div>
+                    <div className="text-[8px] truncate drop-shadow" style={{ color: SCARCITY_CONFIG[card.scarcity].color }}>
+                      {SCARCITY_CONFIG[card.scarcity].label}
+                    </div>
                   </div>
                 </div>
               </motion.button>
@@ -365,38 +421,48 @@ export default function PlayPrototype() {
           </span>
         </div>
 
-        {/* Cards face-off — compact thumbnails during stat pick */}
-        <div className="flex items-center justify-center gap-6 mb-5">
-          {/* Player card thumbnail */}
+        {/* Cards face-off — your card vs mystery */}
+        <div className="flex items-center justify-center gap-4 mb-5">
+          {/* Player card — art visible */}
           <div className="text-center">
             <div
-              className="w-[60px] aspect-[5/7] rounded-lg overflow-hidden relative mb-1"
+              className="w-[80px] aspect-[5/7] rounded-lg overflow-hidden relative mb-1"
               style={{
                 background: `linear-gradient(145deg, ${battle.playerPick.gradientFrom}, ${battle.playerPick.gradientTo})`,
                 border: `1.5px solid ${SCARCITY_CONFIG[battle.playerPick.scarcity].color}`,
+                boxShadow: `0 2px 16px ${SCARCITY_CONFIG[battle.playerPick.scarcity].color}20`,
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xl" style={{ opacity: 0.6 }}>{battle.playerPick.symbol}</span>
-              </div>
+              <CardArtImg card={battle.playerPick} />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)' }} />
             </div>
-            <span className="text-[8px] text-foreground/70 truncate block w-[60px]">{battle.playerPick.character}</span>
+            <span className="text-[8px] text-foreground/70 truncate block w-[80px]">{battle.playerPick.character}</span>
           </div>
 
-          <span className="text-sm text-muted/30 font-bold">VS</span>
+          {/* VS divider */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-px h-6 bg-gradient-to-b from-transparent via-red-500/30 to-transparent" />
+            <span className="text-[10px] font-bold text-red-400/60 tracking-wider">VS</span>
+            <div className="w-px h-6 bg-gradient-to-b from-transparent via-red-500/30 to-transparent" />
+          </div>
 
-          {/* AI card — face down thumbnail */}
+          {/* AI card — face down with glow */}
           <div className="text-center">
             <div
-              className="w-[60px] aspect-[5/7] rounded-lg overflow-hidden relative mb-1 flex items-center justify-center"
+              className="w-[80px] aspect-[5/7] rounded-lg overflow-hidden relative mb-1 flex items-center justify-center"
               style={{
-                background: 'linear-gradient(145deg, #1a1a2e, #0a0b14)',
-                border: '1.5px solid rgba(255,255,255,0.08)',
+                background: 'linear-gradient(145deg, #12132a, #080918)',
+                border: '1.5px solid rgba(255,255,255,0.06)',
+                boxShadow: '0 2px 16px rgba(239,68,68,0.08)',
               }}
             >
-              <span className="text-lg opacity-30">?</span>
+              <motion.span
+                className="text-2xl opacity-20"
+                animate={{ opacity: [0.15, 0.3, 0.15] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >?</motion.span>
             </div>
-            <span className="text-[8px] text-muted/40">???</span>
+            <span className="text-[8px] text-muted/40">Unknown</span>
           </div>
         </div>
 
@@ -481,64 +547,82 @@ export default function PlayPrototype() {
           style={{ background: won ? '#22c55e' : '#ef4444' }}
         />
 
-        {/* Cards revealed side by side */}
-        <div className="flex items-start gap-4 mb-6">
+        {/* Cards revealed side by side — with art */}
+        <div className="flex items-start gap-3 mb-6">
           {/* Player card with stat */}
-          <div className="text-center">
+          <motion.div
+            className="text-center"
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
             <div
-              className="w-[100px] aspect-[5/7] rounded-xl overflow-hidden relative mb-2"
+              className="w-[120px] aspect-[5/7] rounded-xl overflow-hidden relative mb-2"
               style={{
                 background: `linear-gradient(145deg, ${battle.playerPick.gradientFrom}, ${battle.playerPick.gradientTo})`,
-                border: `2px solid ${won ? '#22c55e' : '#ef4444'}`,
-                boxShadow: won ? '0 0 20px rgba(34,197,94,0.2)' : 'none',
+                border: `2px solid ${won ? '#22c55e' : 'rgba(239,68,68,0.4)'}`,
+                boxShadow: won ? '0 0 30px rgba(34,197,94,0.25)' : 'none',
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl" style={{ opacity: 0.6 }}>{battle.playerPick.symbol}</span>
+              <CardArtImg card={battle.playerPick} />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%)' }} />
+              <div className="absolute bottom-1.5 left-0 right-0 text-center">
+                <span className="text-[9px] text-white/80 font-medium drop-shadow-lg">{battle.playerPick.character}</span>
               </div>
             </div>
-            <div className="text-[10px] text-foreground/70 mb-1">{battle.playerPick.character}</div>
             <motion.div
-              className="text-lg font-bold font-mono"
+              className="text-xl font-bold font-mono"
               style={{ color: STAT_COLORS[battle.selectedStat] }}
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 1 }}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2 }}
             >
               {playerVal}
             </motion.div>
+          </motion.div>
+
+          {/* VS divider */}
+          <div className="pt-12 flex flex-col items-center gap-1">
+            <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+            <span className="text-[10px] font-bold text-muted/30 tracking-wider">VS</span>
+            <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
           </div>
 
-          <div className="pt-16 text-muted/40 text-lg font-bold">VS</div>
-
-          {/* AI card revealed — dramatic flip */}
-          <div className="text-center">
+          {/* AI card revealed — dramatic flip with art */}
+          <motion.div
+            className="text-center"
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
             <motion.div
-              className="w-[100px] aspect-[5/7] rounded-xl overflow-hidden relative mb-2"
+              className="w-[120px] aspect-[5/7] rounded-xl overflow-hidden relative mb-2"
               style={{
                 background: `linear-gradient(145deg, ${battle.aiPick.gradientFrom}, ${battle.aiPick.gradientTo})`,
-                border: `2px solid ${!won ? '#22c55e' : '#ef4444'}`,
-                boxShadow: !won ? '0 0 20px rgba(34,197,94,0.2)' : 'none',
+                border: `2px solid ${!won ? '#22c55e' : 'rgba(239,68,68,0.4)'}`,
+                boxShadow: !won ? '0 0 30px rgba(34,197,94,0.25)' : 'none',
               }}
               initial={{ rotateY: 90, scale: 0.9 }}
               animate={{ rotateY: 0, scale: 1 }}
-              transition={{ duration: 0.6, type: 'spring', stiffness: 120 }}
+              transition={{ duration: 0.5, type: 'spring', stiffness: 120, delay: 0.3 }}
             >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl" style={{ opacity: 0.6 }}>{battle.aiPick.symbol}</span>
+              <CardArtImg card={battle.aiPick} />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%)' }} />
+              <div className="absolute bottom-1.5 left-0 right-0 text-center">
+                <span className="text-[9px] text-white/80 font-medium drop-shadow-lg">{battle.aiPick.character}</span>
               </div>
             </motion.div>
-            <div className="text-[10px] text-foreground/70 mb-1">{battle.aiPick.character}</div>
             {/* AI stat revealed with suspense delay */}
             <motion.div
-              className="text-lg font-bold font-mono"
+              className="text-xl font-bold font-mono"
               style={{ color: STAT_COLORS[battle.selectedStat] }}
-              initial={{ opacity: 0, scale: 1.3 }}
+              initial={{ opacity: 0, scale: 1.5 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.3 }}
+              transition={{ delay: 0.7, duration: 0.3 }}
             >
               {aiVal}
             </motion.div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Result — delayed for suspense */}
@@ -629,16 +713,15 @@ export default function PlayPrototype() {
               transition={{ delay: 0.3 }}
             >
               <div
-                className="w-36 aspect-[5/7] rounded-xl overflow-hidden relative mb-3"
+                className="w-44 aspect-[5/7] rounded-xl overflow-hidden relative mb-3"
                 style={{
                   background: `linear-gradient(145deg, ${reward.gradientFrom}, ${reward.gradientTo})`,
                   border: `2px solid ${SCARCITY_CONFIG[reward.scarcity].color}`,
-                  boxShadow: `0 0 30px ${SCARCITY_CONFIG[reward.scarcity].color}20`,
+                  boxShadow: `0 0 40px ${SCARCITY_CONFIG[reward.scarcity].color}30, 0 8px 32px rgba(0,0,0,0.5)`,
                 }}
               >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-4xl" style={{ opacity: 0.6 }}>{reward.symbol}</span>
-                </div>
+                <CardArtImg card={reward} />
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 30%, transparent 60%)' }} />
                 <div
                   className="absolute bottom-2 left-2 right-2 text-center py-1 rounded-lg"
                   style={{ background: `${SCARCITY_CONFIG[reward.scarcity].color}20` }}
@@ -804,9 +887,7 @@ export default function PlayPrototype() {
                         border: `1px solid ${SCARCITY_CONFIG[card.scarcity].color}30`,
                       }}
                     >
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-sm" style={{ opacity: 0.5 }}>{card.symbol}</span>
-                      </div>
+                      <CardArtImg card={card} />
                     </div>
                   ))}
                   {owned > 10 && (

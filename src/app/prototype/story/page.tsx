@@ -6,8 +6,45 @@ import Link from 'next/link';
 import { STORY_WORLDS, StoryWorld, getUnlockedChapters, getNextLockedChapter } from '@/data/story-maps';
 import { ALL_CARDS } from '@/data/cards';
 import { getOwnedCards } from '@/lib/store';
+import { getCardArtPath, getCardBasePath } from '@/lib/card-image';
 
 type Phase = 'intro' | 'select-world' | 'story-map';
+
+/** Card art with fallback chain */
+function StoryCardArt({ card, className = '' }: { card: { setSlug: string; character: string; moment: string; scarcity: string; parallel: string }; className?: string }) {
+  const artPath = getCardArtPath(card);
+  const basePath = getCardBasePath(card);
+  const [src, setSrc] = useState(artPath);
+  const [hasArt, setHasArt] = useState(true);
+  if (!hasArt) return null;
+  return (
+    <img
+      src={src}
+      alt=""
+      className={`absolute inset-0 w-full h-full object-cover ${className}`}
+      onError={() => {
+        if (src !== basePath) setSrc(basePath);
+        else setHasArt(false);
+      }}
+      loading="lazy"
+      draggable={false}
+    />
+  );
+}
+
+/** Get representative hero cards for a world (first 3 unique characters from the set) */
+function getWorldHeroCards(setSlug: string) {
+  const seen = new Set<string>();
+  const heroes: typeof ALL_CARDS = [];
+  for (const card of ALL_CARDS) {
+    if (card.setSlug === setSlug && !seen.has(card.character)) {
+      seen.add(card.character);
+      heroes.push(card);
+      if (heroes.length >= 3) break;
+    }
+  }
+  return heroes;
+}
 
 export default function StoryPrototype() {
   const [phase, setPhase] = useState<Phase>('intro');
@@ -88,27 +125,63 @@ export default function StoryPrototype() {
           <motion.div
             key={world.id}
             className="absolute inset-0 flex flex-col items-center justify-end pb-16 px-8"
-            style={{
-              background: `linear-gradient(180deg, ${world.gradientFrom} 0%, ${world.gradientTo} 40%, #0a0b14 100%)`,
-            }}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.4 }}
           >
-            {/* World icon — large, breathing */}
-            <motion.div
-              className="text-7xl mb-6"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              {world.icon}
-            </motion.div>
+            {/* Full-bleed hero card art as background */}
+            {(() => {
+              const heroes = getWorldHeroCards(world.setSlug);
+              const hero = heroes[0];
+              return hero ? (
+                <div className="absolute inset-0">
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${world.gradientFrom} 0%, ${world.gradientTo} 30%, #0a0b14 100%)` }} />
+                  <div className="absolute inset-0 opacity-30">
+                    <StoryCardArt card={hero} />
+                  </div>
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #0a0b14 0%, rgba(10,11,20,0.8) 40%, rgba(10,11,20,0.5) 70%, rgba(10,11,20,0.7) 100%)' }} />
+                </div>
+              ) : (
+                <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${world.gradientFrom} 0%, ${world.gradientTo} 40%, #0a0b14 100%)` }} />
+              );
+            })()}
+
+            {/* Card art triptych — 3 hero cards fanned */}
+            {(() => {
+              const heroes = getWorldHeroCards(world.setSlug);
+              return (
+                <div className="relative flex justify-center items-end mb-6 h-[200px] w-full">
+                  {heroes.map((card, i) => (
+                    <motion.div
+                      key={card.id}
+                      className="absolute w-[100px] aspect-[5/7] rounded-xl overflow-hidden"
+                      style={{
+                        background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
+                        border: `1.5px solid ${world.accentColor}30`,
+                        boxShadow: `0 8px 32px rgba(0,0,0,0.5)`,
+                        left: `calc(50% - 50px + ${(i - 1) * 55}px)`,
+                        bottom: `${Math.abs(i - 1) * 12}px`,
+                        zIndex: i === 1 ? 3 : 1,
+                        transform: `rotate(${(i - 1) * 6}deg)`,
+                      }}
+                      animate={{
+                        y: [0, -4, 0],
+                      }}
+                      transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <StoryCardArt card={card} />
+                      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%)' }} />
+                    </motion.div>
+                  ))}
+                </div>
+              );
+            })()}
 
             {/* World name + tagline */}
-            <h2 className="type-heading text-foreground mb-2 text-center">{world.name}</h2>
-            <p className="text-xs text-muted text-center mb-2">{world.tagline}</p>
-            <p className="text-[10px] text-muted/50 text-center mb-8">
+            <h2 className="type-heading text-foreground mb-2 text-center relative z-10">{world.name}</h2>
+            <p className="text-xs text-muted text-center mb-2 relative z-10">{world.tagline}</p>
+            <p className="text-[10px] text-muted/50 text-center mb-8 relative z-10">
               8 chapters &middot; {world.chapters.reduce((sum, ch) => sum + ch.requiredCharacters.length, 0)} cards to collect
             </p>
 
@@ -326,15 +399,36 @@ function StoryNodeCard({
       >
         {/* Chapter header */}
         <div className="flex items-center gap-3">
-          {/* Icon or lock */}
-          <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-lg flex-shrink-0"
-            style={{
-              background: isUnlocked ? `${accentColor}15` : 'rgba(255,255,255,0.03)',
-            }}
-          >
-            {isUnlocked ? chapter.icon : '🔒'}
-          </div>
+          {/* Chapter thumbnail — card art of first required character */}
+          {(() => {
+            const firstChar = chapter.requiredCharacters[0];
+            const heroCard = firstChar ? ALL_CARDS.find(c => c.character === firstChar && c.setSlug === setSlug) : null;
+            return (
+              <div
+                className="w-10 h-10 rounded-lg overflow-hidden relative flex-shrink-0"
+                style={{
+                  background: isUnlocked && heroCard
+                    ? `linear-gradient(145deg, ${heroCard.gradientFrom}, ${heroCard.gradientTo})`
+                    : `${accentColor}08`,
+                  border: isUnlocked ? `1px solid ${accentColor}30` : '1px solid rgba(255,255,255,0.05)',
+                }}
+              >
+                {isUnlocked && heroCard ? (
+                  <>
+                    <StoryCardArt card={heroCard} />
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 50%)' }} />
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted/30">
+                      <rect x="3" y="11" width="18" height="11" rx="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           <div className="flex-1 min-w-0">
             <div className="text-[10px] text-muted/60 font-mono mb-0.5">
@@ -387,7 +481,7 @@ function StoryNodeCard({
                 return (
                   <div key={charName} className="flex flex-col items-center gap-1">
                     <div
-                      className="w-8 h-11 rounded-md flex items-center justify-center relative overflow-hidden"
+                      className="w-9 h-[50px] rounded-md relative overflow-hidden"
                       style={{
                         background: isOwned
                           ? `linear-gradient(145deg, ${gradFrom}, ${gradTo})`
@@ -398,15 +492,16 @@ function StoryNodeCard({
                         boxShadow: isOwned ? `0 0 8px ${accentColor}15` : 'none',
                       }}
                     >
-                      <span
-                        className="text-sm"
-                        style={{
-                          opacity: isOwned ? 0.8 : 0.15,
-                          filter: isOwned ? 'none' : 'grayscale(1)',
-                        }}
-                      >
-                        {symbol}
-                      </span>
+                      {isOwned && cardData ? (
+                        <StoryCardArt card={cardData} />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-[10px] text-white/10">?</span>
+                        </div>
+                      )}
+                      {!isOwned && (
+                        <div className="absolute inset-0" style={{ background: 'rgba(15,15,25,0.7)' }} />
+                      )}
                       {/* Checkmark overlay for owned */}
                       {isOwned && (
                         <div
