@@ -32,6 +32,30 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **Acceptance criteria**: Two copies of the same card look visually different after different usage patterns. Effect visible on card detail and in collection view.
 - **Status**: DONE — commit 6fce5fe, v8.23
 
+### DIRECTIVE-004: Card provenance — Journey Timeline + Origin Badges
+- **Priority**: P0
+- **Source**: Strategy Loop S1 — Provenance is weakest dimension (2/10)
+- **What to build**: (A) Card Journey Timeline component on card detail page. Vertical timeline rendering existing `CardMeta.history` array: pulled, revealed, battle_win/loss, showcased, traded events with icons, colors, dates. Header with summary stats ("N events over D days"). (B) Origin Badge overlay on CardItem at all sizes. Badges: "Genesis" (first pack opening), "OG" (first 10 cards acquired), "Pristine" (aging tier pristine), "Veteran" (aging tier veteran). Priority system shows highest-qualifying badge. New `getOriginBadge(cardId)` function in store.ts.
+- **Why**: Provenance is 2/10. The `history[]` data exists but is invisible. Surfacing it as a timeline + badge system makes every card's life story visible. Journey Timeline alone moves Provenance to 5-6; Origin Badges push to 7. Combined, this is the highest-impact single directive for the weakest dimension.
+- **Acceptance criteria**: Card detail page shows chronological event timeline with distinct icons/colors per event type. Origin badges appear on card art at sm/md/lg sizes. Owned cards display "Genesis" or "OG" badges when applicable. All data sourced from existing `CardMeta.history` and `acquiredAt` — no new localStorage schema.
+- **Status**: PENDING
+
+### DIRECTIVE-005: Achievement badge system + collector profile
+- **Priority**: P1
+- **Source**: Strategy Loop S1 — Social Proof (4/10) + Utility Loop (6/10)
+- **What to build**: (A) Badge manifest of 25-30 achievements across 5 categories: Collection (own X cards, complete set), Battle (win streaks, defeat legendary), Discovery (open X packs, find legendary), Market (buy/sell milestones), Dedication (login days, daily missions). Static JSON definition with conditions. (B) Badge evaluator that checks conditions against localStorage state on pack open, battle complete, and app launch. (C) Collector Profile page: name, "Collecting since" date, total cards, sets completed, battle record, pinned badge strip (3 badges). Badge grid with earned (full color + date) and unearned (grey silhouette + progress hint). (D) Badge unlock celebration modal with particle animation.
+- **Why**: Badges create purpose beyond acquisition. The implied hierarchy ("Master Collector" presupposes a collector population) generates social proof even in single-player. Unearned grey badges drive completion behavior via Zeigarnik effect. Projects Social Proof 4→6, Utility Loop 6→7.
+- **Acceptance criteria**: 25+ badges defined across 5 categories. Badge evaluator fires on relevant actions. Profile page shows badge grid with earned/unearned states. New badge triggers celebration modal. Pinned badge strip (3 chosen badges) visible on profile header.
+- **Status**: PENDING
+
+### DIRECTIVE-006: Population counters + serial number enhancement
+- **Priority**: P1
+- **Source**: Strategy Loop S1 — Social Proof (4/10) + Scarcity Legibility (8/10)
+- **What to build**: (A) Deterministic population generator: `totalMinted` per card derived from rarity tier (Legendary 15-49, Epic 100-499, Rare 500-1999, Common 2000-9999) via seeded hash of card ID. `currentOwners` as percentage of `totalMinted` with daily noise. (B) Population counter on card detail page: "47 minted · 38 collectors own this." For legendaries <50 minted, dot visualization. (C) Enhanced serial badge on card tile: #1 = "Genesis" holographic, #2-10 = "Low Serial" gold, #11-100 = silver. (D) Rarity labels enhanced: "Legendary · 47 Exist" everywhere rarity appears.
+- **Why**: Population counters anchor scarcity with concrete numbers. "1 of 47" is psychologically processed through real scarcity circuits regardless of simulation. Trivial effort, broad surface area. Projects Social Proof +1, Scarcity Legibility 8→9.
+- **Acceptance criteria**: Every card has a deterministic `totalMinted` and `currentOwners` count. Card detail page shows population counter. Card tiles show serial number badge with tier-appropriate styling. Rarity labels include population count. All computed from card ID seed — no new localStorage.
+- **Status**: PENDING
+
 ---
 
 ## Completed Directives
