@@ -28,6 +28,21 @@ export const FEED_TYPE_CONFIG: Record<FeedType, { label: string; color: string }
 
 export const FEED_CONTENT: FeedEntry[] = [
   {
+    id: 'pdb-launch',
+    slug: 'public-domain-baseball-is-here',
+    type: 'feature',
+    title: 'Public Domain Baseball Is Here',
+    subtitle: 'd20 dice baseball with 99 literary legends — build your lineup and play ball',
+    body: `The biggest game mode in LoreVault history just dropped. Public Domain Baseball is an MLB Showdown-inspired dice baseball game where your collection comes to life on the diamond.\n\nDraft 9 hitters and 1 pitcher under a 150-point salary cap. Every at-bat rolls a d20 — high roll and the hitter controls the outcome, low roll and the pitcher takes over. Then roll again on the controlling player's hit chart for singles, doubles, home runs, strikeouts, and everything in between.\n\nThree difficulty tiers pit you against themed AI teams: face the Fairy Tale Misfits on Rookie, outsmart the Baker Street Nine on Veteran, or survive Asgard's Chosen on Legend. The AI steals bases, talks trash, and optimizes its batting order based on difficulty.\n\n99 characters across all six sets. Zeus pitches thunderbolts. Sherlock Holmes reads the defense. The Cheshire Cat steals second with a grin. Your collection. Your lineup. Your rules.`,
+    gradientFrom: '#0a1a2e',
+    gradientTo: '#1b3a5c',
+    icon: '\u26BE',
+    ctaLabel: 'Play Ball',
+    ctaLink: '/games/baseball',
+    date: '2026-04-14',
+    pinned: true,
+  },
+  {
     id: 'olympus-guide',
     slug: 'olympus-rising-full-set-guide',
     type: 'drop',

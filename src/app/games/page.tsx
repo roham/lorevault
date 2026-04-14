@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { getGameStats, getXP } from '@/lib/store';
 import { GameStats } from '@/data/types';
+import { getWinLossRecord } from '@/lib/baseball/records';
 
 const DEFAULT_STATS: GameStats = {
   battlesPlayed: 0,
@@ -34,10 +35,12 @@ function getDailyChallenge(): { title: string; desc: string; game: 'battle' | 't
 export default function GamesHub() {
   const [stats, setStats] = useState<GameStats>(DEFAULT_STATS);
   const [xp, setXp] = useState(0);
+  const [baseballRecord, setBaseballRecord] = useState({ wins: 0, losses: 0 });
 
   useEffect(() => {
     setStats(getGameStats());
     setXp(getXP());
+    setBaseballRecord(getWinLossRecord());
   }, []);
 
   const daily = getDailyChallenge();
@@ -125,8 +128,19 @@ export default function GamesHub() {
                       d20 dice baseball with literary legends. Build your lineup and play ball.
                     </p>
                     <div className="flex items-center gap-3">
-                      <span className="text-[10px] text-blue-400/60">99 characters</span>
-                      <span className="text-[10px] text-blue-400/60">MLB Showdown-inspired</span>
+                      {(baseballRecord.wins > 0 || baseballRecord.losses > 0) ? (
+                        <>
+                          <span className="text-[10px] text-muted">
+                            <span className="text-green-400 font-bold">{baseballRecord.wins}</span>W / <span className="text-red-400 font-bold">{baseballRecord.losses}</span>L
+                          </span>
+                          <span className="text-[10px] text-blue-400/60">99 characters</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-[10px] text-blue-400/60">99 characters</span>
+                          <span className="text-[10px] text-blue-400/60">MLB Showdown-inspired</span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="text-muted text-xl group-hover:text-blue-400 transition-colors">&rarr;</div>
@@ -236,15 +250,26 @@ export default function GamesHub() {
       </div>
 
       {/* Records */}
-      {(stats.battlesPlayed > 0 || stats.triviaPlayed > 0) && (
+      {(stats.battlesPlayed > 0 || stats.triviaPlayed > 0 || baseballRecord.wins > 0 || baseballRecord.losses > 0) && (
         <>
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted mb-3">Your Records</h2>
           <div className="grid grid-cols-2 gap-2 mb-6">
+            {(baseballRecord.wins > 0 || baseballRecord.losses > 0) && (
+              <motion.div
+                className="p-4 rounded-xl bg-surface border border-border"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                <div className="text-2xl font-bold text-blue-400">{baseballRecord.wins}<span className="text-base text-muted font-normal">-{baseballRecord.losses}</span></div>
+                <div className="text-[10px] text-muted">Baseball Record</div>
+              </motion.div>
+            )}
             <motion.div
               className="p-4 rounded-xl bg-surface border border-border"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
+              transition={{ delay: 0.3 }}
             >
               <div className="text-2xl font-bold text-green-400">{stats.battlesWon}</div>
               <div className="text-[10px] text-muted">Battle Wins</div>
@@ -253,7 +278,7 @@ export default function GamesHub() {
               className="p-4 rounded-xl bg-surface border border-border"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.35 }}
             >
               <div className="text-2xl font-bold text-yellow-400">{stats.triviaHighScore.toLocaleString()}</div>
               <div className="text-[10px] text-muted">Trivia High Score</div>
@@ -262,7 +287,7 @@ export default function GamesHub() {
               className="p-4 rounded-xl bg-surface border border-border"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
+              transition={{ delay: 0.4 }}
             >
               <div className="text-2xl font-bold text-accent">{stats.totalGameXP}</div>
               <div className="text-[10px] text-muted">Total Game XP</div>
@@ -271,7 +296,7 @@ export default function GamesHub() {
               className="p-4 rounded-xl bg-surface border border-border"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.45 }}
             >
               <div className="text-2xl font-bold text-orange-400">
                 {Math.max(stats.longestBattleStreak, stats.longestTriviaStreak)}
