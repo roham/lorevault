@@ -5,8 +5,8 @@ import crypto from 'crypto';
 // Required to enable eBay API keysets
 // Docs: https://developer.ebay.com/marketplace-account-deletion
 
-const VERIFICATION_TOKEN = process.env.EBAY_VERIFICATION_TOKEN || 'lorevault-cardvault-verification-2026';
-const ENDPOINT_URL = process.env.EBAY_ENDPOINT_URL || 'https://lorevault-site.vercel.app/api/ebay/account-deletion';
+const VERIFICATION_TOKEN = 'lorevault-cardvault-verification-2026';
+const ENDPOINT_URL = 'https://lorevault-site.vercel.app/api/ebay/account-deletion';
 
 // GET — eBay challenge verification
 // eBay sends: ?challenge_code=xxx
