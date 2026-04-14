@@ -53,17 +53,17 @@ function HomeContent() {
   const [showReferralBanner, setShowReferralBanner] = useState(false);
 
   useEffect(() => {
-    if (shouldShowWelcome()) {
-      router.replace('/welcome');
-      return;
-    }
-
-    // Handle ?ref= referral landing
+    // Capture referral code before any redirect — new users get forwarded to /welcome
     const refCode = searchParams.get('ref');
     if (refCode && !localStorage.getItem('lorevault_referred_by')) {
       localStorage.setItem('lorevault_referred_by', refCode);
       setShowReferralBanner(true);
       setTimeout(() => setShowReferralBanner(false), 5000);
+    }
+
+    if (shouldShowWelcome()) {
+      router.replace('/welcome');
+      return;
     }
 
     recordVisit(); // Update streak before reading it
@@ -73,12 +73,12 @@ function HomeContent() {
     setStreak(getStreak());
     setCollectorLevel(getCollectorLevel());
 
-    // Compute set collection progress for discovery personalization
+    // Compute set collection progress — unique characters owned vs total unique in set
     const progress = new Map<string, { owned: number; total: number }>();
     for (const set of SETS) {
-      const setOwned = owned.filter(c => c.setSlug === set.slug);
-      const uniqueChars = new Set(setOwned.map(c => c.character));
-      progress.set(set.slug, { owned: uniqueChars.size, total: set.cardCount });
+      const allSetChars = new Set(ALL_CARDS.filter(c => c.setSlug === set.slug).map(c => c.character));
+      const ownedSetChars = new Set(owned.filter(c => c.setSlug === set.slug).map(c => c.character));
+      progress.set(set.slug, { owned: ownedSetChars.size, total: allSetChars.size });
     }
     setSetProgress(progress);
 

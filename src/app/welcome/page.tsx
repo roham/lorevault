@@ -25,10 +25,12 @@ function WelcomeContent() {
       router.replace('/');
       return;
     }
-    // Store referral code if present
+    // Store referral code if present (don't overwrite existing attribution)
     const refCode = searchParams.get('ref');
-    if (refCode) {
+    if (refCode && !localStorage.getItem('lorevault_referred_by')) {
       localStorage.setItem('lorevault_referred_by', refCode);
+    }
+    if (refCode || localStorage.getItem('lorevault_referred_by')) {
       setIsReferred(true);
     }
   }, [router, searchParams]);
@@ -38,7 +40,7 @@ function WelcomeContent() {
   };
 
   const handleStart = () => {
-    updateOnboarding({ hasVisited: true });
+    updateOnboarding({ hasVisited: true, hasOpenedFirstPack: true });
     // Grant 3 starter packs
     addPackCredits(3);
     router.push(`/packs?first=true${chosenSet ? `&set=${chosenSet}` : ''}`);
