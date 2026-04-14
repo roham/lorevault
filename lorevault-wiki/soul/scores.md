@@ -97,7 +97,7 @@ Each scored 1-10. Threshold: any dimension below 5 = do not ship. Overall below 
 
 | Cycle | Single-Verb | First-Minute | Progressive Disclosure | Attention Hierarchy | Aha-Moment | Feature:Emotion | Mobile | Total |
 |-------|:-----------:|:------------:|:---------------------:|:-------------------:|:----------:|:---------------:|:------:|:-----:|
-| — | — | — | — | — | — | — | — | 0/70 |
+| 17 | 6 | 5 | 5 | 6 | 4 | 7 | 6 | 39/70 |
 
 ### Vision C: "Play to Collect" (Game-First)
 

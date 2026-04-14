@@ -1,8 +1,8 @@
 # Soul Daemon State
 Phase: 2
-Cycle: 16
-Last completed: Cycle 15-16 — Vision B mobile polish + rarity pre-signal bloom in pack opening
-Next target: Cycle 17 — Score Vision B (dispatch Odin-Soul)
+Cycle: 18
+Last completed: Cycle 17-18 — Vision B scored (39/70) + Vision C initial build (Top Trumps battle, value reveal)
+Next target: Cycle 19-20 — Vision C refinement (battle pacing, reward flow) + Cycle 21 Score Vision C
 Vision A soul score: 40
-Vision B soul score: 0
+Vision B soul score: 39
 Vision C soul score: 0
