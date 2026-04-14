@@ -62,7 +62,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Hall of Valhalla leaderboard page (`/hall`) with 4 tabs: Top collectors by total cards, rarest cards, oldest aged cards, achievement count. Mix real user data with 30 deterministic phantom collectors from `src/data/leaderboard-seeds.ts`. (B) ShareCard component — generates styled card snapshot with serial, age tier, rarity, owner name. Share intent or download. (C) Collector profile at `/collector/[name]` — public-facing summary: completion %, rarest pull, oldest card, pinned badges. (D) Dynamic RankBadge (Bronze→Silver→Gold→Mythic Collector) based on composite score. (E) Rank decay: 7+ days inactive dims leaderboard rank.
 - **Why**: Gambler-collectors need an audience. Leaderboards create positional anxiety. Share cards create flex moments. Rank decay creates return urgency. Social Proof is the biggest gap at 6/10.
 - **Acceptance criteria**: Hall page renders 4 leaderboard tabs with mixed real+phantom data. ShareCard produces downloadable image. Collector profile renders at `/collector/[name]`. Rank badge updates as collection changes. 7-day inactivity triggers rank dim.
-- **Status**: PENDING
+- **Status**: DONE — commit 23c606c, v8.27
 
 ### DIRECTIVE-008: Interactive Lore Engine
 - **Priority**: P0
@@ -90,3 +90,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-004**: Card provenance — Journey Timeline + Origin Badges — DONE (v8.24, 2026-04-14). Score: 60→71 (+11).
 - **DIRECTIVE-005**: Achievement badge system + collector profile — DONE (v8.25, 2026-04-14). Score: 71→74 (+3).
 - **DIRECTIVE-006**: Population counters + serial number enhancement — DONE (v8.26, 2026-04-14). Score: 74→77 (+3).
+- **DIRECTIVE-007**: Social Showcase & Leaderboards — DONE (v8.27, 2026-04-14). Score: 77→TBD.
