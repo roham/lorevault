@@ -17,6 +17,7 @@ import { getVipState, type VipState } from '@/lib/vip';
 import { getPlayerActivityEvents, REACTION_TYPES, type PulseEvent } from '@/lib/pulse';
 import { SOCIAL_FEED_CONFIG } from '@/data/social-feed';
 import { getPrestigeState, PRESTIGE_CHALLENGES, type PrestigeState } from '@/lib/store';
+import { getReferralState, getReferralLink, REFERRAL_REWARDS, getNextReferralReward } from '@/lib/referral';
 
 function LazySection({ children, height }: { children: React.ReactNode; height: number }) {
   const [visible, setVisible] = useState(false);
@@ -53,6 +54,9 @@ export default function ProfilePage() {
   const [vip, setVip] = useState<VipState | null>(null);
   const [activityEvents, setActivityEvents] = useState<PulseEvent[]>([]);
   const [prestige, setPrestige] = useState<PrestigeState | null>(null);
+  const [referralCode, setReferralCode] = useState('');
+  const [referralCount, setReferralCount] = useState(0);
+  const [referralCopied, setReferralCopied] = useState(false);
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -82,6 +86,9 @@ export default function ProfilePage() {
     setVip(getVipState());
     setActivityEvents(getPlayerActivityEvents().slice(0, 10));
     setPrestige(getPrestigeState());
+    const ref = getReferralState();
+    setReferralCode(ref.code);
+    setReferralCount(ref.totalReferred);
   }, []);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
@@ -341,6 +348,49 @@ export default function ProfilePage() {
           <span className="text-muted text-xs">→</span>
         </div>
       </Link>
+
+      {/* Referral System */}
+      {referralCode && (
+        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-violet-500/5 to-purple-500/5 border border-violet-500/15">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">🎖️</span>
+            <div>
+              <div className="text-xs font-bold text-foreground">Invite Friends</div>
+              <div className="text-[10px] text-muted">{referralCount} collectors recruited</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex-1 px-3 py-2 rounded-lg bg-surface border border-border font-mono text-xs text-accent tracking-wider">
+              {referralCode}
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(getReferralLink());
+                setReferralCopied(true);
+                setTimeout(() => setReferralCopied(false), 2000);
+              }}
+              className="px-3 py-2 rounded-lg bg-accent/10 border border-accent/20 text-xs font-bold text-accent"
+            >
+              {referralCopied ? '✓ Copied!' : 'Copy Link'}
+            </button>
+          </div>
+          <div className="flex gap-1.5">
+            {REFERRAL_REWARDS.map(r => (
+              <div
+                key={r.at}
+                className={`flex-1 text-center p-1.5 rounded-lg border ${
+                  referralCount >= r.at
+                    ? 'bg-accent/10 border-accent/30'
+                    : 'bg-surface/30 border-border/20 opacity-50'
+                }`}
+              >
+                <div className="text-sm">{referralCount >= r.at ? '✅' : r.icon}</div>
+                <div className="text-[8px] text-muted">{r.at} refs</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Your Activity */}
       {activityEvents.length > 0 && (

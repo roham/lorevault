@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import UnlockCelebration from "@/components/UnlockCelebration";
 import LivePulse from "@/components/LivePulse";
 import PrestigeCelebration from "@/components/PrestigeCelebration";
+import PWAInstall from "@/components/PWAInstall";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +20,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "LoreVault — Collect the Legends",
   description: "Open packs. Pull legends. Build your vault. Premium digital collectibles from the greatest stories ever told.",
+  manifest: "/manifest.json",
+  openGraph: {
+    title: "LoreVault — Collect the Legends",
+    description: "Premium digital collectibles from the greatest stories ever told.",
+    siteName: "LoreVault",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "LoreVault — Collect the Legends",
+    description: "Open packs. Pull legends. Build your vault.",
+  },
 };
 
 export const viewport: Viewport = {
@@ -46,6 +59,7 @@ export default function RootLayout({
         <UnlockCelebration />
         <PrestigeCelebration />
         <LivePulse />
+        <PWAInstall />
         <Navigation />
       </body>
     </html>

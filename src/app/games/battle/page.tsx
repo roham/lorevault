@@ -562,7 +562,7 @@ export default function BattlePage() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
             <motion.button
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-sm"
               whileTap={{ scale: 0.95 }}
@@ -570,6 +570,18 @@ export default function BattlePage() {
             >
               {gameResult === 'lose' ? 'Try Again' : 'Battle Again'}
             </motion.button>
+            <button
+              onClick={() => {
+                const text = gameResult === 'win'
+                  ? `I just won ${playerScore}-${aiScore} on ${DIFFICULTY_CONFIG[difficulty].label} difficulty in LoreVault Battle! Can you beat my score?`
+                  : `I scored ${playerScore}-${aiScore} in LoreVault Battle on ${DIFFICULTY_CONFIG[difficulty].label} difficulty. Think you can do better?`;
+                const url = `${window.location.origin}/games/battle`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
+              }}
+              className="px-5 py-3 rounded-xl bg-[#1da1f2]/10 border border-[#1da1f2]/20 text-[#1da1f2] text-sm font-bold"
+            >
+              Share Result
+            </button>
             <Link href="/games" className="px-6 py-3 rounded-xl bg-surface border border-border text-sm font-medium flex items-center">
               Games Hub
             </Link>

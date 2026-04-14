@@ -322,7 +322,7 @@ export default function TriviaPage() {
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
             <motion.button
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 text-white font-bold text-sm"
               whileTap={{ scale: 0.95 }}
@@ -332,6 +332,16 @@ export default function TriviaPage() {
             >
               Play Again
             </motion.button>
+            <button
+              onClick={() => {
+                const text = `I scored ${score.toLocaleString()} points in LoreVault Trivia with a ${maxStreak}-question streak! Think you know more lore?`;
+                const url = `${window.location.origin}/games/trivia`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
+              }}
+              className="px-5 py-3 rounded-xl bg-[#1da1f2]/10 border border-[#1da1f2]/20 text-[#1da1f2] text-sm font-bold"
+            >
+              Share Score
+            </button>
             <Link href="/games" className="px-6 py-3 rounded-xl bg-surface border border-border text-sm font-medium flex items-center">
               Games Hub
             </Link>

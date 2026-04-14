@@ -13,6 +13,7 @@ interface ShareCardProps {
 
 export default function ShareCard({ card, onClose }: ShareCardProps) {
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scarcityConfig = SCARCITY_CONFIG[card.scarcity];
   const popData = getPopulationData(card);
@@ -185,20 +186,41 @@ export default function ShareCard({ card, onClose }: ShareCardProps) {
               <div className="absolute bottom-2 right-4 text-4xl opacity-10">{card.symbol}</div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              <button
+                onClick={() => {
+                  const text = `Check out my ${scarcityConfig.label} ${card.character} #${card.serialNumber}/${popData.totalMinted} on LoreVault!`;
+                  const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/card/${card.id}`;
+                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
+                }}
+                className="py-2.5 rounded-xl bg-[#1da1f2]/10 border border-[#1da1f2]/20 text-[#1da1f2] text-xs font-bold"
+              >
+                Twitter
+              </button>
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/card/${card.id}`;
+                  navigator.clipboard.writeText(url);
+                  setLinkCopied(true);
+                  setTimeout(() => setLinkCopied(false), 2000);
+                }}
+                className="py-2.5 rounded-xl bg-surface border border-border text-xs font-bold text-muted"
+              >
+                {linkCopied ? '✓ Copied!' : '🔗 Link'}
+              </button>
               <button
                 onClick={handleShare}
-                className="flex-1 py-2.5 rounded-xl bg-accent text-white text-xs font-bold"
+                className="py-2.5 rounded-xl bg-accent text-white text-xs font-bold"
               >
-                {copied ? '✓ Saved!' : '📤 Share / Download'}
-              </button>
-              <button
-                onClick={onClose}
-                className="px-4 py-2.5 rounded-xl bg-surface border border-border text-xs text-muted"
-              >
-                Close
+                {copied ? '✓ Saved!' : '💾 Image'}
               </button>
             </div>
+            <button
+              onClick={onClose}
+              className="w-full py-2 rounded-xl bg-surface border border-border text-xs text-muted"
+            >
+              Close
+            </button>
           </div>
 
           {/* Hidden canvas for image generation */}
