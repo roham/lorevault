@@ -9,7 +9,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 import { Card, getTierForLevel } from '@/data/types';
-import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, getCollectorPass, COLLECTOR_PASS_TIERS, getWeeklyChallenges, type LoginCalendarState, type CollectorPassState, type WeeklyChallenge } from '@/lib/store';
+import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, getCollectorPass, COLLECTOR_PASS_TIERS, getWeeklyChallenges, getFeaturedSetEvent, getChallengeChain, type LoginCalendarState, type CollectorPassState, type WeeklyChallenge, type FeaturedSetEvent, type ChallengeChainState } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
@@ -51,6 +51,9 @@ function HomeContent() {
   const [weeklyChallenges, setWeeklyChallenges] = useState<WeeklyChallenge[]>([]);
   const [setProgress, setSetProgress] = useState<Map<string, { owned: number; total: number }>>(new Map());
   const [showReferralBanner, setShowReferralBanner] = useState(false);
+  const [featuredEvent, setFeaturedEvent] = useState<FeaturedSetEvent | null>(null);
+  const [challengeChain, setChallengeChain] = useState<ChallengeChainState | null>(null);
+  const [eventCountdown, setEventCountdown] = useState('');
 
   useEffect(() => {
     // Capture referral code before any redirect — new users get forwarded to /welcome
@@ -88,6 +91,8 @@ function HomeContent() {
     setLoginCalendar(getLoginCalendar());
     setCollectorPass(getCollectorPass());
     setWeeklyChallenges(getWeeklyChallenges());
+    setFeaturedEvent(getFeaturedSetEvent());
+    setChallengeChain(getChallengeChain());
     const missions = getDailyMissions();
     const incomplete = missions.find(m => !m.completed);
     if (incomplete) setDailyMission(incomplete);
@@ -95,6 +100,22 @@ function HomeContent() {
 
     setReady(true);
   }, [router, searchParams]);
+
+  // Event countdown timer
+  useEffect(() => {
+    if (!featuredEvent) return;
+    const tick = () => {
+      const ms = new Date(featuredEvent.endsAt).getTime() - Date.now();
+      if (ms <= 0) { setEventCountdown('Event ended'); return; }
+      const d = Math.floor(ms / 86400000);
+      const h = Math.floor((ms % 86400000) / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      setEventCountdown(d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`);
+    };
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, [featuredEvent]);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
 
@@ -310,6 +331,83 @@ function HomeContent() {
               </div>
               <span className="text-xs font-mono text-muted">{dailyMission.progress}/{dailyMission.target}</span>
             </div>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ========== FEATURED SET EVENT ========== */}
+      {featuredEvent && (
+        <section className="px-4 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Weekly Event</span>
+            <span className="text-[10px] text-yellow-400 font-mono">{eventCountdown} left</span>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="p-4 rounded-xl bg-gradient-to-r from-yellow-500/8 to-orange-500/8 border border-yellow-500/20"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-2xl">{featuredEvent.setIcon}</span>
+              <div className="flex-1">
+                <div className="text-sm font-bold text-foreground">{featuredEvent.setName}</div>
+                <div className="text-[10px] text-yellow-400 font-semibold">{featuredEvent.xpMultiplier}x XP on all packs from this set</div>
+              </div>
+              <div className="px-2 py-1 rounded-lg bg-yellow-500/15 border border-yellow-500/30">
+                <span className="text-[10px] font-bold text-yellow-400">2x XP</span>
+              </div>
+            </div>
+            <Link href="/packs">
+              <div className="text-[10px] text-muted mt-1">Open packs from <span className="text-yellow-400 font-semibold">{featuredEvent.setName}</span> for double XP this week →</div>
+            </Link>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ========== 7-DAY CHALLENGE CHAIN ========== */}
+      {challengeChain && challengeChain.days.length > 0 && (
+        <section className="px-4 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Weekly Chain</span>
+            <span className="text-[10px] text-accent font-mono">{challengeChain.days.filter(d => d.completed).length}/7 days</span>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-3 rounded-xl bg-surface border border-border"
+          >
+            <div className="flex gap-1 mb-2">
+              {challengeChain.days.map((d) => {
+                const isCurrent = !d.completed && (d.day === 1 || challengeChain.days[d.day - 2]?.completed);
+                return (
+                  <div
+                    key={d.day}
+                    className={`flex-1 text-center p-1.5 rounded-lg transition-all ${
+                      d.completed
+                        ? 'bg-emerald-500/15 border border-emerald-500/30'
+                        : isCurrent
+                          ? 'bg-accent/10 border-2 border-accent/40 animate-pulse'
+                          : 'bg-surface/40 border border-border/20 opacity-40'
+                    }`}
+                  >
+                    <span className="text-xs">{d.completed ? '✅' : d.icon}</span>
+                    <div className="text-[7px] text-muted mt-0.5">D{d.day}</div>
+                  </div>
+                );
+              })}
+            </div>
+            {(() => {
+              const current = challengeChain.days.find(d => !d.completed && (d.day === 1 || challengeChain.days[d.day - 2]?.completed));
+              if (challengeChain.allComplete) {
+                return <div className="text-center text-[10px] text-emerald-400 font-semibold">Chain complete! Rare card + "Weekly Warrior" badge earned</div>;
+              }
+              if (current) {
+                return <div className="text-center text-[10px] text-muted">Today: <span className="text-accent font-semibold">{current.description}</span></div>;
+              }
+              return null;
+            })()}
           </motion.div>
         </section>
       )}

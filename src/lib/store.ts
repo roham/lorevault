@@ -1410,3 +1410,141 @@ export function setActiveTitlePrefix(prefix: string) {
   if (typeof window === 'undefined') return;
   setItem('lorevault_title_prefix', prefix);
 }
+
+// ===== Featured Set Event (Weekly Rotation) =====
+
+const SET_ROTATION = ['baker-street', 'enchanted-kingdom', 'wonderland', 'gothic-horror', 'olympus', 'asgard'];
+
+export interface FeaturedSetEvent {
+  setSlug: string;
+  setName: string;
+  setIcon: string;
+  weekKey: string;
+  xpMultiplier: number;
+  endsAt: string; // ISO date of next Monday
+}
+
+export function getFeaturedSetEvent(): FeaturedSetEvent | null {
+  if (typeof window === 'undefined') return null;
+  const weekKey = getWeekKey();
+  // Deterministic rotation: hash weekKey to pick set index
+  let hash = 0;
+  for (let i = 0; i < weekKey.length; i++) hash = ((hash << 5) - hash + weekKey.charCodeAt(i)) | 0;
+  const idx = Math.abs(hash) % SET_ROTATION.length;
+  const slug = SET_ROTATION[idx];
+
+  // Calculate next Monday for countdown
+  const now = new Date();
+  const daysUntilMonday = (8 - now.getDay()) % 7 || 7;
+  const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
+  nextMonday.setHours(0, 0, 0, 0);
+
+  const setNames: Record<string, { name: string; icon: string }> = {
+    'baker-street': { name: 'Baker Street Files', icon: '🔍' },
+    'enchanted-kingdom': { name: 'The Enchanted Kingdom', icon: '👑' },
+    'wonderland': { name: 'Wonderland Descending', icon: '🐇' },
+    'gothic-horror': { name: 'The Castle of Otranto', icon: '🦇' },
+    'olympus': { name: 'Olympus Rising', icon: '⚡' },
+    'asgard': { name: 'Asgard Unleashed', icon: '❄️' },
+  };
+
+  const info = setNames[slug] || { name: slug, icon: '📦' };
+  return {
+    setSlug: slug,
+    setName: info.name,
+    setIcon: info.icon,
+    weekKey,
+    xpMultiplier: 2,
+    endsAt: nextMonday.toISOString(),
+  };
+}
+
+export function getEventBadges(): string[] {
+  if (typeof window === 'undefined') return [];
+  return getItem<string[]>('lorevault_event_badges', []);
+}
+
+export function earnEventBadge(weekKey: string, setSlug: string): boolean {
+  if (typeof window === 'undefined') return false;
+  const badges = getEventBadges();
+  const badgeId = `${weekKey}-${setSlug}`;
+  if (badges.includes(badgeId)) return false;
+  badges.push(badgeId);
+  setItem('lorevault_event_badges', badges);
+  return true;
+}
+
+// ===== 7-Day Challenge Chain =====
+
+export interface ChallengeChainDay {
+  day: number; // 1-7
+  description: string;
+  icon: string;
+  completed: boolean;
+}
+
+export interface ChallengeChainState {
+  weekKey: string;
+  days: ChallengeChainDay[];
+  allComplete: boolean;
+  rewardClaimed: boolean;
+}
+
+const CHAIN_DAYS: { description: string; icon: string }[] = [
+  { description: 'Open 2 packs', icon: '📦' },
+  { description: 'Win a battle', icon: '⚔️' },
+  { description: 'Collect 3 new cards', icon: '🃏' },
+  { description: 'Forge a card', icon: '🔨' },
+  { description: 'Complete a trivia round', icon: '🧠' },
+  { description: 'Earn 200 XP', icon: '⭐' },
+  { description: 'Claim all daily rewards', icon: '🎁' },
+];
+
+export function getChallengeChain(): ChallengeChainState {
+  if (typeof window === 'undefined') return { weekKey: '', days: [], allComplete: false, rewardClaimed: false };
+  const weekKey = getWeekKey();
+  const stored = getItem<ChallengeChainState>('lorevault_challenge_chain', {
+    weekKey: '',
+    days: [],
+    allComplete: false,
+    rewardClaimed: false,
+  });
+
+  if (stored.weekKey !== weekKey) {
+    const fresh: ChallengeChainState = {
+      weekKey,
+      days: CHAIN_DAYS.map((d, i) => ({ day: i + 1, description: d.description, icon: d.icon, completed: false })),
+      allComplete: false,
+      rewardClaimed: false,
+    };
+    setItem('lorevault_challenge_chain', fresh);
+    return fresh;
+  }
+
+  return stored;
+}
+
+export function completeChallengeChainDay(day: number): boolean {
+  if (typeof window === 'undefined') return false;
+  const state = getChallengeChain();
+  const d = state.days.find(d => d.day === day);
+  if (!d || d.completed) return false;
+  // Can only complete current day (previous must be done)
+  if (day > 1 && !state.days.find(d => d.day === day - 1)?.completed) return false;
+  d.completed = true;
+  state.allComplete = state.days.every(d => d.completed);
+  setItem('lorevault_challenge_chain', state);
+  return true;
+}
+
+export function claimChainReward(): boolean {
+  if (typeof window === 'undefined') return false;
+  const state = getChallengeChain();
+  if (!state.allComplete || state.rewardClaimed) return false;
+  state.rewardClaimed = true;
+  setItem('lorevault_challenge_chain', state);
+  addPackCredits(1);
+  addXP(500);
+  addPassXP(500);
+  return true;
+}

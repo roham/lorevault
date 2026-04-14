@@ -174,6 +174,22 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **Acceptance criteria**: 3-step interactive tutorial with set choice and guided pack open. Social proof landing for shared URLs with CTA. 3 packs guaranteed in first session. Discovery feed personalization. Welcome-back modal after 3+ day absence. All localStorage-based.
 - **Status**: DONE — commit 1099dd1, v8.40
 
+### DIRECTIVE-021: Weekly Events + D7 Engagement Depth
+- **Priority**: P0
+- **Source**: Growth Phase — D7 Retention (8→10) + Viral (8→9)
+- **What to build**: (A) Limited-Time Events — weekly "Featured Set" spotlight that gives 2x XP for opening packs from that set + a time-limited event badge for completing the set during event week. Event banner on home page with countdown timer. Rotation through all 6 sets on 6-week cycle. (B) 7-Day Challenge Chain — a single multi-day challenge that builds across the week (Day 1: open 2 packs, Day 2: win a battle, Day 3: forge a card, etc.). Completing all 7 days grants an exclusive weekly reward (rare card + "Weekly Warrior" badge). Chain state in localStorage with weekKey. (C) Battle/Trivia Result Cards — when sharing game results to Twitter, generate a visual "result card" div showing score, cards used, and outcome. More compelling than plain text shares. (D) Invite Flow — after completing a challenge or winning a battle, show "Challenge a friend?" prompt with referral link pre-filled. Not forced, just surfaced at moments of achievement.
+- **Why**: D7 at 8 means users log in daily but don't have a 7-day commitment arc. Weekly challenges create it (D019 started this, D021 deepens with chain mechanics). The event rotation keeps content fresh without new cards. Battle result sharing converts viral impressions from plain text to visual, increasing click-through. The invite flow surfaces referrals at peak emotional moments (just won, just completed something).
+- **Acceptance criteria**: Featured set event with 2x XP + countdown + event badge. 7-day challenge chain with sequential daily requirements. Visual battle/trivia result sharing. Post-achievement invite prompt. All localStorage-based.
+- **Status**: PENDING
+
+### DIRECTIVE-022: Endgame + Month-End FOMO + Leaderboard Resets
+- **Priority**: P0
+- **Source**: Growth Phase — D30 Retention (8→10) + D1 (9→10) + Conversion (9→10)
+- **What to build**: (A) Monthly Leaderboard with Reset — XP leaderboard that resets monthly. Top 10 get exclusive badge + title prefix. Leaderboard visible on profile and home page. Creates competitive urgency as month-end approaches. Show "X days left" countdown. Uses existing XP system. (B) Month-End FOMO — last 3 days of each month: "Final Sprint" banner with bonus XP multiplier (1.5x). Pass tier progress visible on home page with urgency ("5 tiers unclaimed!"). Creates artificial deadline pressure. (C) Push-to-10 Conversion — smart CTA on home page that adapts to user state: new user = "Open your first pack", user with 0 packs = "Earn a free pack" (link to challenges), user with packs = "Open your packs", user with no unclaimed login reward = "Claim today's reward". Context-aware rather than static. (D) Morning Notification Hook — if user has unclaimed login reward + available daily pack + incomplete daily mission, show a toast on mount: "3 things waiting for you today". Creates a reason to engage immediately rather than bounce.
+- **Why**: D30 at 8 means the monthly pass is working but lacks urgency. Monthly leaderboard resets create competitive pressure. Month-end FOMO with bonus XP multiplier creates a "can't skip the last 3 days" dynamic. Smart CTAs convert more visitors by matching the prompt to their current state. The morning notification hook converts passive page loads into active sessions — D1 from 9→10.
+- **Acceptance criteria**: Monthly leaderboard with top 10 display + reset. Month-end "Final Sprint" bonus XP banner. Smart adaptive CTA on home page. Morning toast notification for pending actions. All localStorage-based.
+- **Status**: PENDING
+
 ---
 
 ## Completed Directives

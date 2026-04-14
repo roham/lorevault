@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { TRIVIA_QUESTIONS, TriviaQuestion } from '@/data/trivia';
 import { saveTriviaRecord } from '@/lib/store';
+import { getReferralLink } from '@/lib/referral';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, Achievement } from '@/data/types';
 import { checkAchievements, getAchievementById } from '@/lib/achievements';
@@ -334,7 +335,8 @@ export default function TriviaPage() {
             </motion.button>
             <button
               onClick={() => {
-                const text = `I scored ${score.toLocaleString()} points in LoreVault Trivia with a ${maxStreak}-question streak! Think you know more lore?`;
+                const stars = '⭐'.repeat(Math.min(5, Math.floor(score / 1000)));
+                const text = `🧠 LoreVault Trivia\n📊 ${score.toLocaleString()} pts | ${maxStreak} streak\n${stars}\n\nCan you beat my score?`;
                 const url = `${window.location.origin}/games/trivia`;
                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
               }}
@@ -346,6 +348,27 @@ export default function TriviaPage() {
               Games Hub
             </Link>
           </div>
+
+          {/* Post-achievement invite prompt */}
+          {score > 2000 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+              className="mt-6 p-3 rounded-xl bg-accent/5 border border-accent/15 text-center max-w-sm mx-auto"
+            >
+              <div className="text-[10px] text-muted mb-1">Know someone who loves trivia?</div>
+              <button
+                onClick={() => {
+                  const url = getReferralLink();
+                  navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                }}
+                className="text-xs font-bold text-accent"
+              >
+                Invite a friend to LoreVault →
+              </button>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Achievement celebration */}

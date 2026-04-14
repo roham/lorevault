@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Card, SCARCITY_CONFIG, BattleRound } from '@/data/types';
 import { getOwnedCards, saveBattleRecord, addPackCredits } from '@/lib/store';
+import { getReferralLink } from '@/lib/referral';
 import { ALL_CARDS } from '@/data/cards';
 import {
   StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS,
@@ -572,9 +573,9 @@ export default function BattlePage() {
             </motion.button>
             <button
               onClick={() => {
-                const text = gameResult === 'win'
-                  ? `I just won ${playerScore}-${aiScore} on ${DIFFICULTY_CONFIG[difficulty].label} difficulty in LoreVault Battle! Can you beat my score?`
-                  : `I scored ${playerScore}-${aiScore} in LoreVault Battle on ${DIFFICULTY_CONFIG[difficulty].label} difficulty. Think you can do better?`;
+                const result = gameResult === 'win' ? '🏆 VICTORY' : '💀 DEFEAT';
+                const stars = gameResult === 'win' ? '⭐'.repeat(Math.min(5, playerScore)) : '';
+                const text = `${result} ${playerScore}-${aiScore}\n${DIFFICULTY_CONFIG[difficulty].icon} ${DIFFICULTY_CONFIG[difficulty].label} difficulty\n${stars}\n\nThink you can beat me?`;
                 const url = `${window.location.origin}/games/battle`;
                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
               }}
@@ -586,6 +587,27 @@ export default function BattlePage() {
               Games Hub
             </Link>
           </div>
+
+          {/* Post-achievement invite prompt */}
+          {gameResult === 'win' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+              className="mt-6 p-3 rounded-xl bg-accent/5 border border-accent/15 text-center max-w-sm mx-auto"
+            >
+              <div className="text-[10px] text-muted mb-1">Know someone who would enjoy this?</div>
+              <button
+                onClick={() => {
+                  const url = getReferralLink();
+                  navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                }}
+                className="text-xs font-bold text-accent"
+              >
+                Invite a friend to LoreVault →
+              </button>
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Achievement celebration */}
