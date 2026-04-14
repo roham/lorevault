@@ -250,6 +250,20 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
   }
 }
 
+// ===== Outcome Icons for Play Log =====
+
+const OUTCOME_ICON: Record<string, { symbol: string; color: string }> = {
+  homerun:      { symbol: '\u25C8', color: 'text-amber-400' },     // ◈
+  triple:       { symbol: '\u25C7', color: 'text-green-400' },     // ◇
+  double:       { symbol: '\u25C6', color: 'text-blue-400' },      // ◆
+  single:       { symbol: '\u00B7', color: 'text-white/60' },      // ·
+  walk:         { symbol: 'BB', color: 'text-teal-400' },
+  strikeout:    { symbol: 'K', color: 'text-red-400' },
+  flyout:       { symbol: 'F', color: 'text-muted/40' },
+  groundout:    { symbol: 'G', color: 'text-muted/40' },
+  groundout_dp: { symbol: 'DP', color: 'text-red-400' },
+};
+
 const initialState: BoardState = {
   game: null,
   animPhase: 'pregame',
@@ -278,11 +292,12 @@ const initialState: BoardState = {
 function Diamond({
   bases,
   stealAnim,
+  recentScore,
 }: {
   bases: { first: boolean; second: boolean; third: boolean };
   stealAnim?: { from: 'first' | 'second'; success: boolean } | null;
+  recentScore?: boolean;
 }) {
-  // Base coordinates
   const coords = {
     home: { x: 100, y: 170 },
     first: { x: 160, y: 110 },
@@ -290,104 +305,122 @@ function Diamond({
     third: { x: 40, y: 110 },
   };
 
+  const hasRunners = bases.first || bases.second || bases.third;
+
   return (
-    <svg viewBox="0 0 200 200" className="w-40 h-40 mx-auto">
-      {/* Base paths */}
-      <line x1="100" y1="170" x2="160" y2="110" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
-      <line x1="160" y1="110" x2="100" y2="50" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
-      <line x1="100" y1="50" x2="40" y2="110" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
-      <line x1="40" y1="110" x2="100" y2="170" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
+    <svg viewBox="0 0 200 200" className="w-44 h-44 mx-auto">
+      <defs>
+        {/* Glow filter for active bases */}
+        <filter id="base-glow">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+        {/* Soft ambient glow for runners */}
+        <filter id="runner-glow">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+        {/* Field grass gradient */}
+        <radialGradient id="field-grass" cx="50%" cy="55%" r="45%">
+          <stop offset="0%" stopColor="#1a3a1a" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#0d2210" stopOpacity="0.02" />
+        </radialGradient>
+        {/* Dirt infield gradient */}
+        <radialGradient id="mound-dirt" cx="50%" cy="50%" r="30%">
+          <stop offset="0%" stopColor="#6b4226" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#3d2410" stopOpacity="0.03" />
+        </radialGradient>
+        {/* Score celebration glow */}
+        <radialGradient id="score-glow" cx="50%" cy="85%" r="40%">
+          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+        </radialGradient>
+      </defs>
 
-      {/* Home plate */}
-      <polygon points="100,170 94,162 100,156 106,162" fill="rgba(255,255,255,0.25)" />
+      {/* Outfield arc — subtle atmosphere */}
+      <ellipse cx="100" cy="110" rx="90" ry="70" fill="url(#field-grass)" />
 
-      {/* Infield grass */}
-      <polygon points="100,170 160,110 100,50 40,110" fill="rgba(34,197,94,0.03)" />
+      {/* Dirt infield */}
+      <polygon points="100,170 160,110 100,50 40,110" fill="url(#mound-dirt)" />
 
-      {/* Base diamonds */}
-      <rect x="153" y="103" width="14" height="14" rx="2" fill={bases.first ? '#f59e0b' : 'transparent'} stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" transform="rotate(45, 160, 110)" />
-      <rect x="93" y="43" width="14" height="14" rx="2" fill={bases.second ? '#f59e0b' : 'transparent'} stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" transform="rotate(45, 100, 50)" />
-      <rect x="33" y="103" width="14" height="14" rx="2" fill={bases.third ? '#f59e0b' : 'transparent'} stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" transform="rotate(45, 40, 110)" />
+      {/* Pitcher's mound */}
+      <ellipse cx="100" cy="115" rx="8" ry="5" fill="rgba(107,66,38,0.15)" />
+      <ellipse cx="100" cy="114" rx="4" ry="2" fill="rgba(255,255,255,0.06)" />
 
-      {/* Runner dots with glow */}
+      {/* Base paths — glow when runners are on */}
+      <line x1="100" y1="170" x2="160" y2="110" stroke={bases.first || hasRunners ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
+      <line x1="160" y1="110" x2="100" y2="50" stroke={bases.second ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
+      <line x1="100" y1="50" x2="40" y2="110" stroke={bases.third ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
+      <line x1="40" y1="110" x2="100" y2="170" stroke="rgba(255,255,255,0.06)" strokeWidth="2" />
+
+      {/* Home plate — pentagon shape */}
+      <polygon points="100,172 94,164 94,158 106,158 106,164" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+
+      {/* Score celebration pulse at home plate */}
+      {recentScore && (
+        <circle cx="100" cy="168" r="20" fill="url(#score-glow)">
+          <animate attributeName="r" values="10;25;10" dur="1s" repeatCount="3" />
+          <animate attributeName="opacity" values="0.6;0;0.6" dur="1s" repeatCount="3" />
+        </circle>
+      )}
+
+      {/* Base diamonds — enhanced with glow when occupied */}
+      {[
+        { x: 160, y: 110, occupied: bases.first, label: '1B' },
+        { x: 100, y: 50, occupied: bases.second, label: '2B' },
+        { x: 40, y: 110, occupied: bases.third, label: '3B' },
+      ].map(base => (
+        <g key={base.label}>
+          <rect
+            x={base.x - 7} y={base.y - 7} width="14" height="14" rx="2"
+            fill={base.occupied ? '#f59e0b' : 'rgba(255,255,255,0.03)'}
+            stroke={base.occupied ? 'rgba(251,191,36,0.5)' : 'rgba(255,255,255,0.12)'}
+            strokeWidth={base.occupied ? 2 : 1}
+            transform={`rotate(45, ${base.x}, ${base.y})`}
+            filter={base.occupied ? 'url(#base-glow)' : undefined}
+          />
+        </g>
+      ))}
+
+      {/* Runner dots with animated glow */}
       {bases.first && !stealAnim && (
-        <>
-          <circle cx="160" cy="110" r="6" fill="#f59e0b" />
-          <circle cx="160" cy="110" r="10" fill="#f59e0b" opacity="0.2">
-            <animate attributeName="r" values="10;14;10" dur="1.5s" repeatCount="indefinite" />
+        <g filter="url(#runner-glow)">
+          <circle cx="160" cy="110" r="5" fill="#f59e0b" />
+          <circle cx="160" cy="110" r="9" fill="#f59e0b" opacity="0.15">
+            <animate attributeName="r" values="9;13;9" dur="2s" repeatCount="indefinite" />
           </circle>
-        </>
+        </g>
       )}
       {bases.second && (
-        <>
-          <circle cx="100" cy="50" r="6" fill="#f59e0b" />
-          <circle cx="100" cy="50" r="10" fill="#f59e0b" opacity="0.2">
-            <animate attributeName="r" values="10;14;10" dur="1.5s" repeatCount="indefinite" />
+        <g filter="url(#runner-glow)">
+          <circle cx="100" cy="50" r="5" fill="#f59e0b" />
+          <circle cx="100" cy="50" r="9" fill="#f59e0b" opacity="0.15">
+            <animate attributeName="r" values="9;13;9" dur="2s" repeatCount="indefinite" />
           </circle>
-        </>
+        </g>
       )}
       {bases.third && (
-        <>
-          <circle cx="40" cy="110" r="6" fill="#f59e0b" />
-          <circle cx="40" cy="110" r="10" fill="#f59e0b" opacity="0.2">
-            <animate attributeName="r" values="10;14;10" dur="1.5s" repeatCount="indefinite" />
+        <g filter="url(#runner-glow)">
+          <circle cx="40" cy="110" r="5" fill="#f59e0b" />
+          <circle cx="40" cy="110" r="9" fill="#f59e0b" opacity="0.15">
+            <animate attributeName="r" values="9;13;9" dur="2s" repeatCount="indefinite" />
           </circle>
-        </>
+        </g>
       )}
 
-      {/* Steal animation — runner moving along base path */}
+      {/* Steal animations */}
       {stealAnim && stealAnim.from === 'first' && (
-        <circle r="6" fill={stealAnim.success ? '#a855f7' : '#ef4444'}>
-          <animate
-            attributeName="cx"
-            from={String(coords.first.x)}
-            to={stealAnim.success ? String(coords.second.x) : String((coords.first.x + coords.second.x) / 2)}
-            dur={stealAnim.success ? '0.5s' : '0.3s'}
-            fill="freeze"
-          />
-          <animate
-            attributeName="cy"
-            from={String(coords.first.y)}
-            to={stealAnim.success ? String(coords.second.y) : String((coords.first.y + coords.second.y) / 2)}
-            dur={stealAnim.success ? '0.5s' : '0.3s'}
-            fill="freeze"
-          />
-          {!stealAnim.success && (
-            <animate
-              attributeName="opacity"
-              values="1;1;0"
-              dur="0.8s"
-              begin="0.3s"
-              fill="freeze"
-            />
-          )}
+        <circle r="5" fill={stealAnim.success ? '#a855f7' : '#ef4444'} filter="url(#runner-glow)">
+          <animate attributeName="cx" from={String(coords.first.x)} to={stealAnim.success ? String(coords.second.x) : String((coords.first.x + coords.second.x) / 2)} dur={stealAnim.success ? '0.5s' : '0.3s'} fill="freeze" />
+          <animate attributeName="cy" from={String(coords.first.y)} to={stealAnim.success ? String(coords.second.y) : String((coords.first.y + coords.second.y) / 2)} dur={stealAnim.success ? '0.5s' : '0.3s'} fill="freeze" />
+          {!stealAnim.success && <animate attributeName="opacity" values="1;1;0" dur="0.8s" begin="0.3s" fill="freeze" />}
         </circle>
       )}
       {stealAnim && stealAnim.from === 'second' && (
-        <circle r="6" fill={stealAnim.success ? '#a855f7' : '#ef4444'}>
-          <animate
-            attributeName="cx"
-            from={String(coords.second.x)}
-            to={stealAnim.success ? String(coords.third.x) : String((coords.second.x + coords.third.x) / 2)}
-            dur={stealAnim.success ? '0.5s' : '0.3s'}
-            fill="freeze"
-          />
-          <animate
-            attributeName="cy"
-            from={String(coords.second.y)}
-            to={stealAnim.success ? String(coords.third.y) : String((coords.second.y + coords.third.y) / 2)}
-            dur={stealAnim.success ? '0.5s' : '0.3s'}
-            fill="freeze"
-          />
-          {!stealAnim.success && (
-            <animate
-              attributeName="opacity"
-              values="1;1;0"
-              dur="0.8s"
-              begin="0.3s"
-              fill="freeze"
-            />
-          )}
+        <circle r="5" fill={stealAnim.success ? '#a855f7' : '#ef4444'} filter="url(#runner-glow)">
+          <animate attributeName="cx" from={String(coords.second.x)} to={stealAnim.success ? String(coords.third.x) : String((coords.second.x + coords.third.x) / 2)} dur={stealAnim.success ? '0.5s' : '0.3s'} fill="freeze" />
+          <animate attributeName="cy" from={String(coords.second.y)} to={stealAnim.success ? String(coords.third.y) : String((coords.second.y + coords.third.y) / 2)} dur={stealAnim.success ? '0.5s' : '0.3s'} fill="freeze" />
+          {!stealAnim.success && <animate attributeName="opacity" values="1;1;0" dur="0.8s" begin="0.3s" fill="freeze" />}
         </circle>
       )}
     </svg>
@@ -410,6 +443,103 @@ function OutDots({ outs }: { outs: number }) {
           }`}
         />
       ))}
+    </div>
+  );
+}
+
+// ===== ESPN-style Line Score =====
+
+function LineScore({
+  game,
+  awayName,
+  homeName,
+}: {
+  game: GameState;
+  awayName: string;
+  homeName: string;
+}) {
+  // Build inning-by-inning score from game log
+  const inningScores: { away: number; home: number }[] = [];
+  for (let i = 1; i <= game.innings; i++) {
+    const awayRuns = game.log
+      .filter(e => e.inning === i && e.half === 'top')
+      .reduce((sum, e) => sum + e.runsScored, 0);
+    const homeRuns = game.log
+      .filter(e => e.inning === i && e.half === 'bottom')
+      .reduce((sum, e) => sum + e.runsScored, 0);
+    inningScores.push({ away: awayRuns, home: homeRuns });
+  }
+
+  const totalHits = {
+    away: game.log.filter(e => e.half === 'top' && ['single', 'double', 'triple', 'homerun'].includes(e.outcome)).length,
+    home: game.log.filter(e => e.half === 'bottom' && ['single', 'double', 'triple', 'homerun'].includes(e.outcome)).length,
+  };
+
+  const currentInning = game.inning.inning;
+
+  return (
+    <div className="mx-auto max-w-[300px] mt-1 px-4">
+      <div className="rounded-lg bg-surface/30 border border-border/15 overflow-hidden">
+        <table className="w-full text-center" style={{ borderCollapse: 'collapse' }}>
+          <thead>
+            <tr className="border-b border-border/10">
+              <th className="text-left px-2 py-1 w-16 text-[8px] text-muted/30 font-normal" />
+              {inningScores.map((_, i) => (
+                <th
+                  key={i}
+                  className={`px-1.5 py-1 text-[8px] font-bold tabular-nums ${
+                    i + 1 === currentInning ? 'text-amber-400/70' : 'text-muted/25'
+                  }`}
+                >
+                  {i + 1}
+                </th>
+              ))}
+              <th className="px-1.5 py-1 text-[8px] font-bold text-muted/40 border-l border-border/10">R</th>
+              <th className="px-1.5 py-1 text-[8px] font-bold text-muted/40">H</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* Away team */}
+            <tr className="border-b border-border/10">
+              <td className="text-left px-2 py-1 text-[9px] text-muted/50 font-bold truncate max-w-[64px]">
+                {awayName.split(' ').pop()}
+              </td>
+              {inningScores.map((score, i) => {
+                const isCurrentAway = i + 1 === currentInning && game.inning.half === 'top';
+                const isPast = i + 1 < currentInning || (i + 1 === currentInning && game.inning.half === 'bottom');
+                return (
+                  <td key={i} className={`px-1.5 py-1 text-[10px] tabular-nums ${
+                    isCurrentAway ? 'text-amber-400 font-bold' : isPast ? 'text-muted/50' : 'text-muted/15'
+                  }`}>
+                    {isPast || isCurrentAway ? score.away : '-'}
+                  </td>
+                );
+              })}
+              <td className="px-1.5 py-1 text-[10px] font-bold tabular-nums text-white/70 border-l border-border/10">{game.score.away}</td>
+              <td className="px-1.5 py-1 text-[10px] tabular-nums text-muted/40">{totalHits.away}</td>
+            </tr>
+            {/* Home team */}
+            <tr>
+              <td className="text-left px-2 py-1 text-[9px] text-muted/50 font-bold truncate max-w-[64px]">
+                {homeName.split(' ').pop()}
+              </td>
+              {inningScores.map((score, i) => {
+                const isCurrentHome = i + 1 === currentInning && game.inning.half === 'bottom';
+                const isPast = i + 1 < currentInning;
+                return (
+                  <td key={i} className={`px-1.5 py-1 text-[10px] tabular-nums ${
+                    isCurrentHome ? 'text-amber-400 font-bold' : isPast ? 'text-muted/50' : 'text-muted/15'
+                  }`}>
+                    {isPast || isCurrentHome ? score.home : '-'}
+                  </td>
+                );
+              })}
+              <td className="px-1.5 py-1 text-[10px] font-bold tabular-nums text-white/70 border-l border-border/10">{game.score.home}</td>
+              <td className="px-1.5 py-1 text-[10px] tabular-nums text-muted/40">{totalHits.home}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -1053,15 +1183,23 @@ export default function PlayPage() {
 
   return (
     <ScreenShake trigger={state.shakeTrigger > 0} intensity={shakeIntensity}>
-      <div className="min-h-screen flex flex-col relative">
+      <div
+        className="min-h-screen flex flex-col relative"
+        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.03) 0%, transparent 50%)' }}
+      >
+        {/* Stadium vignette overlay */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0"
+          style={{ background: 'radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.6) 100%)' }}
+        />
 
         {/* Particle burst for home runs */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
           <ParticleBurst active={state.particleBurst} count={20} color="gold" />
         </div>
 
         {/* Scoreboard Strip */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border/20 bg-surface/40 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/20 relative z-10" style={{ background: 'rgba(10, 14, 20, 0.85)', backdropFilter: 'blur(8px)' }}>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold uppercase text-muted/60">
               {game.inning.half === 'top' ? 'TOP' : 'BOT'} {game.inning.inning}
@@ -1106,8 +1244,8 @@ export default function PlayPage() {
           />
         </div>
 
-        {/* Diamond */}
-        <div className="py-3">
+        {/* Diamond + Line Score */}
+        <div className="py-2 relative">
           <Diamond
             bases={{
               first: game.bases.first !== null,
@@ -1115,7 +1253,10 @@ export default function PlayPage() {
               third: game.bases.third !== null,
             }}
             stealAnim={stealAnim}
+            recentScore={state.currentRunsScored > 0 && showOutcome}
           />
+          {/* Inning-by-inning line score */}
+          <LineScore game={game} awayName={state.aiRoster?.name || 'Away'} homeName={state.playerRoster?.name || 'Home'} />
         </div>
 
         {/* ===== Dice + Reveal Zone ===== */}
@@ -1198,16 +1339,24 @@ export default function PlayPage() {
         </div>
 
         {/* Play-by-play Log */}
-        <div ref={logRef} className="flex-1 px-4 overflow-y-auto max-h-28 mb-2">
-          {[...game.log].reverse().map((entry, i) => (
-            <div key={`${entry.inning}-${entry.half}-${i}`} className="py-1 border-b border-border/10 last:border-0">
-              <p className="text-[10px] text-muted/50">
-                <span className="font-mono text-muted/30">{entry.half === 'top' ? 'T' : 'B'}{entry.inning}</span>
-                {' '}{entry.description}
-                {entry.runsScored > 0 && <span className="text-amber-400/60 ml-1">+{entry.runsScored}</span>}
-              </p>
-            </div>
-          ))}
+        <div ref={logRef} className="flex-1 px-4 overflow-y-auto max-h-36 mb-2">
+          {[...game.log].reverse().map((entry, i) => {
+            const icon = OUTCOME_ICON[entry.outcome] || { symbol: '', color: 'text-muted/30' };
+            return (
+              <div key={`${entry.inning}-${entry.half}-${i}`} className="flex items-start gap-1.5 py-1.5 border-b border-white/5 last:border-0">
+                <span className="text-[9px] font-mono text-muted/25 shrink-0 pt-px w-5">
+                  {entry.half === 'top' ? 'T' : 'B'}{entry.inning}
+                </span>
+                {icon.symbol && (
+                  <span className={`text-[10px] font-bold shrink-0 w-5 text-center ${icon.color}`}>{icon.symbol}</span>
+                )}
+                <p className="text-[10px] text-muted/55 leading-tight flex-1">{entry.description}</p>
+                {entry.runsScored > 0 && (
+                  <span className="text-amber-400/70 text-[10px] font-bold shrink-0 ml-auto">+{entry.runsScored}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Half-Inning Banner */}
