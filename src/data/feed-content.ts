@@ -14,6 +14,7 @@ export interface FeedEntry {
   ctaLink: string;
   date: string;
   pinned?: boolean;
+  artPath?: string; // card art image to use as background
 }
 
 export const FEED_TYPE_CONFIG: Record<FeedType, { label: string; color: string }> = {
@@ -40,6 +41,7 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLink: '/collection/sets',
     date: '2026-04-13',
     pinned: true,
+    artPath: '/cards/olympus-zeus-wielding-the-thunderbolt.webp',
   },
   {
     id: 'baker-street-floor',
@@ -54,6 +56,7 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLabel: 'See Prices',
     ctaLink: '/marketplace',
     date: '2026-04-12',
+    artPath: '/cards/baker-street-sherlock-holmes-at-221b-baker-street.webp',
   },
   {
     id: 'cheshire-cat',
@@ -68,6 +71,7 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLabel: 'View Cards',
     ctaLink: '/marketplace',
     date: '2026-04-11',
+    artPath: '/cards/wonderland-the-cheshire-cat-fading-to-a-grin.webp',
   },
   {
     id: 'season-1-guide',
@@ -82,6 +86,7 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLabel: 'View Progress',
     ctaLink: '/profile',
     date: '2026-04-10',
+    artPath: '/cards/olympus-athena-in-battle-armor.webp',
   },
   {
     id: 'gothic-horror-sleeper',
@@ -96,6 +101,7 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLabel: 'See Prices',
     ctaLink: '/marketplace',
     date: '2026-04-09',
+    artPath: '/cards/gothic-horror-count-dracula-the-castle-at-night.webp',
   },
   {
     id: 'parallels-explainer',
@@ -110,6 +116,7 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLabel: 'Read Guide',
     ctaLink: '/guide#parallels',
     date: '2026-04-08',
+    artPath: '/cards/olympus-medusa-the-petrifying-gaze.webp',
   },
   {
     id: 'enchanted-kingdom',
@@ -124,5 +131,6 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLabel: 'View Set',
     ctaLink: '/collection/sets',
     date: '2026-04-07',
+    artPath: '/cards/enchanted-kingdom-snow-white-the-poisoned-apple.webp',
   },
 ];
