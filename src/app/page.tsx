@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
@@ -17,6 +17,7 @@ import { FEED_CONTENT } from '@/data/feed-content';
 import FeedCard from '@/components/FeedCard';
 import SocialFeed from '@/components/SocialFeed';
 import { getFomoCount } from '@/lib/pulse';
+import { useSearchParams } from 'next/navigation';
 
 const TIER_COLORS: Record<string, string> = {
   Newcomer: '#6b7094',
@@ -33,8 +34,9 @@ const feedEntries = [...FEED_CONTENT].sort((a, b) => {
   return new Date(b.date).getTime() - new Date(a.date).getTime();
 });
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [ownedCards, setOwnedCards] = useState<Card[]>([]);
   const [packs, setPacks] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -47,11 +49,21 @@ export default function Home() {
   const [loginRewardClaimed, setLoginRewardClaimed] = useState<string | null>(null);
   const [collectorPass, setCollectorPass] = useState<CollectorPassState | null>(null);
   const [weeklyChallenges, setWeeklyChallenges] = useState<WeeklyChallenge[]>([]);
+  const [setProgress, setSetProgress] = useState<Map<string, { owned: number; total: number }>>(new Map());
+  const [showReferralBanner, setShowReferralBanner] = useState(false);
 
   useEffect(() => {
     if (shouldShowWelcome()) {
       router.replace('/welcome');
       return;
+    }
+
+    // Handle ?ref= referral landing
+    const refCode = searchParams.get('ref');
+    if (refCode && !localStorage.getItem('lorevault_referred_by')) {
+      localStorage.setItem('lorevault_referred_by', refCode);
+      setShowReferralBanner(true);
+      setTimeout(() => setShowReferralBanner(false), 5000);
     }
 
     recordVisit(); // Update streak before reading it
@@ -60,6 +72,15 @@ export default function Home() {
     setPacks(getPackCredits());
     setStreak(getStreak());
     setCollectorLevel(getCollectorLevel());
+
+    // Compute set collection progress for discovery personalization
+    const progress = new Map<string, { owned: number; total: number }>();
+    for (const set of SETS) {
+      const setOwned = owned.filter(c => c.setSlug === set.slug);
+      const uniqueChars = new Set(setOwned.map(c => c.character));
+      progress.set(set.slug, { owned: uniqueChars.size, total: set.cardCount });
+    }
+    setSetProgress(progress);
 
     const vs = getVipState();
     setVipTier({ name: vs.tier.name, color: vs.tier.color });
@@ -73,7 +94,7 @@ export default function Home() {
     else if (missions.length > 0) setDailyMission(missions[0]);
 
     setReady(true);
-  }, [router]);
+  }, [router, searchParams]);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
 
@@ -413,6 +434,47 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ========== REFERRAL LANDING BANNER ========== */}
+      {showReferralBanner && (
+        <section className="px-4 mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-accent/10 border border-emerald-500/20 text-center"
+          >
+            <span className="text-xs font-semibold text-emerald-400">A friend invited you to LoreVault!</span>
+            <span className="text-[10px] text-muted block mt-0.5">Open packs and build your collection together</span>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ========== SET COLLECTION PROGRESS ========== */}
+      {ownedCards.length > 0 && (
+        <section className="px-4 mb-6">
+          <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-2 block">Your Sets</span>
+          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
+            {SETS.map(set => {
+              const prog = setProgress.get(set.slug);
+              if (!prog) return null;
+              const pct = Math.round((prog.owned / prog.total) * 100);
+              return (
+                <Link key={set.slug} href="/collection/sets" className="shrink-0">
+                  <div className="w-[120px] p-2.5 rounded-xl bg-surface border border-border text-center">
+                    <span className="text-lg">{set.icon}</span>
+                    <div className="text-[10px] font-semibold text-foreground mt-1 truncate">{set.name}</div>
+                    <div className="text-[9px] text-muted">{prog.owned}/{prog.total} chars</div>
+                    <div className="w-full h-1 rounded-full bg-border/30 mt-1.5 overflow-hidden">
+                      <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* ========== DISCOVERY FEED — horizontal story carousel ========== */}
       <section className="mb-6">
         <div className="flex items-center justify-between mb-3 px-4">
@@ -501,5 +563,13 @@ export default function Home() {
         </section>
       )}
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <HomeContent />
+    </Suspense>
   );
 }

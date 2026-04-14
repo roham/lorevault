@@ -349,6 +349,7 @@ export function addCollectorXP(amount: number, source: XPSource): { previousLeve
   const prevLevel = getLevelFromXP(prevXP);
   const xpToAdd = amount || XP_VALUES[source];
   addXP(xpToAdd);
+  addPassXP(xpToAdd);
   recordMonthlyXP(xpToAdd);
   const newXP = prevXP + xpToAdd;
   const newLevel = getLevelFromXP(newXP);
@@ -1223,7 +1224,8 @@ export interface CollectorPassState {
 
 export function getCollectorPass(): CollectorPassState {
   if (typeof window === 'undefined') return { monthKey: '', xpEarned: 0, currentTier: 0, claimedTiers: [] };
-  const monthKey = new Date().toISOString().slice(0, 7); // "2026-04"
+  const now = new Date();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   let state = getItem<CollectorPassState>('lorevault_collector_pass', {
     monthKey,
     xpEarned: 0,
@@ -1245,7 +1247,10 @@ export function getCollectorPass(): CollectorPassState {
     if (state.xpEarned >= totalRequired) tier = t.tier;
     else break;
   }
-  state.currentTier = tier;
+  if (state.currentTier !== tier) {
+    state.currentTier = tier;
+    setItem('lorevault_collector_pass', state);
+  }
 
   return state;
 }
@@ -1299,10 +1304,12 @@ const WEEKLY_CHALLENGE_POOL = [
 ];
 
 function getWeekKey(): string {
-  const now = new Date();
-  const jan1 = new Date(now.getFullYear(), 0, 1);
-  const week = Math.ceil(((now.getTime() - jan1.getTime()) / 86400000 + jan1.getDay() + 1) / 7);
-  return `${now.getFullYear()}-W${week}`;
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+  const week1 = new Date(d.getFullYear(), 0, 4);
+  const weekNum = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+  return `${d.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
 }
 
 export function getWeeklyChallenges(): WeeklyChallenge[] {
@@ -1362,7 +1369,7 @@ export function getCollectorMilestones(): { milestone: CollectorMilestone; earne
   const owned = getOwnedCards();
   const xp = getXP();
   const level = getCollectorLevel();
-  const forgeHistory = typeof window !== 'undefined' ? getItem<unknown[]>('lorevault_forge_history', []) : [];
+  const forgeHistory = getItem<unknown[]>('lorevault_forge_history', []);
   const burnHistory = getBurnHistory();
   const streak = getStreak();
 
