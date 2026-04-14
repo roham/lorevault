@@ -9,9 +9,10 @@ import { ALL_CARDS } from '@/data/cards';
 import { PROFILE } from '@/data/profile';
 import { SCARCITY_CONFIG, Scarcity, Card, getTierForLevel } from '@/data/types';
 import { SETS } from '@/data/sets';
-import { getOwnedCards, getShowcaseIds, getXP, getStreak, getPackCredits, resetAll, addPackCredits, getCollectorLevel, getEarnedAchievements } from '@/lib/store';
+import { getOwnedCards, getShowcaseIds, getXP, getStreak, getPackCredits, resetAll, addPackCredits, getCollectorLevel, getEarnedAchievements, getPinnedBadges, togglePinnedBadge } from '@/lib/store';
 import { getShowcases, getActiveShowcaseId, SHOWCASE_THEMES, ShowcaseTheme } from '@/lib/showcase-store';
-import { ACHIEVEMENTS, getAchievementRarityColor } from '@/lib/achievements';
+import { ACHIEVEMENTS, ACHIEVEMENT_CATEGORIES, getAchievementRarityColor, getAchievementById } from '@/lib/achievements';
+import { AchievementCategory } from '@/data/types';
 import { getVipState, type VipState } from '@/lib/vip';
 
 function LazySection({ children, height }: { children: React.ReactNode; height: number }) {
@@ -44,6 +45,8 @@ export default function ProfilePage() {
   const [activeShowcaseTheme, setActiveShowcaseTheme] = useState<ShowcaseTheme>('dark-glass');
   const [collectorLevel, setCollectorLevel] = useState({ level: 1, tier: 'Newcomer' as string, progressPercent: 0, currentXP: 0, xpForNextLevel: 100, xpForCurrentLevel: 0 });
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set());
+  const [pinnedBadgeIds, setPinnedBadgeIds] = useState<string[]>([]);
+  const [activeCategory, setActiveCategory] = useState<AchievementCategory | 'all'>('all');
   const [vip, setVip] = useState<VipState | null>(null);
 
   useEffect(() => {
@@ -70,6 +73,7 @@ export default function ProfilePage() {
     setPacks(getPackCredits());
     setCollectorLevel(getCollectorLevel());
     setEarnedIds(new Set(getEarnedAchievements().map(a => a.achievementId)));
+    setPinnedBadgeIds(getPinnedBadges());
     setVip(getVipState());
   }, []);
 
@@ -123,6 +127,27 @@ export default function ProfilePage() {
               </span>
               <span className="text-xs text-muted">Since {new Date(PROFILE.joinedDate).toLocaleDateString()}</span>
             </div>
+            {/* Pinned Badge Strip */}
+            {pinnedBadgeIds.length > 0 && (
+              <div className="flex items-center gap-1.5 mt-2">
+                {pinnedBadgeIds.map(id => {
+                  const a = getAchievementById(id);
+                  if (!a) return null;
+                  const color = getAchievementRarityColor(a.rarity);
+                  return (
+                    <div
+                      key={id}
+                      className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                      style={{ background: `${color}15`, border: `1px solid ${color}25`, color }}
+                      title={a.description}
+                    >
+                      <span>{a.icon}</span>
+                      <span>{a.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
@@ -276,56 +301,107 @@ export default function ProfilePage() {
         </section>
       )}
 
-      {/* Achievements — lazy loaded, horizontal scroll on mobile */}
+      {/* Achievements — lazy loaded, category tabs + pin controls */}
       <LazySection height={200}>
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Achievements</span>
           <span className="text-xs text-muted">{earnedIds.size}/{ACHIEVEMENTS.length}</span>
         </div>
-        <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar sm:grid sm:grid-cols-4">
-          {[...ACHIEVEMENTS].sort((a, b) => {
-            const ae = earnedIds.has(a.id) ? 0 : 1;
-            const be = earnedIds.has(b.id) ? 0 : 1;
-            return ae - be;
-          }).map((achievement) => {
-            const isEarned = earnedIds.has(achievement.id);
-            const color = getAchievementRarityColor(achievement.rarity);
+
+        {/* Category tabs */}
+        <div className="flex overflow-x-auto gap-1.5 pb-3 no-scrollbar">
+          <button
+            onClick={() => setActiveCategory('all')}
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold shrink-0 transition-colors ${
+              activeCategory === 'all' ? 'bg-accent/20 text-accent border border-accent/30' : 'bg-surface/40 text-muted border border-border/30 hover:text-foreground'
+            }`}
+          >
+            All
+          </button>
+          {ACHIEVEMENT_CATEGORIES.map(cat => {
+            const count = ACHIEVEMENTS.filter(a => a.category === cat.id && earnedIds.has(a.id)).length;
+            const total = ACHIEVEMENTS.filter(a => a.category === cat.id).length;
             return (
-              <div
-                key={achievement.id}
-                className={`p-3 rounded-xl text-center shrink-0 w-[140px] sm:w-auto ${
-                  isEarned ? 'bg-surface border border-border' : 'bg-surface/30 border border-border/30 opacity-40'
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold shrink-0 transition-colors ${
+                  activeCategory === cat.id ? 'bg-accent/20 text-accent border border-accent/30' : 'bg-surface/40 text-muted border border-border/30 hover:text-foreground'
                 }`}
               >
-                <div
-                  className="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center text-sm font-bold"
-                  style={{
-                    background: isEarned ? `${color}20` : 'rgba(31,34,55,0.3)',
-                    color: isEarned ? color : '#3a3d5c',
-                    border: `1px solid ${isEarned ? color + '30' : 'rgba(31,34,55,0.2)'}`,
-                  }}
-                >
-                  {isEarned ? achievement.icon : (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                    </svg>
-                  )}
-                </div>
-                <div className="text-xs font-semibold truncate">{achievement.name}</div>
-                <div className="text-[9px] text-muted mt-0.5 truncate">{achievement.description}</div>
-                {isEarned && (
-                  <div
-                    className="text-[8px] font-bold uppercase mt-1 px-1.5 py-0.5 rounded inline-block"
-                    style={{ color, background: `${color}10` }}
-                  >
-                    {achievement.mockPercent}% earned
-                  </div>
-                )}
-              </div>
+                {cat.icon} {cat.label} <span className="opacity-60">{count}/{total}</span>
+              </button>
             );
           })}
+        </div>
+
+        {/* Badge grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[...ACHIEVEMENTS]
+            .filter(a => activeCategory === 'all' || a.category === activeCategory)
+            .sort((a, b) => {
+              const ae = earnedIds.has(a.id) ? 0 : 1;
+              const be = earnedIds.has(b.id) ? 0 : 1;
+              return ae - be;
+            })
+            .map((achievement) => {
+              const isEarned = earnedIds.has(achievement.id);
+              const isPinned = pinnedBadgeIds.includes(achievement.id);
+              const color = getAchievementRarityColor(achievement.rarity);
+              return (
+                <div
+                  key={achievement.id}
+                  className={`p-3 rounded-xl text-center relative group ${
+                    isEarned ? 'bg-surface border border-border' : 'bg-surface/30 border border-border/30 opacity-40'
+                  }`}
+                >
+                  {/* Pin button — only for earned badges */}
+                  {isEarned && (
+                    <button
+                      onClick={() => {
+                        const updated = togglePinnedBadge(achievement.id);
+                        setPinnedBadgeIds(updated);
+                      }}
+                      className={`absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[8px] transition-all ${
+                        isPinned
+                          ? 'bg-accent/20 text-accent border border-accent/30'
+                          : 'bg-surface/60 text-muted border border-border/30 opacity-0 group-hover:opacity-100'
+                      }`}
+                      title={isPinned ? 'Unpin badge' : pinnedBadgeIds.length >= 3 ? 'Max 3 pinned' : 'Pin to profile'}
+                    >
+                      {isPinned ? '★' : '☆'}
+                    </button>
+                  )}
+
+                  <div
+                    className="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center text-sm font-bold"
+                    style={{
+                      background: isEarned ? `${color}20` : 'rgba(31,34,55,0.3)',
+                      color: isEarned ? color : '#3a3d5c',
+                      border: `1px solid ${isEarned ? color + '30' : 'rgba(31,34,55,0.2)'}`,
+                    }}
+                  >
+                    {isEarned ? achievement.icon : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="text-xs font-semibold truncate">{achievement.name}</div>
+                  <div className="text-[9px] text-muted mt-0.5 truncate">{achievement.description}</div>
+                  {isEarned && (
+                    <div
+                      className="text-[8px] font-bold uppercase mt-1 px-1.5 py-0.5 rounded inline-block"
+                      style={{ color, background: `${color}10` }}
+                    >
+                      {achievement.mockPercent}% earned
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
       </section>
       </LazySection>

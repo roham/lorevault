@@ -8,6 +8,9 @@ import { SETS } from '@/data/sets';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
 import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addOwnedCards, addXP, getOwnedCardIds, revealCard } from '@/lib/store';
 import { getOnboardingState, updateOnboarding, checkUnlocks } from '@/lib/onboarding';
+import { checkAchievements, getAchievementById } from '@/lib/achievements';
+import AchievementCelebration from '@/components/AchievementCelebration';
+import { Achievement } from '@/data/types';
 import { useSearchParams } from 'next/navigation';
 
 function PacksContent() {
@@ -25,6 +28,9 @@ function PacksContent() {
   const [isGuidedMode, setIsGuidedMode] = useState(false);
   const [revealedInSession, setRevealedInSession] = useState<Set<string>>(new Set());
   const [revealingCardId, setRevealingCardId] = useState<string | null>(null);
+  const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [achievementsChecked, setAchievementsChecked] = useState(false);
 
   useEffect(() => {
     setPackCreditsState(getPackCredits());
@@ -102,10 +108,29 @@ function PacksContent() {
     setDuplicates(new Set());
     setRevealedInSession(new Set());
     setRevealingCardId(null);
+    setAchievementsChecked(false);
+    setCelebrationQueue([]);
+    setShowCelebration(false);
   }, []);
 
   const currentCardRevealed = revealedCards[currentReveal] ? revealedInSession.has(revealedCards[currentReveal].id) : false;
   const allRevealed = currentReveal >= revealedCards.length - 1 && revealedCards.length > 0 && currentCardRevealed;
+
+  // Check achievements when pack is fully revealed
+  useEffect(() => {
+    if (allRevealed && !achievementsChecked) {
+      setAchievementsChecked(true);
+      const newIds = checkAchievements();
+      if (newIds.length > 0) {
+        const achievements = newIds
+          .map(id => getAchievementById(id))
+          .filter(Boolean) as Achievement[];
+        setCelebrationQueue(achievements);
+        // Small delay so user sees the "pack complete" state first
+        setTimeout(() => setShowCelebration(true), 800);
+      }
+    }
+  }, [allRevealed, achievementsChecked]);
 
   // Full-screen pack opening experience
   if (isOpening) {
@@ -496,6 +521,20 @@ function PacksContent() {
             )}
           </div>
         )}
+
+        {/* Achievement celebration */}
+        <AchievementCelebration
+          visible={showCelebration && celebrationQueue.length > 0}
+          achievement={celebrationQueue[0] ?? null}
+          onDone={() => {
+            if (celebrationQueue.length <= 1) {
+              setShowCelebration(false);
+              setCelebrationQueue([]);
+            } else {
+              setCelebrationQueue(prev => prev.slice(1));
+            }
+          }}
+        />
       </div>
     );
   }

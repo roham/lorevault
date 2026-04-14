@@ -514,6 +514,31 @@ export function deleteDeck(id: string) {
   setItem(KEYS.savedDecks, decks);
 }
 
+// ===== Pinned Badges =====
+
+const PINNED_BADGES_KEY = 'lorevault_pinned_badges';
+
+export function getPinnedBadges(): string[] {
+  return getItem<string[]>(PINNED_BADGES_KEY, []);
+}
+
+export function setPinnedBadges(badgeIds: string[]) {
+  setItem(PINNED_BADGES_KEY, badgeIds.slice(0, 3));
+}
+
+export function togglePinnedBadge(badgeId: string): string[] {
+  const current = getPinnedBadges();
+  if (current.includes(badgeId)) {
+    const updated = current.filter(id => id !== badgeId);
+    setPinnedBadges(updated);
+    return updated;
+  }
+  if (current.length >= 3) return current; // max 3
+  const updated = [...current, badgeId];
+  setPinnedBadges(updated);
+  return updated;
+}
+
 // Generate a pack of cards (weighted by scarcity)
 export function generatePack(setSlug?: string): Card[] {
   const pool = setSlug && setSlug !== 'mixed'

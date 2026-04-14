@@ -11,6 +11,9 @@ import {
   getCharacterStats, getEffectiveStat,
 } from '@/data/stats';
 import { Difficulty, seededRandom, aiPickCard, aiChooseStat } from '@/lib/ai';
+import { checkAchievements, getAchievementById } from '@/lib/achievements';
+import AchievementCelebration from '@/components/AchievementCelebration';
+import { Achievement } from '@/data/types';
 import BattleCard from '@/components/games/BattleCard';
 
 type Phase =
@@ -59,6 +62,8 @@ export default function BattlePage() {
 
   // Confetti particles for victory
   const [confetti, setConfetti] = useState<Array<{ id: number; x: number; delay: number; color: string }>>([]);
+  const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -72,6 +77,20 @@ export default function BattlePage() {
     const autoIds = sorted.slice(0, Math.min(5, sorted.length)).map(c => c.id);
     setSelectedIds(new Set(autoIds));
   }, []);
+
+  // Check achievements after battle ends
+  useEffect(() => {
+    if (gameResult) {
+      const newIds = checkAchievements();
+      if (newIds.length > 0) {
+        const achievements = newIds
+          .map(id => getAchievementById(id))
+          .filter(Boolean) as Achievement[];
+        setCelebrationQueue(achievements);
+        setTimeout(() => setShowCelebration(true), 1500);
+      }
+    }
+  }, [gameResult]);
 
   // Toggle card in/out of selected deck
   const toggleCard = useCallback((id: string) => {
@@ -556,6 +575,20 @@ export default function BattlePage() {
             </Link>
           </div>
         </motion.div>
+
+        {/* Achievement celebration */}
+        <AchievementCelebration
+          visible={showCelebration && celebrationQueue.length > 0}
+          achievement={celebrationQueue[0] ?? null}
+          onDone={() => {
+            if (celebrationQueue.length <= 1) {
+              setShowCelebration(false);
+              setCelebrationQueue([]);
+            } else {
+              setCelebrationQueue(prev => prev.slice(1));
+            }
+          }}
+        />
       </div>
     );
   }

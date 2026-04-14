@@ -234,6 +234,7 @@ export interface SeasonReward {
 // ===== Achievement System =====
 
 export type AchievementRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+export type AchievementCategory = 'collection' | 'battle' | 'discovery' | 'dedication' | 'special';
 
 export interface Achievement {
   id: string;
@@ -241,6 +242,7 @@ export interface Achievement {
   description: string;
   icon: string;
   rarity: AchievementRarity;
+  category: AchievementCategory;
   mockPercent: number; // % of collectors who earn it
 }
 

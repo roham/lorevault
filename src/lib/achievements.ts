@@ -1,7 +1,7 @@
 'use client';
 
-import { Achievement, AchievementRarity } from '@/data/types';
-import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel } from '@/lib/store';
+import { Achievement, AchievementRarity, AchievementCategory } from '@/data/types';
+import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge } from '@/lib/store';
 
 // ---------------------------------------------------------------------------
 // Achievement definitions — 20 achievements
@@ -13,6 +13,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Open your first pack',
     icon: '1',
     rarity: 'common',
+    category: 'discovery',
     mockPercent: 95,
   },
   {
@@ -21,6 +22,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Own cards from 3 different sets',
     icon: '3',
     rarity: 'common',
+    category: 'collection',
     mockPercent: 82,
   },
   {
@@ -29,6 +31,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Win 5 card battles',
     icon: 'W',
     rarity: 'uncommon',
+    category: 'battle',
     mockPercent: 45,
   },
   {
@@ -37,6 +40,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Get a trivia streak of 5',
     icon: '?',
     rarity: 'uncommon',
+    category: 'battle',
     mockPercent: 38,
   },
   {
@@ -45,6 +49,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Own 100+ cards',
     icon: 'W',
     rarity: 'rare',
+    category: 'collection',
     mockPercent: 12,
   },
   {
@@ -53,6 +58,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Complete an entire set',
     icon: 'C',
     rarity: 'epic',
+    category: 'collection',
     mockPercent: 5,
   },
   {
@@ -61,6 +67,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Collected during first 24 hours',
     icon: 'D',
     rarity: 'rare',
+    category: 'special',
     mockPercent: 15,
   },
   {
@@ -69,6 +76,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Maintain a 7-day login streak',
     icon: '7',
     rarity: 'uncommon',
+    category: 'dedication',
     mockPercent: 28,
   },
   {
@@ -77,6 +85,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Pull a Rare card from a pack',
     icon: 'R',
     rarity: 'common',
+    category: 'discovery',
     mockPercent: 78,
   },
   {
@@ -85,6 +94,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Pull an Epic card from a pack',
     icon: 'E',
     rarity: 'uncommon',
+    category: 'discovery',
     mockPercent: 35,
   },
   {
@@ -93,6 +103,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Pull a Legendary card',
     icon: 'L',
     rarity: 'rare',
+    category: 'discovery',
     mockPercent: 8,
   },
   {
@@ -101,6 +112,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Own 5 Gold parallel cards',
     icon: 'G',
     rarity: 'uncommon',
+    category: 'collection',
     mockPercent: 22,
   },
   {
@@ -109,6 +121,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Own a Holographic card',
     icon: 'H',
     rarity: 'rare',
+    category: 'collection',
     mockPercent: 18,
   },
   {
@@ -117,6 +130,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Own an Obsidian card',
     icon: 'O',
     rarity: 'epic',
+    category: 'collection',
     mockPercent: 3,
   },
   {
@@ -125,6 +139,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Save your first battle deck',
     icon: 'B',
     rarity: 'common',
+    category: 'battle',
     mockPercent: 60,
   },
   {
@@ -133,6 +148,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Win 10 card battles',
     icon: 'X',
     rarity: 'uncommon',
+    category: 'battle',
     mockPercent: 25,
   },
   {
@@ -141,6 +157,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Score perfect in a trivia round',
     icon: 'T',
     rarity: 'rare',
+    category: 'battle',
     mockPercent: 10,
   },
   {
@@ -149,6 +166,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Reach collector level 10',
     icon: '10',
     rarity: 'uncommon',
+    category: 'dedication',
     mockPercent: 30,
   },
   {
@@ -157,6 +175,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Reach collector level 25',
     icon: '25',
     rarity: 'rare',
+    category: 'dedication',
     mockPercent: 8,
   },
   {
@@ -165,7 +184,80 @@ export const ACHIEVEMENTS: Achievement[] = [
     description: 'Own at least one card from every set',
     icon: 'A',
     rarity: 'uncommon',
+    category: 'collection',
     mockPercent: 42,
+  },
+  {
+    id: 'fifty-wins',
+    name: 'War Hero',
+    description: 'Win 50 card battles',
+    icon: '50',
+    rarity: 'rare',
+    category: 'battle',
+    mockPercent: 6,
+  },
+  {
+    id: 'pack-rat',
+    name: 'Pack Rat',
+    description: 'Own 30+ unique cards',
+    icon: 'P',
+    rarity: 'uncommon',
+    category: 'collection',
+    mockPercent: 32,
+  },
+  {
+    id: 'hoarder',
+    name: 'Hoarder',
+    description: 'Own 50+ cards',
+    icon: 'H',
+    rarity: 'uncommon',
+    category: 'collection',
+    mockPercent: 20,
+  },
+  {
+    id: 'full-mythology',
+    name: 'Mythology Scholar',
+    description: 'Own cards from both Olympus and Asgard',
+    icon: 'M',
+    rarity: 'uncommon',
+    category: 'collection',
+    mockPercent: 35,
+  },
+  {
+    id: 'silver-lining',
+    name: 'Silver Lining',
+    description: 'Own 3 Silver parallel cards',
+    icon: 'S',
+    rarity: 'common',
+    category: 'collection',
+    mockPercent: 55,
+  },
+  {
+    id: 'five-legendaries',
+    name: 'Dragon Hoard',
+    description: 'Own 5 Legendary cards',
+    icon: 'D',
+    rarity: 'epic',
+    category: 'collection',
+    mockPercent: 4,
+  },
+  {
+    id: 'genesis-collector',
+    name: 'Genesis Collector',
+    description: 'Own a card with the Genesis origin badge',
+    icon: 'G',
+    rarity: 'rare',
+    category: 'special',
+    mockPercent: 15,
+  },
+  {
+    id: 'battle-worn-card',
+    name: 'Scarred Veteran',
+    description: 'Own a card with the Battle-Worn aging tier',
+    icon: 'V',
+    rarity: 'rare',
+    category: 'special',
+    mockPercent: 9,
   },
 ];
 
@@ -207,7 +299,7 @@ export function checkAchievements(): string[] {
   tryEarn('trivia-master', stats.triviaHighScore >= 10);
   tryEarn('level-10', level.level >= 10);
   tryEarn('level-25', level.level >= 25);
-  tryEarn('all-sets', new Set(owned.map(c => c.setSlug)).size >= 5);
+  tryEarn('all-sets', new Set(owned.map(c => c.setSlug)).size >= 6);
 
   // Completionist — check each set
   const setsBySlug: Record<string, Set<string>> = {};
@@ -220,8 +312,30 @@ export function checkAchievements(): string[] {
   });
   tryEarn('completionist', anyComplete);
 
+  // New achievements
+  tryEarn('fifty-wins', stats.battlesWon >= 50);
+  tryEarn('pack-rat', owned.length >= 30); // ~6 packs worth of unique cards
+  tryEarn('hoarder', owned.length >= 50);
+  const slugs = new Set(owned.map(c => c.setSlug));
+  tryEarn('full-mythology', slugs.has('olympus') && slugs.has('asgard'));
+  tryEarn('silver-lining', owned.filter(c => c.parallel === 'silver').length >= 3);
+  tryEarn('five-legendaries', owned.filter(c => c.scarcity === 'legendary').length >= 5);
+  tryEarn('genesis-collector', owned.some(c => getOriginBadge(c.id)?.id === 'genesis'));
+  tryEarn('battle-worn-card', owned.some(c => {
+    const t = getAgingTiers(c.id);
+    return t.battle === 'battle-worn' || t.battle === 'veteran';
+  }));
+
   return newlyEarned;
 }
+
+export const ACHIEVEMENT_CATEGORIES: { id: AchievementCategory; label: string; icon: string }[] = [
+  { id: 'collection', label: 'Collection', icon: '📦' },
+  { id: 'battle', label: 'Battle', icon: '⚔️' },
+  { id: 'discovery', label: 'Discovery', icon: '🔍' },
+  { id: 'dedication', label: 'Dedication', icon: '🔥' },
+  { id: 'special', label: 'Special', icon: '✨' },
+];
 
 export function getAchievementById(id: string): Achievement | undefined {
   return ACHIEVEMENTS.find(a => a.id === id);
