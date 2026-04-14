@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
+import { SETS } from '@/data/sets';
 import { StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS, getCharacterStats, getEffectiveStat } from '@/data/stats';
 import { getOwnedCards, addOwnedCards, getPackCredits } from '@/lib/store';
 
@@ -36,11 +37,23 @@ function getCardStat(card: Card, stat: StatKey): number {
 
 function pickAICards(exclude: Set<string>): Card[] {
   const pool = ALL_CARDS.filter(c => !exclude.has(c.id));
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  // Prefer cards from sets the player is progressing in (has 1+ cards)
+  const playerSets = new Set<string>();
+  for (const id of exclude) {
+    const card = ALL_CARDS.find(c => c.id === id);
+    if (card) playerSets.add(card.setSlug);
+  }
+  // Sort: cards from player's active sets first, then shuffle within tiers
+  const prioritized = pool.sort((a, b) => {
+    const aActive = playerSets.has(a.setSlug) ? 0 : 1;
+    const bActive = playerSets.has(b.setSlug) ? 0 : 1;
+    if (aActive !== bActive) return aActive - bActive;
+    return Math.random() - 0.5;
+  });
   // Pick 3 unique characters
   const seen = new Set<string>();
   const picks: Card[] = [];
-  for (const card of shuffled) {
+  for (const card of prioritized) {
     if (!seen.has(card.character) && picks.length < 3) {
       seen.add(card.character);
       picks.push(card);
@@ -641,15 +654,59 @@ export default function PlayPrototype() {
               <h3 className="text-sm font-semibold text-foreground">{reward.character}</h3>
               <p className="text-[10px] text-muted italic">{reward.moment}</p>
 
-              {/* Pure competitive pride — card added to collection */}
-              <motion.p
-                className="text-[10px] text-foreground/40 mt-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
-                Added to your collection
-              </motion.p>
+              {/* Three Aha signals in under 3s: rarity + set + gap-fill */}
+              {(() => {
+                const set = SETS.find(s => s.slug === reward.setSlug);
+                const setCards = ALL_CARDS.filter(c => c.setSlug === reward.setSlug);
+                const ownedInSet = setCards.filter(c => ownedIds.has(c.id)).length;
+                // Check if this is a duplicate (appears more than once in earnedCards)
+                const timesEarned = earnedCards.filter(c => c.id === reward.id).length;
+                const isNew = timesEarned <= 1;
+                if (!set) return null;
+                return (
+                  <motion.div
+                    className="mt-3 flex flex-col items-center"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    {/* Gap-fill signal */}
+                    {isNew && (
+                      <motion.span
+                        className="text-[9px] font-bold uppercase tracking-widest mb-2 px-3 py-0.5 rounded-full"
+                        style={{
+                          color: '#22c55e',
+                          background: 'rgba(34, 197, 94, 0.1)',
+                          border: '1px solid rgba(34, 197, 94, 0.2)',
+                        }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.8, type: 'spring', stiffness: 200 }}
+                      >
+                        New card!
+                      </motion.span>
+                    )}
+                    {/* Set membership + progress */}
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-sm">{set.icon}</span>
+                      <span className="text-[10px] text-foreground/60">{set.name}</span>
+                    </div>
+                    {/* Mini progress bar with animated fill */}
+                    <div className="w-40 h-1.5 rounded-full bg-white/5 overflow-hidden mb-1">
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ background: `linear-gradient(90deg, ${set.gradientFrom}, ${SCARCITY_CONFIG[reward.scarcity].color})` }}
+                        initial={{ width: `${(Math.max(0, ownedInSet - 1) / setCards.length) * 100}%` }}
+                        animate={{ width: `${(ownedInSet / setCards.length) * 100}%` }}
+                        transition={{ delay: 1.0, duration: 0.5 }}
+                      />
+                    </div>
+                    <span className="text-[9px] text-foreground/30 font-mono">
+                      {ownedInSet}/{setCards.length} collected
+                    </span>
+                  </motion.div>
+                );
+              })()}
             </motion.div>
           )}
 
@@ -684,20 +741,19 @@ export default function PlayPrototype() {
   }
 
   // ═══════════════════════════════════════════
-  // COLLECTION — battle trophies (pure pride)
+  // COLLECTION — mini-binder grouped by set
   // ═══════════════════════════════════════════
   if (phase === 'collection') {
-    // Group earned cards by set
-    const bySet = new Map<string, Card[]>();
-    for (const card of earnedCards) {
-      const existing = bySet.get(card.setSlug) || [];
-      existing.push(card);
-      bySet.set(card.setSlug, existing);
-    }
+    // Group all owned cards by set (not just earned — total collection)
+    const setProgress = SETS.map(set => {
+      const setCards = ALL_CARDS.filter(c => c.setSlug === set.slug);
+      const owned = setCards.filter(c => ownedIds.has(c.id));
+      return { set, total: setCards.length, owned: owned.length, cards: owned };
+    }).filter(s => s.owned > 0);
 
     return (
       <div
-        className="min-h-screen flex flex-col px-6 pt-6"
+        className="min-h-screen flex flex-col px-5 pt-6"
         style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
       >
         <motion.div
@@ -705,47 +761,62 @@ export default function PlayPrototype() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <div className="text-center mb-6">
-            <h2 className="type-heading text-foreground mb-1">Battle Trophies</h2>
+          <div className="text-center mb-5">
+            <h2 className="type-heading text-foreground mb-1">Your Collection</h2>
             <p className="text-[10px] text-muted/50">
-              {earnedCards.length} {earnedCards.length === 1 ? 'card' : 'cards'} earned through {wins} {wins === 1 ? 'victory' : 'victories'}
+              {wins} {wins === 1 ? 'victory' : 'victories'} &middot; {earnedCards.length} cards earned in battle
             </p>
           </div>
 
-          {/* Trophy grid */}
-          <div className="grid grid-cols-3 gap-3 mb-8">
-            {earnedCards.map((card, i) => (
+          {/* Set-grouped binder */}
+          <div className="space-y-5 mb-8">
+            {setProgress.map(({ set, total, owned, cards }, si) => (
               <motion.div
-                key={`${card.id}-${i}`}
-                className="flex flex-col items-center"
+                key={set.slug}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
+                transition={{ delay: si * 0.1 }}
               >
-                <div
-                  className="w-full aspect-[5/7] rounded-xl overflow-hidden relative mb-1.5"
-                  style={{
-                    background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
-                    border: `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`,
-                    boxShadow: `0 0 12px ${SCARCITY_CONFIG[card.scarcity].color}10`,
-                  }}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl" style={{ opacity: 0.6 }}>{card.symbol}</span>
-                  </div>
-                  <div
-                    className="absolute bottom-0 left-0 right-0 py-1 text-center"
-                    style={{ background: `${SCARCITY_CONFIG[card.scarcity].color}15` }}
-                  >
-                    <span
-                      className="text-[7px] font-bold uppercase tracking-wider"
-                      style={{ color: SCARCITY_CONFIG[card.scarcity].color }}
-                    >
-                      {card.scarcity}
-                    </span>
-                  </div>
+                {/* Set header with progress */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm">{set.icon}</span>
+                  <span className="text-[11px] text-foreground/70 flex-1">{set.name}</span>
+                  <span className="text-[10px] font-mono text-foreground/40">{owned}/{total}</span>
                 </div>
-                <span className="text-[9px] text-foreground/60 truncate w-full text-center">{card.character}</span>
+                {/* Set progress bar */}
+                <div className="w-full h-1 rounded-full bg-white/5 overflow-hidden mb-2.5">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${(owned / total) * 100}%`,
+                      background: `linear-gradient(90deg, ${set.gradientFrom}, ${set.gradientTo})`,
+                    }}
+                  />
+                </div>
+                {/* Card thumbnails in this set */}
+                <div className="grid grid-cols-5 gap-1.5">
+                  {cards.slice(0, 10).map((card, ci) => (
+                    <div
+                      key={card.id}
+                      className="aspect-[5/7] rounded-lg overflow-hidden relative"
+                      style={{
+                        background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
+                        border: `1px solid ${SCARCITY_CONFIG[card.scarcity].color}30`,
+                      }}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-sm" style={{ opacity: 0.5 }}>{card.symbol}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {owned > 10 && (
+                    <div className="aspect-[5/7] rounded-lg flex items-center justify-center"
+                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.1)' }}
+                    >
+                      <span className="text-[9px] text-foreground/30">+{owned - 10}</span>
+                    </div>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
