@@ -25,12 +25,64 @@ function timeAgo(dateStr: string): string {
   return `${months}mo ago`;
 }
 
+// Lineage stamps — milestone markers injected into the timeline
+interface LineageStamp {
+  icon: string;
+  label: string;
+  color: string;
+  date: string;
+}
+
+function computeLineageStamps(history: CardEvent[], acquiredAt: string): LineageStamp[] {
+  const stamps: LineageStamp[] = [];
+  const sorted = [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const acquiredTime = new Date(acquiredAt).getTime();
+
+  // Milestone: First battle
+  const firstBattle = sorted.find(e => e.type === 'battle_win' || e.type === 'battle_loss');
+  if (firstBattle) {
+    stamps.push({ icon: '🗡', label: 'First Battle', color: '#f97316', date: firstBattle.date });
+  }
+
+  // Milestone: 10th event
+  if (sorted.length >= 10) {
+    stamps.push({ icon: '📜', label: '10 Events Logged', color: '#818cf8', date: sorted[9].date });
+  }
+
+  // Milestone: 7-day anniversary
+  const sevenDays = acquiredTime + 7 * 86400000;
+  if (Date.now() >= sevenDays) {
+    stamps.push({ icon: '🕯', label: '7 Days Held', color: '#d4a76a', date: new Date(sevenDays).toISOString() });
+  }
+
+  // Milestone: 30-day anniversary
+  const thirtyDays = acquiredTime + 30 * 86400000;
+  if (Date.now() >= thirtyDays) {
+    stamps.push({ icon: '🏛', label: '30 Days — Veteran', color: '#ffd700', date: new Date(thirtyDays).toISOString() });
+  }
+
+  // Milestone: 5th battle win
+  let winCount = 0;
+  for (const e of sorted) {
+    if (e.type === 'battle_win') {
+      winCount++;
+      if (winCount === 5) {
+        stamps.push({ icon: '⚔', label: '5th Victory', color: '#22c55e', date: e.date });
+        break;
+      }
+    }
+  }
+
+  return stamps.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
 export default function CardJourney({ history, acquiredAt }: { history: CardEvent[]; acquiredAt: string }) {
   const [expanded, setExpanded] = useState(false);
 
   if (!history || history.length === 0) return null;
 
   const ageDays = Math.floor((Date.now() - new Date(acquiredAt).getTime()) / 86400000);
+  const stamps = computeLineageStamps(history, acquiredAt);
   const sorted = [...history].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const visible = expanded ? sorted : sorted.slice(0, 5);
   const hasMore = sorted.length > 5;
@@ -43,6 +95,30 @@ export default function CardJourney({ history, acquiredAt }: { history: CardEven
           {history.length} events · {ageDays}d held
         </div>
       </div>
+
+      {/* Lineage stamps */}
+      {stamps.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {stamps.map((stamp, i) => (
+            <motion.div
+              key={`stamp-${i}`}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: i * 0.08 }}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg border"
+              style={{
+                background: `${stamp.color}08`,
+                borderColor: `${stamp.color}25`,
+              }}
+            >
+              <span className="text-[10px]">{stamp.icon}</span>
+              <span className="text-[9px] font-semibold" style={{ color: stamp.color }}>
+                {stamp.label}
+              </span>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <div className="relative pl-6">
         {/* Timeline line */}

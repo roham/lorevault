@@ -18,6 +18,7 @@ import {
   removeFromWatchlist,
 } from '@/lib/marketData';
 import ShareCard from '@/components/social/ShareCard';
+import { generateValueHistory, computeLegacyScore, getLegacyTierConfig, type LegacyData, type ValuePoint } from '@/lib/legacy';
 import {
   StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS,
   getCharacterStats, getEffectiveStat,
@@ -33,6 +34,8 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [cardHistory, setCardHistory] = useState<{ history: CardEvent[]; acquiredAt: string } | null>(null);
   const [popData, setPopData] = useState<PopulationData | null>(null);
   const [showShare, setShowShare] = useState(false);
+  const [legacyData, setLegacyData] = useState<LegacyData | null>(null);
+  const [valueHistory, setValueHistory] = useState<ValuePoint[]>([]);
 
   const card = ALL_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
@@ -57,13 +60,17 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
       setCardBattleStats({ wins, total });
       setAgingTiers(getAgingTiers(card.id));
       setPopData(getPopulationData(card));
+      setValueHistory(generateValueHistory(card));
+      if (isOwned) {
+        setLegacyData(computeLegacyScore(card.id, card));
+      }
       const meta = getCardMeta();
       const m = meta[card.id];
       if (m?.history) {
         setCardHistory({ history: m.history, acquiredAt: m.acquiredAt });
       }
     }
-  }, [card]);
+  }, [card, isOwned]);
 
   const toggleWatch = useCallback(() => {
     if (!card) return;
@@ -430,6 +437,100 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               </div>
             );
           })()}
+
+          {/* Value History Sparkline */}
+          {valueHistory.length > 0 && (
+            <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[10px] text-muted uppercase tracking-wider">Estimated Value History</div>
+                <div className="text-xs font-bold font-mono text-foreground">
+                  ${valueHistory[valueHistory.length - 1]?.value.toFixed(2)}
+                </div>
+              </div>
+              {(() => {
+                const prices = valueHistory.map(p => p.value);
+                const max = Math.max(...prices);
+                const min = Math.min(...prices);
+                const spread = max - min || 1;
+                const h = 60;
+                const w = 100;
+                const isUp = prices[prices.length - 1] >= prices[0];
+                const points = prices.map((p, i) => ({
+                  x: (i / (prices.length - 1)) * w,
+                  y: h - ((p - min) / spread) * (h - 8) - 4,
+                }));
+                const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
+                const color = isUp ? 'rgb(34,197,94)' : 'rgb(239,68,68)';
+                const pctChange = ((prices[prices.length - 1] - prices[0]) / prices[0] * 100).toFixed(1);
+                return (
+                  <>
+                    <svg viewBox={`0 0 ${w} ${h}`} className="w-full" preserveAspectRatio="none" style={{ height: h }}>
+                      <defs>
+                        <linearGradient id="valueGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
+                          <stop offset="100%" stopColor={color} stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d={areaPath} fill="url(#valueGrad)" />
+                      <path d={linePath} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <span className="text-[9px] text-muted">90 day trend</span>
+                      <span className={`text-[10px] font-bold ${isUp ? 'text-green-400' : 'text-red-400'}`}>
+                        {isUp ? '+' : ''}{pctChange}%
+                      </span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Legacy Score — owned cards only */}
+          {isOwned && legacyData && (
+            <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[10px] text-muted uppercase tracking-wider">Legacy Score</div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                    style={{
+                      color: getLegacyTierConfig(legacyData.tier).color,
+                      background: `${getLegacyTierConfig(legacyData.tier).color}15`,
+                    }}
+                  >
+                    {getLegacyTierConfig(legacyData.tier).label}
+                  </span>
+                  <span className="text-lg font-bold font-mono text-foreground">{legacyData.score}</span>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                {([
+                  { key: 'age' as const, label: 'Age', icon: '⏳', max: 30 },
+                  { key: 'battles' as const, label: 'Battles', icon: '⚔️', max: 30 },
+                  { key: 'lineage' as const, label: 'Lineage', icon: '📜', max: 20 },
+                  { key: 'rarity' as const, label: 'Rarity', icon: '💎', max: 20 },
+                ]).map(dim => (
+                  <div key={dim.key} className="flex items-center gap-2">
+                    <span className="text-[10px] w-4">{dim.icon}</span>
+                    <span className="text-[9px] text-muted w-12">{dim.label}</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-border/40 overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full bg-accent/60"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(legacyData.breakdown[dim.key] / dim.max) * 100}%` }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                      />
+                    </div>
+                    <span className="text-[9px] font-mono text-muted w-6 text-right">
+                      {legacyData.breakdown[dim.key]}/{dim.max}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Card Journey — provenance timeline */}
           {isOwned && cardHistory && (
