@@ -36,6 +36,7 @@ import {
   getBinderState,
   initBinderFromCards,
   saveBinderState,
+  debouncedSaveBinderState,
   syncBinderWithOwned,
   addBinderPage,
   renameBinderPage,
@@ -50,19 +51,16 @@ const AnalyticsSection = lazy(() => import('./analytics/page'));
 // Page transition variants
 const pageVariants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? 300 : -300,
+    x: direction > 0 ? 200 : -200,
     opacity: 0,
-    scale: 0.95,
   }),
   center: {
     x: 0,
     opacity: 1,
-    scale: 1,
   },
   exit: (direction: number) => ({
-    x: direction < 0 ? 300 : -300,
+    x: direction < 0 ? 200 : -200,
     opacity: 0,
-    scale: 0.95,
   }),
 };
 
@@ -79,26 +77,23 @@ function SortableBinderCard({ card }: { card: Card }) {
     isDragging,
   } = useSortable({ id: card.id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.2 : 1,
+    opacity: isDragging ? 0.3 : 1,
+    scale: isDragging ? '0.95' : undefined,
   };
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="relative touch-manipulation cursor-grab active:cursor-grabbing"
-      whileHover={{ scale: 1.04, y: -6, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
-      whileTap={{ scale: 1.07 }}
-      layout
+      className="relative touch-manipulation cursor-grab active:cursor-grabbing sortable-binder-card"
     >
       <BinderCard card={card} />
-      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-    </motion.div>
+    </div>
   );
 }
 
@@ -253,8 +248,8 @@ export default function CollectionPage() {
   }, []);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 12 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 100, tolerance: 5 } })
   );
 
   const cardMap = useMemo(() => {
@@ -362,7 +357,7 @@ export default function CollectionPage() {
           return p;
         });
         const next = { ...binder, pages: newPages };
-        saveBinderState(next);
+        debouncedSaveBinderState(next);
         setBinder(next);
         setDragOverPageIndex(null);
         setDirection(dragOverPageIndex > currentPageIndex ? 1 : -1);
@@ -380,7 +375,7 @@ export default function CollectionPage() {
     const newIds = arrayMove(page.cardIds, oldIdx, newIdx);
     const newPages = binder.pages.map(p => p.id === page.id ? { ...p, cardIds: newIds } : p);
     const next = { ...binder, pages: newPages };
-    saveBinderState(next);
+    debouncedSaveBinderState(next);
     setBinder(next);
   }
 
@@ -561,13 +556,13 @@ export default function CollectionPage() {
                 )}
               </AnimatePresence>
 
-              <AnimatePresence mode="wait" custom={direction}>
+              <AnimatePresence mode="popLayout" custom={direction}>
                 <motion.div
                   key={currentPageIndex}
                   custom={direction}
                   variants={pageVariants}
                   initial="enter" animate="center" exit="exit"
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 35 }}
                   drag={!activeId ? "x" : false}
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.15}
@@ -594,7 +589,7 @@ export default function CollectionPage() {
                     </div>
                     {currentPage && (
                       <SortableContext items={currentPage.cardIds.filter(id => !id.startsWith('missing:'))} strategy={rectSortingStrategy}>
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 justify-items-center ml-3 sm:ml-5">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 justify-items-center ml-3 sm:ml-5" style={{ contain: 'layout style' }}>
                           {currentPage.cardIds.map((cid, i) => {
                             if (cid.startsWith('missing:')) {
                               const realId = cid.replace('missing:', '');

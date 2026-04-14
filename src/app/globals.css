@@ -567,3 +567,14 @@ table tbody tr {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Sortable binder card — CSS-only hover/active (replaces Framer Motion whileHover/whileTap) */
+.sortable-binder-card {
+  transition: transform 150ms ease, opacity 150ms ease;
+}
+.sortable-binder-card:hover {
+  transform: scale(1.03) translateY(-4px);
+}
+.sortable-binder-card:active {
+  transform: scale(1.05);
+}

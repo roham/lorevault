@@ -38,6 +38,32 @@ export function saveBinderState(state: BinderState) {
   }
 }
 
+// Debounced save — accumulates writes, flushes after 400ms idle.
+// Use during drag operations to avoid blocking the main thread.
+let _pendingSave: BinderState | null = null;
+let _saveTimer: ReturnType<typeof setTimeout> | null = null;
+
+export function debouncedSaveBinderState(state: BinderState) {
+  _pendingSave = state;
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    if (_pendingSave) {
+      saveBinderState(_pendingSave);
+      _pendingSave = null;
+    }
+    _saveTimer = null;
+  }, 400);
+}
+
+export function flushBinderSave() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  if (_pendingSave) {
+    saveBinderState(_pendingSave);
+    _pendingSave = null;
+  }
+  _saveTimer = null;
+}
+
 export function initBinderFromCards(cardIds: string[]): BinderState {
   // Chunk cards into pages of 6
   const pages: BinderPage[] = [];
