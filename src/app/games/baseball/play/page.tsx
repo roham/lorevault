@@ -43,6 +43,8 @@ import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records
 import { checkAchievements } from '@/lib/achievements';
 import { earnAchievement, addCollectorXP, progressDailyMission } from '@/lib/store';
 import BaseballShareCard from '@/components/baseball/BaseballShareCard';
+import { getStadiumTheme, type StadiumTheme, type CrowdReactionType } from '@/lib/baseball/stadium-themes';
+import { CrowdReaction } from '@/components/baseball/CrowdReaction';
 
 // ===== Animation Phase State Machine =====
 
@@ -94,6 +96,10 @@ interface BoardState {
   gameLength: 3 | 9;
   preCards: CardRegistry; // cards loaded at pregame, before game init
   prePlayerRoster: Roster | null;
+  // Stadium theme
+  stadiumTheme: StadiumTheme | null;
+  // Crowd reaction
+  crowdReaction: CrowdReactionType | null;
 }
 
 type BoardAction =
@@ -109,7 +115,8 @@ type BoardAction =
   | { type: 'STEAL_RESOLVED'; game: GameState; isHalfInningOver: boolean; isGameOver: boolean }
   | { type: 'SET_XP'; xpBreakdown: XPBreakdown[] }
   | { type: 'RETURN_IDLE' }
-  | { type: 'HALF_INNING_DONE' };
+  | { type: 'HALF_INNING_DONE' }
+  | { type: 'SET_CROWD'; crowdReaction: CrowdReactionType | null };
 
 function boardReducer(state: BoardState, action: BoardAction): BoardState {
   switch (action.type) {
@@ -143,6 +150,8 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         shakeTrigger: 0,
         particleBurst: false,
         xpBreakdown: [],
+        stadiumTheme: getStadiumTheme(action.aiRoster.name),
+        crowdReaction: null,
       };
 
     case 'INIT_GAME':
@@ -250,6 +259,9 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         particleBurst: false,
       };
 
+    case 'SET_CROWD':
+      return { ...state, crowdReaction: action.crowdReaction };
+
     default:
       return state;
   }
@@ -291,6 +303,8 @@ const initialState: BoardState = {
   gameLength: 3,
   preCards: new Map(),
   prePlayerRoster: null,
+  stadiumTheme: null,
+  crowdReaction: null,
 };
 
 // ===== Diamond SVG with animated runners =====
@@ -299,10 +313,12 @@ function Diamond({
   bases,
   stealAnim,
   recentScore,
+  theme,
 }: {
   bases: { first: boolean; second: boolean; third: boolean };
   stealAnim?: { from: 'first' | 'second'; success: boolean } | null;
   recentScore?: boolean;
+  theme?: StadiumTheme | null;
 }) {
   const coords = {
     home: { x: 100, y: 170 },
@@ -312,6 +328,9 @@ function Diamond({
   };
 
   const hasRunners = bases.first || bases.second || bases.third;
+  const baseColor = theme?.baseGlow || '#f59e0b';
+  const runnerColor = theme?.runnerGlow || '#f59e0b';
+  const pathGlowColor = theme?.basePath || 'rgba(251,191,36,0.12)';
 
   return (
     <svg viewBox="0 0 200 200" className="w-44 h-44 mx-auto">
@@ -353,10 +372,10 @@ function Diamond({
       <ellipse cx="100" cy="115" rx="8" ry="5" fill="rgba(107,66,38,0.15)" />
       <ellipse cx="100" cy="114" rx="4" ry="2" fill="rgba(255,255,255,0.06)" />
 
-      {/* Base paths — glow when runners are on */}
-      <line x1="100" y1="170" x2="160" y2="110" stroke={bases.first || hasRunners ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
-      <line x1="160" y1="110" x2="100" y2="50" stroke={bases.second ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
-      <line x1="100" y1="50" x2="40" y2="110" stroke={bases.third ? 'rgba(251,191,36,0.12)' : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
+      {/* Base paths — glow when runners are on (theme-driven) */}
+      <line x1="100" y1="170" x2="160" y2="110" stroke={bases.first || hasRunners ? pathGlowColor : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
+      <line x1="160" y1="110" x2="100" y2="50" stroke={bases.second ? pathGlowColor : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
+      <line x1="100" y1="50" x2="40" y2="110" stroke={bases.third ? pathGlowColor : 'rgba(255,255,255,0.06)'} strokeWidth="2" />
       <line x1="40" y1="110" x2="100" y2="170" stroke="rgba(255,255,255,0.06)" strokeWidth="2" />
 
       {/* Home plate — pentagon shape */}
@@ -370,7 +389,7 @@ function Diamond({
         </circle>
       )}
 
-      {/* Base diamonds — enhanced with glow when occupied */}
+      {/* Base diamonds — enhanced with glow when occupied (theme-driven) */}
       {[
         { x: 160, y: 110, occupied: bases.first, label: '1B' },
         { x: 100, y: 50, occupied: bases.second, label: '2B' },
@@ -379,8 +398,8 @@ function Diamond({
         <g key={base.label}>
           <rect
             x={base.x - 7} y={base.y - 7} width="14" height="14" rx="2"
-            fill={base.occupied ? '#f59e0b' : 'rgba(255,255,255,0.03)'}
-            stroke={base.occupied ? 'rgba(251,191,36,0.5)' : 'rgba(255,255,255,0.12)'}
+            fill={base.occupied ? baseColor : 'rgba(255,255,255,0.03)'}
+            stroke={base.occupied ? `${baseColor}80` : 'rgba(255,255,255,0.12)'}
             strokeWidth={base.occupied ? 2 : 1}
             transform={`rotate(45, ${base.x}, ${base.y})`}
             filter={base.occupied ? 'url(#base-glow)' : undefined}
@@ -388,27 +407,27 @@ function Diamond({
         </g>
       ))}
 
-      {/* Runner dots with animated glow */}
+      {/* Runner dots with animated glow (theme-driven) */}
       {bases.first && !stealAnim && (
         <g filter="url(#runner-glow)">
-          <circle cx="160" cy="110" r="5" fill="#f59e0b" />
-          <circle cx="160" cy="110" r="9" fill="#f59e0b" opacity="0.15">
+          <circle cx="160" cy="110" r="5" fill={runnerColor} />
+          <circle cx="160" cy="110" r="9" fill={runnerColor} opacity="0.15">
             <animate attributeName="r" values="9;13;9" dur="2s" repeatCount="indefinite" />
           </circle>
         </g>
       )}
       {bases.second && (
         <g filter="url(#runner-glow)">
-          <circle cx="100" cy="50" r="5" fill="#f59e0b" />
-          <circle cx="100" cy="50" r="9" fill="#f59e0b" opacity="0.15">
+          <circle cx="100" cy="50" r="5" fill={runnerColor} />
+          <circle cx="100" cy="50" r="9" fill={runnerColor} opacity="0.15">
             <animate attributeName="r" values="9;13;9" dur="2s" repeatCount="indefinite" />
           </circle>
         </g>
       )}
       {bases.third && (
         <g filter="url(#runner-glow)">
-          <circle cx="40" cy="110" r="5" fill="#f59e0b" />
-          <circle cx="40" cy="110" r="9" fill="#f59e0b" opacity="0.15">
+          <circle cx="40" cy="110" r="5" fill={runnerColor} />
+          <circle cx="40" cy="110" r="9" fill={runnerColor} opacity="0.15">
             <animate attributeName="r" values="9;13;9" dur="2s" repeatCount="indefinite" />
           </circle>
         </g>
@@ -940,6 +959,18 @@ export default function PlayPage() {
     });
     pendingResolution.current = null;
 
+    // Trigger crowd reaction based on outcome
+    const isPlayerBat = battingTeam === 'home';
+    let crowd: CrowdReactionType | null = null;
+    if (outcome === 'homerun') crowd = 'homerun';
+    else if (outcome === 'strikeout') crowd = isPlayerBat ? 'strikeout_bad' : 'strikeout_good';
+    else if (outcome === 'groundout_dp') crowd = 'double_play';
+    else if (outcome === 'triple') crowd = 'triple';
+    else if ((outcome === 'double' || outcome === 'single') && runsScored >= 2) crowd = 'big_hit';
+    // Walk-off detection
+    if (newState.isGameOver && isPlayerBat && runsScored > 0) crowd = 'walk_off';
+    if (crowd) dispatch({ type: 'SET_CROWD', crowdReaction: crowd });
+
     if (!newState.isGameOver && !isHalfInningOver) {
       timerRef.current = setTimeout(() => dispatch({ type: 'RETURN_IDLE' }), 2000);
     }
@@ -1055,6 +1086,12 @@ export default function PlayPage() {
       dispatch({
         type: 'STEAL_RESOLVED', game: newState,
         isHalfInningOver, isGameOver: newState.isGameOver,
+      });
+
+      // Trigger crowd reaction for steal
+      dispatch({
+        type: 'SET_CROWD',
+        crowdReaction: success ? 'steal_success' : 'steal_caught',
       });
 
       // Auto-advance back to idle
@@ -1237,25 +1274,41 @@ export default function PlayPage() {
     ? { from: state.stealData.fromBase, success: state.stealData.success }
     : null;
 
+  const theme = state.stadiumTheme;
+
   return (
     <ScreenShake trigger={state.shakeTrigger > 0} intensity={shakeIntensity}>
       <div
         className="min-h-screen flex flex-col relative"
-        style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.03) 0%, transparent 50%)' }}
+        style={{ background: theme?.bgGradient || 'radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.03) 0%, transparent 50%)' }}
       >
-        {/* Stadium vignette overlay */}
+        {/* Stadium vignette overlay — theme-driven */}
         <div
           className="pointer-events-none fixed inset-0 z-0"
-          style={{ background: 'radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.6) 100%)' }}
+          style={{ background: `radial-gradient(ellipse at 50% 50%, transparent 50%, ${theme?.vignetteColor || 'rgba(0,0,0,0.6)'} 100%)` }}
         />
+
+        {/* Stadium ambient animation layer */}
+        {theme?.ambientAnimClass && (
+          <div
+            className={`pointer-events-none fixed inset-0 z-0 ${theme.ambientAnimClass}`}
+          />
+        )}
 
         {/* Particle burst for home runs */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
           <ParticleBurst active={state.particleBurst} count={20} color="gold" />
         </div>
 
-        {/* Scoreboard Strip */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border/20 relative z-10" style={{ background: 'rgba(10, 14, 20, 0.85)', backdropFilter: 'blur(8px)' }}>
+        {/* Crowd Reaction overlay */}
+        <CrowdReaction
+          type={state.crowdReaction}
+          accentColor={theme?.crowdColor || '#f59e0b'}
+          onDismiss={() => dispatch({ type: 'SET_CROWD', crowdReaction: null })}
+        />
+
+        {/* Scoreboard Strip — theme-driven */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/20 relative z-10" style={{ background: theme?.scoreboardBg || 'rgba(10,14,20,0.85)', backdropFilter: 'blur(8px)' }}>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold uppercase text-muted/60">
               {game.inning.half === 'top' ? 'TOP' : 'BOT'} {game.inning.inning}
@@ -1289,6 +1342,15 @@ export default function PlayPage() {
           <OutDots outs={game.inning.outs} />
         </div>
 
+        {/* Stadium name strip */}
+        {theme && theme.id !== 'default' && (
+          <div className="text-center py-1 relative z-10" style={{ background: `linear-gradient(90deg, transparent, ${theme.crowdColor}08, transparent)` }}>
+            <span className="text-[8px] tracking-[0.15em] uppercase font-bold" style={{ color: `${theme.crowdColor}50` }}>
+              {theme.stadiumName}
+            </span>
+          </div>
+        )}
+
         {/* Batter vs Pitcher Cards */}
         <div className="flex gap-2 px-4 pt-3">
           <PlayerCard
@@ -1315,6 +1377,7 @@ export default function PlayPage() {
             }}
             stealAnim={stealAnim}
             recentScore={state.currentRunsScored > 0 && showOutcome}
+            theme={theme}
           />
           {/* Inning-by-inning line score */}
           <LineScore game={game} awayName={state.aiRoster?.name || 'Away'} homeName={state.playerRoster?.name || 'Home'} />
@@ -1403,6 +1466,7 @@ export default function PlayPage() {
         <div ref={logRef} className="flex-1 px-4 overflow-y-auto max-h-36 mb-2">
           {[...game.log].reverse().map((entry, i) => {
             const icon = OUTCOME_ICON[entry.outcome] || { symbol: '', color: 'text-muted/30' };
+            const isHit = ['single', 'double', 'triple', 'homerun'].includes(entry.outcome);
             return (
               <div key={`${entry.inning}-${entry.half}-${i}`} className="flex items-start gap-1.5 py-1.5 border-b border-white/5 last:border-0">
                 <span className="text-[9px] font-mono text-muted/25 shrink-0 pt-px w-5">
@@ -1411,7 +1475,10 @@ export default function PlayPage() {
                 {icon.symbol && (
                   <span className={`text-[10px] font-bold shrink-0 w-5 text-center ${icon.color}`}>{icon.symbol}</span>
                 )}
-                <p className="text-[10px] text-muted/55 leading-tight flex-1">{entry.description}</p>
+                <p className="text-[10px] text-muted/55 leading-tight flex-1">
+                  {isHit && <span className="opacity-30 mr-0.5" title="Bat crack">{'\uD83C\uDFCF'}</span>}
+                  {entry.description}
+                </p>
                 {entry.runsScored > 0 && (
                   <span className="text-amber-400/70 text-[10px] font-bold shrink-0 ml-auto">+{entry.runsScored}</span>
                 )}

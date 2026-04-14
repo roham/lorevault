@@ -601,3 +601,96 @@ table tbody tr {
 .binder-grid-dragging .sortable-binder-card:hover {
   transform: translateZ(0);
 }
+
+/* ======= STADIUM AMBIENT ANIMATIONS ======= */
+/* Each animation class is applied to the ambient overlay div on the play page */
+/* driven by stadium-themes.ts config. Purely cosmetic, CSS-only, GPU-friendly. */
+
+/* Olympus Arena: slow golden shimmer expanding from top */
+@keyframes olympus-shimmer {
+  0%, 100% { opacity: 0.6; background-position: 50% -10%; }
+  50% { opacity: 1; background-position: 50% 5%; }
+}
+.stadium-olympus {
+  background: radial-gradient(ellipse at 50% -10%, rgba(251,191,36,0.08) 0%, transparent 50%);
+  animation: olympus-shimmer 8s ease-in-out infinite;
+}
+
+/* Asgard: aurora borealis — dual-tone shifting glow */
+@keyframes asgard-aurora {
+  0%, 100% {
+    background: radial-gradient(ellipse at 30% -10%, rgba(56,189,248,0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% -10%, rgba(20,184,166,0.04) 0%, transparent 40%);
+  }
+  50% {
+    background: radial-gradient(ellipse at 60% -10%, rgba(56,189,248,0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 40% -10%, rgba(20,184,166,0.07) 0%, transparent 40%);
+  }
+}
+.stadium-asgard {
+  animation: asgard-aurora 10s ease-in-out infinite;
+}
+
+/* Baker Street: fog drift — horizontal translate on blurred overlay */
+@keyframes baker-fog {
+  0%, 100% { opacity: 0.5; transform: translateX(0); }
+  50% { opacity: 0.8; transform: translateX(15px); }
+}
+.stadium-baker {
+  background: radial-gradient(ellipse at 50% 40%, rgba(217,178,119,0.05) 0%, transparent 50%);
+  filter: blur(40px);
+  animation: baker-fog 12s ease-in-out infinite;
+}
+
+/* Wonderland: floating sparkle — scale + opacity dance */
+@keyframes wonderland-float {
+  0%, 100% {
+    opacity: 0.5;
+    background: radial-gradient(ellipse at 30% 0%, rgba(168,85,247,0.05) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 0%, rgba(236,72,153,0.03) 0%, transparent 40%);
+  }
+  33% {
+    opacity: 0.8;
+    background: radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.07) 0%, transparent 40%),
+                radial-gradient(ellipse at 30% 0%, rgba(236,72,153,0.05) 0%, transparent 40%);
+  }
+  66% {
+    opacity: 0.6;
+    background: radial-gradient(ellipse at 60% 0%, rgba(168,85,247,0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 0%, rgba(236,72,153,0.06) 0%, transparent 40%);
+  }
+}
+.stadium-wonderland {
+  animation: wonderland-float 9s ease-in-out infinite;
+}
+
+/* Horror Hollow: slow red pulse — breathing darkness */
+@keyframes horror-breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.stadium-horror {
+  background: radial-gradient(ellipse at 50% 20%, rgba(239,68,68,0.04) 0%, transparent 50%);
+  animation: horror-breathe 6s ease-in-out infinite;
+}
+
+/* Fairy Tale Field: gentle green sparkle drift */
+@keyframes fairy-drift {
+  0%, 100% { opacity: 0.5; transform: translateY(0); }
+  50% { opacity: 0.9; transform: translateY(-8px); }
+}
+.stadium-fairy {
+  background: radial-gradient(ellipse at 50% 0%, rgba(52,211,153,0.05) 0%, transparent 50%);
+  animation: fairy-drift 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stadium-olympus,
+  .stadium-asgard,
+  .stadium-baker,
+  .stadium-wonderland,
+  .stadium-horror,
+  .stadium-fairy {
+    animation: none;
+  }
+}
