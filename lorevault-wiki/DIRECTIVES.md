@@ -30,7 +30,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: CSS filter layers on CardItem that change based on `battleCount` and `acquiredAt`. Battle-worn (50+ battles): subtle edge wear. Bonded (30+ days): warm glow. Pristine (0 battles, 0 trades): factory sheen. Read from card meta in localStorage.
 - **Why**: Makes every card unique through use. Triggers endowment effect. Temporal Weight: 1→7.
 - **Acceptance criteria**: Two copies of the same card look visually different after different usage patterns. Effect visible on card detail and in collection view.
-- **Status**: PENDING
+- **Status**: DONE — commit 6fce5fe, v8.23
 
 ---
 
@@ -38,3 +38,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 
 - **DIRECTIVE-001**: Complete sealed/reveal UX — DONE (v8.21, 2026-04-14). Score: 33→43 (+10).
 - **DIRECTIVE-002**: Build Norse Mythology set (Asgard Unleashed) — DONE (v8.22, 2026-04-14). Score: 43→46 (+3).
+- **DIRECTIVE-003**: Add card aging visual effects — DONE (v8.23, 2026-04-14). Score: 46→60 (+14).
