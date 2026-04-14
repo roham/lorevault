@@ -96,7 +96,10 @@ export default function ChapterRevealPage({ params }: { params: Promise<{ id: st
       />
 
       {/* Content — centered, maximum 375px readable width */}
-      <div className="relative z-10 px-8 pt-20 pb-16 max-w-[375px] mx-auto">
+      <div
+        className="relative z-10 px-6 pt-16 max-w-[375px] mx-auto"
+        style={{ paddingBottom: 'calc(32px + env(safe-area-inset-bottom, 0px))' }}
+      >
         {/* Chapter header — fades in first */}
         <motion.div
           className="text-center mb-10"

@@ -123,7 +123,7 @@ export default function StoryPackPage() {
             <p className="text-xs text-muted/50">No packs available</p>
           )}
 
-          <Link href="/prototype/story" className="block mt-6 text-[10px] text-muted/40">
+          <Link href="/prototype/story" className="block mt-6 py-2 text-[10px] text-muted/40">
             Back to story map
           </Link>
         </motion.div>
@@ -276,7 +276,10 @@ export default function StoryPackPage() {
   // ═══════════════════════════════════════════
   if (phase === 'summary') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-8">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-6"
+        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+      >
         <motion.div
           className="text-center w-full max-w-sm"
           initial={{ opacity: 0, y: 20 }}

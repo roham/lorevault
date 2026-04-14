@@ -63,7 +63,7 @@ export default function StoryPrototype() {
           </motion.h1>
           <motion.button
             onClick={() => setPhase('select-world')}
-            className="text-xs text-accent font-medium tracking-wide"
+            className="text-xs text-accent font-medium tracking-wide py-3 px-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.0 }}
@@ -189,7 +189,10 @@ export default function StoryPrototype() {
     const nextLocked = getNextLockedChapter(selectedWorld, ownedCharacters);
 
     return (
-      <div className="min-h-screen px-4 py-6">
+      <div
+        className="min-h-screen px-4 pt-4"
+        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+      >
         {/* Header — progress */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -372,7 +375,7 @@ function StoryNodeCard({
             <p className="text-[11px] text-muted/50 italic mb-3">{chapter.teaser}</p>
 
             {/* Card silhouettes — mini cards showing owned vs missing */}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {chapter.requiredCharacters.map(charName => {
                 const isOwned = ownedCharacters.has(charName);
                 // Look up card for this character's symbol + gradients
