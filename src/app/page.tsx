@@ -245,22 +245,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ========== DISCOVERY FEED ========== */}
-      <section className="px-4 mb-6">
-        <div className="flex items-center justify-between mb-3">
+      {/* ========== DISCOVERY FEED — horizontal story carousel ========== */}
+      <section className="mb-6">
+        <div className="flex items-center justify-between mb-3 px-4">
           <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Discover</span>
+          <Link href="/discover/olympus-rising-full-set-guide" className="text-[11px] text-accent">See All</Link>
         </div>
-        <FeedCard entry={feedEntries[0]} variant="hero" />
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          {feedEntries.slice(1, 7).map((entry, i) => (
-            <motion.div
-              key={entry.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 + i * 0.06 }}
-            >
-              <FeedCard entry={entry} variant="compact" />
-            </motion.div>
+        <div className="flex gap-3 overflow-x-auto pb-3 no-scrollbar px-4 snap-x snap-mandatory">
+          {feedEntries.slice(0, 7).map((entry) => (
+            <FeedCard key={entry.id} entry={entry} variant="story" />
           ))}
         </div>
       </section>
