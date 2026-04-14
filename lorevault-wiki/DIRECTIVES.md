@@ -56,6 +56,30 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **Acceptance criteria**: Every card has a deterministic `totalMinted` and `currentOwners` count. Card detail page shows population counter. Card tiles show serial number badge with tier-appropriate styling. Rarity labels include population count. All computed from card ID seed — no new localStorage.
 - **Status**: DONE — commit dc60a3f, v8.26
 
+### DIRECTIVE-007: Social Showcase & Leaderboards
+- **Priority**: P0
+- **Source**: Strategy Loop S2 — Social Proof (6→9), Loss Aversion (7→8)
+- **What to build**: (A) Hall of Valhalla leaderboard page (`/hall`) with 4 tabs: Top collectors by total cards, rarest cards, oldest aged cards, achievement count. Mix real user data with 30 deterministic phantom collectors from `src/data/leaderboard-seeds.ts`. (B) ShareCard component — generates styled card snapshot with serial, age tier, rarity, owner name. Share intent or download. (C) Collector profile at `/collector/[name]` — public-facing summary: completion %, rarest pull, oldest card, pinned badges. (D) Dynamic RankBadge (Bronze→Silver→Gold→Mythic Collector) based on composite score. (E) Rank decay: 7+ days inactive dims leaderboard rank.
+- **Why**: Gambler-collectors need an audience. Leaderboards create positional anxiety. Share cards create flex moments. Rank decay creates return urgency. Social Proof is the biggest gap at 6/10.
+- **Acceptance criteria**: Hall page renders 4 leaderboard tabs with mixed real+phantom data. ShareCard produces downloadable image. Collector profile renders at `/collector/[name]`. Rank badge updates as collection changes. 7-day inactivity triggers rank dim.
+- **Status**: PENDING
+
+### DIRECTIVE-008: Interactive Lore Engine
+- **Priority**: P0
+- **Source**: Strategy Loop S2 — Lore Depth (6→9), Utility Loop (7→8)
+- **What to build**: (A) Lore Codex page (`/codex`) with node-graph of lore entries. Nodes unlock based on cards owned. Framer Motion animated reveal. (B) `src/data/lore-graph.ts` — directed graph: ~40 nodes across 6 sets, 6 secret nodes requiring cross-set combinations. Each node: id, title, text, requiredCards[], connections[]. (C) LoreFragment component on card detail — "Lore Unlocked" badge when fragment available. (D) Secret threads discovered by cross-set combos → trigger unique achievements. (E) Codex completion % feeds into leaderboard ranking.
+- **Why**: Passive lore is wallpaper. A gated graph turns lore into a collectibility driver — cards become keys, not just assets. Lore Depth is tied for biggest gap at 6/10.
+- **Acceptance criteria**: Codex page renders node graph with locked/unlocked states. Owning required cards unlocks nodes with animated reveal. 6+ secret nodes require cross-set combos. Secret thread discovery grants achievement. Codex % visible on collector profile.
+- **Status**: PENDING
+
+### DIRECTIVE-009: Provenance Deepening — Lineage & Market History
+- **Priority**: P1
+- **Source**: Strategy Loop S2 — Provenance (7→9), Loss Aversion (7→8)
+- **What to build**: (A) Simulated price sparkline on card detail from deterministic market curves. Rarity base × age multiplier × population scarcity factor. Legendaries trend up, commons fluctuate. (B) LineageStamp in Journey Timeline: pack origin → reveal → battles → achievements → age milestones. Vertical chain of stamped events. (C) Legacy Score: composite number from lineage length + age + battles. Higher legacy = more prominent glow. Displayed on card detail.
+- **Why**: Financial gambler-collectors read price charts instinctively. Simulated value history creates paper-gain endowment. Legacy Score makes every action accumulate into visible prestige.
+- **Acceptance criteria**: Card detail shows sparkline price history. Lineage chain renders all tracked events. Curves deterministic from card seed. Legacy Score displayed and feeds visual flair. Legendary cards show appreciating curves.
+- **Status**: PENDING
+
 ---
 
 ## Completed Directives
@@ -65,4 +89,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-003**: Add card aging visual effects — DONE (v8.23, 2026-04-14). Score: 46→60 (+14).
 - **DIRECTIVE-004**: Card provenance — Journey Timeline + Origin Badges — DONE (v8.24, 2026-04-14). Score: 60→71 (+11).
 - **DIRECTIVE-005**: Achievement badge system + collector profile — DONE (v8.25, 2026-04-14). Score: 71→74 (+3).
-- **DIRECTIVE-006**: Population counters + serial number enhancement — DONE (v8.26, 2026-04-14).
+- **DIRECTIVE-006**: Population counters + serial number enhancement — DONE (v8.26, 2026-04-14). Score: 74→77 (+3).
