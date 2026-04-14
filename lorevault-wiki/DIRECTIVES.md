@@ -70,7 +70,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Lore Codex page (`/codex`) with node-graph of lore entries. Nodes unlock based on cards owned. Framer Motion animated reveal. (B) `src/data/lore-graph.ts` — directed graph: ~40 nodes across 6 sets, 6 secret nodes requiring cross-set combinations. Each node: id, title, text, requiredCards[], connections[]. (C) LoreFragment component on card detail — "Lore Unlocked" badge when fragment available. (D) Secret threads discovered by cross-set combos → trigger unique achievements. (E) Codex completion % feeds into leaderboard ranking.
 - **Why**: Passive lore is wallpaper. A gated graph turns lore into a collectibility driver — cards become keys, not just assets. Lore Depth is tied for biggest gap at 6/10.
 - **Acceptance criteria**: Codex page renders node graph with locked/unlocked states. Owning required cards unlocks nodes with animated reveal. 6+ secret nodes require cross-set combos. Secret thread discovery grants achievement. Codex % visible on collector profile.
-- **Status**: DONE — commit TBD, v8.28
+- **Status**: DONE — commit 0fedc81, v8.28
 
 ### DIRECTIVE-009: Provenance Deepening — Lineage & Market History
 - **Priority**: P1
@@ -90,4 +90,5 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-004**: Card provenance — Journey Timeline + Origin Badges — DONE (v8.24, 2026-04-14). Score: 60→71 (+11).
 - **DIRECTIVE-005**: Achievement badge system + collector profile — DONE (v8.25, 2026-04-14). Score: 71→74 (+3).
 - **DIRECTIVE-006**: Population counters + serial number enhancement — DONE (v8.26, 2026-04-14). Score: 74→77 (+3).
-- **DIRECTIVE-007**: Social Showcase & Leaderboards — DONE (v8.27, 2026-04-14). Score: 77→TBD.
+- **DIRECTIVE-007**: Social Showcase & Leaderboards — DONE (v8.27, 2026-04-14). Score: 77→80 (+3).
+- **DIRECTIVE-008**: Interactive Lore Engine — DONE (v8.28, 2026-04-14). Score: 80→TBD.
