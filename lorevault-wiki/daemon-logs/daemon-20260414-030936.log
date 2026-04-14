@@ -1,0 +1,13 @@
+**Collectibility: 100/100. Growth: 50/50. Combined: 150/150.**
+
+This session shipped 5 directives (D019-D023) across 32 daemon cycles:
+
+| Directive | What | Growth Delta |
+|---|---|---|
+| D019 fixes | Pass XP wiring, UTC→local, ISO week, tier persistence | +0 (correctness) |
+| D020 | Welcome tutorial, welcome-back modal, referral landing, set progress | 39→42 (+3) |
+| D021 | Featured set events, 7-day challenge chain, visual sharing, invite prompts | 42→45 (+3) |
+| D022 | Monthly leaderboard, month-end FOMO, smart CTA, morning toast | 45→49 (+4) |
+| D023 | Collection flex card, collection comparison, social challenge links | 49→50 (+1) |
+
+Growth Score went from 39/50 → 50/50 across the session. Both scoring dimensions are now at maximum.
