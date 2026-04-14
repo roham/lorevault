@@ -94,7 +94,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) `LivePulse` component — persistent bottom ticker on Home page showing auto-rotating social events. Pulls from existing `SOCIAL_FEED` data plus new dynamically generated events from user actions (pack opens, achievements earned, lore unlocked, leaderboard rank changes). Each event fades in with typewriter effect, pauses 4s, slides out. Accent color per event type from `SOCIAL_FEED_CONFIG`. (B) `PulseDetail` expandable drawer — tapping a pulse event opens a half-sheet showing the event card/achievement with a reaction bar. (C) Reaction system: 5 reactions (Fire, Jealous, Respect, Want, GG) stored in localStorage per event. Deterministic phantom reactions (3-12 per event from seeded hash) create baseline social proof. User reactions animate with micro-burst. (D) "Your Activity" section on Profile page — timeline of the collector's own pulse events, showing which got the most reactions. (E) FOMO counter on Home: "47 legendaries pulled today" — deterministic daily count from date seed, increments by 1 when user pulls a legendary.
 - **Why**: Social Proof at 8 has leaderboards and share cards but lacks the ambient social presence that makes a platform feel alive. A persistent feed of "NeonPhoenix just pulled Legendary Fenrir" with visible jealousy reactions triggers competitive acquisition. The reactions themselves are a micro-engagement loop — collectors return to see if their pull got reactions. Phantom reactions ensure the feed never feels dead. FOMO counter creates urgency via social comparison. Pushes Social Proof 8→9 and Loss Aversion 8→9 (seeing others pull while you don't).
 - **Acceptance criteria**: Home page shows auto-rotating LivePulse ticker at bottom. Events sourced from existing `SOCIAL_FEED` plus user action events. Tapping event opens drawer with reaction bar. 5 reaction types with animated micro-burst. Phantom reactions render for all events. Profile page shows "Your Activity" timeline. FOMO counter visible on Home page. All data localStorage — no backend.
-- **Status**: PENDING
+- **Status**: DONE — commit 31ad47a, v8.31
 
 ### DIRECTIVE-012: Seasonal Vault + Countdown Forge
 - **Priority**: P1
@@ -117,4 +117,5 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-007**: Social Showcase & Leaderboards — DONE (v8.27, 2026-04-14). Score: 77→80 (+3).
 - **DIRECTIVE-008**: Interactive Lore Engine — DONE (v8.28, 2026-04-14). Score: 80→86 (+6).
 - **DIRECTIVE-009**: Provenance Deepening — DONE (v8.29, 2026-04-14). Score: 86→90 (+4).
-- **DIRECTIVE-010**: Card DNA — Procedural Visual Identity — DONE (v8.30, 2026-04-14). Score: 90→TBD.
+- **DIRECTIVE-010**: Card DNA — Procedural Visual Identity — DONE (v8.30, 2026-04-14). Score: 90→91 (+1).
+- **DIRECTIVE-011**: Live Pulse Feed + Collector Reactions — DONE (v8.31, 2026-04-14). Score: 91→TBD.
