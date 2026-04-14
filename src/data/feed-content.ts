@@ -57,7 +57,7 @@ export const FEED_CONTENT: FeedEntry[] = [
     ctaLink: '/collection/sets',
     date: '2026-04-14',
     pinned: true,
-    artPath: '/cards/asgard-odin-the-all-father-on-hlidskjalf.webp',
+    artPath: '/cards/asgard-odin-hanging-on-yggdrasil.webp',
   },
   {
     id: 'baker-street-floor',

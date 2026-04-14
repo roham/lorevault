@@ -90,10 +90,10 @@ function parseAllCards() {
     const setMatch = /^\s*'([a-z-]+)':\s*\[/.exec(line);
     if (setMatch) currentSet = setMatch[1];
 
-    const charMatch = /character:\s*'([^']+)',\s*moment:\s*'([^']+)'/.exec(line);
+    const charMatch = /character:\s*'((?:[^'\\]|\\.)+)',\s*moment:\s*'((?:[^'\\]|\\.)+)'/.exec(line);
     if (charMatch && currentSet) {
       if (!setCharacters[currentSet]) setCharacters[currentSet] = [];
-      setCharacters[currentSet].push({ character: charMatch[1], moment: charMatch[2] });
+      setCharacters[currentSet].push({ character: charMatch[1].replace(/\\'/g, "'"), moment: charMatch[2].replace(/\\'/g, "'") });
     }
   }
 
