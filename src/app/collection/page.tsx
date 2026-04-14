@@ -79,9 +79,10 @@ function SortableBinderCard({ card }: { card: Card }) {
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.3 : 1,
-    scale: isDragging ? '0.95' : undefined,
+    transition: transition || 'opacity 150ms ease, transform 150ms ease',
+    opacity: isDragging ? 0.25 : 1,
+    scale: isDragging ? '0.92' : undefined,
+    filter: isDragging ? 'grayscale(0.5)' : undefined,
   };
 
   return (
@@ -90,7 +91,7 @@ function SortableBinderCard({ card }: { card: Card }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="relative touch-manipulation cursor-grab active:cursor-grabbing sortable-binder-card"
+      className={`relative touch-manipulation cursor-grab active:cursor-grabbing sortable-binder-card ${isDragging ? 'drag-source-placeholder' : ''}`}
     >
       <BinderCard card={card} />
     </div>
@@ -351,6 +352,10 @@ export default function CollectionPage() {
   function handleDragEndDnd(event: DragEndEvent) {
     const { active, over } = event;
     setActiveId(null);
+    // Haptic feedback on drop
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(5);
+    }
     if (!binder || isFiltered) return;
     if (dragOverPageIndex !== null && dragOverPageIndex !== currentPageIndex) {
       const fromPage = binder.pages[currentPageIndex];
@@ -545,21 +550,23 @@ export default function CollectionPage() {
             <div className="relative overflow-hidden rounded-2xl" style={{ overscrollBehavior: 'none' }}>
               <AnimatePresence>
                 {activeId && currentPageIndex > 0 && (
-                  <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: dragOverPageIndex === currentPageIndex - 1 ? 1 : 0.4, x: 0 }} exit={{ opacity: 0, x: -20 }}
-                    className="absolute left-0 top-0 bottom-0 w-16 z-20 flex items-center justify-center"
-                    style={{ background: 'linear-gradient(to right, rgba(129,140,248,0.25), transparent)' }}>
-                    <motion.svg width="20" height="20" viewBox="0 0 16 16" fill="none" animate={{ x: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 1 }}>
+                  <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: dragOverPageIndex === currentPageIndex - 1 ? 1 : 0.5, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                    className="absolute left-0 top-0 bottom-0 w-20 z-20 flex flex-col items-center justify-center gap-1"
+                    style={{ background: dragOverPageIndex === currentPageIndex - 1 ? 'linear-gradient(to right, rgba(129,140,248,0.4), transparent)' : 'linear-gradient(to right, rgba(129,140,248,0.2), transparent)' }}>
+                    <motion.svg width="18" height="18" viewBox="0 0 16 16" fill="none" animate={{ x: [-3, 1, -3] }} transition={{ repeat: Infinity, duration: 0.8 }}>
                       <path d="M10 12L6 8L10 4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     </motion.svg>
+                    <span className="text-[8px] text-white/50 font-medium truncate max-w-[70px]">{displayPages[currentPageIndex - 1]?.name}</span>
                   </motion.div>
                 )}
                 {activeId && currentPageIndex < displayPages.length - 1 && (
-                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: dragOverPageIndex === currentPageIndex + 1 ? 1 : 0.4, x: 0 }} exit={{ opacity: 0, x: 20 }}
-                    className="absolute right-0 top-0 bottom-0 w-16 z-20 flex items-center justify-center"
-                    style={{ background: 'linear-gradient(to left, rgba(129,140,248,0.25), transparent)' }}>
-                    <motion.svg width="20" height="20" viewBox="0 0 16 16" fill="none" animate={{ x: [2, -2, 2] }} transition={{ repeat: Infinity, duration: 1 }}>
+                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: dragOverPageIndex === currentPageIndex + 1 ? 1 : 0.5, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                    className="absolute right-0 top-0 bottom-0 w-20 z-20 flex flex-col items-center justify-center gap-1"
+                    style={{ background: dragOverPageIndex === currentPageIndex + 1 ? 'linear-gradient(to left, rgba(129,140,248,0.4), transparent)' : 'linear-gradient(to left, rgba(129,140,248,0.2), transparent)' }}>
+                    <motion.svg width="18" height="18" viewBox="0 0 16 16" fill="none" animate={{ x: [3, -1, 3] }} transition={{ repeat: Infinity, duration: 0.8 }}>
                       <path d="M6 4L10 8L6 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     </motion.svg>
+                    <span className="text-[8px] text-white/50 font-medium truncate max-w-[70px]">{displayPages[currentPageIndex + 1]?.name}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -633,7 +640,10 @@ export default function CollectionPage() {
               </AnimatePresence>
             </div>
 
-            <DragOverlay dropAnimation={null}>
+            <DragOverlay dropAnimation={{
+              duration: 200,
+              easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+            }}>
               {activeCard && <DragGhostCard card={activeCard} />}
             </DragOverlay>
           </DndContext>

@@ -579,6 +579,13 @@ table tbody tr {
   transform: scale(1.05);
 }
 
+/* Drag source placeholder — shows where the card came from */
+.drag-source-placeholder {
+  outline: 2px dashed rgba(129, 140, 248, 0.3);
+  outline-offset: -2px;
+  border-radius: 0.75rem;
+}
+
 /* During drag — promote all binder cards to compositor layers */
 .binder-grid-dragging .binder-card,
 .binder-grid-dragging .sortable-binder-card {
