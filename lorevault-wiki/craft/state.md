@@ -1,21 +1,23 @@
 # Craft Daemon State
-Round: 2
-Current prototype: DEPLOYED TO PRODUCTION
-Deploy URL: https://lorevault-site-owny2o6bp-ros-projects-9a9bb0c9.vercel.app
-Deploy date: 2026-04-14
+Round: 3
+Current prototype: play
+
+## Scoring Correction (Round 3 daemon)
+Previous daemon recorded raw scores as composite. Composite = (Raw/140)×100.
+Actual R2 composites: play=46.4, story=47.9, chase=47.9. Target: 60+ (raw ≥ 84).
 
 ## Scores (updated after every gate-pass)
-| Prototype | Round | V | E | Cl | Co | M | D | N | Composite |
-|-----------|-------|---|---|----|----|---|---|---|-----------|
-| play      | 0     | 2 | 2 | 4  | 3  | 4 | 1 | 3 | 18        |
-| story     | 0     | 2 | 3 | 3  | 3  | 4 | 2 | 4 | 20        |
-| chase     | 0     | 2 | 2 | 3  | 2  | 4 | 1 | 3 | 17        |
-| play      | 1     | 5 | 4 | 4  | 3  | 4 | 3 | 4 | 56        |
-| story     | 1     | 5 | 5 | 4  | 4  | 4 | 4 | 5 | 63        |
-| chase     | 1     | 5 | 4 | 4  | 4  | 4 | 4 | 3 | 58        |
-| play      | 2     | 6 | 5 | 4  | 4  | 4 | 4 | 4 | 65        |
-| story     | 2     | 6 | 5 | 4  | 4  | 4 | 5 | 5 | 67        |
-| chase     | 2     | 6 | 5 | 4  | 5  | 4 | 5 | 3 | 67        |
+| Prototype | Round | V | E | Cl | Co | M | D | N | Raw | Composite |
+|-----------|-------|---|---|----|----|---|---|---|-----|-----------|
+| play      | 0     | 2 | 2 | 4  | 3  | 4 | 1 | 3 | 25  | 17.9      |
+| story     | 0     | 2 | 3 | 3  | 3  | 4 | 2 | 4 | 27  | 19.3      |
+| chase     | 0     | 2 | 2 | 3  | 2  | 4 | 1 | 3 | 24  | 17.1      |
+| play      | 1     | 5 | 4 | 4  | 3  | 4 | 3 | 4 | 56  | 40.0      |
+| story     | 1     | 5 | 5 | 4  | 4  | 4 | 4 | 5 | 63  | 45.0      |
+| chase     | 1     | 5 | 4 | 4  | 4  | 4 | 4 | 3 | 58  | 41.4      |
+| play      | 2     | 6 | 5 | 4  | 4  | 4 | 4 | 4 | 65  | 46.4      |
+| story     | 2     | 6 | 5 | 4  | 4  | 4 | 5 | 5 | 67  | 47.9      |
+| chase     | 2     | 6 | 5 | 4  | 5  | 4 | 5 | 3 | 67  | 47.9      |
 
 ## Round 1 Synopsis
 - All three prototypes: emoji symbols replaced with actual card art images
