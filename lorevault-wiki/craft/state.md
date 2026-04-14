@@ -20,6 +20,14 @@ Actual R2 composites: play=46.4, story=47.9, chase=47.9. Target: 60+ (raw ≥ 84
 | chase     | 2     | 6 | 5 | 4  | 5  | 4 | 5 | 3 | 67  | 47.9      |
 | play      | 3     | 8 | 7 | 5  | 5  | 6 | 7 | 6 | 90  | 64.3      |
 | story     | 3     | 8 | 7 | 5  | 5  | 5 | 7 | 6 | 88  | 62.9      |
+| chase     | 3     | 8 | 7 | 5  | 5  | 5 | 7 | 4 | 86  | 61.4      |
+
+## Round 3 Synopsis
+- All three prototypes: atmospheric depth layers (#050810 void, faction/set fog, vignette, particles)
+- Play: vertical battle arena, conic AI border, five-beat tension timing, impact particles
+- Story: world-specific fog (amber/purple/blue), connecting path, next-locked shimmer, glow dots
+- Chase: binder breathing glow (staggered wave), owned card elevation shadows, set-specific fog
+- ALL THREE CROSSED 60 THRESHOLD: play=64.3, story=62.9, chase=61.4
 
 ## Round 1 Synopsis
 - All three prototypes: emoji symbols replaced with actual card art images

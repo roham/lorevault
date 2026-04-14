@@ -279,12 +279,42 @@ export default function ChasePrototype() {
 
     return (
       <div
-        className="min-h-screen px-3 pt-2"
+        className="min-h-screen relative overflow-hidden"
         style={{
           paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
-          background: `radial-gradient(ellipse at 50% 0%, ${selectedSet.gradientFrom}80 0%, #080c18 40%, #000000 100%)`,
+          background: '#050810',
         }}
       >
+        {/* Atmospheric fog layers — set-specific */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/4 w-[500px] h-[500px] rounded-full"
+            style={{ background: `radial-gradient(circle, ${selectedSet.gradientFrom}18, transparent 70%)`, filter: 'blur(80px)' }} />
+          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full"
+            style={{ background: `radial-gradient(circle, ${selectedSet.gradientTo}12, transparent 70%)`, filter: 'blur(60px)' }} />
+          <div className="absolute top-1/2 left-0 -translate-x-1/4 w-[300px] h-[300px] rounded-full"
+            style={{ background: `radial-gradient(circle, ${selectedSet.gradientFrom}10, transparent 70%)`, filter: 'blur(70px)' }} />
+        </div>
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%)' }} />
+        {/* Ambient particles */}
+        {Array.from({ length: 6 }).map((_, i) => {
+          const size = 2 + (i % 3);
+          const left = 15 + ((i * 37 + 13) % 70);
+          const startTop = 15 + ((i * 53 + 7) % 70);
+          return (
+            <motion.div
+              key={`particle-${i}`}
+              className="absolute rounded-full pointer-events-none"
+              style={{ width: size, height: size, background: selectedSet.gradientFrom, left: `${left}%`, top: `${startTop}%` }}
+              animate={{ y: [0, -(25 + (i % 4) * 12)], opacity: [0, 0.4, 0] }}
+              transition={{ duration: 5 + (i % 3), repeat: Infinity, delay: (i * 0.8) % 4, ease: 'easeInOut' }}
+            />
+          );
+        })}
+
+        {/* Content */}
+        <div className="relative z-10 px-3 pt-2">
         {/* Binder header */}
         <div className="flex items-center justify-between mb-3">
           <div>
@@ -394,6 +424,9 @@ export default function ChasePrototype() {
                       border: isOwned
                         ? `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`
                         : '1.5px solid rgba(255,255,255,0.04)',
+                      boxShadow: isOwned
+                        ? `0 4px 16px rgba(0,0,0,0.5), 0 0 12px ${SCARCITY_CONFIG[card.scarcity].color}15`
+                        : 'none',
                     }}
                   >
                     {isOwned ? (
@@ -409,12 +442,17 @@ export default function ChasePrototype() {
                       </>
                     ) : (
                       <>
-                        {/* Empty slot — dark silhouette with blurred art hint */}
-                        <div className="absolute inset-0 opacity-[0.06]">
+                        {/* Empty slot — ghost silhouette with breathing glow */}
+                        <div className="absolute inset-0 opacity-[0.08]">
                           <ChaseCardArt card={card} />
                         </div>
-                        {/* Subtle inner border */}
-                        <div className="absolute inset-[3px] rounded border border-white/[0.03]" />
+                        {/* Breathing glow — staggered across grid */}
+                        <motion.div
+                          className="absolute inset-0 rounded-lg pointer-events-none"
+                          style={{ boxShadow: 'inset 0 0 15px 3px rgba(255,255,255,0.04)' }}
+                          animate={{ opacity: [0.3, 0.9, 0.3] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
+                        />
                       </>
                     )}
                   </div>
@@ -499,10 +537,11 @@ export default function ChasePrototype() {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
 
         {/* Fixed bottom CTA — open packs */}
         <div
-          className="fixed bottom-0 left-0 right-0 px-4 pt-3"
+          className="fixed bottom-0 left-0 right-0 px-4 pt-3 z-20"
           style={{
             paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
             background: 'linear-gradient(to top, rgba(10,11,20,0.95) 60%, transparent)',
