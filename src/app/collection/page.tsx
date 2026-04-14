@@ -80,7 +80,7 @@ function SortableBinderCard({ card }: { card: Card }) {
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition: transition || 'opacity 150ms ease, transform 150ms ease',
-    opacity: isDragging ? 0.25 : 1,
+    opacity: isDragging ? 0.35 : 1,
     scale: isDragging ? '0.92' : undefined,
     filter: isDragging ? 'grayscale(0.5)' : undefined,
   };
