@@ -7,7 +7,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS, getCharacterStats, getEffectiveStat } from '@/data/stats';
 import { getOwnedCards, addOwnedCards, getPackCredits } from '@/lib/store';
 
-type Phase = 'intro' | 'pre-battle' | 'battle' | 'round-result' | 'battle-result' | 'reward' | 'value-reveal';
+type Phase = 'intro' | 'pre-battle' | 'battle' | 'round-result' | 'battle-result' | 'collection';
 
 interface BattleState {
   playerCards: Card[];
@@ -19,9 +19,15 @@ interface BattleState {
   aiPick: Card | null;
   selectedStat: StatKey | null;
   roundWinner: 'player' | 'ai' | null;
+  availableStats: StatKey[]; // 3 random stats per round
 }
 
 const STATS: StatKey[] = ['power', 'intelligence', 'mystery', 'legend', 'charm'];
+
+function pickRandomStats(count: number): StatKey[] {
+  const shuffled = [...STATS].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
 
 function getCardStat(card: Card, stat: StatKey): number {
   const base = getCharacterStats(card.character);
@@ -49,7 +55,7 @@ export default function PlayPrototype() {
   const [battle, setBattle] = useState<BattleState | null>(null);
   const [wins, setWins] = useState(0);
   const [earnedCards, setEarnedCards] = useState<Card[]>([]);
-  const [showValues, setShowValues] = useState(false);
+
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -89,6 +95,7 @@ export default function PlayPrototype() {
       aiPick: null,
       selectedStat: null,
       roundWinner: null,
+      availableStats: pickRandomStats(3),
     });
     setPhase('pre-battle');
   }, [playerDeck, ownedIds]);
@@ -142,11 +149,6 @@ export default function PlayPrototype() {
         const newWins = wins + 1;
         setWins(newWins);
         localStorage.setItem('lorevault_play_wins', String(newWins));
-
-        // After 3+ total wins, trigger value reveal
-        if (newWins >= 3 && !showValues) {
-          setShowValues(true);
-        }
       }
       setPhase('battle-result');
     } else {
@@ -157,10 +159,11 @@ export default function PlayPrototype() {
         aiPick: null,
         selectedStat: null,
         roundWinner: null,
+        availableStats: pickRandomStats(3),
       } : null);
       setPhase('pre-battle');
     }
-  }, [battle, wins, showValues]);
+  }, [battle, wins]);
 
   // ═══════════════════════════════════════════
   // INTRO — the hook
@@ -175,18 +178,18 @@ export default function PlayPrototype() {
           transition={{ duration: 1.2 }}
         >
           <motion.p
-            className="text-sm text-muted/70 tracking-wide mb-6"
+            className="text-sm text-muted/70 tracking-wide mb-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.2 }}
           >
             Your cards. Your stats. Your battle.
           </motion.p>
           <motion.h1
-            className="type-display text-foreground mb-10"
+            className="type-display text-foreground mb-8"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
+            transition={{ delay: 0.5 }}
           >
             Play.
             <br />
@@ -204,7 +207,7 @@ export default function PlayPrototype() {
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 2.0 }}
+            transition={{ delay: 1.0 }}
             whileTap={{ scale: 0.95 }}
           >
             Battle
@@ -216,7 +219,7 @@ export default function PlayPrototype() {
               className="mt-4 text-[10px] text-muted/40"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 2.2 }}
+              transition={{ delay: 1.2 }}
             >
               {wins} {wins === 1 ? 'victory' : 'victories'} &middot; {earnedCards.length} cards earned
             </motion.p>
@@ -349,85 +352,94 @@ export default function PlayPrototype() {
           </span>
         </div>
 
-        {/* Cards face-off */}
-        <div className="flex items-center justify-center gap-4 mb-6">
-          {/* Player card */}
+        {/* Cards face-off — compact thumbnails during stat pick */}
+        <div className="flex items-center justify-center gap-6 mb-5">
+          {/* Player card thumbnail */}
           <div className="text-center">
             <div
-              className="w-[100px] aspect-[5/7] rounded-xl overflow-hidden relative mb-1"
+              className="w-[60px] aspect-[5/7] rounded-lg overflow-hidden relative mb-1"
               style={{
                 background: `linear-gradient(145deg, ${battle.playerPick.gradientFrom}, ${battle.playerPick.gradientTo})`,
                 border: `1.5px solid ${SCARCITY_CONFIG[battle.playerPick.scarcity].color}`,
               }}
             >
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl" style={{ opacity: 0.6 }}>{battle.playerPick.symbol}</span>
+                <span className="text-xl" style={{ opacity: 0.6 }}>{battle.playerPick.symbol}</span>
               </div>
             </div>
-            <span className="text-[9px] text-foreground/70">{battle.playerPick.character}</span>
+            <span className="text-[8px] text-foreground/70 truncate block w-[60px]">{battle.playerPick.character}</span>
           </div>
 
-          <span className="text-lg text-muted/30 font-bold">VS</span>
+          <span className="text-sm text-muted/30 font-bold">VS</span>
 
-          {/* AI card — face down still */}
+          {/* AI card — face down thumbnail */}
           <div className="text-center">
             <div
-              className="w-[100px] aspect-[5/7] rounded-xl overflow-hidden relative mb-1 flex items-center justify-center"
+              className="w-[60px] aspect-[5/7] rounded-lg overflow-hidden relative mb-1 flex items-center justify-center"
               style={{
                 background: 'linear-gradient(145deg, #1a1a2e, #0a0b14)',
                 border: '1.5px solid rgba(255,255,255,0.08)',
               }}
             >
-              <span className="text-2xl opacity-30">?</span>
+              <span className="text-lg opacity-30">?</span>
             </div>
-            <span className="text-[9px] text-muted/40">???</span>
+            <span className="text-[8px] text-muted/40">???</span>
           </div>
         </div>
 
-        {/* Stat picker with visual bars */}
-        <div className="space-y-2 max-w-xs mx-auto w-full">
-          {STATS.map((stat, i) => {
-            const val = getCardStat(battle.playerPick!, stat);
-            return (
-              <motion.button
-                key={stat}
-                onClick={() => selectStat(stat)}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl"
-                style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                }}
-                whileTap={{ scale: 0.98 }}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.06 }}
-              >
-                <span className="text-lg">{STAT_ICONS[stat]}</span>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-foreground/70">{STAT_LABELS[stat]}</span>
-                    <span
-                      className="text-xs font-bold font-mono"
-                      style={{ color: STAT_COLORS[stat] }}
-                    >
-                      {val}
-                    </span>
-                  </div>
-                  {/* Stat bar */}
-                  <div className="w-full h-1 rounded-full bg-white/5 overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: STAT_COLORS[stat] }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${val}%` }}
-                      transition={{ duration: 0.5, delay: 0.1 + i * 0.06 }}
-                    />
-                  </div>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
+        {/* Stat picker — 3 random stats per round */}
+        {(() => {
+          const statVals = battle.availableStats.map(s => getCardStat(battle.playerPick!, s));
+          const bestIdx = statVals.indexOf(Math.max(...statVals));
+          return (
+            <div className="space-y-2.5 max-w-xs mx-auto w-full">
+              {battle.availableStats.map((stat, i) => {
+                const val = statVals[i];
+                const isBest = i === bestIdx;
+                return (
+                  <motion.button
+                    key={stat}
+                    onClick={() => selectStat(stat)}
+                    className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl"
+                    style={{
+                      background: isBest ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+                      border: isBest
+                        ? `1px solid ${STAT_COLORS[stat]}30`
+                        : '1px solid rgba(255,255,255,0.06)',
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.08 }}
+                  >
+                    <span className="text-lg">{STAT_ICONS[stat]}</span>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[11px] text-foreground/70">{STAT_LABELS[stat]}</span>
+                        <span
+                          className="text-sm font-bold font-mono"
+                          style={{ color: STAT_COLORS[stat] }}
+                        >
+                          {val}
+                        </span>
+                      </div>
+                      {/* Stat bar */}
+                      <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ background: STAT_COLORS[stat] }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${val}%` }}
+                          transition={{ duration: 0.5, delay: 0.15 + i * 0.08 }}
+                        />
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
     );
   }
@@ -442,11 +454,20 @@ export default function PlayPrototype() {
 
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-6"
+        className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
         onClick={nextRound}
         role="button"
         tabIndex={0}
       >
+        {/* Background color flash on result */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.15, 0] }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          style={{ background: won ? '#22c55e' : '#ef4444' }}
+        />
+
         {/* Cards revealed side by side */}
         <div className="flex items-start gap-4 mb-6">
           {/* Player card with stat */}
@@ -464,17 +485,19 @@ export default function PlayPrototype() {
               </div>
             </div>
             <div className="text-[10px] text-foreground/70 mb-1">{battle.playerPick.character}</div>
-            <div
+            <motion.div
               className="text-lg font-bold font-mono"
               style={{ color: STAT_COLORS[battle.selectedStat] }}
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 1 }}
             >
               {playerVal}
-            </div>
+            </motion.div>
           </div>
 
           <div className="pt-16 text-muted/40 text-lg font-bold">VS</div>
 
-          {/* AI card revealed */}
+          {/* AI card revealed — dramatic flip */}
           <div className="text-center">
             <motion.div
               className="w-[100px] aspect-[5/7] rounded-xl overflow-hidden relative mb-2"
@@ -483,30 +506,34 @@ export default function PlayPrototype() {
                 border: `2px solid ${!won ? '#22c55e' : '#ef4444'}`,
                 boxShadow: !won ? '0 0 20px rgba(34,197,94,0.2)' : 'none',
               }}
-              initial={{ rotateY: 90 }}
-              animate={{ rotateY: 0 }}
-              transition={{ duration: 0.4 }}
+              initial={{ rotateY: 90, scale: 0.9 }}
+              animate={{ rotateY: 0, scale: 1 }}
+              transition={{ duration: 0.6, type: 'spring', stiffness: 120 }}
             >
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-3xl" style={{ opacity: 0.6 }}>{battle.aiPick.symbol}</span>
               </div>
             </motion.div>
             <div className="text-[10px] text-foreground/70 mb-1">{battle.aiPick.character}</div>
-            <div
+            {/* AI stat revealed with suspense delay */}
+            <motion.div
               className="text-lg font-bold font-mono"
               style={{ color: STAT_COLORS[battle.selectedStat] }}
+              initial={{ opacity: 0, scale: 1.3 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
             >
               {aiVal}
-            </div>
+            </motion.div>
           </div>
         </div>
 
-        {/* Result */}
+        {/* Result — delayed for suspense */}
         <motion.div
           className="text-center mb-6"
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.8, type: 'spring', stiffness: 200, damping: 15 }}
         >
           <div className="flex items-center gap-2 justify-center mb-1">
             <span className="text-lg">{STAT_ICONS[battle.selectedStat]}</span>
@@ -521,16 +548,22 @@ export default function PlayPrototype() {
         </motion.div>
 
         {/* Score */}
-        <div className="flex gap-6 text-sm font-mono">
+        <motion.div
+          className="flex gap-6 text-sm font-mono"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0 }}
+        >
           <span style={{ color: '#22c55e' }}>You: {battle.playerScore}</span>
           <span style={{ color: '#ef4444' }}>AI: {battle.aiScore}</span>
-        </div>
+        </motion.div>
 
         {/* Tap hint */}
         <motion.div
           className="absolute bottom-8 left-0 right-0 text-center"
-          animate={{ opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.5, 0.3] }}
+          transition={{ delay: 1.2, duration: 1.5 }}
         >
           <span className="text-[10px] text-muted/30">
             {battle.playerScore >= 2 || battle.aiScore >= 2
@@ -608,35 +641,15 @@ export default function PlayPrototype() {
               <h3 className="text-sm font-semibold text-foreground">{reward.character}</h3>
               <p className="text-[10px] text-muted italic">{reward.moment}</p>
 
-              {/* "Found money" — show value + social proof after 3+ wins */}
-              {showValues && reward.price && (
-                <motion.div
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="mt-3"
-                >
-                  <div
-                    className="px-4 py-2 rounded-full inline-block"
-                    style={{
-                      background: 'rgba(34, 197, 94, 0.1)',
-                      border: '1px solid rgba(34, 197, 94, 0.2)',
-                    }}
-                  >
-                    <span className="text-[11px] text-green-400 font-medium">
-                      Worth ${reward.price.toFixed(2)} on the market
-                    </span>
-                  </div>
-                  <motion.p
-                    className="text-[9px] text-muted/30 mt-1"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.2 }}
-                  >
-                    {Math.floor(Math.random() * 40 + 12)} players own this card
-                  </motion.p>
-                </motion.div>
-              )}
+              {/* Pure competitive pride — card added to collection */}
+              <motion.p
+                className="text-[10px] text-foreground/40 mt-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                Added to your collection
+              </motion.p>
             </motion.div>
           )}
 
@@ -654,13 +667,14 @@ export default function PlayPrototype() {
               Battle again
             </button>
 
-            {/* Value reveal CTA — appears after 3+ total wins */}
-            {showValues && earnedCards.length >= 3 && (
+            {/* Collection CTA — appears after earning cards */}
+            {earnedCards.length >= 2 && (
               <button
-                onClick={() => setPhase('value-reveal')}
-                className="py-3 rounded-xl text-sm font-medium text-green-400/80 border border-green-400/20"
+                onClick={() => setPhase('collection')}
+                className="py-3 rounded-xl text-sm font-medium text-foreground/50"
+                style={{ border: '1px solid rgba(255,255,255,0.08)' }}
               >
-                See your collection value
+                View your trophies ({earnedCards.length})
               </button>
             )}
           </div>
@@ -670,80 +684,71 @@ export default function PlayPrototype() {
   }
 
   // ═══════════════════════════════════════════
-  // VALUE REVEAL — the "found money" moment
+  // COLLECTION — battle trophies (pure pride)
   // ═══════════════════════════════════════════
-  if (phase === 'value-reveal') {
-    const totalValue = earnedCards.reduce((sum, c) => sum + (c.price || 0), 0);
+  if (phase === 'collection') {
+    // Group earned cards by set
+    const bySet = new Map<string, Card[]>();
+    for (const card of earnedCards) {
+      const existing = bySet.get(card.setSlug) || [];
+      existing.push(card);
+      bySet.set(card.setSlug, existing);
+    }
 
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-6"
+        className="min-h-screen flex flex-col px-6 pt-6"
         style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
       >
         <motion.div
-          className="text-center w-full max-w-sm"
+          className="w-full max-w-sm mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <motion.p
-            className="text-[10px] text-muted/50 tracking-wide mb-2"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            Wait...
-          </motion.p>
+          <div className="text-center mb-6">
+            <h2 className="type-heading text-foreground mb-1">Battle Trophies</h2>
+            <p className="text-[10px] text-muted/50">
+              {earnedCards.length} {earnedCards.length === 1 ? 'card' : 'cards'} earned through {wins} {wins === 1 ? 'victory' : 'victories'}
+            </p>
+          </div>
 
-          <motion.h2
-            className="type-heading text-green-400 mb-1"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            Your wins are worth something
-          </motion.h2>
-
-          <motion.div
-            className="text-3xl font-bold font-mono text-green-400 mb-6"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.3 }}
-          >
-            ${totalValue.toFixed(2)}
-          </motion.div>
-
-          {/* Earned cards with values */}
-          <motion.div
-            className="space-y-2 mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.6 }}
-          >
+          {/* Trophy grid */}
+          <div className="grid grid-cols-3 gap-3 mb-8">
             {earnedCards.map((card, i) => (
-              <div
+              <motion.div
                 key={`${card.id}-${i}`}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}
+                className="flex flex-col items-center"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08 }}
               >
                 <div
-                  className="w-8 h-11 rounded flex items-center justify-center flex-shrink-0"
+                  className="w-full aspect-[5/7] rounded-xl overflow-hidden relative mb-1.5"
                   style={{
                     background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
-                    border: `1px solid ${SCARCITY_CONFIG[card.scarcity].color}40`,
+                    border: `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`,
+                    boxShadow: `0 0 12px ${SCARCITY_CONFIG[card.scarcity].color}10`,
                   }}
                 >
-                  <span className="text-sm">{card.symbol}</span>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-2xl" style={{ opacity: 0.6 }}>{card.symbol}</span>
+                  </div>
+                  <div
+                    className="absolute bottom-0 left-0 right-0 py-1 text-center"
+                    style={{ background: `${SCARCITY_CONFIG[card.scarcity].color}15` }}
+                  >
+                    <span
+                      className="text-[7px] font-bold uppercase tracking-wider"
+                      style={{ color: SCARCITY_CONFIG[card.scarcity].color }}
+                    >
+                      {card.scarcity}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="text-[11px] text-foreground/80 truncate">{card.character}</div>
-                  <div className="text-[9px] text-muted/40">{card.scarcity}</div>
-                </div>
-                <span className="text-[11px] font-mono text-green-400/80">
-                  ${card.price?.toFixed(2) || '0.00'}
-                </span>
-              </div>
+                <span className="text-[9px] text-foreground/60 truncate w-full text-center">{card.character}</span>
+              </motion.div>
             ))}
-          </motion.div>
+          </div>
 
           <button
             onClick={startBattle}
@@ -754,7 +759,7 @@ export default function PlayPrototype() {
               color: '#ef4444',
             }}
           >
-            Keep playing, keep earning
+            Keep battling
           </button>
         </motion.div>
       </div>
