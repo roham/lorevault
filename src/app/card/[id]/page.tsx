@@ -7,7 +7,7 @@ import CardItem from '@/components/CardItem';
 import PriceChart from '@/components/marketplace/PriceChart';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getOwnedCardIds, addOwnedCards, getBattleRecords } from '@/lib/store';
+import { getOwnedCardIds, addOwnedCards, getBattleRecords, getAgingTiers, type AgingTiers } from '@/lib/store';
 import {
   getCardMarketData,
   isWatchlisted,
@@ -25,6 +25,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [watched, setWatched] = useState(false);
   const [bought, setBought] = useState(false);
   const [cardBattleStats, setCardBattleStats] = useState<{ wins: number; total: number }>({ wins: 0, total: 0 });
+  const [agingTiers, setAgingTiers] = useState<AgingTiers | null>(null);
 
   const card = ALL_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
@@ -47,6 +48,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
         }
       }
       setCardBattleStats({ wins, total });
+      setAgingTiers(getAgingTiers(card.id));
     }
   }, [card]);
 
@@ -170,6 +172,24 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
             <span className="px-2.5 py-1 rounded-lg text-xs bg-surface border border-border">
               {card.set}
             </span>
+            {agingTiers?.battle === 'pristine' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#e0e7ff', background: '#e0e7ff15', border: '1px solid #e0e7ff25' }}>✦ Pristine</span>
+            )}
+            {agingTiers?.battle === 'seasoned' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#d4a76a', background: '#d4a76a15', border: '1px solid #d4a76a25' }}>⚔ Seasoned</span>
+            )}
+            {agingTiers?.battle === 'battle-worn' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#c0855c', background: '#c0855c15', border: '1px solid #c0855c25' }}>⚔ Battle-Worn</span>
+            )}
+            {agingTiers?.battle === 'veteran' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#b8860b', background: '#b8860b15', border: '1px solid #b8860b25' }}>🏛 Veteran</span>
+            )}
+            {agingTiers?.time === 'bonded' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#ffb43c', background: '#ffb43c15', border: '1px solid #ffb43c25' }}>♥ Bonded</span>
+            )}
+            {agingTiers?.time === 'ancient' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#d4a030', background: '#d4a03015', border: '1px solid #d4a03025' }}>⏳ Ancient</span>
+            )}
           </div>
 
           {/* Price + Market Data section */}

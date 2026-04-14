@@ -3,7 +3,7 @@
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getCardMeta } from '@/lib/store';
+import { getCardMeta, getAgingTiers, type AgingTiers } from '@/lib/store';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -70,6 +70,51 @@ const SIZE_MAP = {
   xl: { w: 320, h: 448, symbol: 'text-7xl', name: 'text-base', moment: 'text-sm', serial: 'text-xs', initial: 'text-[90px]' },
 };
 
+function getAgingFilter(tiers: AgingTiers | null): string | undefined {
+  if (!tiers) return undefined;
+  const f: string[] = [];
+  switch (tiers.battle) {
+    case 'pristine': f.push('brightness(1.06)', 'contrast(1.02)'); break;
+    case 'seasoned': f.push('sepia(0.04)', 'brightness(1.01)'); break;
+    case 'battle-worn': f.push('sepia(0.06)', 'contrast(1.04)', 'brightness(0.97)'); break;
+    case 'veteran': f.push('sepia(0.10)', 'contrast(1.06)', 'brightness(0.94)'); break;
+  }
+  switch (tiers.time) {
+    case 'bonded': f.push('saturate(1.08)'); break;
+    case 'ancient': f.push('saturate(1.12)'); break;
+  }
+  return f.length > 0 ? f.join(' ') : undefined;
+}
+
+function AgingOverlays({ tiers }: { tiers: AgingTiers | null }) {
+  if (!tiers) return null;
+  return (
+    <>
+      {tiers.battle === 'pristine' && (
+        <div className="absolute inset-0 pointer-events-none z-[15] aging-pristine-sheen" />
+      )}
+      {tiers.battle === 'battle-worn' && (
+        <div className="absolute inset-0 pointer-events-none z-[15]"
+          style={{ background: 'radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.18) 100%)', mixBlendMode: 'multiply' }} />
+      )}
+      {tiers.battle === 'veteran' && (
+        <>
+          <div className="absolute inset-0 pointer-events-none z-[15]"
+            style={{ background: 'radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0,0,0,0.25) 100%)', mixBlendMode: 'multiply' }} />
+          <div className="absolute inset-[3px] pointer-events-none z-[15] rounded-[10px]"
+            style={{ border: '1px solid rgba(180,140,80,0.12)', boxShadow: 'inset 0 0 8px rgba(0,0,0,0.15)' }} />
+        </>
+      )}
+      {tiers.time === 'bonded' && (
+        <div className="absolute inset-0 pointer-events-none z-[14] aging-bonded-glow" />
+      )}
+      {tiers.time === 'ancient' && (
+        <div className="absolute inset-0 pointer-events-none z-[14] aging-ancient-glow" />
+      )}
+    </>
+  );
+}
+
 export default function CardItem(props: CardItemProps) {
   if (props.interactive === false) return <CardItemStatic {...props} />;
   return <CardItemInteractive {...props} />;
@@ -93,6 +138,10 @@ function CardItemStatic({
     return allMeta[card.id] || null;
   });
   const isSealed = forceRevealed ? false : (meta?.sealed ?? false);
+  const [agingTiers] = useState<AgingTiers | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return getAgingTiers(card.id);
+  });
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
   const borderWidth = card.scarcity === 'legendary' ? 3 : card.scarcity === 'epic' ? 2.5 : 2;
@@ -112,7 +161,7 @@ function CardItemStatic({
   return (
     <div
       className={`relative select-none flex-shrink-0 ${getGlowClass()}`}
-      style={{ width: s.w, height: s.h }}
+      style={{ width: s.w, height: s.h, filter: getAgingFilter(agingTiers) }}
       onClick={() => onClick?.(card)}
     >
       <div className="w-full h-full relative">
@@ -134,6 +183,9 @@ function CardItemStatic({
           {/* Card art — always rendered, covered by sealed overlay when sealed */}
           <CardArt card={card} borderColor={borderColor} size={s} />
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0,0,0,0.5) 100%)' }} />
+
+          {/* Aging visual effects — behind sealed overlay */}
+          <AgingOverlays tiers={agingTiers} />
 
           {/* SEALED overlay — frosted glass with scarcity glow */}
           {isSealed && (
@@ -192,6 +244,10 @@ function CardItemInteractive({
   const scarcityConfig = SCARCITY_CONFIG[card.scarcity];
   const parallelConfig = PARALLEL_CONFIG[card.parallel];
   const cardRef = useRef<HTMLDivElement>(null);
+  const [agingTiers] = useState<AgingTiers | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return getAgingTiers(card.id);
+  });
   const s = SIZE_MAP[size];
 
   // 3D tilt — only created for interactive cards
@@ -249,7 +305,7 @@ function CardItemInteractive({
     <motion.div
       ref={cardRef}
       className={`relative cursor-pointer select-none flex-shrink-0 ${getGlowClass()}`}
-      style={{ width: s.w, height: s.h, perspective: 800 }}
+      style={{ width: s.w, height: s.h, perspective: 800, filter: getAgingFilter(agingTiers) }}
       whileHover={interactive ? { scale: 1.04, y: -4 } : undefined}
       whileTap={interactive ? { scale: 0.97 } : undefined}
       onClick={() => {
@@ -375,6 +431,9 @@ function CardItemInteractive({
           <div className="absolute inset-0 pointer-events-none" style={{
             background: 'radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0,0,0,0.5) 100%)',
           }} />
+
+          {/* Aging visual effects */}
+          <AgingOverlays tiers={agingTiers} />
 
           {/* Bottom info */}
           <div className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent">

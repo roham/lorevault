@@ -126,6 +126,38 @@ export function getCardAge(cardId: string): number {
   return Math.floor((Date.now() - new Date(meta[cardId].acquiredAt).getTime()) / 86400000);
 }
 
+export type AgingBattleTier = 'pristine' | 'seasoned' | 'battle-worn' | 'veteran';
+export type AgingTimeTier = 'bonded' | 'ancient';
+
+export interface AgingTiers {
+  battle: AgingBattleTier | null;
+  time: AgingTimeTier | null;
+}
+
+export function getAgingTiers(cardId: string): AgingTiers {
+  const meta = getCardMeta();
+  const m = meta[cardId];
+  if (!m) return { battle: null, time: null };
+
+  const ageDays = m.acquiredAt
+    ? Math.floor((Date.now() - new Date(m.acquiredAt).getTime()) / 86400000)
+    : 0;
+  const battles = m.battleCount ?? 0;
+  const trades = (m.history?.filter((e: { type: string }) => e.type === 'traded') ?? []).length;
+
+  let battle: AgingBattleTier | null = null;
+  if (battles >= 100 && ageDays >= 60) battle = 'veteran';
+  else if (battles >= 50) battle = 'battle-worn';
+  else if (battles >= 10) battle = 'seasoned';
+  else if (battles === 0 && trades === 0 && ageDays < 7) battle = 'pristine';
+
+  let time: AgingTimeTier | null = null;
+  if (ageDays >= 90) time = 'ancient';
+  else if (ageDays >= 30) time = 'bonded';
+
+  return { battle, time };
+}
+
 export function isCardSealed(cardId: string): boolean {
   const meta = getCardMeta();
   return meta[cardId]?.sealed ?? false;
