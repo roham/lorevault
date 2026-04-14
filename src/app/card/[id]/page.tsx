@@ -16,6 +16,7 @@ import {
   addToWatchlist,
   removeFromWatchlist,
 } from '@/lib/marketData';
+import ShareCard from '@/components/social/ShareCard';
 import {
   StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS,
   getCharacterStats, getEffectiveStat,
@@ -30,6 +31,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [agingTiers, setAgingTiers] = useState<AgingTiers | null>(null);
   const [cardHistory, setCardHistory] = useState<{ history: CardEvent[]; acquiredAt: string } | null>(null);
   const [popData, setPopData] = useState<PopulationData | null>(null);
+  const [showShare, setShowShare] = useState(false);
 
   const card = ALL_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
@@ -124,6 +126,14 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           >
             {watched ? '★ Watching' : '☆ Watch'}
           </button>
+          {isOwned && (
+            <button
+              onClick={() => setShowShare(true)}
+              className="px-3 py-1.5 rounded-lg bg-surface border border-border text-xs text-muted hover:text-foreground"
+            >
+              📤 Share
+            </button>
+          )}
           <Link
             href="/marketplace"
             className="px-3 py-1.5 rounded-lg bg-surface border border-border text-xs text-muted hover:text-foreground"
@@ -453,6 +463,11 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           )}
         </motion.div>
       </div>
+
+      {/* Share modal */}
+      {showShare && card && (
+        <ShareCard card={card} onClose={() => setShowShare(false)} />
+      )}
     </div>
   );
 }

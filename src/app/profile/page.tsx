@@ -266,6 +266,21 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {/* Hall of Valhalla link */}
+      <Link
+        href="/hall"
+        className="block mb-6 p-3 rounded-xl bg-gradient-to-r from-amber-500/5 to-purple-500/5 border border-amber-500/15 hover:border-amber-500/30 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-xl">🏛</span>
+          <div className="flex-1">
+            <div className="text-xs font-bold text-foreground">Hall of Valhalla</div>
+            <div className="text-[10px] text-muted">Compete with the greatest collectors</div>
+          </div>
+          <span className="text-muted text-xs">→</span>
+        </div>
+      </Link>
+
       {/* Season Track — no entrance animation */}
       <section className="mb-8">
         <SeasonTrack />
