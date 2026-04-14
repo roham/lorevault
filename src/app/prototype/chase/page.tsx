@@ -561,6 +561,25 @@ export default function ChasePrototype() {
           </span>
         </div>
 
+        {/* Rarity pre-signal — colored bloom behind card */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`glow-${card.id}`}
+            className="absolute inset-0 pointer-events-none flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.6, 0] }}
+            transition={{ duration: 0.6, times: [0, 0.3, 1] }}
+          >
+            <div
+              className="w-64 h-64 rounded-full"
+              style={{
+                background: `radial-gradient(circle, ${scarcityConfig.color}30, transparent 70%)`,
+                filter: 'blur(30px)',
+              }}
+            />
+          </motion.div>
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={card.id}
@@ -568,7 +587,7 @@ export default function ChasePrototype() {
             initial={{ opacity: 0, scale: 0.7, rotateY: 90 }}
             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: -30 }}
-            transition={{ duration: 0.5, type: 'spring', stiffness: 200, damping: 20 }}
+            transition={{ duration: 0.5, delay: 0.15, type: 'spring', stiffness: 200, damping: 20 }}
           >
             {/* Card visual */}
             <div
