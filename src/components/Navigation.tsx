@@ -108,11 +108,14 @@ export default function Navigation() {
       setLevel(getCollectorLevel().level);
       setVipColor(getVipState().tier.color);
     };
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') handleStorage();
+    };
     window.addEventListener('storage', handleStorage);
-    const interval = setInterval(handleStorage, 1000);
+    document.addEventListener('visibilitychange', handleVisibility);
     return () => {
       window.removeEventListener('storage', handleStorage);
-      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 

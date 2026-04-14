@@ -62,7 +62,86 @@ const SIZE_MAP = {
   xl: { w: 320, h: 448, symbol: 'text-7xl', name: 'text-base', moment: 'text-sm', serial: 'text-xs', initial: 'text-[90px]' },
 };
 
-export default function CardItem({
+export default function CardItem(props: CardItemProps) {
+  if (props.interactive === false) return <CardItemStatic {...props} />;
+  return <CardItemInteractive {...props} />;
+}
+
+function CardItemStatic({
+  card,
+  size = 'md',
+  onClick,
+  showPrice = false,
+  showAddButton = false,
+  onAdd,
+}: CardItemProps) {
+  const scarcityConfig = SCARCITY_CONFIG[card.scarcity];
+  const parallelConfig = PARALLEL_CONFIG[card.parallel];
+  const s = SIZE_MAP[size];
+  const borderColor = scarcityConfig.color;
+  const borderWidth = card.scarcity === 'legendary' ? 3 : card.scarcity === 'epic' ? 2.5 : 2;
+  const noiseOpacity = card.scarcity === 'common' || card.scarcity === 'uncommon' ? 0.07 : 0.04;
+  const getGlowClass = () => {
+    switch (card.scarcity) {
+      case 'legendary': return 'glow-legendary';
+      case 'epic': return 'glow-epic';
+      case 'rare': return 'glow-rare';
+      default: return '';
+    }
+  };
+  const getCornerSize = (): number | null => {
+    switch (card.scarcity) { case 'legendary': return 14; case 'epic': return 10; case 'rare': return 8; default: return null; }
+  };
+
+  return (
+    <div
+      className={`relative select-none flex-shrink-0 ${getGlowClass()}`}
+      style={{ width: s.w, height: s.h }}
+      onClick={() => onClick?.(card)}
+    >
+      <div className="w-full h-full relative">
+        <div
+          className="absolute inset-0 rounded-xl overflow-hidden card-depth card-edge-bottom"
+          style={{ border: `${borderWidth}px solid ${borderColor}` }}
+        >
+          <div className="absolute inset-0" style={{ background: `linear-gradient(145deg, ${card.gradientFrom} 0%, ${card.gradientTo} 100%)` }} />
+          <div className="absolute inset-0 pointer-events-none" style={{ opacity: noiseOpacity, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")` }} />
+          <div className="absolute inset-0 pointer-events-none rounded-xl card-edge-light" />
+          {card.parallel === 'silver' && <div className="absolute inset-0 pointer-events-none silver-effect" />}
+          {card.parallel === 'gold' && <><div className="absolute inset-0 pointer-events-none gold-ambient" /><div className="absolute inset-0 pointer-events-none gold-effect" /></>}
+          {card.parallel === 'holographic' && <><div className="absolute inset-0 pointer-events-none holo-effect" /><div className="absolute inset-0 pointer-events-none holo-lines" /></>}
+          {card.parallel === 'obsidian' && <><div className="absolute inset-0 pointer-events-none obsidian-depth" /><div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(100,100,255,0.15) 0%, transparent 60%)' }} /><div className="absolute inset-[2px] pointer-events-none rounded-[10px]" style={{ border: '1px solid rgba(99,102,241,0.15)', animation: 'obsidian-pulse 4s ease-in-out infinite' }} /></>}
+          {getCornerSize() && ['tl', 'tr', 'bl', 'br'].map((pos) => (
+            <span key={pos} className={`corner-accent corner-${pos}`} style={{ '--accent-size': `${getCornerSize()}px`, '--accent-color': `${borderColor}${card.scarcity === 'legendary' ? 'cc' : '80'}` } as React.CSSProperties} />
+          ))}
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: borderColor, boxShadow: card.scarcity === 'legendary' ? `0 0 12px ${borderColor}` : card.scarcity === 'epic' ? `0 0 8px ${borderColor}` : 'none' }} />
+          <CardArt card={card} borderColor={borderColor} size={s} />
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0,0,0,0.5) 100%)' }} />
+          <div className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
+            <div className={`${s.name} font-semibold text-white truncate leading-tight`}>{card.character}</div>
+            <div className={`${s.moment} text-white/50 truncate`}>{card.moment}</div>
+            <div className="flex items-center justify-between mt-0.5">
+              <span className={`${s.serial} font-mono font-bold uppercase tracking-wider`} style={{ color: borderColor }}>{scarcityConfig.label}</span>
+              {card.scarcity !== 'common' && <span className={`${s.serial} font-mono text-white/40`}>#{card.serialNumber.toString().padStart(card.maxSerial.toString().length, '0')}/{card.maxSerial}</span>}
+            </div>
+          </div>
+          {showPrice && card.listed && (
+            <div className="absolute top-2 left-8 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur-sm border border-green-500/20">
+              <span className={`${s.serial} font-mono text-green-400 font-bold`}>${card.price.toFixed(2)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+      {showAddButton && onAdd && (
+        <div role="button" tabIndex={0} onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); onAdd(card); }}
+          className="absolute top-1.5 right-1.5 w-8 h-8 rounded-full bg-accent text-white text-base font-bold flex items-center justify-center z-30 shadow-lg cursor-pointer active:scale-90 transition-transform touch-manipulation"
+          style={{ WebkitTapHighlightColor: 'transparent' }}>+</div>
+      )}
+    </div>
+  );
+}
+
+function CardItemInteractive({
   card,
   size = 'md',
   onClick,
@@ -77,18 +156,18 @@ export default function CardItem({
   const cardRef = useRef<HTMLDivElement>(null);
   const s = SIZE_MAP[size];
 
-  // 3D tilt
+  // 3D tilt — only created for interactive cards
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [10, -10]), { stiffness: 300, damping: 30 });
   const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), { stiffness: 300, damping: 30 });
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!cardRef.current || !interactive) return;
+    if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     mx.set((e.clientX - rect.left) / rect.width - 0.5);
     my.set((e.clientY - rect.top) / rect.height - 0.5);
-  }, [mx, my, interactive]);
+  }, [mx, my]);
 
   const handlePointerLeave = useCallback(() => {
     mx.set(0);
@@ -141,7 +220,6 @@ export default function CardItem({
       }}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      layout
     >
       <motion.div
         className="w-full h-full relative"

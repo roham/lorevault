@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, type RefObject } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CardItem from '@/components/CardItem';
 import FilterChips from '@/components/marketplace/FilterChips';
@@ -66,6 +66,8 @@ export default function MarketplacePage() {
   const [focusedIdx, setFocusedIdx] = useState(-1);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [visibleCount, setVisibleCount] = useState(24);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setRecentSearches(getRecentSearches());
@@ -81,6 +83,17 @@ export default function MarketplacePage() {
     else if (ownershipFilter === 'own' && loaded) filtered = filtered.filter(c => ownedIds.has(c.id));
     return filtered;
   }, [filters, ownershipFilter, ownedIds, loaded]);
+
+  // Progressive rendering — reset on filter change, load more on scroll
+  useEffect(() => { setVisibleCount(24); }, [filters, ownershipFilter]);
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setVisibleCount(v => Math.min(v + 24, results.length));
+    }, { rootMargin: '200px' });
+    obs.observe(sentinelRef.current);
+    return () => obs.disconnect();
+  }, [results.length]);
 
   const facets = useMemo(() => getFacetCounts(ALL_CARDS, filters), [filters]);
   const trending = useMemo(() => getTrendingCards(8), []);
@@ -566,7 +579,7 @@ export default function MarketplacePage() {
           {viewMode === 'grid' && (
             <div className={`flex flex-wrap ${compact ? 'gap-2' : 'gap-4'} justify-center sm:justify-start`}>
               <AnimatePresence mode="popLayout">
-                {results.map((card, i) => {
+                {results.slice(0, visibleCount).map((card, i) => {
                   const data = getCardMarketData(card.id); const watched = watchlist.includes(card.id); const inBulk = bulkSelected.has(card.id);
                   const owned = ownedIds.has(card.id);
                   const isHotDeal = data && data.currentPrice < data.floorPrice * 1.05;
@@ -615,7 +628,7 @@ export default function MarketplacePage() {
           {viewMode === 'list' && (
             <div className="space-y-1.5">
               <AnimatePresence mode="popLayout">
-                {results.map((card, i) => {
+                {results.slice(0, visibleCount).map((card, i) => {
                   const data = getCardMarketData(card.id); const watched = watchlist.includes(card.id); const owned = ownedIds.has(card.id);
                   return (
                     <motion.div key={card.id} layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.12, delay: Math.min(i * 0.008, 0.15) }}>
@@ -703,6 +716,9 @@ export default function MarketplacePage() {
               </table>
             </div>
           )}
+
+          {/* Progressive loading sentinel */}
+          {visibleCount < results.length && <div ref={sentinelRef} className="h-4 w-full" />}
 
           {results.length === 0 && isSearchActive && (
             <div className="flex flex-col items-center justify-center h-60 text-center">
