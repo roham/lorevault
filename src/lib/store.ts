@@ -750,6 +750,7 @@ export function getLoreNodesForCard(character: string): LoreNode[] {
 
 // Cascade: nodes adjacent to any unlocked node become "hinted" (visible silhouette + requirements)
 export function getHintedLoreNodes(): string[] {
+  if (typeof window === 'undefined') return [];
   const unlocked = new Set(getUnlockedLoreNodes());
   const hinted = new Set<string>();
 
@@ -772,7 +773,8 @@ export function checkLoreUnlocks(): string[] {
   if (typeof window === 'undefined') return [];
   const current = getUnlockedLoreNodes();
   const prevKey = 'lorevault_lore_unlocked';
-  const prev: string[] = getItem(prevKey, [] as string[]);
+  // Seed with current on first write to avoid false "new unlock" events for existing collection
+  const prev: string[] = getItem(prevKey, current);
   const newUnlocks = current.filter(id => !prev.includes(id));
 
   if (newUnlocks.length > 0) {
@@ -783,6 +785,9 @@ export function checkLoreUnlocks(): string[] {
         window.dispatchEvent(new CustomEvent('lore-unlock', { detail: { nodeId, title: node.title, secret: !!node.secret } }));
       }
     }
+  } else if (!localStorage.getItem(prevKey)) {
+    // First visit — persist baseline so future unlocks are detected correctly
+    setItem(prevKey, current);
   }
 
   return newUnlocks;
@@ -1052,4 +1057,125 @@ export function getPopulationDecayTier(card: Card): 'bright' | 'normal' | 'faded
   if (pct <= 0.25) return 'bright'; // Low serial — brighter
   if (pct >= 0.75) return 'faded'; // High serial — desaturated
   return 'normal';
+}
+
+// ===== Daily Free Pack =====
+
+export function getDailyPackState(): { available: boolean; nextResetMs: number } {
+  if (typeof window === 'undefined') return { available: false, nextResetMs: 0 };
+  const lastClaim = getItem<string>('lorevault_daily_pack', '');
+  const now = new Date();
+  const todayUTC = now.toISOString().slice(0, 10);
+
+  if (lastClaim === todayUTC) {
+    // Already claimed today — compute ms until midnight UTC
+    const tomorrow = new Date(todayUTC);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    return { available: false, nextResetMs: tomorrow.getTime() - now.getTime() };
+  }
+
+  return { available: true, nextResetMs: 0 };
+}
+
+export function claimDailyPack(): boolean {
+  if (typeof window === 'undefined') return false;
+  const todayUTC = new Date().toISOString().slice(0, 10);
+  const lastClaim = getItem<string>('lorevault_daily_pack', '');
+  if (lastClaim === todayUTC) return false;
+
+  setItem('lorevault_daily_pack', todayUTC);
+  return true;
+}
+
+// ===== Daily Mission Progress Helper =====
+
+export function progressDailyMission(missionId: string, amount: number = 1) {
+  // Map generic mission IDs to the existing daily mission IDs
+  const idMap: Record<string, string> = {
+    'open-pack': 'daily-packs',
+    'win-battle': 'daily-battle',
+    'play-trivia': 'daily-trivia',
+  };
+  const mapped = idMap[missionId] || missionId;
+  const missions = getDailyMissions();
+  const mission = missions.find(m => m.id === mapped);
+  if (mission && !mission.completed) {
+    updateDailyMission(mapped, mission.progress + amount);
+  }
+}
+
+// ===== Login Calendar =====
+
+export interface LoginCalendarState {
+  weekStart: string; // ISO date of the Monday this week started
+  days: boolean[]; // 7 booleans, index 0 = day 1
+  currentDay: number; // 0-6, which day of the streak we're on
+  claimedToday: boolean;
+}
+
+const LOGIN_REWARDS: { day: number; label: string; icon: string; xp: number }[] = [
+  { day: 1, label: '50 XP', icon: '✨', xp: 50 },
+  { day: 2, label: '100 XP', icon: '⭐', xp: 100 },
+  { day: 3, label: '200 XP', icon: '💫', xp: 200 },
+  { day: 4, label: 'Rare Card', icon: '🃏', xp: 150 },
+  { day: 5, label: '300 XP', icon: '🔥', xp: 300 },
+  { day: 6, label: 'Badge', icon: '🏆', xp: 250 },
+  { day: 7, label: 'Legendary Pack', icon: '👑', xp: 500 },
+];
+
+export { LOGIN_REWARDS };
+
+export function getLoginCalendar(): LoginCalendarState {
+  if (typeof window === 'undefined') return { weekStart: '', days: Array(7).fill(false), currentDay: 0, claimedToday: false };
+  const todayUTC = new Date().toISOString().slice(0, 10);
+  const streak = getStreak();
+  let state = getItem<LoginCalendarState>('lorevault_login_calendar', {
+    weekStart: todayUTC,
+    days: Array(7).fill(false),
+    currentDay: 0,
+    claimedToday: false,
+  });
+
+  // If streak is 0 or reset, start fresh
+  if (streak === 0 || (streak === 1 && !state.claimedToday)) {
+    state = { weekStart: todayUTC, days: Array(7).fill(false), currentDay: 0, claimedToday: false };
+  }
+
+  // Check if already claimed today
+  const lastClaimDate = getItem<string>('lorevault_login_calendar_date', '');
+  if (lastClaimDate === todayUTC) {
+    state.claimedToday = true;
+  } else {
+    state.claimedToday = false;
+  }
+
+  return state;
+}
+
+export function claimLoginDay(): { reward: typeof LOGIN_REWARDS[number]; newState: LoginCalendarState } | null {
+  if (typeof window === 'undefined') return null;
+  const todayUTC = new Date().toISOString().slice(0, 10);
+  const lastClaimDate = getItem<string>('lorevault_login_calendar_date', '');
+  if (lastClaimDate === todayUTC) return null; // Already claimed
+
+  const state = getLoginCalendar();
+  if (state.currentDay >= 7) {
+    // Reset calendar for next cycle
+    state.days = Array(7).fill(false);
+    state.currentDay = 0;
+    state.weekStart = todayUTC;
+  }
+
+  const dayIndex = state.currentDay;
+  state.days[dayIndex] = true;
+  state.currentDay = dayIndex + 1;
+  state.claimedToday = true;
+
+  const reward = LOGIN_REWARDS[dayIndex];
+  addXP(reward.xp);
+
+  setItem('lorevault_login_calendar', state);
+  setItem('lorevault_login_calendar_date', todayUTC);
+
+  return { reward, newState: state };
 }

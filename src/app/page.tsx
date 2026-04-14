@@ -9,7 +9,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 import { Card, getTierForLevel } from '@/data/types';
-import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions } from '@/lib/store';
+import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, type LoginCalendarState } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
@@ -43,6 +43,8 @@ export default function Home() {
   const [dailyMission, setDailyMission] = useState<{ description: string; progress: number; target: number; reward: string } | null>(null);
   const [vipTier, setVipTier] = useState<{ name: string; color: string }>({ name: 'Bronze', color: '#CD7F32' });
   const [fomo, setFomo] = useState({ legendaries: 0, epics: 0, packs: 0 });
+  const [loginCalendar, setLoginCalendar] = useState<LoginCalendarState | null>(null);
+  const [loginRewardClaimed, setLoginRewardClaimed] = useState<string | null>(null);
 
   useEffect(() => {
     if (shouldShowWelcome()) {
@@ -59,6 +61,7 @@ export default function Home() {
     const vs = getVipState();
     setVipTier({ name: vs.tier.name, color: vs.tier.color });
     setFomo(getFomoCount());
+    setLoginCalendar(getLoginCalendar());
     const missions = getDailyMissions();
     const incomplete = missions.find(m => !m.completed);
     if (incomplete) setDailyMission(incomplete);
@@ -194,6 +197,68 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* ========== LOGIN CALENDAR ========== */}
+      {loginCalendar && (
+        <section className="px-4 mb-6">
+          <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-2 block">Daily Login Rewards</span>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="p-3 rounded-xl bg-surface border border-border"
+          >
+            <div className="grid grid-cols-7 gap-1.5">
+              {LOGIN_REWARDS.map((reward, idx) => {
+                const claimed = loginCalendar.days[idx];
+                const isCurrent = idx === loginCalendar.currentDay && !loginCalendar.claimedToday;
+                const isLocked = idx > loginCalendar.currentDay || (idx === loginCalendar.currentDay && loginCalendar.claimedToday);
+
+                return (
+                  <button
+                    key={idx}
+                    disabled={!isCurrent}
+                    onClick={() => {
+                      if (isCurrent) {
+                        const result = claimLoginDay();
+                        if (result) {
+                          setLoginCalendar(result.newState);
+                          setLoginRewardClaimed(`${result.reward.icon} ${result.reward.label}`);
+                          setTimeout(() => setLoginRewardClaimed(null), 3000);
+                        }
+                      }
+                    }}
+                    className={`flex flex-col items-center gap-0.5 p-1.5 rounded-lg text-center transition-all ${
+                      claimed
+                        ? 'bg-accent/15 border border-accent/30'
+                        : isCurrent
+                          ? 'bg-emerald-500/15 border-2 border-emerald-500/40 animate-pulse'
+                          : 'bg-surface/40 border border-border/20 opacity-50'
+                    }`}
+                  >
+                    <span className="text-sm">{claimed ? '✅' : reward.icon}</span>
+                    <span className="text-[8px] text-muted font-mono">D{idx + 1}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {loginRewardClaimed && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-center text-xs text-emerald-400 font-semibold"
+              >
+                {loginRewardClaimed} claimed!
+              </motion.div>
+            )}
+            {!loginCalendar.claimedToday && loginCalendar.currentDay < 7 && (
+              <div className="mt-2 text-center text-[10px] text-emerald-400/70">
+                Tap Day {loginCalendar.currentDay + 1} to claim today&apos;s reward
+              </div>
+            )}
+          </motion.div>
+        </section>
+      )}
 
       {/* ========== DAILY CHALLENGE ========== */}
       {dailyMission && (

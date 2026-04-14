@@ -107,7 +107,7 @@ function buildChronicle(): ChronicleEvent[] {
 
   // First Forge
   if (forgeHistory.length > 0) {
-    const first = forgeHistory[forgeHistory.length - 1]; // oldest is last since prepended
+    const first = forgeHistory[0]; // oldest is at index 0 (push-appended)
     events.push({
       id: 'first-forge',
       date: first.date,

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { SETS } from '@/data/sets';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
-import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addOwnedCards, addXP, getOwnedCardIds, revealCard } from '@/lib/store';
+import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addOwnedCards, addXP, getOwnedCardIds, revealCard, getDailyPackState, claimDailyPack, progressDailyMission } from '@/lib/store';
 import { getOnboardingState, updateOnboarding, checkUnlocks } from '@/lib/onboarding';
 import { checkAchievements, getAchievementById } from '@/lib/achievements';
 import AchievementCelebration from '@/components/AchievementCelebration';
@@ -106,9 +106,13 @@ function PacksContent() {
   const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
   const [showCelebration, setShowCelebration] = useState(false);
   const [achievementsChecked, setAchievementsChecked] = useState(false);
+  const [dailyPackAvailable, setDailyPackAvailable] = useState(false);
+  const [dailyCountdown, setDailyCountdown] = useState('');
 
   useEffect(() => {
     setPackCreditsState(getPackCredits());
+    const dp = getDailyPackState();
+    setDailyPackAvailable(dp.available);
     // Auto-open first pack if coming from welcome screen
     if (isFirstPack && !getOnboardingState().hasOpenedFirstPack) {
       setIsGuidedMode(true);
@@ -625,6 +629,42 @@ function PacksContent() {
         </div>
       </div>
       <p className="text-xs text-muted mb-4">5 cards per pack. Guaranteed 1 Uncommon+. Cards added permanently.</p>
+
+      {/* Daily Free Pack */}
+      {dailyPackAvailable ? (
+        <motion.button
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            if (claimDailyPack()) {
+              setDailyPackAvailable(false);
+              progressDailyMission('open-pack');
+              openPack('mixed');
+            }
+          }}
+          className="w-full mb-4 p-4 rounded-2xl text-left bg-gradient-to-r from-emerald-500/15 to-teal-500/15 border-2 border-emerald-500/30"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🎁</span>
+            <div className="flex-1">
+              <div className="text-sm font-bold text-emerald-400">Daily Free Pack</div>
+              <div className="text-[10px] text-muted">Guaranteed Uncommon+. Claim now!</div>
+            </div>
+            <span className="text-xs text-emerald-400 font-bold bg-emerald-400/10 px-2 py-1 rounded-lg">FREE</span>
+          </div>
+        </motion.button>
+      ) : (
+        <div className="mb-4 p-3 rounded-xl bg-surface/40 border border-border/30">
+          <div className="flex items-center gap-3">
+            <span className="text-xl opacity-50">🎁</span>
+            <div className="flex-1">
+              <div className="text-xs text-muted">Daily pack claimed</div>
+              <div className="text-[10px] text-muted/50">Next pack at midnight UTC</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Season Countdown + Exclusive Cards */}
       <SeasonBanner />

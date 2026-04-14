@@ -84,6 +84,16 @@ export default function HallPage() {
   const playerPosition = entries.findIndex(e => e.isPlayer) + 1;
   const isDimmed = streakDays === 0; // rank decay visual
 
+  // Persist best rank for prestige challenge
+  useEffect(() => {
+    if (playerPosition > 0) {
+      const stored = parseInt(localStorage.getItem('lorevault_hall_rank') || '999', 10);
+      if (playerPosition < stored) {
+        localStorage.setItem('lorevault_hall_rank', JSON.stringify(playerPosition));
+      }
+    }
+  }, [playerPosition]);
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
       {/* Header */}
