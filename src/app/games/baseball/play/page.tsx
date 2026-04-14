@@ -18,6 +18,8 @@ import {
   rollD20,
   resolveControlRoll,
   resolveAtBat,
+  resolveSteal,
+  applySteal,
   getBattingTeam,
   getCurrentBatter,
   getCurrentPitcher,
@@ -36,22 +38,34 @@ import { DiceRoller } from '@/components/baseball/DiceRoller';
 import { OutcomeReveal } from '@/components/baseball/OutcomeReveal';
 import { ParticleBurst } from '@/components/baseball/ParticleBurst';
 import { ScreenShake } from '@/components/baseball/ScreenShake';
+import { StealReveal } from '@/components/baseball/StealReveal';
 
 // ===== Animation Phase State Machine =====
 
 type AnimPhase =
-  | 'idle'              // waiting for player to roll
-  | 'control-rolling'   // dice are spinning for control roll
-  | 'control-landed'    // control roll landed, showing who controls
-  | 'outcome-rolling'   // dice spinning for outcome roll
-  | 'outcome-landed'    // outcome resolved, showing dramatic reveal
-  | 'half-inning'       // half-inning transition screen
-  | 'game-over';        // game finished
+  | 'idle'
+  | 'control-rolling'
+  | 'control-landed'
+  | 'outcome-rolling'
+  | 'outcome-landed'
+  | 'steal-rolling'      // dice spinning for steal attempt
+  | 'steal-result'       // showing steal safe/out result
+  | 'half-inning'
+  | 'game-over';
+
+interface StealData {
+  runnerName: string;
+  fromBase: 'first' | 'second';
+  rollValue: number;
+  threshold: number;
+  runnerSpeed: number;
+  catcherDefense: number;
+  success: boolean;
+}
 
 interface BoardState {
   game: GameState | null;
   animPhase: AnimPhase;
-  // Roll data for current at-bat
   controlRollValue: number | null;
   controlResult: 'pitcher' | 'hitter' | null;
   outcomeRollValue: number | null;
@@ -60,13 +74,13 @@ interface BoardState {
   currentPitcherName: string;
   currentRunsScored: number;
   currentDescription: string;
+  // Steal data
+  stealData: StealData | null;
   // Registry + rosters
   cards: CardRegistry;
   playerRoster: Roster | null;
   aiRoster: Roster | null;
-  // Shake trigger (increments to re-trigger)
   shakeTrigger: number;
-  // Particle burst
   particleBurst: boolean;
 }
 
@@ -76,6 +90,9 @@ type BoardAction =
   | { type: 'CONTROL_LANDED' }
   | { type: 'START_OUTCOME_ROLL'; value: number }
   | { type: 'OUTCOME_LANDED'; game: GameState; outcome: AtBatOutcome; runsScored: number; description: string; isHalfInningOver: boolean; isGameOver: boolean }
+  | { type: 'START_STEAL_ROLL'; stealData: StealData }
+  | { type: 'STEAL_DICE_LANDED' }
+  | { type: 'STEAL_RESOLVED'; game: GameState; isHalfInningOver: boolean; isGameOver: boolean }
   | { type: 'RETURN_IDLE' }
   | { type: 'HALF_INNING_DONE' };
 
@@ -97,6 +114,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         currentPitcherName: '',
         currentRunsScored: 0,
         currentDescription: '',
+        stealData: null,
         shakeTrigger: 0,
         particleBurst: false,
       };
@@ -113,6 +131,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         currentOutcome: null,
         currentRunsScored: 0,
         currentDescription: '',
+        stealData: null,
         particleBurst: false,
       };
 
@@ -120,11 +139,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
       return { ...state, animPhase: 'control-landed' };
 
     case 'START_OUTCOME_ROLL':
-      return {
-        ...state,
-        animPhase: 'outcome-rolling',
-        outcomeRollValue: action.value,
-      };
+      return { ...state, animPhase: 'outcome-rolling', outcomeRollValue: action.value };
 
     case 'OUTCOME_LANDED': {
       const isEpic = action.outcome === 'homerun';
@@ -141,6 +156,25 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
       };
     }
 
+    case 'START_STEAL_ROLL':
+      return {
+        ...state,
+        animPhase: 'steal-rolling',
+        stealData: action.stealData,
+        particleBurst: false,
+      };
+
+    case 'STEAL_DICE_LANDED':
+      return { ...state, animPhase: 'steal-result' };
+
+    case 'STEAL_RESOLVED':
+      return {
+        ...state,
+        game: action.game,
+        animPhase: action.isGameOver ? 'game-over' : action.isHalfInningOver ? 'half-inning' : 'steal-result',
+        shakeTrigger: state.stealData && !state.stealData.success ? state.shakeTrigger + 1 : state.shakeTrigger,
+      };
+
     case 'RETURN_IDLE':
       return {
         ...state,
@@ -149,6 +183,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         controlResult: null,
         outcomeRollValue: null,
         currentOutcome: null,
+        stealData: null,
         particleBurst: false,
       };
 
@@ -160,6 +195,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         controlResult: null,
         outcomeRollValue: null,
         currentOutcome: null,
+        stealData: null,
         particleBurst: false,
       };
 
@@ -179,6 +215,7 @@ const initialState: BoardState = {
   currentPitcherName: '',
   currentRunsScored: 0,
   currentDescription: '',
+  stealData: null,
   cards: new Map(),
   playerRoster: null,
   aiRoster: null,
@@ -186,9 +223,23 @@ const initialState: BoardState = {
   particleBurst: false,
 };
 
-// ===== Diamond SVG =====
+// ===== Diamond SVG with animated runners =====
 
-function Diamond({ bases }: { bases: { first: boolean; second: boolean; third: boolean } }) {
+function Diamond({
+  bases,
+  stealAnim,
+}: {
+  bases: { first: boolean; second: boolean; third: boolean };
+  stealAnim?: { from: 'first' | 'second'; success: boolean } | null;
+}) {
+  // Base coordinates
+  const coords = {
+    home: { x: 100, y: 170 },
+    first: { x: 160, y: 110 },
+    second: { x: 100, y: 50 },
+    third: { x: 40, y: 110 },
+  };
+
   return (
     <svg viewBox="0 0 200 200" className="w-40 h-40 mx-auto">
       {/* Base paths */}
@@ -203,17 +254,92 @@ function Diamond({ bases }: { bases: { first: boolean; second: boolean; third: b
       {/* Infield grass */}
       <polygon points="100,170 160,110 100,50 40,110" fill="rgba(34,197,94,0.03)" />
 
-      {/* First base */}
+      {/* Base diamonds */}
       <rect x="153" y="103" width="14" height="14" rx="2" fill={bases.first ? '#f59e0b' : 'transparent'} stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" transform="rotate(45, 160, 110)" />
-      {bases.first && <circle cx="160" cy="110" r="12" fill="#f59e0b" opacity="0.25"><animate attributeName="r" values="12;16;12" dur="1.5s" repeatCount="indefinite" /></circle>}
-
-      {/* Second base */}
       <rect x="93" y="43" width="14" height="14" rx="2" fill={bases.second ? '#f59e0b' : 'transparent'} stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" transform="rotate(45, 100, 50)" />
-      {bases.second && <circle cx="100" cy="50" r="12" fill="#f59e0b" opacity="0.25"><animate attributeName="r" values="12;16;12" dur="1.5s" repeatCount="indefinite" /></circle>}
-
-      {/* Third base */}
       <rect x="33" y="103" width="14" height="14" rx="2" fill={bases.third ? '#f59e0b' : 'transparent'} stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" transform="rotate(45, 40, 110)" />
-      {bases.third && <circle cx="40" cy="110" r="12" fill="#f59e0b" opacity="0.25"><animate attributeName="r" values="12;16;12" dur="1.5s" repeatCount="indefinite" /></circle>}
+
+      {/* Runner dots with glow */}
+      {bases.first && !stealAnim && (
+        <>
+          <circle cx="160" cy="110" r="6" fill="#f59e0b" />
+          <circle cx="160" cy="110" r="10" fill="#f59e0b" opacity="0.2">
+            <animate attributeName="r" values="10;14;10" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+        </>
+      )}
+      {bases.second && (
+        <>
+          <circle cx="100" cy="50" r="6" fill="#f59e0b" />
+          <circle cx="100" cy="50" r="10" fill="#f59e0b" opacity="0.2">
+            <animate attributeName="r" values="10;14;10" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+        </>
+      )}
+      {bases.third && (
+        <>
+          <circle cx="40" cy="110" r="6" fill="#f59e0b" />
+          <circle cx="40" cy="110" r="10" fill="#f59e0b" opacity="0.2">
+            <animate attributeName="r" values="10;14;10" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+        </>
+      )}
+
+      {/* Steal animation — runner moving along base path */}
+      {stealAnim && stealAnim.from === 'first' && (
+        <circle r="6" fill={stealAnim.success ? '#a855f7' : '#ef4444'}>
+          <animate
+            attributeName="cx"
+            from={String(coords.first.x)}
+            to={stealAnim.success ? String(coords.second.x) : String((coords.first.x + coords.second.x) / 2)}
+            dur={stealAnim.success ? '0.5s' : '0.3s'}
+            fill="freeze"
+          />
+          <animate
+            attributeName="cy"
+            from={String(coords.first.y)}
+            to={stealAnim.success ? String(coords.second.y) : String((coords.first.y + coords.second.y) / 2)}
+            dur={stealAnim.success ? '0.5s' : '0.3s'}
+            fill="freeze"
+          />
+          {!stealAnim.success && (
+            <animate
+              attributeName="opacity"
+              values="1;1;0"
+              dur="0.8s"
+              begin="0.3s"
+              fill="freeze"
+            />
+          )}
+        </circle>
+      )}
+      {stealAnim && stealAnim.from === 'second' && (
+        <circle r="6" fill={stealAnim.success ? '#a855f7' : '#ef4444'}>
+          <animate
+            attributeName="cx"
+            from={String(coords.second.x)}
+            to={stealAnim.success ? String(coords.third.x) : String((coords.second.x + coords.third.x) / 2)}
+            dur={stealAnim.success ? '0.5s' : '0.3s'}
+            fill="freeze"
+          />
+          <animate
+            attributeName="cy"
+            from={String(coords.second.y)}
+            to={stealAnim.success ? String(coords.third.y) : String((coords.second.y + coords.third.y) / 2)}
+            dur={stealAnim.success ? '0.5s' : '0.3s'}
+            fill="freeze"
+          />
+          {!stealAnim.success && (
+            <animate
+              attributeName="opacity"
+              values="1;1;0"
+              dur="0.8s"
+              begin="0.3s"
+              fill="freeze"
+            />
+          )}
+        </circle>
+      )}
     </svg>
   );
 }
@@ -365,60 +491,21 @@ export default function PlayPage() {
       playerRoster.pitcher,
     ]);
     const aiRoster = generateAILineup('veteran', playerIds, 12345);
-
     const game = createGame(aiRoster, playerRoster, 3);
     dispatch({ type: 'INIT_GAME', game, playerRoster, aiRoster, cards });
   }, []);
 
   // Cleanup timers
   useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, []);
 
   // Scroll log on new entries
   useEffect(() => {
-    if (state.currentOutcome && logRef.current) {
-      logRef.current.scrollTop = 0;
-    }
+    if (state.currentOutcome && logRef.current) logRef.current.scrollTop = 0;
   }, [state.currentOutcome]);
 
-  // ===== Full at-bat resolution (called after control roll dice land) =====
-  const resolveFullAtBat = useCallback((
-    game: GameState,
-    cards: CardRegistry,
-    controlRoll: number,
-    controlResult: 'pitcher' | 'hitter',
-  ) => {
-    const batterSlot = getCurrentBatter(game);
-    const pitcherId = getCurrentPitcher(game);
-    const batterCard = cards.get(batterSlot.cardId);
-    const pitcherCard = cards.get(pitcherId);
-
-    if (!batterCard || !pitcherCard) return;
-    if (batterCard.stats.type !== 'hitter' || pitcherCard.stats.type !== 'pitcher') return;
-
-    const hitterStats = batterCard.stats as HitterStats;
-    const pitcherStats = pitcherCard.stats as PitcherStats;
-
-    // Roll outcome
-    const outcomeRoll = rollD20();
-
-    // Start outcome dice animation
-    dispatch({ type: 'START_OUTCOME_ROLL', value: outcomeRoll });
-
-    // The outcome dice will spin ~1s, then we resolve
-    // (resolved in onOutcomeDiceLand callback)
-
-    // Stash the resolution data so the callback can use it
-    pendingResolution.current = {
-      game, cards, controlRoll, outcomeRoll, hitterStats, pitcherStats,
-      batterCard, pitcherCard, batterSlot,
-    };
-  }, []);
-
-  // Pending resolution data (avoids closure issues)
+  // ===== Pending resolution ref =====
   const pendingResolution = useRef<{
     game: GameState;
     cards: CardRegistry;
@@ -431,32 +518,51 @@ export default function PlayPage() {
     batterSlot: { cardId: string; position: FieldPosition; battingOrder: number };
   } | null>(null);
 
+  // ===== Resolve at-bat (after control dice land) =====
+  const resolveFullAtBat = useCallback((
+    game: GameState,
+    cards: CardRegistry,
+    controlRoll: number,
+  ) => {
+    const batterSlot = getCurrentBatter(game);
+    const pitcherId = getCurrentPitcher(game);
+    const batterCard = cards.get(batterSlot.cardId);
+    const pitcherCard = cards.get(pitcherId);
+    if (!batterCard || !pitcherCard) return;
+    if (batterCard.stats.type !== 'hitter' || pitcherCard.stats.type !== 'pitcher') return;
+
+    const outcomeRoll = rollD20();
+    dispatch({ type: 'START_OUTCOME_ROLL', value: outcomeRoll });
+
+    pendingResolution.current = {
+      game, cards, controlRoll, outcomeRoll,
+      hitterStats: batterCard.stats as HitterStats,
+      pitcherStats: pitcherCard.stats as PitcherStats,
+      batterCard, pitcherCard, batterSlot,
+    };
+  }, []);
+
   // ===== Handle control dice landing =====
   const onControlDiceLand = useCallback(() => {
     dispatch({ type: 'CONTROL_LANDED' });
-
-    // Brief pause to show who controls, then start outcome roll
     timerRef.current = setTimeout(() => {
-      if (state.game && state.controlRollValue !== null && state.controlResult !== null) {
-        resolveFullAtBat(state.game, state.cards, state.controlRollValue, state.controlResult);
+      if (state.game && state.controlRollValue !== null) {
+        resolveFullAtBat(state.game, state.cards, state.controlRollValue);
       }
     }, 800);
-  }, [state.game, state.controlRollValue, state.controlResult, state.cards, resolveFullAtBat]);
+  }, [state.game, state.controlRollValue, state.cards, resolveFullAtBat]);
 
   // ===== Handle outcome dice landing =====
   const onOutcomeDiceLand = useCallback(() => {
     const data = pendingResolution.current;
     if (!data) return;
-
     const { game, cards, controlRoll, outcomeRoll, hitterStats, pitcherStats, batterCard, pitcherCard, batterSlot } = data;
 
-    // Resolve the at-bat
     const { outcome, controlResult, description } = resolveAtBat(
       controlRoll, outcomeRoll, hitterStats, pitcherStats,
       batterCard.character, pitcherCard.character,
     );
 
-    // Process outcome
     const isOut = ['strikeout', 'groundout', 'flyout', 'groundout_dp'].includes(outcome);
     let newOuts = game.inning.outs;
     let runsScored = 0;
@@ -497,15 +603,9 @@ export default function PlayPage() {
     newScore[battingTeam === 'away' ? 'away' : 'home'] += runsScored;
 
     const logEntry: PlayLogEntry = {
-      inning: game.inning.inning,
-      half: game.inning.half,
-      batter: batterCard.character,
-      pitcher: pitcherCard.character,
-      controlRoll,
-      controlResult,
-      outcomeRoll,
-      outcome,
-      runsScored,
+      inning: game.inning.inning, half: game.inning.half,
+      batter: batterCard.character, pitcher: pitcherCard.character,
+      controlRoll, controlResult, outcomeRoll, outcome, runsScored,
       description: runsScored > 0
         ? `${description} ${runsScored} run${runsScored > 1 ? 's' : ''} score!`
         : description,
@@ -514,9 +614,7 @@ export default function PlayPage() {
     let newState: GameState = {
       ...game,
       inning: { ...game.inning, outs: newOuts },
-      bases: newBases,
-      score: newScore,
-      log: [...game.log, logEntry],
+      bases: newBases, score: newScore, log: [...game.log, logEntry],
     };
     newState = advanceBattingOrder(newState);
 
@@ -530,60 +628,172 @@ export default function PlayPage() {
     }
 
     dispatch({
-      type: 'OUTCOME_LANDED',
-      game: newState,
-      outcome,
-      runsScored,
-      description: logEntry.description,
-      isHalfInningOver,
-      isGameOver: newState.isGameOver,
+      type: 'OUTCOME_LANDED', game: newState, outcome, runsScored,
+      description: logEntry.description, isHalfInningOver, isGameOver: newState.isGameOver,
     });
-
     pendingResolution.current = null;
 
-    // Auto-advance from outcome display after delay
     if (!newState.isGameOver && !isHalfInningOver) {
-      timerRef.current = setTimeout(() => {
-        dispatch({ type: 'RETURN_IDLE' });
-      }, 2000);
+      timerRef.current = setTimeout(() => dispatch({ type: 'RETURN_IDLE' }), 2000);
     }
   }, []);
 
-  // ===== Handle Roll button press =====
+  // ===== Handle Roll button =====
   const handleRoll = useCallback(() => {
     if (!state.game || state.animPhase !== 'idle') return;
-
     const game = state.game;
     const batterSlot = getCurrentBatter(game);
     const pitcherId = getCurrentPitcher(game);
     const batterCard = state.cards.get(batterSlot.cardId);
     const pitcherCard = state.cards.get(pitcherId);
-
     if (!batterCard || !pitcherCard) return;
     if (pitcherCard.stats.type !== 'pitcher') return;
 
     const controlRollValue = rollD20();
     const controlResult = resolveControlRoll(controlRollValue, (pitcherCard.stats as PitcherStats).control);
-
     dispatch({
-      type: 'START_CONTROL_ROLL',
-      value: controlRollValue,
-      result: controlResult,
-      batterName: batterCard.character,
-      pitcherName: pitcherCard.character,
+      type: 'START_CONTROL_ROLL', value: controlRollValue, result: controlResult,
+      batterName: batterCard.character, pitcherName: pitcherCard.character,
     });
   }, [state.game, state.animPhase, state.cards]);
+
+  // ===== Handle Steal button =====
+  const handleSteal = useCallback((fromBase: 'first' | 'second') => {
+    if (!state.game || state.animPhase !== 'idle') return;
+    const game = state.game;
+
+    const runner = fromBase === 'first' ? game.bases.first : game.bases.second;
+    if (!runner) return;
+
+    const runnerCard = state.cards.get(runner.cardId);
+    if (!runnerCard || runnerCard.stats.type !== 'hitter') return;
+
+    // Get catcher defense
+    const battingTeam = getBattingTeam(game);
+    const fieldingRoster = battingTeam === 'away' ? game.homeRoster : game.awayRoster;
+    const catcherSlot = fieldingRoster.hitters.find(h => h.position === 'C');
+    const catcherCard = catcherSlot ? state.cards.get(catcherSlot.cardId) : null;
+    const catcherDefense = catcherCard && catcherCard.stats.type === 'hitter'
+      ? (catcherCard.stats as HitterStats).defense : 3;
+
+    const runnerSpeed = (runnerCard.stats as HitterStats).speed;
+    const threshold = runnerSpeed - catcherDefense;
+    const roll = rollD20();
+    const success = roll <= threshold;
+
+    const stealResult = resolveSteal(roll, runnerSpeed, catcherDefense, runnerCard.character, fromBase);
+
+    dispatch({
+      type: 'START_STEAL_ROLL',
+      stealData: {
+        runnerName: runnerCard.character,
+        fromBase,
+        rollValue: roll,
+        threshold,
+        runnerSpeed,
+        catcherDefense,
+        success: stealResult.success,
+      },
+    });
+  }, [state.game, state.animPhase, state.cards]);
+
+  // ===== Handle steal dice landing =====
+  const onStealDiceLand = useCallback(() => {
+    dispatch({ type: 'STEAL_DICE_LANDED' });
+
+    // Apply steal result after a brief reveal
+    timerRef.current = setTimeout(() => {
+      if (!state.game || !state.stealData) return;
+      const { fromBase, success } = state.stealData;
+
+      let newState = {
+        ...state.game,
+        bases: applySteal(state.game.bases, fromBase, success),
+      };
+
+      let isHalfInningOver = false;
+      if (!success) {
+        const newOuts = state.game.inning.outs + 1;
+        newState = { ...newState, inning: { ...newState.inning, outs: newOuts } };
+        if (newOuts >= 3) {
+          isHalfInningOver = true;
+          newState = advanceInning(newState);
+        }
+      }
+
+      if (!newState.isGameOver) {
+        newState = { ...newState, isGameOver: checkGameOver(newState) };
+      }
+
+      // Add to log
+      const desc = success
+        ? `${state.stealData.runnerName} steals ${fromBase === 'first' ? 'second' : 'third'}!`
+        : `${state.stealData.runnerName} caught stealing ${fromBase === 'first' ? 'second' : 'third'}!`;
+
+      const logEntry: PlayLogEntry = {
+        inning: state.game.inning.inning,
+        half: state.game.inning.half,
+        batter: state.stealData.runnerName,
+        pitcher: '',
+        controlRoll: 0,
+        controlResult: 'pitcher',
+        outcomeRoll: state.stealData.rollValue,
+        outcome: success ? 'single' : 'strikeout', // placeholder for log
+        runsScored: 0,
+        description: desc,
+      };
+
+      newState = { ...newState, log: [...newState.log, logEntry] };
+
+      dispatch({
+        type: 'STEAL_RESOLVED', game: newState,
+        isHalfInningOver, isGameOver: newState.isGameOver,
+      });
+
+      // Auto-advance back to idle
+      if (!newState.isGameOver && !isHalfInningOver) {
+        timerRef.current = setTimeout(() => dispatch({ type: 'RETURN_IDLE' }), 2000);
+      }
+    }, 1200);
+  }, [state.game, state.stealData]);
+
+  // ===== Compute steal availability =====
+  const getStealOptions = useCallback((): { first: boolean; second: boolean } => {
+    if (!state.game || state.animPhase !== 'idle') return { first: false, second: false };
+    const game = state.game;
+    const isPlayerBatting = getBattingTeam(game) === 'home';
+    if (!isPlayerBatting) return { first: false, second: false };
+    return {
+      first: game.bases.first !== null && game.bases.second === null,  // can't steal into occupied base
+      second: game.bases.second !== null && game.bases.third === null,
+    };
+  }, [state.game, state.animPhase]);
+
+  const getStealThreshold = useCallback((fromBase: 'first' | 'second'): { threshold: number; runnerName: string; speed: number; defense: number } | null => {
+    if (!state.game) return null;
+    const game = state.game;
+    const runner = fromBase === 'first' ? game.bases.first : game.bases.second;
+    if (!runner) return null;
+    const runnerCard = state.cards.get(runner.cardId);
+    if (!runnerCard || runnerCard.stats.type !== 'hitter') return null;
+
+    const battingTeam = getBattingTeam(game);
+    const fieldingRoster = battingTeam === 'away' ? game.homeRoster : game.awayRoster;
+    const catcherSlot = fieldingRoster.hitters.find(h => h.position === 'C');
+    const catcherCard = catcherSlot ? state.cards.get(catcherSlot.cardId) : null;
+    const catcherDefense = catcherCard && catcherCard.stats.type === 'hitter'
+      ? (catcherCard.stats as HitterStats).defense : 3;
+
+    const speed = (runnerCard.stats as HitterStats).speed;
+    return { threshold: speed - catcherDefense, runnerName: runnerCard.character, speed, defense: catcherDefense };
+  }, [state.game, state.cards]);
 
   // ===== Render =====
 
   if (!state.game) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <motion.p
-          className="text-muted text-sm"
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
+        <motion.p className="text-muted text-sm" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }}>
           Loading game...
         </motion.p>
       </div>
@@ -597,12 +807,20 @@ export default function PlayPage() {
   const isPlayerBatting = battingTeam === 'home';
   const summary = game.isGameOver ? generateGameSummary(game) : null;
 
-  const isRolling = state.animPhase === 'control-rolling' || state.animPhase === 'outcome-rolling';
   const showControlResult = state.animPhase === 'control-landed';
   const showOutcome = state.animPhase === 'outcome-landed';
+  const showStealResult = state.animPhase === 'steal-result';
+  const stealOptions = getStealOptions();
+  const canSteal = stealOptions.first || stealOptions.second;
+
   const shakeIntensity = state.currentOutcome === 'homerun' ? 'heavy' as const
     : ['strikeout', 'groundout_dp', 'triple'].includes(state.currentOutcome || '') ? 'medium' as const
     : 'light' as const;
+
+  // Steal animation for diamond
+  const stealAnim = (state.animPhase === 'steal-rolling' || state.animPhase === 'steal-result') && state.stealData
+    ? { from: state.stealData.fromBase, success: state.stealData.success }
+    : null;
 
   return (
     <ScreenShake trigger={state.shakeTrigger > 0} intensity={shakeIntensity}>
@@ -658,98 +876,83 @@ export default function PlayPage() {
               second: game.bases.second !== null,
               third: game.bases.third !== null,
             }}
+            stealAnim={stealAnim}
           />
         </div>
 
         {/* ===== Dice + Reveal Zone ===== */}
         <div className="px-4 min-h-[140px] flex flex-col items-center justify-center">
           <AnimatePresence mode="wait">
-            {/* Control Roll Phase — Two dice spinning */}
+            {/* Control Roll Phase */}
             {(state.animPhase === 'control-rolling' || state.animPhase === 'control-landed') && state.controlRollValue !== null && (
-              <motion.div
-                key="control-phase"
-                className="flex flex-col items-center gap-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="flex items-center gap-6">
-                  <DiceRoller
-                    value={state.controlRollValue}
-                    isRolling={state.animPhase === 'control-rolling'}
-                    label="d20"
-                    accentColor={state.controlResult === 'pitcher' ? 'text-red-400' : 'text-green-400'}
-                    size="md"
-                    onLandComplete={onControlDiceLand}
-                  />
-                </div>
-
-                {/* Control result label */}
+              <motion.div key="control-phase" className="flex flex-col items-center gap-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                <DiceRoller
+                  value={state.controlRollValue}
+                  isRolling={state.animPhase === 'control-rolling'}
+                  label="d20"
+                  accentColor={state.controlResult === 'pitcher' ? 'text-red-400' : 'text-green-400'}
+                  size="md"
+                  onLandComplete={onControlDiceLand}
+                />
                 <AnimatePresence>
                   {showControlResult && state.controlResult && (
-                    <ControlRollDisplay
-                      result={state.controlResult}
-                      pitcherName={state.currentPitcherName}
-                      batterName={state.currentBatterName}
-                    />
+                    <ControlRollDisplay result={state.controlResult} pitcherName={state.currentPitcherName} batterName={state.currentBatterName} />
                   )}
                 </AnimatePresence>
               </motion.div>
             )}
 
-            {/* Outcome Roll Phase — Second die */}
-            {(state.animPhase === 'outcome-rolling') && state.outcomeRollValue !== null && (
-              <motion.div
-                key="outcome-phase"
-                className="flex flex-col items-center gap-3"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <DiceRoller
-                  value={state.outcomeRollValue}
-                  isRolling={true}
-                  label="Outcome"
-                  accentColor="text-amber-400"
-                  size="md"
-                  onLandComplete={onOutcomeDiceLand}
-                />
-                <span className="text-[10px] text-muted/40">
-                  {state.controlResult === 'pitcher' ? 'Pitcher chart...' : 'Hitter chart...'}
-                </span>
+            {/* Outcome Roll Phase */}
+            {state.animPhase === 'outcome-rolling' && state.outcomeRollValue !== null && (
+              <motion.div key="outcome-phase" className="flex flex-col items-center gap-3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                <DiceRoller value={state.outcomeRollValue} isRolling={true} label="Outcome" accentColor="text-amber-400" size="md" onLandComplete={onOutcomeDiceLand} />
+                <span className="text-[10px] text-muted/40">{state.controlResult === 'pitcher' ? 'Pitcher chart...' : 'Hitter chart...'}</span>
               </motion.div>
             )}
 
             {/* Outcome Reveal */}
             {showOutcome && state.currentOutcome && (
-              <motion.div
-                key="outcome-reveal"
-                className="w-full"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <OutcomeReveal
-                  outcome={state.currentOutcome}
-                  batterName={state.currentBatterName}
-                  runsScored={state.currentRunsScored}
-                  description={state.currentDescription}
+              <motion.div key="outcome-reveal" className="w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <OutcomeReveal outcome={state.currentOutcome} batterName={state.currentBatterName} runsScored={state.currentRunsScored} description={state.currentDescription} visible={true} />
+              </motion.div>
+            )}
+
+            {/* Steal Roll Phase */}
+            {state.animPhase === 'steal-rolling' && state.stealData && (
+              <motion.div key="steal-roll" className="flex flex-col items-center gap-3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                <DiceRoller
+                  value={state.stealData.rollValue}
+                  isRolling={true}
+                  label="Steal"
+                  accentColor="text-purple-400"
+                  size="md"
+                  onLandComplete={onStealDiceLand}
+                />
+                <span className="text-[10px] text-muted/40">
+                  {state.stealData.runnerName} needs ≤{state.stealData.threshold}
+                </span>
+              </motion.div>
+            )}
+
+            {/* Steal Result */}
+            {showStealResult && state.stealData && (
+              <motion.div key="steal-result" className="w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <StealReveal
                   visible={true}
+                  runnerName={state.stealData.runnerName}
+                  fromBase={state.stealData.fromBase}
+                  roll={state.stealData.rollValue}
+                  threshold={state.stealData.threshold}
+                  runnerSpeed={state.stealData.runnerSpeed}
+                  catcherDefense={state.stealData.catcherDefense}
+                  success={state.stealData.success}
                 />
               </motion.div>
             )}
 
-            {/* Idle state — prompt */}
+            {/* Idle state */}
             {state.animPhase === 'idle' && (
-              <motion.p
-                key="idle-prompt"
-                className="text-[10px] text-muted/25"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <motion.p key="idle-prompt" className="text-[10px] text-muted/25" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 {game.log.length === 0 ? 'Tap Roll to play ball!' : 'Next at-bat ready'}
               </motion.p>
             )}
@@ -757,18 +960,13 @@ export default function PlayPage() {
         </div>
 
         {/* Play-by-play Log */}
-        <div
-          ref={logRef}
-          className="flex-1 px-4 overflow-y-auto max-h-28 mb-2"
-        >
+        <div ref={logRef} className="flex-1 px-4 overflow-y-auto max-h-28 mb-2">
           {[...game.log].reverse().map((entry, i) => (
             <div key={`${entry.inning}-${entry.half}-${i}`} className="py-1 border-b border-border/10 last:border-0">
               <p className="text-[10px] text-muted/50">
                 <span className="font-mono text-muted/30">{entry.half === 'top' ? 'T' : 'B'}{entry.inning}</span>
                 {' '}{entry.description}
-                {entry.runsScored > 0 && (
-                  <span className="text-amber-400/60 ml-1">+{entry.runsScored}</span>
-                )}
+                {entry.runsScored > 0 && <span className="text-amber-400/60 ml-1">+{entry.runsScored}</span>}
               </p>
             </div>
           ))}
@@ -777,23 +975,10 @@ export default function PlayPage() {
         {/* Half-Inning Banner */}
         <AnimatePresence>
           {state.animPhase === 'half-inning' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center"
-              onClick={() => dispatch({ type: 'HALF_INNING_DONE' })}
-            >
-              <motion.div
-                initial={{ scale: 0.85, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                className="text-center"
-              >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center" onClick={() => dispatch({ type: 'HALF_INNING_DONE' })}>
+              <motion.div initial={{ scale: 0.85, y: 20 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 25 }} className="text-center">
                 <p className="text-muted/40 text-[10px] uppercase tracking-[0.2em] mb-2">End of</p>
-                <p className="text-3xl font-black mb-5">
-                  {game.inning.half === 'top' ? 'Top' : 'Bottom'} {game.inning.inning}
-                </p>
+                <p className="text-3xl font-black mb-5">{game.inning.half === 'top' ? 'Top' : 'Bottom'} {game.inning.inning}</p>
                 <div className="flex items-center gap-8 justify-center mb-8">
                   <div>
                     <span className="text-[10px] text-muted/40 block">{state.aiRoster?.name}</span>
@@ -805,13 +990,7 @@ export default function PlayPage() {
                     <span className="text-3xl font-black tabular-nums">{game.score.home}</span>
                   </div>
                 </div>
-                <motion.p
-                  className="text-[10px] text-muted/30"
-                  animate={{ opacity: [0.2, 0.6, 0.2] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  Tap to continue
-                </motion.p>
+                <motion.p className="text-[10px] text-muted/30" animate={{ opacity: [0.2, 0.6, 0.2] }} transition={{ duration: 1.5, repeat: Infinity }}>Tap to continue</motion.p>
               </motion.div>
             </motion.div>
           )}
@@ -820,59 +999,25 @@ export default function PlayPage() {
         {/* Game Over */}
         <AnimatePresence>
           {state.animPhase === 'game-over' && summary && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center px-4"
-            >
-              <motion.div
-                initial={{ scale: 0.85, y: 30 }}
-                animate={{ scale: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 280, damping: 22 }}
-                className="w-full max-w-sm text-center"
-              >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center px-4">
+              <motion.div initial={{ scale: 0.85, y: 30 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 22 }} className="w-full max-w-sm text-center">
                 <p className="text-[10px] text-muted/40 uppercase tracking-[0.2em] mb-3">Game Over</p>
-                <p className="text-5xl font-black mb-2 tabular-nums">
-                  {game.score.away} — {game.score.home}
-                </p>
-                <motion.p
-                  className={`text-sm font-black mb-8 ${
-                    summary.winner === 'home' ? 'text-green-400' : 'text-red-400'
-                  }`}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}
-                >
+                <p className="text-5xl font-black mb-2 tabular-nums">{game.score.away} — {game.score.home}</p>
+                <motion.p className={`text-sm font-black mb-8 ${summary.winner === 'home' ? 'text-green-400' : 'text-red-400'}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.3 }}>
                   {summary.winner === 'home' ? 'YOU WIN!' : 'YOU LOSE'}
                 </motion.p>
-
                 {summary.mvp.character && (
-                  <motion.div
-                    className="p-4 rounded-2xl bg-surface border border-amber-500/20 mb-6"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                  >
+                  <motion.div className="p-4 rounded-2xl bg-surface border border-amber-500/20 mb-6" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
                     <p className="text-[10px] text-amber-400/50 uppercase tracking-widest">MVP</p>
                     <p className="text-base font-black mt-0.5">{summary.mvp.character}</p>
-                    <p className="text-[11px] text-muted/50 mt-1">
-                      {summary.mvp.hits} hits, {summary.mvp.rbis} RBIs
-                    </p>
+                    <p className="text-[11px] text-muted/50 mt-1">{summary.mvp.hits} hits, {summary.mvp.rbis} RBIs</p>
                   </motion.div>
                 )}
-
                 <div className="space-y-2">
-                  <Link
-                    href="/games/baseball/play"
-                    className="block w-full py-3.5 rounded-xl bg-accent text-bg text-sm font-bold hover:bg-accent/90 transition-colors"
-                    onClick={() => window.location.reload()}
-                  >
+                  <Link href="/games/baseball/play" className="block w-full py-3.5 rounded-xl bg-accent text-bg text-sm font-bold hover:bg-accent/90 transition-colors" onClick={() => window.location.reload()}>
                     Play Again
                   </Link>
-                  <Link
-                    href="/games/baseball"
-                    className="block text-xs text-muted/40 hover:text-white transition-colors py-2"
-                  >
+                  <Link href="/games/baseball" className="block text-xs text-muted/40 hover:text-white transition-colors py-2">
                     Back to Baseball Hub
                   </Link>
                 </div>
@@ -881,31 +1026,72 @@ export default function PlayPage() {
           )}
         </AnimatePresence>
 
-        {/* Roll Button */}
+        {/* ===== Action Buttons ===== */}
         <div className="sticky bottom-0 p-4 bg-bg/90 backdrop-blur-sm border-t border-border/20">
           {state.animPhase === 'game-over' ? null : (
-            <motion.button
-              onClick={handleRoll}
-              disabled={state.animPhase !== 'idle'}
-              className={`w-full py-4 rounded-xl text-base font-black tracking-wider transition-all ${
-                state.animPhase === 'idle'
-                  ? 'bg-accent text-bg cursor-pointer'
-                  : 'bg-surface/50 text-muted/20 border border-border/20 cursor-not-allowed'
-              }`}
-              animate={
-                state.animPhase === 'idle'
-                  ? { boxShadow: ['0 0 0px rgba(251,191,36,0)', '0 0 20px rgba(251,191,36,0.15)', '0 0 0px rgba(251,191,36,0)'] }
-                  : {}
-              }
-              transition={
-                state.animPhase === 'idle'
-                  ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
-                  : {}
-              }
-              whileTap={state.animPhase === 'idle' ? { scale: 0.97 } : {}}
-            >
-              {state.animPhase === 'idle' ? 'ROLL' : ''}
-            </motion.button>
+            <div className="flex gap-2">
+              {/* Steal Buttons — contextual */}
+              <AnimatePresence>
+                {canSteal && state.animPhase === 'idle' && (
+                  <motion.div
+                    className="flex flex-col gap-1.5"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  >
+                    {stealOptions.first && (() => {
+                      const info = getStealThreshold('first');
+                      return (
+                        <button
+                          onClick={() => handleSteal('first')}
+                          className="px-3 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[11px] font-bold hover:bg-purple-500/20 transition-colors cursor-pointer"
+                        >
+                          Steal 2nd
+                          {info && <span className="text-[9px] text-purple-400/50 ml-1">≤{info.threshold}</span>}
+                        </button>
+                      );
+                    })()}
+                    {stealOptions.second && (() => {
+                      const info = getStealThreshold('second');
+                      return (
+                        <button
+                          onClick={() => handleSteal('second')}
+                          className="px-3 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[11px] font-bold hover:bg-purple-500/20 transition-colors cursor-pointer"
+                        >
+                          Steal 3rd
+                          {info && <span className="text-[9px] text-purple-400/50 ml-1">≤{info.threshold}</span>}
+                        </button>
+                      );
+                    })()}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Roll Button */}
+              <motion.button
+                onClick={handleRoll}
+                disabled={state.animPhase !== 'idle'}
+                className={`flex-1 py-4 rounded-xl text-base font-black tracking-wider transition-all ${
+                  state.animPhase === 'idle'
+                    ? 'bg-accent text-bg cursor-pointer'
+                    : 'bg-surface/50 text-muted/20 border border-border/20 cursor-not-allowed'
+                }`}
+                animate={
+                  state.animPhase === 'idle'
+                    ? { boxShadow: ['0 0 0px rgba(251,191,36,0)', '0 0 20px rgba(251,191,36,0.15)', '0 0 0px rgba(251,191,36,0)'] }
+                    : {}
+                }
+                transition={
+                  state.animPhase === 'idle'
+                    ? { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+                    : {}
+                }
+                whileTap={state.animPhase === 'idle' ? { scale: 0.97 } : {}}
+              >
+                {state.animPhase === 'idle' ? 'ROLL' : ''}
+              </motion.button>
+            </div>
           )}
         </div>
       </div>
