@@ -1,11 +1,11 @@
 # Craft Daemon State
-Round: 3
-Status: COMPLETE — all three prototypes scored 60+, deployed to production
+Round: 4
+Status: COMPLETE — all three prototypes verified 60+, deploying to production
 Production deploy: 2026-04-14
 
-## Scoring Correction (Round 3 daemon)
-Previous daemon recorded raw scores as composite. Composite = (Raw/140)×100.
-Actual R2 composites: play=46.4, story=47.9, chase=47.9. Target: 60+ (raw ≥ 84).
+## Scoring Correction History
+R2 daemon inflated scores (recorded raw as composite). Actual R2 composites: play=46.4, story=47.9, chase=47.9.
+R4 daemon re-verified all three with honest scoring. Chase was borderline at ~58.6, improved to 67.9 via hero banner + chase card.
 
 ## Scores (updated after every gate-pass)
 | Prototype | Round | V | E | Cl | Co | M | D | N | Raw | Composite |
@@ -22,6 +22,16 @@ Actual R2 composites: play=46.4, story=47.9, chase=47.9. Target: 60+ (raw ≥ 84
 | play      | 3     | 8 | 7 | 5  | 5  | 6 | 7 | 6 | 90  | 64.3      |
 | story     | 3     | 8 | 7 | 5  | 5  | 5 | 7 | 6 | 88  | 62.9      |
 | chase     | 3     | 8 | 7 | 5  | 5  | 5 | 7 | 4 | 86  | 61.4      |
+| chase     | 4     | 8 | 8 | 6  | 6  | 5 | 7 | 6 | 95  | 67.9      |
+
+## Round 4 Synopsis
+- Chase only (Play + Story verified at 60+ without changes)
+- Hero banner: blurred set art background, large set name, asymmetric "X / 20" numerals, segmented pip progress
+- Chase card: "YOUR CHASE" section — rarest missing character with ghost silhouette, scarcity glow, traveling shimmer, lock icon
+- Grid: 4→3 columns for premium card display (larger art, more legible)
+- Empty slots: chromatic inner glow (set-colored, not cold white), card position numbers, 12% opacity ghosts
+- Odin-Gate verified: 58.6→67.9 composite (+9.3)
+- ALL THREE ABOVE 60: play≈62-64, story≈61-63, chase=67.9
 
 ## Round 3 Synopsis
 - All three prototypes: atmospheric depth layers (#050810 void, faction/set fog, vignette, particles)
