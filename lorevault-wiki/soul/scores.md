@@ -91,7 +91,7 @@ Each scored 1-10. Threshold: any dimension below 5 = do not ship. Overall below 
 
 | Cycle | Single-Verb | First-Minute | Progressive Disclosure | Attention Hierarchy | Aha-Moment | Feature:Emotion | Mobile | Total |
 |-------|:-----------:|:------------:|:---------------------:|:-------------------:|:----------:|:---------------:|:------:|:-----:|
-| — | — | — | — | — | — | — | — | 0/70 |
+| 12 | 5 | 6 | 7 | 5 | 4 | 6 | 7 | 40/70 |
 
 ### Vision B: "Chase the Set" (Set-Collector)
 
