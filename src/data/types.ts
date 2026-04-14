@@ -1,6 +1,12 @@
 export type Scarcity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 export type Parallel = 'base' | 'silver' | 'gold' | 'holographic' | 'obsidian';
 
+export interface CardEvent {
+  type: 'pulled' | 'revealed' | 'battle_win' | 'battle_loss' | 'showcased' | 'traded';
+  date: string;
+  detail?: string;
+}
+
 export interface Card {
   id: string;
   name: string;
@@ -19,6 +25,13 @@ export interface Card {
   gradientFrom: string;
   gradientTo: string;
   symbol: string;
+  // Collectibility fields
+  sealed?: boolean;         // true = character hidden, only scarcity glow visible
+  acquiredAt?: string;      // ISO date when this card was first obtained
+  battleCount?: number;     // total battles this card participated in
+  tradeCount?: number;      // times this card changed hands
+  pullContext?: string;     // "First Hour" | "Milestone Pull" | etc.
+  history?: CardEvent[];    // living provenance chain
 }
 
 export interface CardSet {

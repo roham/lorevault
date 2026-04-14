@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, BattleRecord, TriviaRecord, GameStats, SavedDeck, CollectorLevel, XPSource, XP_VALUES, getLevelFromXP, getXPForLevel, getTierForLevel, EarnedAchievement } from '@/data/types';
+import { Card, CardEvent, BattleRecord, TriviaRecord, GameStats, SavedDeck, CollectorLevel, XPSource, XP_VALUES, getLevelFromXP, getXPForLevel, getTierForLevel, EarnedAchievement } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
 import { recordMonthlyXP } from '@/lib/vip';
 
@@ -68,7 +68,67 @@ export function addOwnedCards(cardIds: string[]) {
   const current = getOwnedCardIds();
   const merged = [...new Set([...current, ...cardIds])];
   setItem(KEYS.ownedCardIds, merged);
+  // Initialize collectibility metadata for new cards
+  const meta = getCardMeta();
+  const now = new Date().toISOString();
+  for (const id of cardIds) {
+    if (!meta[id]) {
+      meta[id] = {
+        sealed: true,
+        acquiredAt: now,
+        battleCount: 0,
+        tradeCount: 0,
+        history: [{ type: 'pulled', date: now }],
+      };
+    }
+  }
+  setItem('lorevault_card_meta', meta);
   return merged;
+}
+
+// Card collectibility metadata (sealed state, history, aging)
+type CardMeta = Record<string, {
+  sealed: boolean;
+  acquiredAt: string;
+  battleCount: number;
+  tradeCount: number;
+  history: CardEvent[];
+}>;
+
+export function getCardMeta(): CardMeta {
+  return getItem<CardMeta>('lorevault_card_meta', {});
+}
+
+export function revealCard(cardId: string): void {
+  const meta = getCardMeta();
+  if (meta[cardId]) {
+    meta[cardId].sealed = false;
+    meta[cardId].history.push({ type: 'revealed', date: new Date().toISOString() });
+    setItem('lorevault_card_meta', meta);
+  }
+}
+
+export function recordBattle(cardId: string, won: boolean): void {
+  const meta = getCardMeta();
+  if (meta[cardId]) {
+    meta[cardId].battleCount++;
+    meta[cardId].history.push({
+      type: won ? 'battle_win' : 'battle_loss',
+      date: new Date().toISOString(),
+    });
+    setItem('lorevault_card_meta', meta);
+  }
+}
+
+export function getCardAge(cardId: string): number {
+  const meta = getCardMeta();
+  if (!meta[cardId]?.acquiredAt) return 0;
+  return Math.floor((Date.now() - new Date(meta[cardId].acquiredAt).getTime()) / 86400000);
+}
+
+export function isCardSealed(cardId: string): boolean {
+  const meta = getCardMeta();
+  return meta[cardId]?.sealed ?? false;
 }
 
 export function getShowcaseIds(): string[] {

@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
+import { getCardMeta } from '@/lib/store';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -83,6 +84,13 @@ function CardItemStatic({
 }: CardItemProps) {
   const scarcityConfig = SCARCITY_CONFIG[card.scarcity];
   const parallelConfig = PARALLEL_CONFIG[card.parallel];
+  // Collectibility: check sealed state and aging
+  const [meta] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    const allMeta = getCardMeta();
+    return allMeta[card.id] || null;
+  });
+  const isSealed = meta?.sealed ?? false;
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
   const borderWidth = card.scarcity === 'legendary' ? 3 : card.scarcity === 'epic' ? 2.5 : 2;
@@ -121,14 +129,36 @@ function CardItemStatic({
             <span key={pos} className={`corner-accent corner-${pos}`} style={{ '--accent-size': `${getCornerSize()}px`, '--accent-color': `${borderColor}${card.scarcity === 'legendary' ? 'cc' : '80'}` } as React.CSSProperties} />
           ))}
           <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: borderColor, boxShadow: card.scarcity === 'legendary' ? `0 0 12px ${borderColor}` : card.scarcity === 'epic' ? `0 0 8px ${borderColor}` : 'none' }} />
-          <CardArt card={card} borderColor={borderColor} size={s} />
+          {/* Card art — hidden if sealed */}
+          {!isSealed && <CardArt card={card} borderColor={borderColor} size={s} />}
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0,0,0,0.5) 100%)' }} />
+
+          {/* SEALED overlay — frosted glass with scarcity glow */}
+          {isSealed && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
+              <div className="absolute inset-0 backdrop-blur-md bg-black/40" />
+              <div className="relative z-10 text-center">
+                <div className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center"
+                  style={{ background: `${borderColor}20`, border: `2px solid ${borderColor}40`, boxShadow: `0 0 20px ${borderColor}30` }}>
+                  <span className="text-lg" style={{ color: borderColor }}>?</span>
+                </div>
+                <div className={`${s.serial} font-mono font-bold uppercase`} style={{ color: borderColor }}>{scarcityConfig.label}</div>
+                <div className={`${s.serial} text-white/30 mt-0.5`}>Sealed</div>
+              </div>
+            </div>
+          )}
+
+          {/* Card info — character hidden if sealed */}
           <div className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
-            <div className={`${s.name} font-semibold text-white truncate leading-tight`}>{card.character}</div>
-            <div className={`${s.moment} text-white/50 truncate`}>{card.moment}</div>
+            <div className={`${s.name} font-semibold text-white truncate leading-tight`}>
+              {isSealed ? '???' : card.character}
+            </div>
+            <div className={`${s.moment} text-white/50 truncate`}>
+              {isSealed ? 'Tap to reveal' : card.moment}
+            </div>
             <div className="flex items-center justify-between mt-0.5">
               <span className={`${s.serial} font-mono font-bold uppercase tracking-wider`} style={{ color: borderColor }}>{scarcityConfig.label}</span>
-              {card.scarcity !== 'common' && <span className={`${s.serial} font-mono text-white/40`}>#{card.serialNumber.toString().padStart(card.maxSerial.toString().length, '0')}/{card.maxSerial}</span>}
+              {!isSealed && card.scarcity !== 'common' && <span className={`${s.serial} font-mono text-white/40`}>#{card.serialNumber.toString().padStart(card.maxSerial.toString().length, '0')}/{card.maxSerial}</span>}
             </div>
           </div>
           {showPrice && card.listed && (
