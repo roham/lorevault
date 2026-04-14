@@ -1677,3 +1677,102 @@ export function getPendingActions(): string[] {
 
   return actions;
 }
+
+// ===== Collection Flex (Shareable Stats) =====
+
+export interface CollectionFlex {
+  totalCards: number;
+  uniqueCharacters: number;
+  rarestCard: { name: string; scarcity: string } | null;
+  collectorLevel: number;
+  collectorTier: string;
+  longestStreak: number;
+  setsStarted: number;
+  encoded: string; // Base64 encoded for URL sharing
+}
+
+export function getCollectionFlex(): CollectionFlex {
+  if (typeof window === 'undefined') return { totalCards: 0, uniqueCharacters: 0, rarestCard: null, collectorLevel: 0, collectorTier: 'Newcomer', longestStreak: 0, setsStarted: 0, encoded: '' };
+
+  const owned = getOwnedCards();
+  const uniqueChars = new Set(owned.map(c => c.character));
+  const level = getCollectorLevel();
+  const streak = getStreak();
+
+  // Find rarest card
+  const scarcityRank: Record<string, number> = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
+  let rarestCard: { name: string; scarcity: string } | null = null;
+  let highestRank = -1;
+  for (const card of owned) {
+    const rank = scarcityRank[card.scarcity] || 0;
+    if (rank > highestRank) {
+      highestRank = rank;
+      rarestCard = { name: `${card.character} — ${card.moment}`, scarcity: card.scarcity };
+    }
+  }
+
+  const setsStarted = new Set(owned.map(c => c.setSlug)).size;
+
+  const data = {
+    t: owned.length,
+    u: uniqueChars.size,
+    l: level.level,
+    ti: level.tier,
+    s: streak,
+    ss: setsStarted,
+    r: rarestCard?.name || '',
+    rs: rarestCard?.scarcity || '',
+  };
+  const encoded = typeof btoa !== 'undefined' ? btoa(JSON.stringify(data)) : '';
+
+  return {
+    totalCards: owned.length,
+    uniqueCharacters: uniqueChars.size,
+    rarestCard,
+    collectorLevel: level.level,
+    collectorTier: level.tier,
+    longestStreak: streak,
+    setsStarted,
+    encoded,
+  };
+}
+
+export function decodeCollectionFlex(encoded: string): Partial<CollectionFlex> {
+  try {
+    const data = JSON.parse(atob(encoded));
+    return {
+      totalCards: data.t || 0,
+      uniqueCharacters: data.u || 0,
+      collectorLevel: data.l || 0,
+      collectorTier: data.ti || 'Newcomer',
+      longestStreak: data.s || 0,
+      setsStarted: data.ss || 0,
+      rarestCard: data.r ? { name: data.r, scarcity: data.rs || 'common' } : null,
+    };
+  } catch {
+    return {};
+  }
+}
+
+// ===== Social Challenge =====
+
+export interface SocialChallenge {
+  game: 'battle' | 'trivia';
+  score: number;
+  difficulty?: string;
+  encoded: string;
+}
+
+export function encodeSocialChallenge(game: 'battle' | 'trivia', score: number, difficulty?: string): string {
+  const data = { g: game, s: score, d: difficulty || '' };
+  return typeof btoa !== 'undefined' ? btoa(JSON.stringify(data)) : '';
+}
+
+export function decodeSocialChallenge(encoded: string): SocialChallenge | null {
+  try {
+    const data = JSON.parse(atob(encoded));
+    return { game: data.g, score: data.s, difficulty: data.d, encoded };
+  } catch {
+    return null;
+  }
+}

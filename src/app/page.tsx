@@ -9,7 +9,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 import { Card, getTierForLevel } from '@/data/types';
-import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, getCollectorPass, COLLECTOR_PASS_TIERS, getWeeklyChallenges, getFeaturedSetEvent, getChallengeChain, getMonthlyLeaderboard, getMonthEndBonus, getSmartCTA, getPendingActions, type LoginCalendarState, type CollectorPassState, type WeeklyChallenge, type FeaturedSetEvent, type ChallengeChainState, type LeaderboardEntry, type SmartCTA } from '@/lib/store';
+import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, getCollectorPass, COLLECTOR_PASS_TIERS, getWeeklyChallenges, getFeaturedSetEvent, getChallengeChain, getMonthlyLeaderboard, getMonthEndBonus, getSmartCTA, getPendingActions, decodeCollectionFlex, getCollectionFlex, type LoginCalendarState, type CollectorPassState, type WeeklyChallenge, type FeaturedSetEvent, type ChallengeChainState, type LeaderboardEntry, type SmartCTA, type CollectionFlex } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
@@ -58,6 +58,7 @@ function HomeContent() {
   const [monthEndBonus, setMonthEndBonus] = useState<{ active: boolean; multiplier: number; daysLeft: number; label: string }>({ active: false, multiplier: 1, daysLeft: 0, label: '' });
   const [smartCta, setSmartCta] = useState<SmartCTA | null>(null);
   const [morningToast, setMorningToast] = useState<string[]>([]);
+  const [flexComparison, setFlexComparison] = useState<{ theirs: Partial<CollectionFlex>; mine: Partial<CollectionFlex> } | null>(null);
 
   useEffect(() => {
     // Capture referral code before any redirect — new users get forwarded to /welcome
@@ -71,6 +72,16 @@ function HomeContent() {
     if (shouldShowWelcome()) {
       router.replace('/welcome');
       return;
+    }
+
+    // Handle ?flex= collection comparison landing
+    const flexParam = searchParams.get('flex');
+    if (flexParam) {
+      const theirs = decodeCollectionFlex(flexParam);
+      const mine = getCollectionFlex();
+      if (theirs.totalCards !== undefined) {
+        setFlexComparison({ theirs, mine });
+      }
     }
 
     recordVisit(); // Update streak before reading it
@@ -164,6 +175,39 @@ function HomeContent() {
             </div>
           ))}
         </motion.div>
+      )}
+
+      {/* ========== COLLECTION COMPARISON ========== */}
+      {flexComparison && (
+        <section className="px-4 mb-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-4 rounded-2xl bg-gradient-to-r from-purple-500/8 to-accent/8 border border-purple-500/20"
+          >
+            <div className="text-[10px] uppercase tracking-[0.1em] text-muted mb-3 text-center">Collection Comparison</div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div className="text-[9px] text-muted mb-1">Their Vault</div>
+                <div className="text-lg font-bold text-purple-400">{flexComparison.theirs.totalCards || 0}</div>
+                <div className="text-[8px] text-muted">cards</div>
+                <div className="text-xs font-semibold text-purple-400 mt-1">L{flexComparison.theirs.collectorLevel || 1}</div>
+              </div>
+              <div className="flex items-center justify-center text-lg text-muted">vs</div>
+              <div>
+                <div className="text-[9px] text-muted mb-1">Your Vault</div>
+                <div className="text-lg font-bold text-accent">{flexComparison.mine.totalCards || 0}</div>
+                <div className="text-[8px] text-muted">cards</div>
+                <div className="text-xs font-semibold text-accent mt-1">L{flexComparison.mine.collectorLevel || 1}</div>
+              </div>
+            </div>
+            {(flexComparison.mine.totalCards || 0) < (flexComparison.theirs.totalCards || 0) && (
+              <Link href="/packs">
+                <div className="mt-3 text-center text-[10px] text-accent font-bold">Catch up — Open packs →</div>
+              </Link>
+            )}
+          </motion.div>
+        </section>
       )}
 
       {/* ========== MONTH-END FOMO BANNER ========== */}

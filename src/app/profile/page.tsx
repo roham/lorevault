@@ -16,7 +16,7 @@ import { AchievementCategory } from '@/data/types';
 import { getVipState, type VipState } from '@/lib/vip';
 import { getPlayerActivityEvents, REACTION_TYPES, type PulseEvent } from '@/lib/pulse';
 import { SOCIAL_FEED_CONFIG } from '@/data/social-feed';
-import { getPrestigeState, PRESTIGE_CHALLENGES, type PrestigeState, getCollectorPass, COLLECTOR_PASS_TIERS, getCollectorMilestones, getActiveTitlePrefix, setActiveTitlePrefix, type CollectorPassState } from '@/lib/store';
+import { getPrestigeState, PRESTIGE_CHALLENGES, type PrestigeState, getCollectorPass, COLLECTOR_PASS_TIERS, getCollectorMilestones, getActiveTitlePrefix, setActiveTitlePrefix, type CollectorPassState, getCollectionFlex, type CollectionFlex } from '@/lib/store';
 import { getReferralState, getReferralLink, REFERRAL_REWARDS, getNextReferralReward } from '@/lib/referral';
 
 function LazySection({ children, height }: { children: React.ReactNode; height: number }) {
@@ -60,6 +60,8 @@ export default function ProfilePage() {
   const [pass, setPass] = useState<CollectorPassState | null>(null);
   const [milestones, setMilestones] = useState<{ milestone: { id: string; title: string; description: string; icon: string; titlePrefix: string }; earned: boolean }[]>([]);
   const [titlePrefix, setTitlePrefix] = useState('');
+  const [flex, setFlex] = useState<CollectionFlex | null>(null);
+  const [flexCopied, setFlexCopied] = useState(false);
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -95,6 +97,7 @@ export default function ProfilePage() {
     setPass(getCollectorPass());
     setMilestones(getCollectorMilestones());
     setTitlePrefix(getActiveTitlePrefix());
+    setFlex(getCollectionFlex());
   }, []);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
@@ -397,6 +400,58 @@ export default function ProfilePage() {
                 <div className="text-[8px] text-muted">{r.at} refs</div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Collection Flex Card */}
+      {flex && flex.totalCards > 0 && (
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-[#1a103a] via-[#2d1b69] to-[#16213e] border border-accent/20 relative overflow-hidden">
+          <div className="absolute inset-0 card-shimmer opacity-20" />
+          <div className="relative">
+            <div className="text-[9px] uppercase tracking-[0.15em] text-accent/60 mb-2">My LoreVault</div>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              <div className="text-center">
+                <div className="text-xl font-bold text-white">{flex.totalCards}</div>
+                <div className="text-[9px] text-muted">Cards</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold text-accent">L{flex.collectorLevel}</div>
+                <div className="text-[9px] text-muted">{flex.collectorTier}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold text-orange-400">{flex.longestStreak}d</div>
+                <div className="text-[9px] text-muted">Streak</div>
+              </div>
+            </div>
+            {flex.rarestCard && (
+              <div className="text-center text-[10px] text-muted mb-3">
+                Rarest pull: <span className="text-yellow-400 font-semibold">{flex.rarestCard.name}</span>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const text = `My LoreVault 📜\n\n📦 ${flex.totalCards} cards collected\n⭐ Level ${flex.collectorLevel} ${flex.collectorTier}\n🔥 ${flex.longestStreak}-day streak\n📚 ${flex.setsStarted} sets explored${flex.rarestCard ? `\n👑 Rarest: ${flex.rarestCard.name}` : ''}\n\nThink you can build a better vault?`;
+                  const url = `${window.location.origin}/?flex=${flex.encoded}`;
+                  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-[#1da1f2]/15 border border-[#1da1f2]/25 text-[#1da1f2] text-xs font-bold"
+              >
+                Share on Twitter
+              </button>
+              <button
+                onClick={() => {
+                  const url = `${window.location.origin}/?flex=${flex.encoded}`;
+                  navigator.clipboard.writeText(url).catch(() => window.prompt('Copy link:', url));
+                  setFlexCopied(true);
+                  setTimeout(() => setFlexCopied(false), 2000);
+                }}
+                className="px-4 py-2.5 rounded-xl bg-accent/10 border border-accent/20 text-accent text-xs font-bold"
+              >
+                {flexCopied ? '✓' : 'Copy'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { TRIVIA_QUESTIONS, TriviaQuestion } from '@/data/trivia';
 import { saveTriviaRecord } from '@/lib/store';
 import { getReferralLink } from '@/lib/referral';
+import { encodeSocialChallenge } from '@/lib/store';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, Achievement } from '@/data/types';
 import { checkAchievements, getAchievementById } from '@/lib/achievements';
@@ -349,7 +350,7 @@ export default function TriviaPage() {
             </Link>
           </div>
 
-          {/* Post-achievement invite prompt */}
+          {/* Post-achievement social actions */}
           {score > 2000 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -357,16 +358,28 @@ export default function TriviaPage() {
               transition={{ delay: 1.2 }}
               className="mt-6 p-3 rounded-xl bg-accent/5 border border-accent/15 text-center max-w-sm mx-auto"
             >
-              <div className="text-[10px] text-muted mb-1">Know someone who loves trivia?</div>
-              <button
-                onClick={() => {
-                  const url = getReferralLink();
-                  navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
-                }}
-                className="text-xs font-bold text-accent"
-              >
-                Invite a friend to LoreVault →
-              </button>
+              <div className="text-[10px] text-muted mb-2">Challenge a friend to beat your score</div>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => {
+                    const challenge = encodeSocialChallenge('trivia', score);
+                    const url = `${window.location.origin}/games/trivia?challenge=${challenge}`;
+                    navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20 text-[10px] font-bold text-accent"
+                >
+                  Copy Challenge Link
+                </button>
+                <button
+                  onClick={() => {
+                    const url = getReferralLink();
+                    navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-surface border border-border text-[10px] font-bold text-muted"
+                >
+                  Invite to LoreVault
+                </button>
+              </div>
             </motion.div>
           )}
         </motion.div>
