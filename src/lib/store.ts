@@ -840,7 +840,10 @@ export function checkPrestigeChallenges(): string[] {
   tryComplete('forge-legendary', (() => {
     try {
       const history = JSON.parse(localStorage.getItem('lorevault_forge_history') || '[]');
-      return history.some((h: { outputRarity: string }) => h.outputRarity === 'legendary');
+      return history.some((h: { outputCardId: string }) => {
+        const card = [...ALL_CARDS, ...GHOST_CARDS].find(c => c.id === h.outputCardId);
+        return card?.scarcity === 'legendary';
+      });
     } catch { return false; }
   })());
 
@@ -890,4 +893,120 @@ export function checkPrestigeChallenges(): string[] {
   }
 
   return newlyCompleted;
+}
+
+// ===== Parallel Transmute =====
+
+const PARALLEL_ORDER = ['base', 'silver', 'gold', 'holographic', 'obsidian'] as const;
+
+export function getNextParallel(current: string): string | null {
+  const idx = PARALLEL_ORDER.indexOf(current as typeof PARALLEL_ORDER[number]);
+  if (idx === -1 || idx >= PARALLEL_ORDER.length - 1) return null;
+  return PARALLEL_ORDER[idx + 1];
+}
+
+export function canTransmute(cardIds: string[], owned: Card[]): { valid: boolean; reason?: string } {
+  if (cardIds.length !== 3) return { valid: false, reason: 'Select 3 cards' };
+  const cards = cardIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[];
+  if (cards.length !== 3) return { valid: false, reason: 'Cards not found' };
+
+  const character = cards[0].character;
+  const parallel = cards[0].parallel;
+  if (!cards.every(c => c.character === character)) return { valid: false, reason: 'Must be same character' };
+  if (!cards.every(c => c.parallel === parallel)) return { valid: false, reason: 'Must be same parallel' };
+  if (!getNextParallel(parallel)) return { valid: false, reason: 'Already max parallel' };
+
+  return { valid: true };
+}
+
+export interface TransmuteEntry {
+  id: string;
+  inputCardIds: string[];
+  outputCardId: string;
+  date: string;
+  fromParallel: string;
+  toParallel: string;
+}
+
+export function getTransmuteHistory(): TransmuteEntry[] {
+  return getItem<TransmuteEntry[]>('lorevault_transmute_history', []);
+}
+
+export function addTransmuteEntry(entry: TransmuteEntry): void {
+  const history = getTransmuteHistory();
+  history.unshift(entry);
+  setItem('lorevault_transmute_history', history.slice(0, 20));
+}
+
+// ===== Card Burn =====
+
+export interface BurnEntry {
+  cardId: string;
+  character: string;
+  scarcity: string;
+  xpGained: number;
+  date: string;
+}
+
+export function getBurnHistory(): BurnEntry[] {
+  return getItem<BurnEntry[]>('lorevault_burn_history', []);
+}
+
+export function burnCard(cardId: string): BurnEntry | null {
+  const owned = getOwnedCards();
+  const card = owned.find(c => c.id === cardId);
+  if (!card) return null;
+
+  // XP value: 2× normal pack pull XP based on scarcity
+  const XP_BY_SCARCITY: Record<string, number> = {
+    common: 20,
+    uncommon: 50,
+    rare: 100,
+    epic: 200,
+    legendary: 500,
+  };
+  const xpGained = (XP_BY_SCARCITY[card.scarcity] || 20) * 2;
+
+  // Remove from collection
+  removeOwnedCards([cardId]);
+
+  // Record burn in card meta history
+  const meta = getCardMeta();
+  if (meta[cardId]) {
+    meta[cardId].history.push({
+      type: 'traded' as const,
+      date: new Date().toISOString(),
+      detail: 'burned',
+    });
+    setItem('lorevault_card_meta', meta);
+  }
+
+  // Grant XP
+  addXP(xpGained);
+
+  // Record burn
+  const entry: BurnEntry = {
+    cardId,
+    character: card.character,
+    scarcity: card.scarcity,
+    xpGained,
+    date: new Date().toISOString(),
+  };
+  const history = getBurnHistory();
+  history.unshift(entry);
+  setItem('lorevault_burn_history', history.slice(0, 50));
+
+  return entry;
+}
+
+// ===== Population Decay Visual =====
+
+export function getPopulationDecayTier(card: Card): 'bright' | 'normal' | 'faded' {
+  const popData = getPopulationData(card);
+  if (!popData || card.scarcity === 'common') return 'normal';
+
+  const pct = card.serialNumber / popData.totalMinted;
+  if (pct <= 0.25) return 'bright'; // Low serial — brighter
+  if (pct >= 0.75) return 'faded'; // High serial — desaturated
+  return 'normal';
 }

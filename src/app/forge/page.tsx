@@ -4,9 +4,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
-import { Card, Scarcity, SCARCITY_CONFIG } from '@/data/types';
+import { Card, Scarcity, Parallel, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
-import { getOwnedCards, addOwnedCards, removeOwnedCards, getCardMeta } from '@/lib/store';
+import { getOwnedCards, addOwnedCards, removeOwnedCards, getCardMeta, canTransmute, getNextParallel, addTransmuteEntry, burnCard } from '@/lib/store';
 import {
   getForgeCost,
   canForge,
@@ -19,6 +19,14 @@ import {
 } from '@/lib/seasonal-vault';
 
 const SCARCITY_ORDER: Scarcity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+
+const PARALLEL_COLORS: Record<string, string> = {
+  base: '#6b7094',
+  silver: '#c0c0c0',
+  gold: '#ffd700',
+  holographic: '#ff6ec7',
+  obsidian: '#818cf8',
+};
 
 function CountdownChip() {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 });
@@ -48,6 +56,8 @@ function CountdownChip() {
   );
 }
 
+type ForgeMode = 'forge' | 'transmute';
+
 export default function ForgePage() {
   const [ownedCards, setOwnedCards] = useState<Card[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -58,6 +68,9 @@ export default function ForgePage() {
   const [seasonActive, setSeasonActive] = useState(false);
   const [forgeCost, setForgeCost] = useState(3);
   const [ready, setReady] = useState(false);
+  const [mode, setMode] = useState<ForgeMode>('forge');
+  const [filterParallel, setFilterParallel] = useState<string>('base');
+  const [burnConfirm, setBurnConfirm] = useState<string | null>(null);
 
   useEffect(() => {
     setOwnedCards(getOwnedCards());
@@ -69,42 +82,63 @@ export default function ForgePage() {
 
   // Cards available for forging (filter by selected rarity, exclude legendary)
   const forgeableCards = useMemo(() => {
+    if (mode === 'transmute') {
+      return ownedCards.filter(c => c.parallel === filterParallel && filterParallel !== 'obsidian');
+    }
     return ownedCards.filter(c => c.scarcity === filterRarity && c.scarcity !== 'legendary');
-  }, [ownedCards, filterRarity]);
+  }, [ownedCards, filterRarity, mode, filterParallel]);
 
   const toggleCard = (cardId: string) => {
+    const maxSelect = mode === 'transmute' ? 3 : forgeCost;
     setSelectedIds(prev => {
       if (prev.includes(cardId)) return prev.filter(id => id !== cardId);
-      if (prev.length >= forgeCost) return prev;
+      if (prev.length >= maxSelect) return prev;
       return [...prev, cardId];
     });
   };
 
   const forgeValidation = useMemo(() => {
+    if (mode === 'transmute') return canTransmute(selectedIds, ownedCards);
     return canForge(selectedIds, ownedCards);
-  }, [selectedIds, ownedCards]);
+  }, [selectedIds, ownedCards, mode]);
 
   const nextRarity = getNextRarity(filterRarity);
+  const nextParallel = getNextParallel(filterParallel);
 
   const executeForge = async () => {
-    if (!forgeValidation.valid || !nextRarity) return;
+    if (!forgeValidation.valid) return;
 
     setForging(true);
 
     // Wait for animation
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // Pick the output card: find a card of the next rarity in a matching set
     const inputCards = ownedCards.filter(c => selectedIds.includes(c.id));
     const inputSet = inputCards[0]?.setSlug;
+    let outputCard: Card | undefined;
 
-    // Find candidate output from ALL_CARDS
-    const candidates = ALL_CARDS.filter(
-      c => c.scarcity === nextRarity && c.setSlug === inputSet && !ownedCards.some(o => o.id === c.id)
-    );
-    const outputCard = candidates[0] || ALL_CARDS.find(
-      c => c.scarcity === nextRarity && !ownedCards.some(o => o.id === c.id)
-    );
+    if (mode === 'transmute') {
+      // Transmute: same character, next parallel tier
+      const inputCharacter = inputCards[0]?.character;
+      const targetParallel = nextParallel;
+      if (!targetParallel) { setForging(false); return; }
+
+      // Find candidate: same character + target parallel
+      outputCard = ALL_CARDS.find(
+        c => c.character === inputCharacter && c.parallel === targetParallel && !ownedCards.some(o => o.id === c.id)
+      ) || ALL_CARDS.find(
+        c => c.setSlug === inputSet && c.parallel === targetParallel && !ownedCards.some(o => o.id === c.id)
+      );
+    } else {
+      if (!nextRarity) { setForging(false); return; }
+      // Rarity forge: find a card of the next rarity in a matching set
+      const candidates = ALL_CARDS.filter(
+        c => c.scarcity === nextRarity && c.setSlug === inputSet && !ownedCards.some(o => o.id === c.id)
+      );
+      outputCard = candidates[0] || ALL_CARDS.find(
+        c => c.scarcity === nextRarity && !ownedCards.some(o => o.id === c.id)
+      );
+    }
 
     if (!outputCard) {
       setForging(false);
@@ -139,13 +173,24 @@ export default function ForgePage() {
     }
     localStorage.setItem('lorevault_card_meta', JSON.stringify(meta));
 
-    addForgeEntry({
-      id: `forge-${Date.now()}`,
-      inputCardIds: selectedIds,
-      outputCardId: outputCard.id,
-      date: new Date().toISOString(),
-      seasonal: seasonActive,
-    });
+    if (mode === 'transmute') {
+      addTransmuteEntry({
+        id: `transmute-${Date.now()}`,
+        inputCardIds: selectedIds,
+        outputCardId: outputCard.id,
+        date: new Date().toISOString(),
+        fromParallel: filterParallel,
+        toParallel: nextParallel || filterParallel,
+      });
+    } else {
+      addForgeEntry({
+        id: `forge-${Date.now()}`,
+        inputCardIds: selectedIds,
+        outputCardId: outputCard.id,
+        date: new Date().toISOString(),
+        seasonal: seasonActive,
+      });
+    }
 
     setForgedCard(outputCard);
     setForging(false);
@@ -279,11 +324,29 @@ export default function ForgePage() {
       <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="type-heading">Forge</h1>
-          <p className="text-xs text-muted">Combine cards to forge higher rarities</p>
+          <p className="text-xs text-muted">
+            {mode === 'forge' ? 'Combine cards to forge higher rarities' : 'Transmute 3 same-character cards to next parallel'}
+          </p>
         </div>
         <Link href="/collection" className="text-xs text-muted hover:text-foreground">
           ← Collection
         </Link>
+      </div>
+
+      {/* Mode toggle */}
+      <div className="flex gap-1.5 mb-4 p-1 rounded-xl bg-surface/40 border border-border/30">
+        <button
+          onClick={() => { setMode('forge'); setSelectedIds([]); }}
+          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${mode === 'forge' ? 'bg-accent/20 text-accent' : 'text-muted'}`}
+        >
+          🔨 Rarity Forge
+        </button>
+        <button
+          onClick={() => { setMode('transmute'); setSelectedIds([]); }}
+          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${mode === 'transmute' ? 'bg-purple-500/20 text-purple-400' : 'text-muted'}`}
+        >
+          ◈ Parallel Transmute
+        </button>
       </div>
 
       {/* Season discount banner */}
@@ -314,56 +377,99 @@ export default function ForgePage() {
       <div className="p-4 rounded-xl bg-surface/60 border border-border/30 mb-4">
         <div className="flex items-center justify-center gap-3 text-center">
           <div>
-            <div className="text-2xl font-bold font-mono text-foreground">{forgeCost}</div>
+            <div className="text-2xl font-bold font-mono text-foreground">{mode === 'transmute' ? 3 : forgeCost}</div>
             <div className="text-[9px] text-muted uppercase tracking-wider">
-              {filterRarity !== 'legendary' ? SCARCITY_CONFIG[filterRarity].label : '—'}
+              {mode === 'transmute'
+                ? (PARALLEL_CONFIG[filterParallel as keyof typeof PARALLEL_CONFIG]?.label || filterParallel)
+                : (filterRarity !== 'legendary' ? SCARCITY_CONFIG[filterRarity].label : '—')}
             </div>
           </div>
           <span className="text-xl text-muted">→</span>
           <div>
-            <div className="text-2xl font-bold font-mono" style={{ color: nextRarity ? SCARCITY_CONFIG[nextRarity].color : '#6b7094' }}>
+            <div className="text-2xl font-bold font-mono" style={{
+              color: mode === 'transmute'
+                ? (nextParallel ? (PARALLEL_COLORS[nextParallel] || '#818cf8') : '#6b7094')
+                : (nextRarity ? SCARCITY_CONFIG[nextRarity].color : '#6b7094')
+            }}>
               1
             </div>
-            <div className="text-[9px] uppercase tracking-wider" style={{ color: nextRarity ? SCARCITY_CONFIG[nextRarity].color : '#6b7094' }}>
-              {nextRarity ? SCARCITY_CONFIG[nextRarity].label : '—'}
+            <div className="text-[9px] uppercase tracking-wider" style={{
+              color: mode === 'transmute'
+                ? (nextParallel ? (PARALLEL_COLORS[nextParallel] || '#818cf8') : '#6b7094')
+                : (nextRarity ? SCARCITY_CONFIG[nextRarity].color : '#6b7094')
+            }}>
+              {mode === 'transmute'
+                ? (nextParallel ? (PARALLEL_CONFIG[nextParallel as keyof typeof PARALLEL_CONFIG]?.label || nextParallel) : '—')
+                : (nextRarity ? SCARCITY_CONFIG[nextRarity].label : '—')}
             </div>
           </div>
         </div>
         <div className="text-center mt-2 text-[10px] text-muted">
-          Input cards are consumed. Forged card inherits the highest Legacy Score.
+          {mode === 'transmute'
+            ? '3 same-character, same-parallel cards → 1 next parallel tier. Input cards consumed.'
+            : 'Input cards are consumed. Forged card inherits the highest Legacy Score.'}
         </div>
       </div>
 
-      {/* Rarity filter tabs */}
-      <div className="flex gap-1.5 mb-4">
-        {SCARCITY_ORDER.filter(s => s !== 'legendary').map(s => {
-          const count = ownedCards.filter(c => c.scarcity === s).length;
-          return (
-            <button
-              key={s}
-              onClick={() => { setFilterRarity(s); setSelectedIds([]); }}
-              className={`flex-1 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
-                filterRarity === s
-                  ? 'border-2'
-                  : 'bg-surface/40 border border-border/30 text-muted'
-              }`}
-              style={filterRarity === s ? {
-                backgroundColor: `${SCARCITY_CONFIG[s].color}15`,
-                borderColor: `${SCARCITY_CONFIG[s].color}40`,
-                color: SCARCITY_CONFIG[s].color,
-              } : undefined}
-            >
-              {SCARCITY_CONFIG[s].label}
-              <span className="ml-1 opacity-60">{count}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Filter tabs */}
+      {mode === 'forge' ? (
+        <div className="flex gap-1.5 mb-4">
+          {SCARCITY_ORDER.filter(s => s !== 'legendary').map(s => {
+            const count = ownedCards.filter(c => c.scarcity === s).length;
+            return (
+              <button
+                key={s}
+                onClick={() => { setFilterRarity(s); setSelectedIds([]); }}
+                className={`flex-1 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
+                  filterRarity === s
+                    ? 'border-2'
+                    : 'bg-surface/40 border border-border/30 text-muted'
+                }`}
+                style={filterRarity === s ? {
+                  backgroundColor: `${SCARCITY_CONFIG[s].color}15`,
+                  borderColor: `${SCARCITY_CONFIG[s].color}40`,
+                  color: SCARCITY_CONFIG[s].color,
+                } : undefined}
+              >
+                {SCARCITY_CONFIG[s].label}
+                <span className="ml-1 opacity-60">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex gap-1.5 mb-4">
+          {(['base', 'silver', 'gold', 'holographic'] as const).map(p => {
+            const cfg = PARALLEL_CONFIG[p];
+            const pColor = PARALLEL_COLORS[p] || '#6b7094';
+            const count = ownedCards.filter(c => c.parallel === p).length;
+            return (
+              <button
+                key={p}
+                onClick={() => { setFilterParallel(p); setSelectedIds([]); }}
+                className={`flex-1 px-2 py-2 rounded-lg text-[10px] font-semibold transition-colors ${
+                  filterParallel === p
+                    ? 'border-2'
+                    : 'bg-surface/40 border border-border/30 text-muted'
+                }`}
+                style={filterParallel === p ? {
+                  backgroundColor: `${pColor}15`,
+                  borderColor: `${pColor}40`,
+                  color: pColor,
+                } : undefined}
+              >
+                {cfg.label}
+                <span className="ml-1 opacity-60">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Selection status */}
       <div className="flex items-center justify-between mb-3">
         <span className="text-[11px] text-muted">
-          Selected: <span className="text-foreground font-bold">{selectedIds.length}/{forgeCost}</span>
+          Selected: <span className="text-foreground font-bold">{selectedIds.length}/{mode === 'transmute' ? 3 : forgeCost}</span>
         </span>
         {selectedIds.length > 0 && (
           <button
@@ -427,8 +533,10 @@ export default function ForgePage() {
         }`}
       >
         {forgeValidation.valid
-          ? `Forge ${forgeCost} ${SCARCITY_CONFIG[filterRarity].label} → 1 ${nextRarity ? SCARCITY_CONFIG[nextRarity].label : ''}`
-          : forgeValidation.reason || `Select ${forgeCost} cards of the same rarity`
+          ? mode === 'transmute'
+            ? `Transmute 3 ${PARALLEL_CONFIG[filterParallel as keyof typeof PARALLEL_CONFIG]?.label || ''} → 1 ${nextParallel ? PARALLEL_CONFIG[nextParallel as keyof typeof PARALLEL_CONFIG]?.label || '' : ''}`
+            : `Forge ${forgeCost} ${SCARCITY_CONFIG[filterRarity].label} → 1 ${nextRarity ? SCARCITY_CONFIG[nextRarity].label : ''}`
+          : forgeValidation.reason || (mode === 'transmute' ? 'Select 3 same-character, same-parallel cards' : `Select ${forgeCost} cards of the same rarity`)
         }
       </motion.button>
 
