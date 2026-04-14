@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
@@ -13,6 +13,18 @@ import { getOwnedCards, getShowcaseIds, getXP, getStreak, getPackCredits, resetA
 import { getShowcases, getActiveShowcaseId, SHOWCASE_THEMES, ShowcaseTheme } from '@/lib/showcase-store';
 import { ACHIEVEMENTS, getAchievementRarityColor } from '@/lib/achievements';
 import { getVipState, type VipState } from '@/lib/vip';
+
+function LazySection({ children, height }: { children: React.ReactNode; height: number }) {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { rootMargin: '100px' });
+    obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return <div ref={ref}>{visible ? children : <div style={{ height }} className="rounded-2xl bg-surface/20 animate-pulse" />}</div>;
+}
 
 const TIER_COLORS: Record<string, string> = {
   Newcomer: '#6b7094',
@@ -77,10 +89,8 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
-      {/* Collector Level Hero */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+      {/* Collector Level Hero — no entrance animation for instant render */}
+      <div
         className="p-6 rounded-2xl mb-6"
         style={{
           background: `linear-gradient(135deg, rgba(18,20,31,0.95), ${tierColor}08)`,
@@ -152,14 +162,11 @@ export default function ProfilePage() {
             </div>
           ))}
         </div>
-      </motion.div>
+      </div>
 
-      {/* VIP Status Card */}
+      {/* VIP Status Card — no entrance animation */}
       {vip && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
+        <div
           className="mb-6 rounded-2xl overflow-hidden"
           style={{ border: `1px solid ${vip.tier.color}25` }}
         >
@@ -231,30 +238,13 @@ export default function ProfilePage() {
               <div className="text-[9px] text-muted uppercase tracking-wider">Early Access</div>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
 
-      {/* Collector's Guide link */}
-      <Link href="/guide" className="block mb-6 p-4 rounded-xl bg-accent/5 border border-accent/20 hover:bg-accent/10 transition-all">
-        <div className="flex items-center gap-3">
-          <span className="text-xl">{'\u{1F4D6}'}</span>
-          <div>
-            <div className="text-sm font-semibold">Collector&apos;s Guide</div>
-            <div className="text-xs text-muted">Learn scarcity, parallels, VIP tiers &amp; strategy</div>
-          </div>
-          <span className="ml-auto text-muted">&rarr;</span>
-        </div>
-      </Link>
-
-      {/* Season Track — hero section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mb-8"
-      >
+      {/* Season Track — no entrance animation */}
+      <section className="mb-8">
         <SeasonTrack />
-      </motion.section>
+      </section>
 
       {/* Showcase */}
       {showcaseCards.length > 0 && (
@@ -276,39 +266,35 @@ export default function ProfilePage() {
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
             }} />
             <div className="flex gap-4 overflow-x-auto pb-2 relative z-10 no-scrollbar">
-              {showcaseCards.map((card, i) => (
-                <motion.div
-                  key={card.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.1, duration: 0.4 }}
-                  className="flex-shrink-0"
-                >
-                  <CardItem card={card} size="lg" />
-                </motion.div>
+              {showcaseCards.map((card) => (
+                <div key={card.id} className="flex-shrink-0">
+                  <CardItem card={card} size="lg" interactive={false} />
+                </div>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* Achievements */}
+      {/* Achievements — lazy loaded, horizontal scroll on mobile */}
+      <LazySection height={200}>
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Achievements</span>
           <span className="text-xs text-muted">{earnedIds.size}/{ACHIEVEMENTS.length}</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {ACHIEVEMENTS.map((achievement, i) => {
+        <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar sm:grid sm:grid-cols-4">
+          {[...ACHIEVEMENTS].sort((a, b) => {
+            const ae = earnedIds.has(a.id) ? 0 : 1;
+            const be = earnedIds.has(b.id) ? 0 : 1;
+            return ae - be;
+          }).map((achievement) => {
             const isEarned = earnedIds.has(achievement.id);
             const color = getAchievementRarityColor(achievement.rarity);
             return (
-              <motion.div
+              <div
                 key={achievement.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className={`p-3 rounded-xl text-center transition-all ${
+                className={`p-3 rounded-xl text-center shrink-0 w-[140px] sm:w-auto ${
                   isEarned ? 'bg-surface border border-border' : 'bg-surface/30 border border-border/30 opacity-40'
                 }`}
               >
@@ -337,70 +323,61 @@ export default function ProfilePage() {
                     {achievement.mockPercent}% earned
                   </div>
                 )}
-              </motion.div>
+              </div>
             );
           })}
         </div>
       </section>
+      </LazySection>
 
-      {/* Set Completion */}
+      {/* Set Completion — lazy loaded, compact rows */}
+      <LazySection height={220}>
       <section className="mb-8">
-        <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-4 block">Set Completion</span>
-        <div className="space-y-3">
-          {setStats.map((set, i) => {
+        <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-3 block">Set Completion</span>
+        <div className="rounded-xl bg-surface border border-border divide-y divide-border/30 overflow-hidden">
+          {setStats.map((set) => {
             const pct = set.total > 0 ? Math.round((set.owned / set.total) * 100) : 0;
             return (
-              <motion.div
-                key={set.slug}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
-                className="p-4 rounded-xl bg-surface border border-border"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span>{set.icon}</span>
-                    <span className="font-semibold text-sm">{set.name}</span>
-                  </div>
-                  <span className="text-xs text-muted font-mono">{set.owned}/{set.total}</span>
+              <div key={set.slug} className="flex items-center gap-3 px-3 py-2.5">
+                <span className="text-sm shrink-0">{set.icon}</span>
+                <span className="text-xs font-semibold flex-1 truncate">{set.name}</span>
+                <div className="w-20 h-1.5 rounded-full bg-border/30 overflow-hidden shrink-0">
+                  <div className="h-full rounded-full bg-accent transition-all duration-500" style={{ width: `${pct}%` }} />
                 </div>
-                <div className="relative h-2 rounded-full bg-background overflow-hidden">
-                  <motion.div
-                    className="absolute inset-y-0 left-0 rounded-full bg-accent"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${pct}%` }}
-                    transition={{ delay: 0.3 + i * 0.1, duration: 0.8 }}
-                  />
-                </div>
-              </motion.div>
+                <span className="text-[10px] text-muted font-mono w-10 text-right">{set.owned}/{set.total}</span>
+              </div>
             );
           })}
         </div>
       </section>
+      </LazySection>
 
-      {/* Scarcity Distribution */}
+      {/* Scarcity Distribution — lazy loaded */}
+      <LazySection height={80}>
       <section className="mb-8">
-        <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-4 block">Scarcity Distribution</span>
-        <div className="grid grid-cols-5 gap-3">
+        <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-3 block">Scarcity Distribution</span>
+        <div className="grid grid-cols-5 gap-2">
           {(['common', 'uncommon', 'rare', 'epic', 'legendary'] as Scarcity[]).map((scarcity) => (
             <div
               key={scarcity}
-              className="p-3 rounded-xl text-center"
+              className="p-2 rounded-lg text-center"
               style={{
                 background: `${SCARCITY_CONFIG[scarcity].color}10`,
-                border: `1px solid ${SCARCITY_CONFIG[scarcity].color}30`,
+                border: `1px solid ${SCARCITY_CONFIG[scarcity].color}20`,
               }}
             >
-              <div className="text-xl font-bold font-mono" style={{ color: SCARCITY_CONFIG[scarcity].color }}>
+              <div className="text-base font-bold font-mono" style={{ color: SCARCITY_CONFIG[scarcity].color }}>
                 {scarcityDist[scarcity] || 0}
               </div>
-              <div className="text-[10px] text-muted capitalize">{scarcity}</div>
+              <div className="text-[9px] text-muted capitalize">{scarcity}</div>
             </div>
           ))}
         </div>
       </section>
+      </LazySection>
 
-      {/* Debug / Testing */}
+      {/* Testing Controls — dev only */}
+      {process.env.NODE_ENV === 'development' && (
       <section className="mb-8">
         <span className="text-[11px] uppercase tracking-[0.08em] text-muted/30 mb-4 block">Testing Controls</span>
         <div className="flex gap-3">
@@ -417,8 +394,8 @@ export default function ProfilePage() {
             Reset Everything
           </button>
         </div>
-        <p className="text-[10px] text-muted/30 mt-2">For demo purposes. Resets localStorage and starts fresh.</p>
       </section>
+      )}
     </div>
   );
 }
