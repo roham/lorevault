@@ -93,6 +93,49 @@ export default function GamesHub() {
       {/* Game Modes */}
       <h2 className="text-xs font-bold uppercase tracking-wider text-muted mb-3">Game Modes</h2>
       <div className="space-y-3 mb-8">
+        {/* Baseball — Featured */}
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.12 }}
+        >
+          <Link href="/games/baseball">
+            <div className="relative overflow-hidden rounded-2xl border border-blue-500/30 hover:border-blue-500/50 transition-all group">
+              <div
+                className="p-5"
+                style={{
+                  background: 'linear-gradient(135deg, #0a1a2e 0%, #12141f 100%)',
+                }}
+              >
+                <div className="absolute top-3 right-3">
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold uppercase">
+                    New
+                  </span>
+                </div>
+                <div className="flex items-start gap-4">
+                  <motion.div
+                    className="w-16 h-16 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-3xl flex-shrink-0"
+                    whileHover={{ rotate: [0, -5, 5, 0] }}
+                  >
+                    &#9918;
+                  </motion.div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold mb-0.5">Public Domain Baseball</h3>
+                    <p className="text-xs text-muted mb-2">
+                      d20 dice baseball with literary legends. Build your lineup and play ball.
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] text-blue-400/60">99 characters</span>
+                      <span className="text-[10px] text-blue-400/60">MLB Showdown-inspired</span>
+                    </div>
+                  </div>
+                  <div className="text-muted text-xl group-hover:text-blue-400 transition-colors">&rarr;</div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
+
         {/* Battle */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
