@@ -12,15 +12,21 @@ function getCardArtPath(card: Card): string {
 }
 
 function CardArt({ card, borderColor, size: s }: { card: Card; borderColor: string; size: typeof SIZE_MAP[keyof typeof SIZE_MAP] }) {
+  const [imgSrc, setImgSrc] = useState(() => getCardArtPath(card));
   const [hasArt, setHasArt] = useState(true);
+  // Fallback chain: variant-specific path → base path → monogram
+  const basePath = `/cards/${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9\/]/g, '-').replace(/-+/g, '-') + '.webp';
   return (
     <>
       {hasArt && (
         <img
-          src={getCardArtPath(card)}
+          src={imgSrc}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
-          onError={() => setHasArt(false)}
+          onError={() => {
+            if (imgSrc !== basePath) { setImgSrc(basePath); }
+            else { setHasArt(false); }
+          }}
           loading="lazy"
         />
       )}

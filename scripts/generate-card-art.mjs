@@ -102,20 +102,19 @@ function parseAllCards() {
 
   for (const [setSlug, chars] of Object.entries(setCharacters)) {
     for (const char of chars) {
-      // Common base card
-      rand(); // skip serial
+      // Match exact rand() call order from cards.ts generateCards():
+      rand(); // 1: commonSerial
+      rand(); // 2: common card listed flag (inline in object literal)
       cards.push({ ...char, setSlug, scarcity: 'common', parallel: 'base' });
 
       // Higher variant
-      const roll = rand();
+      const roll = rand(); // 3: scarcity roll
       const scarcity = roll < 0.4 ? 'uncommon' : roll < 0.7 ? 'rare' : roll < 0.9 ? 'epic' : 'legendary';
-      const pRoll = rand();
+      const pRoll = rand(); // 4: parallel roll
       const parallel = pRoll < 0.5 ? 'base' : pRoll < 0.7 ? 'silver' : pRoll < 0.85 ? 'gold' : pRoll < 0.95 ? 'holographic' : 'obsidian';
-      rand(); // skip serial
+      rand(); // 5: higher variant serial
+      rand(); // 6: higher variant listed flag
       cards.push({ ...char, setSlug, scarcity, parallel });
-
-      rand(); // skip listed flag for card 1
-      rand(); // skip listed flag for card 2
     }
   }
 
