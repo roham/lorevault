@@ -19,6 +19,7 @@ export default function ChasePrototype() {
   const [currentRevealIndex, setCurrentRevealIndex] = useState(0);
   const [newForSet, setNewForSet] = useState<string[]>([]);
   const [packs, setPacks] = useState(0);
+  const [inspectedCard, setInspectedCard] = useState<Card | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('lorevault_chase_set');
@@ -190,6 +191,9 @@ export default function ChasePrototype() {
   // PHASE 3: Binder — the set grid
   // ═══════════════════════════════════════════
   if (phase === 'binder' && selectedSet) {
+    const isFinishing = totalInSet > 0 && ownedInSet >= totalInSet * 0.9 && ownedInSet < totalInSet;
+    const missingCards = setCards.filter(c => !ownedCharacters.has(c.character));
+
     return (
       <div
         className="min-h-screen px-3 pt-2"
@@ -229,6 +233,53 @@ export default function ChasePrototype() {
           />
         </div>
 
+        {/* FINISHING MODE — full-focus on remaining gaps */}
+        {isFinishing && (
+          <motion.div
+            className="mb-5 p-4 rounded-xl"
+            style={{
+              background: `linear-gradient(135deg, ${selectedSet.gradientFrom}40, ${selectedSet.gradientTo}20)`,
+              border: `1px solid ${selectedSet.gradientTo}40`,
+            }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="text-[10px] font-bold tracking-wider text-amber-400/80 mb-2">
+              ALMOST THERE
+            </div>
+            <p className="text-xs text-foreground/80 mb-3">
+              {missingCards.length} {missingCards.length === 1 ? 'card' : 'cards'} left to complete the set
+            </p>
+            <div className="flex gap-3">
+              {missingCards.map(card => (
+                <div key={card.character} className="flex flex-col items-center gap-1">
+                  <div
+                    className="w-12 h-[67px] rounded-lg flex items-center justify-center relative"
+                    style={{
+                      background: 'rgba(15, 15, 25, 0.8)',
+                      border: '1.5px solid rgba(255,255,255,0.1)',
+                      boxShadow: '0 0 12px rgba(245, 158, 11, 0.08)',
+                    }}
+                  >
+                    <span className="text-xl" style={{ opacity: 0.15, filter: 'grayscale(1)' }}>
+                      {card.symbol}
+                    </span>
+                    <motion.div
+                      className="absolute inset-0 rounded-lg"
+                      style={{ border: '1px solid rgba(245, 158, 11, 0.15)' }}
+                      animate={{ opacity: [0.3, 0.8, 0.3] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  </div>
+                  <span className="text-[9px] text-amber-400/60 text-center max-w-[56px] truncate">
+                    {card.character}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Binder grid — 4 columns on mobile */}
         <div className="grid grid-cols-4 gap-2">
           {setCards.map((card, i) => {
@@ -242,56 +293,61 @@ export default function ChasePrototype() {
                 transition={{ delay: i * 0.03 }}
                 className="relative"
               >
-                <div
-                  className="aspect-[5/7] rounded-lg overflow-hidden relative"
-                  style={{
-                    background: isOwned
-                      ? `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`
-                      : 'rgba(15, 15, 25, 0.6)',
-                    border: isOwned
-                      ? `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`
-                      : '1.5px dashed rgba(255,255,255,0.06)',
-                  }}
+                <button
+                  className="w-full text-left"
+                  onClick={() => isOwned ? setInspectedCard(card) : undefined}
                 >
-                  {isOwned ? (
-                    <>
-                      {/* Owned card — symbol + vignette */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-2xl" style={{ opacity: 0.8 }}>{card.symbol}</span>
-                      </div>
-                      <div
-                        className="absolute inset-0"
-                        style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,0.4) 100%)' }}
-                      />
-                      {/* Scarcity indicator */}
-                      <div
-                        className="absolute bottom-0 left-0 right-0 h-[2px]"
-                        style={{ background: SCARCITY_CONFIG[card.scarcity].color }}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      {/* Empty slot — silhouette with faded symbol */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span
-                          className="text-2xl"
-                          style={{ opacity: 0.08, filter: 'grayscale(1)' }}
-                        >
-                          {card.symbol}
-                        </span>
-                      </div>
-                      {/* Dashed border corner accents */}
-                      <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/8 rounded-tl" />
-                      <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-white/8 rounded-tr" />
-                      <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-white/8 rounded-bl" />
-                      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/8 rounded-br" />
-                    </>
-                  )}
-                </div>
+                  <div
+                    className="aspect-[5/7] rounded-lg overflow-hidden relative"
+                    style={{
+                      background: isOwned
+                        ? `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`
+                        : 'rgba(15, 15, 25, 0.6)',
+                      border: isOwned
+                        ? `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`
+                        : '1.5px dashed rgba(255,255,255,0.06)',
+                    }}
+                  >
+                    {isOwned ? (
+                      <>
+                        {/* Owned card — symbol + vignette */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-2xl" style={{ opacity: 0.8 }}>{card.symbol}</span>
+                        </div>
+                        <div
+                          className="absolute inset-0"
+                          style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,0.4) 100%)' }}
+                        />
+                        {/* Scarcity indicator */}
+                        <div
+                          className="absolute bottom-0 left-0 right-0 h-[2px]"
+                          style={{ background: SCARCITY_CONFIG[card.scarcity].color }}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        {/* Empty slot — silhouette with faded symbol */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span
+                            className="text-2xl"
+                            style={{ opacity: 0.08, filter: 'grayscale(1)' }}
+                          >
+                            {card.symbol}
+                          </span>
+                        </div>
+                        {/* Dashed border corner accents */}
+                        <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/8 rounded-tl" />
+                        <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-white/8 rounded-tr" />
+                        <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-white/8 rounded-bl" />
+                        <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/8 rounded-br" />
+                      </>
+                    )}
+                  </div>
+                </button>
 
-                {/* Character name — always visible */}
+                {/* Character name — always visible, 10px min per Odin feedback */}
                 <div
-                  className="text-[8px] text-center mt-1 truncate leading-tight px-0.5"
+                  className="text-[10px] text-center mt-1 truncate leading-tight px-0.5"
                   style={{
                     color: isOwned ? 'var(--color-foreground)' : 'var(--color-muted)',
                     opacity: isOwned ? 0.8 : 0.25,
@@ -305,6 +361,71 @@ export default function ChasePrototype() {
             );
           })}
         </div>
+
+        {/* Card inspection overlay */}
+        <AnimatePresence>
+          {inspectedCard && (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center px-8"
+              style={{ background: 'rgba(0,0,0,0.8)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setInspectedCard(null)}
+            >
+              <motion.div
+                className="w-full max-w-[240px]"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                onClick={e => e.stopPropagation()}
+              >
+                {/* Large card */}
+                <div
+                  className="aspect-[5/7] rounded-xl overflow-hidden relative mb-4"
+                  style={{
+                    background: `linear-gradient(145deg, ${inspectedCard.gradientFrom}, ${inspectedCard.gradientTo})`,
+                    border: `2px solid ${SCARCITY_CONFIG[inspectedCard.scarcity].color}`,
+                    boxShadow: `0 0 40px ${SCARCITY_CONFIG[inspectedCard.scarcity].color}25`,
+                  }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-6xl" style={{ opacity: 0.7 }}>{inspectedCard.symbol}</span>
+                  </div>
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,0.5) 100%)' }}
+                  />
+                  <div
+                    className="absolute bottom-0 left-0 right-0 px-3 py-2.5"
+                    style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)' }}
+                  >
+                    <div className="text-sm font-semibold text-white/90 truncate">{inspectedCard.character}</div>
+                    <div className="text-[10px] text-white/50">{inspectedCard.moment}</div>
+                  </div>
+                </div>
+                {/* Card details */}
+                <div className="text-center">
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-wider"
+                    style={{ color: SCARCITY_CONFIG[inspectedCard.scarcity].color }}
+                  >
+                    {inspectedCard.scarcity} {inspectedCard.parallel !== 'base' ? `/ ${inspectedCard.parallel}` : ''}
+                  </span>
+                  <p className="text-[11px] text-muted/60 mt-2 italic leading-relaxed">
+                    {inspectedCard.loreText.replace(/^"|"$/g, '')}
+                  </p>
+                  <button
+                    onClick={() => setInspectedCard(null)}
+                    className="mt-4 text-[10px] text-muted/40 py-2 px-4"
+                  >
+                    Tap to close
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Fixed bottom CTA — open packs */}
         <div
