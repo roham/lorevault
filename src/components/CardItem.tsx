@@ -3,7 +3,7 @@
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getCardMeta, getAgingTiers, type AgingTiers } from '@/lib/store';
+import { getCardMeta, getAgingTiers, getOriginBadge, type AgingTiers, type OriginBadge } from '@/lib/store';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -142,6 +142,10 @@ function CardItemStatic({
     if (typeof window === 'undefined') return null;
     return getAgingTiers(card.id);
   });
+  const [originBadge] = useState<OriginBadge | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return getOriginBadge(card.id);
+  });
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
   const borderWidth = card.scarcity === 'legendary' ? 3 : card.scarcity === 'epic' ? 2.5 : 2;
@@ -186,6 +190,19 @@ function CardItemStatic({
 
           {/* Aging visual effects — behind sealed overlay */}
           <AgingOverlays tiers={agingTiers} />
+
+          {/* Origin badge — provenance marker */}
+          {!isSealed && originBadge && (
+            <div
+              className="absolute top-1.5 left-1.5 z-[16] flex items-center gap-1 px-1.5 py-0.5 rounded-full backdrop-blur-sm"
+              style={{ background: `${originBadge.color}20`, border: `1px solid ${originBadge.color}40` }}
+            >
+              <span className="text-[8px]">{originBadge.icon}</span>
+              {(size === 'lg' || size === 'xl') && (
+                <span className="text-[7px] font-bold uppercase tracking-wider" style={{ color: originBadge.color }}>{originBadge.label}</span>
+              )}
+            </div>
+          )}
 
           {/* SEALED overlay — frosted glass with scarcity glow */}
           {isSealed && (
@@ -247,6 +264,10 @@ function CardItemInteractive({
   const [agingTiers] = useState<AgingTiers | null>(() => {
     if (typeof window === 'undefined') return null;
     return getAgingTiers(card.id);
+  });
+  const [originBadge] = useState<OriginBadge | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return getOriginBadge(card.id);
   });
   const s = SIZE_MAP[size];
 
@@ -434,6 +455,19 @@ function CardItemInteractive({
 
           {/* Aging visual effects */}
           <AgingOverlays tiers={agingTiers} />
+
+          {/* Origin badge — provenance marker */}
+          {originBadge && (
+            <div
+              className="absolute top-1.5 left-1.5 z-[16] flex items-center gap-1 px-1.5 py-0.5 rounded-full backdrop-blur-sm"
+              style={{ background: `${originBadge.color}20`, border: `1px solid ${originBadge.color}40` }}
+            >
+              <span className="text-[8px]">{originBadge.icon}</span>
+              {(size === 'lg' || size === 'xl') && (
+                <span className="text-[7px] font-bold uppercase tracking-wider" style={{ color: originBadge.color }}>{originBadge.label}</span>
+              )}
+            </div>
+          )}
 
           {/* Bottom info */}
           <div className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent">

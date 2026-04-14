@@ -158,6 +158,52 @@ export function getAgingTiers(cardId: string): AgingTiers {
   return { battle, time };
 }
 
+export interface OriginBadge {
+  id: string;
+  label: string;
+  icon: string;
+  color: string;
+}
+
+export function getOriginBadge(cardId: string): OriginBadge | null {
+  const meta = getCardMeta();
+  const m = meta[cardId];
+  if (!m) return null;
+
+  // Compute first-ever acquisition timestamp across all cards
+  const allDates = Object.values(meta)
+    .map(c => c.acquiredAt)
+    .filter(Boolean)
+    .sort();
+  const firstEverDate = allDates[0];
+
+  // Genesis: card was pulled in the very first pack opening (within 60s of first-ever card)
+  if (firstEverDate && m.acquiredAt) {
+    const diff = Math.abs(new Date(m.acquiredAt).getTime() - new Date(firstEverDate).getTime());
+    if (diff < 60000) {
+      return { id: 'genesis', label: 'Genesis', icon: '✦', color: '#ffd700' };
+    }
+  }
+
+  // OG: among the first 10 cards ever acquired
+  if (m.acquiredAt && allDates.indexOf(m.acquiredAt) < 10) {
+    return { id: 'og', label: 'OG', icon: '⚡', color: '#f59e0b' };
+  }
+
+  // Veteran: aging tier veteran
+  const tiers = getAgingTiers(cardId);
+  if (tiers.battle === 'veteran') {
+    return { id: 'veteran', label: 'Veteran', icon: '🏛', color: '#b8860b' };
+  }
+
+  // Pristine: aging tier pristine
+  if (tiers.battle === 'pristine') {
+    return { id: 'pristine', label: 'Pristine', icon: '✦', color: '#e0e7ff' };
+  }
+
+  return null;
+}
+
 export function isCardSealed(cardId: string): boolean {
   const meta = getCardMeta();
   return meta[cardId]?.sealed ?? false;

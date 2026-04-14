@@ -7,7 +7,9 @@ import CardItem from '@/components/CardItem';
 import PriceChart from '@/components/marketplace/PriceChart';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getOwnedCardIds, addOwnedCards, getBattleRecords, getAgingTiers, type AgingTiers } from '@/lib/store';
+import { getOwnedCardIds, addOwnedCards, getBattleRecords, getCardMeta, getAgingTiers, type AgingTiers } from '@/lib/store';
+import CardJourney from '@/components/CardJourney';
+import { CardEvent } from '@/data/types';
 import {
   getCardMarketData,
   isWatchlisted,
@@ -26,6 +28,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [bought, setBought] = useState(false);
   const [cardBattleStats, setCardBattleStats] = useState<{ wins: number; total: number }>({ wins: 0, total: 0 });
   const [agingTiers, setAgingTiers] = useState<AgingTiers | null>(null);
+  const [cardHistory, setCardHistory] = useState<{ history: CardEvent[]; acquiredAt: string } | null>(null);
 
   const card = ALL_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
@@ -49,6 +52,11 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
       }
       setCardBattleStats({ wins, total });
       setAgingTiers(getAgingTiers(card.id));
+      const meta = getCardMeta();
+      const m = meta[card.id];
+      if (m?.history) {
+        setCardHistory({ history: m.history, acquiredAt: m.acquiredAt });
+      }
     }
   }, [card]);
 
@@ -348,6 +356,11 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               </div>
             );
           })()}
+
+          {/* Card Journey — provenance timeline */}
+          {isOwned && cardHistory && (
+            <CardJourney history={cardHistory.history} acquiredAt={cardHistory.acquiredAt} />
+          )}
 
           {/* Lore text */}
           <div className="p-4 rounded-2xl bg-surface/50 border border-border/50 mb-6">

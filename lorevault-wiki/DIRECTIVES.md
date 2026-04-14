@@ -38,7 +38,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Card Journey Timeline component on card detail page. Vertical timeline rendering existing `CardMeta.history` array: pulled, revealed, battle_win/loss, showcased, traded events with icons, colors, dates. Header with summary stats ("N events over D days"). (B) Origin Badge overlay on CardItem at all sizes. Badges: "Genesis" (first pack opening), "OG" (first 10 cards acquired), "Pristine" (aging tier pristine), "Veteran" (aging tier veteran). Priority system shows highest-qualifying badge. New `getOriginBadge(cardId)` function in store.ts.
 - **Why**: Provenance is 2/10. The `history[]` data exists but is invisible. Surfacing it as a timeline + badge system makes every card's life story visible. Journey Timeline alone moves Provenance to 5-6; Origin Badges push to 7. Combined, this is the highest-impact single directive for the weakest dimension.
 - **Acceptance criteria**: Card detail page shows chronological event timeline with distinct icons/colors per event type. Origin badges appear on card art at sm/md/lg sizes. Owned cards display "Genesis" or "OG" badges when applicable. All data sourced from existing `CardMeta.history` and `acquiredAt` — no new localStorage schema.
-- **Status**: PENDING
+- **Status**: IN_PROGRESS
 
 ### DIRECTIVE-005: Achievement badge system + collector profile
 - **Priority**: P1
