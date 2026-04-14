@@ -46,7 +46,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Badge manifest of 25-30 achievements across 5 categories: Collection (own X cards, complete set), Battle (win streaks, defeat legendary), Discovery (open X packs, find legendary), Market (buy/sell milestones), Dedication (login days, daily missions). Static JSON definition with conditions. (B) Badge evaluator that checks conditions against localStorage state on pack open, battle complete, and app launch. (C) Collector Profile page: name, "Collecting since" date, total cards, sets completed, battle record, pinned badge strip (3 badges). Badge grid with earned (full color + date) and unearned (grey silhouette + progress hint). (D) Badge unlock celebration modal with particle animation.
 - **Why**: Badges create purpose beyond acquisition. The implied hierarchy ("Master Collector" presupposes a collector population) generates social proof even in single-player. Unearned grey badges drive completion behavior via Zeigarnik effect. Projects Social Proof 4→6, Utility Loop 6→7.
 - **Acceptance criteria**: 25+ badges defined across 5 categories. Badge evaluator fires on relevant actions. Profile page shows badge grid with earned/unearned states. New badge triggers celebration modal. Pinned badge strip (3 chosen badges) visible on profile header.
-- **Status**: PENDING
+- **Status**: DONE — commit d61cfaf, v8.25
 
 ### DIRECTIVE-006: Population counters + serial number enhancement
 - **Priority**: P1
@@ -64,3 +64,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-002**: Build Norse Mythology set (Asgard Unleashed) — DONE (v8.22, 2026-04-14). Score: 43→46 (+3).
 - **DIRECTIVE-003**: Add card aging visual effects — DONE (v8.23, 2026-04-14). Score: 46→60 (+14).
 - **DIRECTIVE-004**: Card provenance — Journey Timeline + Origin Badges — DONE (v8.24, 2026-04-14). Score: 60→71 (+11).
+- **DIRECTIVE-005**: Achievement badge system + collector profile — DONE (v8.25, 2026-04-14).
