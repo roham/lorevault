@@ -1,6 +1,6 @@
 # Craft Daemon State
 Round: 4
-Status: COMPLETE — all three prototypes verified 60+, deploying to production
+Status: COMPLETE — all three prototypes verified 60+, deployed to production (R4)
 Production deploy: 2026-04-14
 
 ## Scoring Correction History
