@@ -164,7 +164,7 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **What to build**: (A) Monthly Collector Pass — 30-tier reward track with free and premium tiers. Each tier requires XP thresholds. Free: XP boosts, common/uncommon cards. Premium: exclusive parallels, badges, legendary card at tier 30. Monthly reset. State in `lorevault_collector_pass`. Display on profile + home. (B) Weekly Challenges — 3 weekly challenges that rotate every Monday. More ambitious than dailies: "Win 5 battles", "Collect 3 cards from one set", "Reach codex 50%". Reward: bonus pack + exclusive badge. State in `lorevault_weekly_challenges`. (C) Collector Milestones — permanent progression achievements beyond the existing system. "100 packs opened", "1000 XP earned in a day", "Own every scarcity tier", "Forge 10 cards". Each milestone grants a unique title prefix shown on profile. (D) Season 2 Tease — countdown banner on home page: "Season 2: The Underworld — Coming Soon". Visual tease with silhouetted characters. Creates anticipation without requiring new content.
 - **Why**: D30 retention at 4 is the weakest growth dimension. Daily hooks bring users back for D1/D7, but D30 requires investment ladders that create sunk-cost commitment. A monthly pass with 30 tiers means users who start can't leave without losing progress. Weekly challenges create a rhythm between daily grinds. Milestones provide permanent goals that outlast any single week/month. The season tease creates FOMO for future content — "I need to be ready for Season 2."
 - **Acceptance criteria**: Monthly pass UI with 30 tiers + progress bar. Weekly challenges with progress tracking. 10+ collector milestones with title rewards. Season 2 tease banner with countdown. All localStorage-based.
-- **Status**: PENDING
+- **Status**: DONE — commit 5b9fc1d, v8.39
 
 ### DIRECTIVE-020: Onboarding Funnel + Conversion Optimization
 - **Priority**: P0
@@ -196,3 +196,4 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **DIRECTIVE-016**: Discovery Cascade + Narrative Fusion + Chronicle — DONE (v8.36, 2026-04-14). Score: 99→100 (+1).
 - **DIRECTIVE-017**: Daily Engagement Engine + Retention Hooks — DONE (v8.37, 2026-04-14). Score: 100/100 maintained. Growth: 6→17/50.
 - **DIRECTIVE-018**: Viral Sharing + Social Growth + PWA — DONE (v8.38, 2026-04-14). Growth: 17→31/50.
+- **DIRECTIVE-019**: Long-Term Progression + Monthly Cycles — DONE (v8.39, 2026-04-14). Growth: 31→39/50.
