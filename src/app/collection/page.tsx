@@ -24,6 +24,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
+import BinderCard, { DragGhostCard } from '@/components/BinderCard';
 import CollectionPills, { CollectionTab } from '@/components/collection/CollectionPills';
 import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
@@ -95,7 +96,7 @@ function SortableBinderCard({ card }: { card: Card }) {
       whileTap={{ scale: 1.07 }}
       layout
     >
-      <CardItem card={card} size="lg" interactive={false} />
+      <BinderCard card={card} />
       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
     </motion.div>
   );
@@ -629,13 +630,8 @@ export default function CollectionPage() {
               </AnimatePresence>
             </div>
 
-            <DragOverlay dropAnimation={{ duration: 250, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
-              {activeCard && (
-                <motion.div initial={{ scale: 1, rotate: 0 }} animate={{ scale: 1.08, rotate: 2 }}
-                  style={{ filter: 'drop-shadow(0 25px 50px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(129,140,248,0.15))' }}>
-                  <CardItem card={activeCard} size="lg" interactive={false} />
-                </motion.div>
-              )}
+            <DragOverlay dropAnimation={null}>
+              {activeCard && <DragGhostCard card={activeCard} />}
             </DragOverlay>
           </DndContext>
 
