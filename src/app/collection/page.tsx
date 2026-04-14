@@ -48,10 +48,10 @@ const SetsSection = lazy(() => import('./sets/page'));
 const SmartSection = lazy(() => import('./smart/page'));
 const AnalyticsSection = lazy(() => import('./analytics/page'));
 
-// Page transition variants
+// Page transition variants — x only for GPU-composited animation
 const pageVariants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? 200 : -200,
+    x: direction > 0 ? 120 : -120,
     opacity: 0,
   }),
   center: {
@@ -59,7 +59,7 @@ const pageVariants = {
     opacity: 1,
   },
   exit: (direction: number) => ({
-    x: direction < 0 ? 200 : -200,
+    x: direction < 0 ? 120 : -120,
     opacity: 0,
   }),
 };
@@ -309,8 +309,8 @@ export default function CollectionPage() {
 
   const handleDragEnd_swipe = useCallback(
     (_: unknown, info: PanInfo) => {
-      const threshold = 60;
-      const velocity = 300;
+      const threshold = 40;
+      const velocity = 200;
       if ((info.offset.x < -threshold || info.velocity.x < -velocity) && currentPageIndex < displayPages.length - 1) {
         nextPage();
       } else if ((info.offset.x > threshold || info.velocity.x > velocity) && currentPageIndex > 0) {
@@ -568,12 +568,13 @@ export default function CollectionPage() {
                   custom={direction}
                   variants={pageVariants}
                   initial="enter" animate="center" exit="exit"
-                  transition={{ type: 'spring', stiffness: 380, damping: 35 }}
+                  transition={{ type: 'tween', duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                   drag={!activeId ? "x" : false}
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.15}
                   onDragEnd={handleDragEnd_swipe}
                   className="touch-pan-y"
+                  style={{ willChange: 'transform, opacity', backfaceVisibility: 'hidden' }}
                 >
                   <div className="p-4 sm:p-6 lg:p-8 rounded-2xl min-h-[420px] sm:min-h-[480px] relative"
                     style={{
