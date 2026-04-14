@@ -67,30 +67,30 @@ export default function BaseballHub() {
           </Link>
         </motion.div>
 
-        {/* Play Game — coming soon */}
+        {/* Play Game */}
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <div className="relative overflow-hidden rounded-2xl border border-border opacity-50">
-            <div className="p-5" style={{ background: 'linear-gradient(135deg, #1a0a0a 0%, #12141f 100%)' }}>
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-2xl flex-shrink-0">
-                  &#127922;
+          <Link href="/games/baseball/play">
+            <div className="relative overflow-hidden rounded-2xl border border-red-500/20 hover:border-red-500/40 transition-all group">
+              <div className="p-5" style={{ background: 'linear-gradient(135deg, #1a0a0a 0%, #12141f 100%)' }}>
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-2xl flex-shrink-0">
+                    &#127922;
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold mb-0.5">Play Ball</h3>
+                    <p className="text-xs text-muted">
+                      3-inning quick match vs AI. Uses your latest saved lineup.
+                    </p>
+                  </div>
+                  <div className="text-muted text-xl group-hover:text-red-400 transition-colors">&rarr;</div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold mb-0.5">Play Ball</h3>
-                  <p className="text-xs text-muted">
-                    Step up to the plate. Roll the d20. Coming in Cycle 13.
-                  </p>
-                </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-muted font-bold uppercase">
-                  Soon
-                </span>
               </div>
             </div>
-          </div>
+          </Link>
         </motion.div>
       </div>
 
