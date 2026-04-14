@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import { STORY_WORLDS, StoryWorld, getUnlockedChapters, getNextLockedChapter } from '@/data/story-maps';
-import { ALL_CARDS } from '@/data/cards';
-import { getOwnedCardIds, getOwnedCards } from '@/lib/store';
+import { getOwnedCards } from '@/lib/store';
 
 type Phase = 'intro' | 'select-world' | 'story-map';
 
@@ -284,14 +284,17 @@ function StoryNodeCard({
   accentColor: string;
   worldGradientFrom: string;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const Wrapper = isUnlocked
+    ? ({ children, ...props }: { children: React.ReactNode; className?: string }) => (
+        <Link href={`/prototype/story/chapter/${chapter.id}`} {...props}>{children}</Link>
+      )
+    : ({ children, ...props }: { children: React.ReactNode; className?: string }) => (
+        <div {...props}>{children}</div>
+      );
 
   return (
-    <button
-      onClick={() => isUnlocked && setExpanded(!expanded)}
-      disabled={!isUnlocked}
-      className="w-full text-left"
-    >
+    <Wrapper className="w-full block text-left">
+
       <div
         className="p-4 rounded-xl transition-all"
         style={{
@@ -332,12 +335,11 @@ function StoryNodeCard({
             </div>
           </div>
 
-          {/* Status indicator */}
+          {/* Read indicator */}
           {isUnlocked && (
             <svg
               width="16" height="16" viewBox="0 0 24 24" fill="none"
               stroke={accentColor} strokeWidth="2"
-              style={{ transform: expanded ? 'rotate(90deg)' : 'rotate(0)', transition: 'transform 0.2s' }}
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
@@ -361,24 +363,7 @@ function StoryNodeCard({
           </div>
         )}
 
-        {/* Expanded content (unlocked) */}
-        <AnimatePresence>
-          {isUnlocked && expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-3 pt-3 border-t" style={{ borderColor: `${accentColor}15` }}>
-                <p className="text-xs text-muted/80 leading-relaxed">
-                  {chapter.text}
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
-    </button>
+    </Wrapper>
   );
 }
