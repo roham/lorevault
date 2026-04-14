@@ -158,6 +158,22 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **Acceptance criteria**: Share button generates card image with social metadata. Pack opening share generates shareable URL. Referral codes generate and track. Challenge links encode scores. manifest.json + SW registration. OG/Twitter meta tags on card detail pages.
 - **Status**: DONE — commit fedf382, v8.38
 
+### DIRECTIVE-019: Long-Term Progression + Monthly Cycles
+- **Priority**: P0
+- **Source**: Growth Phase — D30 Retention (4→8)
+- **What to build**: (A) Monthly Collector Pass — 30-tier reward track with free and premium tiers. Each tier requires XP thresholds. Free: XP boosts, common/uncommon cards. Premium: exclusive parallels, badges, legendary card at tier 30. Monthly reset. State in `lorevault_collector_pass`. Display on profile + home. (B) Weekly Challenges — 3 weekly challenges that rotate every Monday. More ambitious than dailies: "Win 5 battles", "Collect 3 cards from one set", "Reach codex 50%". Reward: bonus pack + exclusive badge. State in `lorevault_weekly_challenges`. (C) Collector Milestones — permanent progression achievements beyond the existing system. "100 packs opened", "1000 XP earned in a day", "Own every scarcity tier", "Forge 10 cards". Each milestone grants a unique title prefix shown on profile. (D) Season 2 Tease — countdown banner on home page: "Season 2: The Underworld — Coming Soon". Visual tease with silhouetted characters. Creates anticipation without requiring new content.
+- **Why**: D30 retention at 4 is the weakest growth dimension. Daily hooks bring users back for D1/D7, but D30 requires investment ladders that create sunk-cost commitment. A monthly pass with 30 tiers means users who start can't leave without losing progress. Weekly challenges create a rhythm between daily grinds. Milestones provide permanent goals that outlast any single week/month. The season tease creates FOMO for future content — "I need to be ready for Season 2."
+- **Acceptance criteria**: Monthly pass UI with 30 tiers + progress bar. Weekly challenges with progress tracking. 10+ collector milestones with title rewards. Season 2 tease banner with countdown. All localStorage-based.
+- **Status**: PENDING
+
+### DIRECTIVE-020: Onboarding Funnel + Conversion Optimization
+- **Priority**: P0
+- **Source**: Growth Phase — Conversion (6→9)
+- **What to build**: (A) Interactive Tutorial — replace the current welcome screen with a 3-step guided experience: (1) "Choose your starter set" (pick from 3 sets, get 1 free rare from chosen set), (2) "Open your first pack" (guided reveal with celebration), (3) "Meet your collection" (tour of key pages). Progress stored in `lorevault_onboarding_v2`. (B) Social Proof Landing — for visitors arriving via shared links (card detail, battle, trivia): show the shared content prominently, then "Start Your Collection" CTA with instant free pack. Track `?ref=` parameter to credit referrer. (C) First-Session Hooks — guarantee 3 packs in first session (starter + shared link bonus + "Welcome Gift" pack). Each pack opening teaches a mechanic: first pack = basic reveal, second = scarcity comparison, third = collection grid. (D) Discovery Feed personalization — sort `/discover/[slug]` entries by cards the user owns, showing "You have 3/20 from this set" context. (E) Return User Re-engagement — if user hasn't visited in 3+ days, show "Welcome Back" modal with a free pack + summary of what they missed (new phantom events from LivePulse, new challenges available).
+- **Why**: Conversion at 6 means social traffic lands but doesn't convert to active collectors. The current welcome screen is a single static page. An interactive tutorial that gives a starter card creates immediate ownership and loss aversion. Social proof landing pages turn shared links into acquisition funnels. First-session hooks ensure every new user has the "aha moment" of pulling a rare card. Return re-engagement catches lapsed users before they churn permanently.
+- **Acceptance criteria**: 3-step interactive tutorial with set choice and guided pack open. Social proof landing for shared URLs with CTA. 3 packs guaranteed in first session. Discovery feed personalization. Welcome-back modal after 3+ day absence. All localStorage-based.
+- **Status**: PENDING
+
 ---
 
 ## Completed Directives
