@@ -535,8 +535,8 @@ const POP_RANGES: Record<string, [number, number]> = {
   legendary: [10, 49],
   epic: [50, 199],
   rare: [200, 999],
-  uncommon: [1000, 4999],
-  common: [3000, 9999],
+  uncommon: [1000, 2999],
+  common: [5000, 9999],
 };
 
 const PARALLEL_DIVISORS: Record<string, number> = {

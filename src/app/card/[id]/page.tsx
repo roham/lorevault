@@ -236,7 +236,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
                       #{card.serialNumber}
                     </div>
                     <div className="text-[9px] text-muted">
-                      {popData.serialTier === 'genesis' ? 'Genesis Serial' : popData.serialTier === 'low' ? 'Low Serial' : popData.serialTier === 'mid' ? 'Silver Serial' : `of ${popData.totalMinted.toLocaleString()}`}
+                      {popData.serialTier === 'genesis' ? 'Genesis Serial' : popData.serialTier === 'low' ? 'Low Serial' : popData.serialTier === 'mid' ? 'Early Serial' : `of ${popData.totalMinted.toLocaleString()}`}
                     </div>
                   </div>
                 )}
