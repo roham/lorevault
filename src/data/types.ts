@@ -244,6 +244,7 @@ export interface Achievement {
   rarity: AchievementRarity;
   category: AchievementCategory;
   mockPercent: number; // % of collectors who earn it
+  hidden?: boolean; // hidden achievements display as ??? until earned
 }
 
 export interface EarnedAchievement {

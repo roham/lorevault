@@ -96,6 +96,33 @@ export function generateCardDNA(cardId: string, serialNumber: number = 0): CardD
   };
 }
 
+// ===== Mutation State =====
+// Cards held 60+ days with 50+ battles, or legendary cards with 70+ collector level, develop a mutation
+export type MutationState = 'none' | 'awakened' | 'ascended';
+
+export function getMutationState(cardId: string): MutationState {
+  if (typeof window === 'undefined') return 'none';
+  try {
+    const meta = JSON.parse(localStorage.getItem('lorevault_card_meta') || '{}');
+    const m = meta[cardId];
+    if (!m) return 'none';
+
+    const ageDays = m.acquiredAt
+      ? Math.floor((Date.now() - new Date(m.acquiredAt).getTime()) / 86400000)
+      : 0;
+    const battles = m.battleCount ?? 0;
+
+    // Ascended: 90+ days AND 100+ battles
+    if (ageDays >= 90 && battles >= 100) return 'ascended';
+    // Awakened: 60+ days AND 50+ battles
+    if (ageDays >= 60 && battles >= 50) return 'awakened';
+
+    return 'none';
+  } catch {
+    return 'none';
+  }
+}
+
 // CSS custom properties for a card's DNA
 export function getDNACssVars(dna: CardDNA): Record<string, string> {
   return {

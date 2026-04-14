@@ -486,8 +486,8 @@ export default function ProfilePage() {
                       </svg>
                     )}
                   </div>
-                  <div className="text-xs font-semibold truncate">{achievement.name}</div>
-                  <div className="text-[9px] text-muted mt-0.5 truncate">{achievement.description}</div>
+                  <div className="text-xs font-semibold truncate">{achievement.hidden && !isEarned ? '???' : achievement.name}</div>
+                  <div className="text-[9px] text-muted mt-0.5 truncate">{achievement.hidden && !isEarned ? 'Hidden achievement' : achievement.description}</div>
                   {isEarned && (
                     <div
                       className="text-[8px] font-bold uppercase mt-1 px-1.5 py-0.5 rounded inline-block"

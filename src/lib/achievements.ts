@@ -3,6 +3,7 @@
 import { Achievement, AchievementRarity, AchievementCategory } from '@/data/types';
 import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge, getCardMeta, getUnlockedLoreNodes } from '@/lib/store';
 import { getSecretNodes } from '@/data/lore-graph';
+import { isGhostCard } from '@/data/cards';
 
 // ---------------------------------------------------------------------------
 // Achievement definitions — 33 achievements across 5 categories
@@ -306,6 +307,17 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'special',
     mockPercent: 1,
   },
+  // Ghost card hidden achievement — displays as ??? until earned
+  {
+    id: 'ghost-finder',
+    name: 'Void Walker',
+    description: 'Pull a Ghost card from the void',
+    icon: '◐',
+    rarity: 'legendary',
+    category: 'special',
+    mockPercent: 0.5,
+    hidden: true,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -380,6 +392,9 @@ export function checkAchievements(): string[] {
     const t = getAgingTiers(c.id);
     return t.battle === 'battle-worn' || t.battle === 'veteran';
   }));
+
+  // Ghost card finder
+  tryEarn('ghost-finder', owned.some(c => isGhostCard(c.id)));
 
   // Lore Codex
   const unlockedLore = getUnlockedLoreNodes();

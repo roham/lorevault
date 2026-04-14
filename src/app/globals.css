@@ -449,6 +449,41 @@ table tbody tr {
 .price-flash-up { animation: price-flash-green 0.6s ease-out; }
 .price-flash-down { animation: price-flash-red 0.6s ease-out; }
 
+/* Ghost card pulsing white border */
+@keyframes ghost-pulse {
+  0%, 100% { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 8px rgba(255,255,255,0.05); }
+  50% { border-color: rgba(255,255,255,0.5); box-shadow: 0 0 20px rgba(255,255,255,0.15); }
+}
+.ghost-sealed-border {
+  animation: ghost-pulse 3s ease-in-out infinite;
+}
+
+/* Ghost card reveal invert flash */
+@keyframes ghost-reveal-flash {
+  0% { filter: invert(1) brightness(2); }
+  40% { filter: invert(1) brightness(1.5); }
+  100% { filter: invert(0) brightness(1); }
+}
+.ghost-reveal-flash {
+  animation: ghost-reveal-flash 400ms ease-out forwards;
+}
+
+/* Mutation halo — breathing glow for long-held battle-tested cards */
+@keyframes mutation-halo {
+  0%, 100% { box-shadow: 0 0 12px rgba(168,85,247,0.15), inset 0 0 8px rgba(168,85,247,0.05); }
+  50% { box-shadow: 0 0 24px rgba(168,85,247,0.3), inset 0 0 16px rgba(168,85,247,0.1); }
+}
+@keyframes mutation-halo-gold {
+  0%, 100% { box-shadow: 0 0 12px rgba(255,215,0,0.15), inset 0 0 8px rgba(255,215,0,0.05); }
+  50% { box-shadow: 0 0 24px rgba(255,215,0,0.3), inset 0 0 16px rgba(255,215,0,0.1); }
+}
+.mutation-halo {
+  animation: mutation-halo 4s ease-in-out infinite;
+}
+.mutation-halo-gold {
+  animation: mutation-halo-gold 4s ease-in-out infinite;
+}
+
 /* Marketplace filter panel backdrop */
 .filter-panel-bg {
   background: linear-gradient(180deg, var(--color-surface) 0%, rgba(18, 20, 31, 0.95) 100%);

@@ -7,6 +7,8 @@ import { getCardMeta, getAgingTiers, getOriginBadge, getPopulationData, type Agi
 import { generateCardDNA, type CardDNA } from '@/lib/card-dna';
 import { getSeasonalCardIds } from '@/data/seasonal-cards';
 import { isSeasonActive } from '@/lib/seasonal-vault';
+import { isGhostCard } from '@/data/cards';
+import { getMutationState, type MutationState } from '@/lib/card-dna';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -204,6 +206,11 @@ function CardItemStatic({
     if (typeof window === 'undefined') return null;
     return generateCardDNA(card.id, card.serialNumber);
   });
+  const isGhost = isGhostCard(card.id);
+  const [mutation] = useState<MutationState>(() => {
+    if (typeof window === 'undefined') return 'none';
+    return getMutationState(card.id);
+  });
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
   const borderWidth = card.scarcity === 'legendary' ? 3 : card.scarcity === 'epic' ? 2.5 : 2;
@@ -219,11 +226,12 @@ function CardItemStatic({
   const getCornerSize = (): number | null => {
     switch (card.scarcity) { case 'legendary': return 14; case 'epic': return 10; case 'rare': return 8; default: return null; }
   };
+  const mutationClass = mutation === 'ascended' ? 'mutation-halo-gold' : mutation === 'awakened' ? 'mutation-halo' : '';
 
   return (
     <div
-      className={`relative select-none flex-shrink-0 ${getGlowClass()}`}
-      style={{ width: s.w, height: s.h, filter: getAgingFilter(agingTiers) }}
+      className={`relative select-none flex-shrink-0 ${getGlowClass()} ${mutationClass}`}
+      style={{ width: s.w, height: s.h, filter: getAgingFilter(agingTiers), borderRadius: '0.75rem' }}
       onClick={() => onClick?.(card)}
     >
       <div className="w-full h-full relative">
@@ -293,6 +301,19 @@ function CardItemStatic({
             </div>
           )}
 
+          {/* Ghost card sealed state — black overlay + white border pulse */}
+          {isGhost && isSealed && (
+            <div className="absolute inset-0 z-[19] rounded-xl overflow-hidden ghost-sealed-border" style={{ border: '2px solid rgba(255,255,255,0.3)' }}>
+              <div className="absolute inset-0 bg-black/70" />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <span className={`${size === 'xl' ? 'text-4xl' : size === 'lg' ? 'text-3xl' : 'text-xl'} text-white/60`}>◐</span>
+                <div className={`${size === 'lg' || size === 'xl' ? 'text-[9px]' : 'text-[7px]'} font-mono text-white/40 uppercase tracking-widest mt-1`}>
+                  ???
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Card info — character hidden if sealed */}
           <div className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
             <div className={`${s.name} font-semibold text-white truncate leading-tight`}>
@@ -357,6 +378,11 @@ function CardItemInteractive({
     if (typeof window === 'undefined') return null;
     return generateCardDNA(card.id, card.serialNumber);
   });
+  const isGhost = isGhostCard(card.id);
+  const [mutation] = useState<MutationState>(() => {
+    if (typeof window === 'undefined') return 'none';
+    return getMutationState(card.id);
+  });
   const s = SIZE_MAP[size];
 
   // 3D tilt — only created for interactive cards
@@ -409,12 +435,13 @@ function CardItemInteractive({
   };
 
   const noiseOpacity = card.scarcity === 'common' || card.scarcity === 'uncommon' ? 0.07 : 0.04;
+  const mutationClass = mutation === 'ascended' ? 'mutation-halo-gold' : mutation === 'awakened' ? 'mutation-halo' : '';
 
   return (
     <motion.div
       ref={cardRef}
-      className={`relative cursor-pointer select-none flex-shrink-0 ${getGlowClass()}`}
-      style={{ width: s.w, height: s.h, perspective: 800, filter: getAgingFilter(agingTiers) }}
+      className={`relative cursor-pointer select-none flex-shrink-0 ${getGlowClass()} ${mutationClass}`}
+      style={{ width: s.w, height: s.h, perspective: 800, filter: getAgingFilter(agingTiers), borderRadius: '0.75rem' }}
       whileHover={interactive ? { scale: 1.04, y: -4 } : undefined}
       whileTap={interactive ? { scale: 0.97 } : undefined}
       onClick={() => {
@@ -557,6 +584,19 @@ function CardItemInteractive({
               {(size === 'lg' || size === 'xl') && (
                 <span className="text-[7px] font-bold uppercase tracking-wider" style={{ color: originBadge.color }}>{originBadge.label}</span>
               )}
+            </div>
+          )}
+
+          {/* Ghost card sealed state — black overlay + white border pulse */}
+          {isGhost && (
+            <div className="absolute inset-0 z-[19] rounded-xl overflow-hidden ghost-sealed-border" style={{ border: '2px solid rgba(255,255,255,0.3)' }}>
+              <div className="absolute inset-0 bg-black/70" />
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <span className={`${size === 'xl' ? 'text-4xl' : size === 'lg' ? 'text-3xl' : 'text-xl'} text-white/60`}>◐</span>
+                <div className={`${size === 'lg' || size === 'xl' ? 'text-[9px]' : 'text-[7px]'} font-mono text-white/40 uppercase tracking-widest mt-1`}>
+                  ???
+                </div>
+              </div>
             </div>
           )}
 

@@ -601,8 +601,71 @@ export function togglePinnedBadge(badgeId: string): string[] {
   return updated;
 }
 
+// ===== Pack Counter =====
+const PACKS_OPENED_KEY = 'lorevault_packs_opened';
+
+export function getPacksOpened(): number {
+  return getItem<number>(PACKS_OPENED_KEY, 0);
+}
+
+function incrementPacksOpened(): number {
+  const count = getPacksOpened() + 1;
+  setItem(PACKS_OPENED_KEY, count);
+  return count;
+}
+
+// ===== Ghost Card Pull Conditions =====
+import { GHOST_CARDS, isGhostCard } from '@/data/cards';
+import { getForgeHistory } from '@/lib/seasonal-vault';
+
+function checkGhostConditions(): Card | null {
+  const owned = getOwnedCards();
+  const ownedIds = new Set(owned.map(c => c.id));
+  const ownedLegendaries = owned.filter(c => c.scarcity === 'legendary').length;
+  const packsOpened = getPacksOpened();
+  const streak = getStreak();
+
+  // Map of ghost card → condition
+  const conditions: [string, boolean][] = [
+    // Ghost 0: 13th pack opened
+    ['ghost-void-odin', packsOpened === 13],
+    // Ghost 1: owning exactly 5 legendaries
+    ['ghost-mirror-sherlock', ownedLegendaries === 5],
+    // Ghost 2: pulling on day-of-week matching set hash
+    ['ghost-crimson-dracula', (() => {
+      const dayHash = Math.abs('gothic-horror'.split('').reduce((h, c) => ((h << 5) - h) + c.charCodeAt(0), 0)) % 7;
+      return new Date().getDay() === dayHash;
+    })()],
+    // Ghost 3: 7-day login streak
+    ['ghost-inverse-zeus', streak >= 7],
+    // Ghost 4: owning all 20 characters from a single set
+    ['ghost-forgotten-alice', (() => {
+      const setCharCounts: Record<string, Set<string>> = {};
+      for (const c of owned) {
+        if (!setCharCounts[c.setSlug]) setCharCounts[c.setSlug] = new Set();
+        setCharCounts[c.setSlug].add(c.character);
+      }
+      return Object.values(setCharCounts).some(chars => chars.size >= 20);
+    })()],
+    // Ghost 5: 3rd forge completed
+    ['ghost-true-queen', getForgeHistory().length >= 3],
+  ];
+
+  // Check each condition — if met AND card not owned AND 15% roll
+  for (const [ghostId, condMet] of conditions) {
+    if (condMet && !ownedIds.has(ghostId) && Math.random() < 0.15) {
+      return GHOST_CARDS.find(c => c.id === ghostId) || null;
+    }
+  }
+
+  return null;
+}
+
 // Generate a pack of cards (weighted by scarcity)
 export function generatePack(setSlug?: string): Card[] {
+  // Increment pack counter
+  incrementPacksOpened();
+
   const pool = setSlug && setSlug !== 'mixed'
     ? ALL_CARDS.filter(c => c.setSlug === setSlug)
     : ALL_CARDS;
@@ -637,9 +700,21 @@ export function generatePack(setSlug?: string): Card[] {
     }
   }
 
-  // Sort: rarest last (for dramatic reveal)
+  // Ghost card injection — silently check hidden conditions
+  const ghostCard = checkGhostConditions();
+  if (ghostCard) {
+    // Replace the least-rare card (first in the array before sort)
+    drawn[0] = ghostCard;
+  }
+
+  // Sort: rarest last (for dramatic reveal), ghost cards always last
   const scarcityOrder = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
-  drawn.sort((a, b) => scarcityOrder[a.scarcity] - scarcityOrder[b.scarcity]);
+  drawn.sort((a, b) => {
+    const aGhost = isGhostCard(a.id) ? 1 : 0;
+    const bGhost = isGhostCard(b.id) ? 1 : 0;
+    if (aGhost !== bGhost) return aGhost - bGhost;
+    return scarcityOrder[a.scarcity] - scarcityOrder[b.scarcity];
+  });
 
   return drawn;
 }
