@@ -118,6 +118,22 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) `getPrestigeState()` in `src/lib/store.ts` returning `{ unlocked, level, unlockedAt, prestigeChallengesCompleted }`. localStorage key: `lorevault_prestige`. Unlocks when: all 33 achievements earned + codex 100% (48/48) + 4+ sets complete. Checked on every `checkAchievements()`. Fires `CustomEvent('prestige-unlock')` on first unlock. (B) `PrestigeCelebration` component in `src/components/PrestigeCelebration.tsx`: full-screen overlay — screen dims, golden crown scales in (spring), "Collector Prestige Unlocked" text fades in, auto-dismiss 5s. Mounted in layout.tsx. (C) 6 Prestige Challenges (separate from ACHIEVEMENTS, hidden until prestige): forge-legendary, all-parallels, ancient-legendary (60+ day Legendary), codex-reactions (react to 20 nodes), ghost-collector (3+ ghosts), hall-apex (top 3 leaderboard). Add `lorevault_codex_reactions` localStorage. (D) Profile visual: golden crown prefix, "Prestige I" badge, animated gradient border (conic-gradient rotation). Hall: crown glyph on prestige collectors, 6th "prestige" leaderboard tab. (E) Visible achievement `collector-prestige` in standard grid from day one (greyed silhouette) — the distant lighthouse.
 - **Why**: Completion at 9 has a visible ceiling. Prestige converts the endpoint into a gateway. Visual distinctions create aspiration in lower-tier collectors. Prestige Challenges require cross-system mastery. The visible achievement serves as a lighthouse pulling collectors through the entire achievement tree.
 - **Acceptance criteria**: `getPrestigeState()` reads/writes `lorevault_prestige`. Prestige unlocks at all-achievements + codex-100% + 4-set-complete. `prestige-unlock` CustomEvent fires. PrestigeCelebration renders full-screen ceremony. 6 Prestige Challenges hidden until prestige. Profile shows crown + badge + animated border. Hall shows prestige tab. `collector-prestige` achievement visible from day one.
+- **Status**: DONE — commit 2980438, v8.34
+
+### DIRECTIVE-015: Scarcity Gradient Ascension — Parallel Upgrade Chain
+- **Priority**: P0
+- **Source**: Strategy Loop S5 — Scarcity Gradient (10→10), Loss Aversion (9→10)
+- **What to build**: (A) Parallel Transmutation system in `/forge`: own 3 same-character cards of one parallel → transmute to next parallel tier (base→silver→gold→holographic→obsidian). Each transmute consumes the 3 inputs. Adds `lorevault_transmute_history`. (B) Population Decay visual: cards with serial numbers above 75th percentile of `totalMinted` show subtle desaturation in marketplace view. Below 25th percentile glow brighter. (C) Scarcity Badges on showcase frames — unlock unique showcase borders based on rarity milestones (10 Epics, 5 Legendaries, 1 Obsidian). (D) "Burn" mechanic: permanently sacrifice a card for 2× its XP value + "Sacrificed" origin badge on all remaining copies of that character.
+- **Why**: Scarcity at 10 mechanically but Loss Aversion at 9 lacks irreversible decisions with emotional weight. Burn + transmute create real sacrifice. Population decay makes serial position psychologically felt. Pushes Loss Aversion 9→10.
+- **Acceptance criteria**: Parallel transmute on forge page with 3-card input. Burn button on card detail. Population decay visual on marketplace. Scarcity badges in showcase. Transmute history persisted.
+- **Status**: PENDING
+
+### DIRECTIVE-016: Discovery Cascade + Narrative Fusion
+- **Priority**: P0
+- **Source**: Strategy Loop S5 — Narrative Depth (9→10), Social Proof (9→10)
+- **What to build**: (A) Lore Node Cascades: unlocking a node reveals 2-3 adjacent hint nodes (greyed-out silhouettes with "?" markers). Requirements only visible when parent is unlocked. Progressive revelation loop. (B) Ghost Card Breadcrumbs: each ghost card pulled reveals 1 hidden condition hint for a related ghost in a "Whispers" section on the ghost card detail. (C) Narrative Fusion Events: when 2+ players (phantom) own the same character's cards, generate "crossover lore" events in LivePulse (e.g., "Odin met Sherlock at the crossroads of worlds"). Cross-set character interactions. (D) "Chronicle" page (`/chronicle`): auto-generated story of the player's collecting journey — first pack, first legendary, first forge, prestige — rendered as an illustrated timeline with lore callbacks.
+- **Why**: Narrative Depth at 9 has strong lore content but no emergent narrative. Cascades + breadcrumbs create exploration arcs. Chronicle makes the player's own journey a narrative. Social Proof at 9 needs ambient social narrative, not just leaderboards. Pushes Narrative Depth 9→10 and Social Proof 9→10.
+- **Acceptance criteria**: Codex shows hint nodes after parent unlock. Ghost card detail shows whisper hint. LivePulse generates crossover events. Chronicle page renders player journey.
 - **Status**: PENDING
 
 ---
@@ -137,3 +153,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-011**: Live Pulse Feed + Collector Reactions — DONE (v8.31, 2026-04-14). Score: 91→93 (+2).
 - **DIRECTIVE-012**: Seasonal Vault + Countdown Forge — DONE (v8.32, 2026-04-14). Score: 93→95 (+2).
 - **DIRECTIVE-013**: Ghost Cards + Hidden Pull Mechanics — DONE (v8.33, 2026-04-14). Score: 95→97 (+2).
+- **DIRECTIVE-014**: Collector Prestige — Meta-Completion Layer — DONE (v8.34, 2026-04-14). Score: 97→TBD.
