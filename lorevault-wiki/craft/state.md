@@ -1,6 +1,8 @@
 # Craft Daemon State
 Round: 2
-Current prototype: all (all above 60 — ready for deploy)
+Current prototype: DEPLOYED TO PRODUCTION
+Deploy URL: https://lorevault-site-owny2o6bp-ros-projects-9a9bb0c9.vercel.app
+Deploy date: 2026-04-14
 
 ## Scores (updated after every gate-pass)
 | Prototype | Round | V | E | Cl | Co | M | D | N | Composite |
