@@ -14,7 +14,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: Dramatic reveal animation when user taps a sealed card. Particle burst, card flip with art reveal, sound-ready (visual cue where sound would go). Update pack opening flow to deliver all cards sealed by default.
 - **Why**: Sealed/reveal is the #1 highest-impact collectibility mechanic. Every pack opening becomes a TikTok moment.
 - **Acceptance criteria**: Cards arrive sealed from pack opening. Tapping a sealed card triggers a reveal animation. Character art appears after reveal. Sealed state persists in localStorage.
-- **Status**: IN_PROGRESS
+- **Status**: DONE — commit 5a8a658, v8.21
 
 ### DIRECTIVE-002: Build Norse Mythology set (Asgard Unleashed)
 - **Priority**: P1
@@ -36,4 +36,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 
 ## Completed Directives
 
-(None yet — product daemon has not started reading this file)
+- **DIRECTIVE-001**: Complete sealed/reveal UX — DONE (v8.21, 2026-04-14). Score: 33→43 (+10).
