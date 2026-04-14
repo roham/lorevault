@@ -60,6 +60,7 @@ interface CardItemProps {
   showAddButton?: boolean;
   onAdd?: (card: Card) => void;
   interactive?: boolean;
+  forceRevealed?: boolean;
 }
 
 const SIZE_MAP = {
@@ -81,6 +82,7 @@ function CardItemStatic({
   showPrice = false,
   showAddButton = false,
   onAdd,
+  forceRevealed = false,
 }: CardItemProps) {
   const scarcityConfig = SCARCITY_CONFIG[card.scarcity];
   const parallelConfig = PARALLEL_CONFIG[card.parallel];
@@ -90,7 +92,7 @@ function CardItemStatic({
     const allMeta = getCardMeta();
     return allMeta[card.id] || null;
   });
-  const isSealed = meta?.sealed ?? false;
+  const isSealed = forceRevealed ? false : (meta?.sealed ?? false);
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
   const borderWidth = card.scarcity === 'legendary' ? 3 : card.scarcity === 'epic' ? 2.5 : 2;
@@ -129,8 +131,8 @@ function CardItemStatic({
             <span key={pos} className={`corner-accent corner-${pos}`} style={{ '--accent-size': `${getCornerSize()}px`, '--accent-color': `${borderColor}${card.scarcity === 'legendary' ? 'cc' : '80'}` } as React.CSSProperties} />
           ))}
           <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: borderColor, boxShadow: card.scarcity === 'legendary' ? `0 0 12px ${borderColor}` : card.scarcity === 'epic' ? `0 0 8px ${borderColor}` : 'none' }} />
-          {/* Card art — hidden if sealed */}
-          {!isSealed && <CardArt card={card} borderColor={borderColor} size={s} />}
+          {/* Card art — always rendered, covered by sealed overlay when sealed */}
+          <CardArt card={card} borderColor={borderColor} size={s} />
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0,0,0,0.5) 100%)' }} />
 
           {/* SEALED overlay — frosted glass with scarcity glow */}
@@ -138,12 +140,12 @@ function CardItemStatic({
             <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
               <div className="absolute inset-0 backdrop-blur-md bg-black/40" />
               <div className="relative z-10 text-center">
-                <div className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center"
-                  style={{ background: `${borderColor}20`, border: `2px solid ${borderColor}40`, boxShadow: `0 0 20px ${borderColor}30` }}>
-                  <span className="text-lg" style={{ color: borderColor }}>?</span>
+                <div className={`${size === 'xl' ? 'w-20 h-20' : size === 'lg' ? 'w-16 h-16' : 'w-12 h-12'} rounded-full mx-auto mb-2 flex items-center justify-center`}
+                  style={{ background: `${borderColor}20`, border: `2px solid ${borderColor}40`, boxShadow: `0 0 ${size === 'lg' || size === 'xl' ? '30' : '20'}px ${borderColor}30` }}>
+                  <span className={`${size === 'xl' ? 'text-4xl' : size === 'lg' ? 'text-3xl' : 'text-lg'}`} style={{ color: borderColor }}>?</span>
                 </div>
-                <div className={`${s.serial} font-mono font-bold uppercase`} style={{ color: borderColor }}>{scarcityConfig.label}</div>
-                <div className={`${s.serial} text-white/30 mt-0.5`}>Sealed</div>
+                <div className={`${size === 'lg' || size === 'xl' ? 'text-xs' : s.serial} font-mono font-bold uppercase`} style={{ color: borderColor }}>{scarcityConfig.label}</div>
+                <div className={`${size === 'lg' || size === 'xl' ? 'text-xs' : s.serial} text-white/30 mt-0.5`}>Sealed</div>
               </div>
             </div>
           )}
