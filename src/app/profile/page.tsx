@@ -16,7 +16,7 @@ import { AchievementCategory } from '@/data/types';
 import { getVipState, type VipState } from '@/lib/vip';
 import { getPlayerActivityEvents, REACTION_TYPES, type PulseEvent } from '@/lib/pulse';
 import { SOCIAL_FEED_CONFIG } from '@/data/social-feed';
-import { getPrestigeState, PRESTIGE_CHALLENGES, type PrestigeState } from '@/lib/store';
+import { getPrestigeState, PRESTIGE_CHALLENGES, type PrestigeState, getCollectorPass, COLLECTOR_PASS_TIERS, getCollectorMilestones, getActiveTitlePrefix, setActiveTitlePrefix, type CollectorPassState } from '@/lib/store';
 import { getReferralState, getReferralLink, REFERRAL_REWARDS, getNextReferralReward } from '@/lib/referral';
 
 function LazySection({ children, height }: { children: React.ReactNode; height: number }) {
@@ -57,6 +57,9 @@ export default function ProfilePage() {
   const [referralCode, setReferralCode] = useState('');
   const [referralCount, setReferralCount] = useState(0);
   const [referralCopied, setReferralCopied] = useState(false);
+  const [pass, setPass] = useState<CollectorPassState | null>(null);
+  const [milestones, setMilestones] = useState<{ milestone: { id: string; title: string; description: string; icon: string; titlePrefix: string }; earned: boolean }[]>([]);
+  const [titlePrefix, setTitlePrefix] = useState('');
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -89,6 +92,9 @@ export default function ProfilePage() {
     const ref = getReferralState();
     setReferralCode(ref.code);
     setReferralCount(ref.totalReferred);
+    setPass(getCollectorPass());
+    setMilestones(getCollectorMilestones());
+    setTitlePrefix(getActiveTitlePrefix());
   }, []);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
@@ -393,6 +399,77 @@ export default function ProfilePage() {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Collector Pass */}
+      {pass && (
+        <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-violet-500/5 to-indigo-500/5 border border-violet-500/15">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🎫</span>
+              <div>
+                <div className="text-xs font-bold text-foreground">Collector Pass</div>
+                <div className="text-[10px] text-muted">Tier {pass.currentTier}/30 &middot; {pass.xpEarned} XP this month</div>
+              </div>
+            </div>
+          </div>
+          <div className="h-2 rounded-full bg-border/30 overflow-hidden mb-2">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
+              style={{ width: `${(pass.currentTier / 30) * 100}%` }}
+            />
+          </div>
+          <div className="flex gap-1 overflow-x-auto no-scrollbar">
+            {COLLECTOR_PASS_TIERS.slice(0, 10).map(t => (
+              <div
+                key={t.tier}
+                className={`flex-shrink-0 w-8 text-center p-1 rounded text-[8px] ${
+                  t.tier <= pass.currentTier ? 'bg-violet-500/15 text-violet-400' : 'bg-surface/30 text-muted/40'
+                }`}
+              >
+                <div>{t.freeReward.icon}</div>
+                <div>{t.tier}</div>
+              </div>
+            ))}
+            <div className="flex-shrink-0 w-8 text-center p-1 rounded text-[8px] text-muted/40">...</div>
+          </div>
+        </div>
+      )}
+
+      {/* Collector Milestones */}
+      {milestones.length > 0 && (
+        <section className="mb-8">
+          <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-3 block">Collector Milestones</span>
+          <div className="grid grid-cols-2 gap-2">
+            {milestones.map(({ milestone: m, earned }) => (
+              <button
+                key={m.id}
+                onClick={() => {
+                  if (earned) {
+                    setActiveTitlePrefix(titlePrefix === m.titlePrefix ? '' : m.titlePrefix);
+                    setTitlePrefix(prev => prev === m.titlePrefix ? '' : m.titlePrefix);
+                  }
+                }}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  earned
+                    ? titlePrefix === m.titlePrefix
+                      ? 'bg-accent/10 border-accent/30 ring-1 ring-accent/30'
+                      : 'bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40'
+                    : 'bg-surface/30 border-border/20 opacity-50'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm">{earned ? m.icon : '🔒'}</span>
+                  <span className="text-[10px] font-bold text-foreground">{m.title}</span>
+                </div>
+                <div className="text-[9px] text-muted">{m.description}</div>
+                {earned && (
+                  <div className="text-[8px] text-accent/70 mt-1">Title: &quot;{m.titlePrefix}&quot; {titlePrefix === m.titlePrefix ? '(active)' : ''}</div>
+                )}
+              </button>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Your Activity */}

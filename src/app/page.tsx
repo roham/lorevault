@@ -9,7 +9,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SETS } from '@/data/sets';
 import { CHALLENGES } from '@/data/challenges';
 import { Card, getTierForLevel } from '@/data/types';
-import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, type LoginCalendarState } from '@/lib/store';
+import { getOwnedCards, getPackCredits, getXP, getStreak, getShowcaseIds, getOwnedCardIds, getCollectorLevel, getDailyMissions, getLoginCalendar, claimLoginDay, LOGIN_REWARDS, recordVisit, getCollectorPass, COLLECTOR_PASS_TIERS, getWeeklyChallenges, type LoginCalendarState, type CollectorPassState, type WeeklyChallenge } from '@/lib/store';
 import { shouldShowWelcome } from '@/lib/onboarding';
 import { useRouter } from 'next/navigation';
 import { getVipState } from '@/lib/vip';
@@ -45,6 +45,8 @@ export default function Home() {
   const [fomo, setFomo] = useState({ legendaries: 0, epics: 0, packs: 0 });
   const [loginCalendar, setLoginCalendar] = useState<LoginCalendarState | null>(null);
   const [loginRewardClaimed, setLoginRewardClaimed] = useState<string | null>(null);
+  const [collectorPass, setCollectorPass] = useState<CollectorPassState | null>(null);
+  const [weeklyChallenges, setWeeklyChallenges] = useState<WeeklyChallenge[]>([]);
 
   useEffect(() => {
     if (shouldShowWelcome()) {
@@ -63,6 +65,8 @@ export default function Home() {
     setVipTier({ name: vs.tier.name, color: vs.tier.color });
     setFomo(getFomoCount());
     setLoginCalendar(getLoginCalendar());
+    setCollectorPass(getCollectorPass());
+    setWeeklyChallenges(getWeeklyChallenges());
     const missions = getDailyMissions();
     const incomplete = missions.find(m => !m.completed);
     if (incomplete) setDailyMission(incomplete);
@@ -288,6 +292,101 @@ export default function Home() {
           </motion.div>
         </section>
       )}
+
+      {/* ========== COLLECTOR PASS PREVIEW ========== */}
+      {collectorPass && (
+        <section className="px-4 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] uppercase tracking-[0.08em] text-muted">Collector Pass</span>
+            <span className="text-[10px] text-accent font-mono">Tier {collectorPass.currentTier}/30</span>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="p-3 rounded-xl bg-gradient-to-r from-violet-500/5 to-indigo-500/5 border border-violet-500/15"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex-1 h-2 rounded-full bg-border/30 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(collectorPass.currentTier / 30) * 100}%` }}
+                  transition={{ duration: 1, delay: 0.4 }}
+                />
+              </div>
+              <span className="text-xs font-mono text-muted">{collectorPass.xpEarned} XP</span>
+            </div>
+            <div className="flex gap-1 overflow-hidden">
+              {COLLECTOR_PASS_TIERS.slice(Math.max(0, collectorPass.currentTier - 1), collectorPass.currentTier + 4).map(t => (
+                <div
+                  key={t.tier}
+                  className={`flex-1 text-center p-1 rounded-md text-[9px] ${
+                    t.tier <= collectorPass.currentTier ? 'bg-violet-500/15 text-violet-400' : 'bg-surface/30 text-muted/50'
+                  }`}
+                >
+                  <div>{t.freeReward.icon}</div>
+                  <div>T{t.tier}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ========== WEEKLY CHALLENGES ========== */}
+      {weeklyChallenges.length > 0 && (
+        <section className="px-4 mb-6">
+          <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-2 block">Weekly Challenges</span>
+          <div className="space-y-2">
+            {weeklyChallenges.map((ch, i) => (
+              <motion.div
+                key={ch.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + i * 0.08 }}
+                className={`p-3 rounded-xl border ${ch.completed ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-surface border-border'}`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">{ch.icon}</span>
+                    <span className="text-xs font-semibold">{ch.description}</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-accent">{ch.reward}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-1.5 rounded-full bg-border/30 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${ch.completed ? 'bg-emerald-500' : 'bg-accent'}`}
+                      style={{ width: `${Math.min(100, (ch.progress / ch.target) * 100)}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-muted">{ch.progress}/{ch.target}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ========== SEASON 2 TEASE ========== */}
+      <section className="px-4 mb-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="p-4 rounded-2xl bg-gradient-to-r from-red-900/10 via-orange-900/10 to-yellow-900/10 border border-red-500/10 text-center"
+        >
+          <div className="text-2xl mb-1">🔥</div>
+          <div className="text-xs font-bold text-foreground mb-0.5">Season 2: The Underworld</div>
+          <div className="text-[10px] text-muted">New characters. New lore. Coming soon.</div>
+          <div className="flex justify-center gap-3 mt-2">
+            {['👤', '👤', '👤', '👤', '👤'].map((_, i) => (
+              <div key={i} className="w-6 h-8 rounded bg-red-500/10 border border-red-500/20 flex items-center justify-center text-[10px] text-red-500/40">?</div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
 
       {/* ========== FEATURED CARDS — Large horizontal scroll ========== */}
       <section className="px-4 mb-6">
