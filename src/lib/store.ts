@@ -86,6 +86,14 @@ export function addOwnedCards(cardIds: string[]) {
   return merged;
 }
 
+export function removeOwnedCards(cardIds: string[]): string[] {
+  const current = getOwnedCardIds();
+  const toRemove = new Set(cardIds);
+  const remaining = current.filter(id => !toRemove.has(id));
+  setItem(KEYS.ownedCardIds, remaining);
+  return remaining;
+}
+
 // Card collectibility metadata (sealed state, history, aging)
 type CardMeta = Record<string, {
   sealed: boolean;

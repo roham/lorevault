@@ -6,7 +6,7 @@ import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { Card, Scarcity, SCARCITY_CONFIG } from '@/data/types';
 import { ALL_CARDS } from '@/data/cards';
-import { getOwnedCards, addOwnedCards, getCardMeta } from '@/lib/store';
+import { getOwnedCards, addOwnedCards, removeOwnedCards, getCardMeta } from '@/lib/store';
 import {
   getForgeCost,
   canForge,
@@ -124,10 +124,8 @@ export default function ForgePage() {
       });
     }
 
-    // Remove consumed cards from owned (mark in history)
-    const currentIds = JSON.parse(localStorage.getItem('lorevault_owned_card_ids') || '[]') as string[];
-    const remaining = currentIds.filter((id: string) => !selectedIds.includes(id));
-    localStorage.setItem('lorevault_owned_card_ids', JSON.stringify(remaining));
+    // Remove consumed cards from owned
+    removeOwnedCards(selectedIds);
 
     // Add forge history
     for (const id of selectedIds) {
