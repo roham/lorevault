@@ -172,7 +172,7 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **What to build**: (A) Interactive Tutorial — replace the current welcome screen with a 3-step guided experience: (1) "Choose your starter set" (pick from 3 sets, get 1 free rare from chosen set), (2) "Open your first pack" (guided reveal with celebration), (3) "Meet your collection" (tour of key pages). Progress stored in `lorevault_onboarding_v2`. (B) Social Proof Landing — for visitors arriving via shared links (card detail, battle, trivia): show the shared content prominently, then "Start Your Collection" CTA with instant free pack. Track `?ref=` parameter to credit referrer. (C) First-Session Hooks — guarantee 3 packs in first session (starter + shared link bonus + "Welcome Gift" pack). Each pack opening teaches a mechanic: first pack = basic reveal, second = scarcity comparison, third = collection grid. (D) Discovery Feed personalization — sort `/discover/[slug]` entries by cards the user owns, showing "You have 3/20 from this set" context. (E) Return User Re-engagement — if user hasn't visited in 3+ days, show "Welcome Back" modal with a free pack + summary of what they missed (new phantom events from LivePulse, new challenges available).
 - **Why**: Conversion at 6 means social traffic lands but doesn't convert to active collectors. The current welcome screen is a single static page. An interactive tutorial that gives a starter card creates immediate ownership and loss aversion. Social proof landing pages turn shared links into acquisition funnels. First-session hooks ensure every new user has the "aha moment" of pulling a rare card. Return re-engagement catches lapsed users before they churn permanently.
 - **Acceptance criteria**: 3-step interactive tutorial with set choice and guided pack open. Social proof landing for shared URLs with CTA. 3 packs guaranteed in first session. Discovery feed personalization. Welcome-back modal after 3+ day absence. All localStorage-based.
-- **Status**: PENDING
+- **Status**: DONE — commit 1099dd1, v8.40
 
 ---
 
@@ -197,3 +197,4 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **DIRECTIVE-017**: Daily Engagement Engine + Retention Hooks — DONE (v8.37, 2026-04-14). Score: 100/100 maintained. Growth: 6→17/50.
 - **DIRECTIVE-018**: Viral Sharing + Social Growth + PWA — DONE (v8.38, 2026-04-14). Growth: 17→31/50.
 - **DIRECTIVE-019**: Long-Term Progression + Monthly Cycles — DONE (v8.39, 2026-04-14). Growth: 31→39/50.
+- **DIRECTIVE-020**: Onboarding Funnel + Conversion Optimization — DONE (v8.40, 2026-04-14). Growth: 39→44/50.
