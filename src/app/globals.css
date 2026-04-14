@@ -580,11 +580,17 @@ table tbody tr {
 }
 
 /* During drag — promote all binder cards to compositor layers */
-.binder-grid-dragging .binder-card {
+.binder-grid-dragging .binder-card,
+.binder-grid-dragging .sortable-binder-card {
   will-change: transform;
   backface-visibility: hidden;
+  transform: translateZ(0);
 }
 /* When not dragging — reclaim GPU memory */
 .binder-card {
   will-change: auto;
+}
+/* Disable hover effects during drag to prevent re-layout */
+.binder-grid-dragging .sortable-binder-card:hover {
+  transform: translateZ(0);
 }

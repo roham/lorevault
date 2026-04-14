@@ -104,11 +104,12 @@ function EmptySlot({ index, isMissing, card }: { index: number; isMissing?: bool
   if (isMissing && card) {
     return (
       <Link href="/packs">
-        <div className="w-[260px] h-[364px] rounded-xl flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden backdrop-blur-sm transition-all hover:scale-[1.02]"
+        <div className="w-[260px] h-[364px] rounded-xl flex flex-col items-center justify-center cursor-pointer group relative overflow-hidden transition-all hover:scale-[1.02]"
           style={{
             background: `linear-gradient(145deg, ${card.gradientFrom}30, ${card.gradientTo}15)`,
             border: '1px solid rgba(255,255,255,0.04)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)',
+            contain: 'layout style paint',
           }}
         >
           <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors" />
@@ -130,7 +131,7 @@ function EmptySlot({ index, isMissing, card }: { index: number; isMissing?: bool
           <span className="text-[10px] text-accent/0 group-hover:text-accent font-semibold mt-2 relative z-10 transition-all group-hover:translate-y-0 translate-y-1">
             Find this card
           </span>
-          <div className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-20 group-hover:opacity-50 transition-opacity z-10 border border-white/5">
+          <div className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-black/60 flex items-center justify-center opacity-20 group-hover:opacity-50 transition-opacity z-10 border border-white/5">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/60">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -147,6 +148,7 @@ function EmptySlot({ index, isMissing, card }: { index: number; isMissing?: bool
       style={{
         background: 'linear-gradient(145deg, rgba(18,20,31,0.3), rgba(10,11,20,0.2))',
         border: '1px dashed rgba(31, 34, 55, 0.25)',
+        contain: 'layout style paint',
       }}
     >
       <div className="absolute inset-0 rounded-xl" style={{
