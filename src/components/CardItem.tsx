@@ -2,10 +2,7 @@
 
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
-import Image from 'next/image';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-
-const SIZES_ATTR = '(max-width: 640px) 140px, (max-width: 1024px) 180px, 260px';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -17,20 +14,15 @@ function getCardArtPath(card: Card): string {
 function CardArt({ card, borderColor, size: s }: { card: Card; borderColor: string; size: typeof SIZE_MAP[keyof typeof SIZE_MAP] }) {
   const [hasArt, setHasArt] = useState(true);
   return (
-    <div className="absolute inset-0">
+    <>
       {hasArt && (
-        <div className="relative w-full h-full">
-          <Image
-            src={getCardArtPath(card)}
-            alt={card.character}
-            fill
-            sizes={SIZES_ATTR}
-            quality={70}
-            className="object-cover"
-            onError={() => setHasArt(false)}
-            unoptimized
-          />
-        </div>
+        <img
+          src={getCardArtPath(card)}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={() => setHasArt(false)}
+          loading="lazy"
+        />
       )}
       {!hasArt && (
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -49,7 +41,7 @@ function CardArt({ card, borderColor, size: s }: { card: Card; borderColor: stri
           </span>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
