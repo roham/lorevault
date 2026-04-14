@@ -313,6 +313,12 @@ body {
   border-radius: 8px;
 }
 
+/* Content-visibility for card grids — skip rendering off-screen cards */
+.card-grid-perf {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
 /* Selection styling */
 ::selection {
   background: rgba(129, 140, 248, 0.3);

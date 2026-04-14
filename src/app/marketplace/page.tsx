@@ -577,7 +577,7 @@ export default function MarketplacePage() {
 
           {/* GRID VIEW — LARGE CARDS */}
           {viewMode === 'grid' && (
-            <div className={`flex flex-wrap ${compact ? 'gap-2' : 'gap-4'} justify-center sm:justify-start`}>
+            <div className={`flex flex-wrap card-grid-perf ${compact ? 'gap-2' : 'gap-4'} justify-center sm:justify-start`}>
               <AnimatePresence mode="popLayout">
                 {results.slice(0, visibleCount).map((card, i) => {
                   const data = getCardMarketData(card.id); const watched = watchlist.includes(card.id); const inBulk = bulkSelected.has(card.id);

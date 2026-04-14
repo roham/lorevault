@@ -2,7 +2,10 @@
 
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
+
+const SIZES_ATTR = '(max-width: 640px) 140px, (max-width: 1024px) 180px, 260px';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -16,12 +19,14 @@ function CardArt({ card, borderColor, size: s }: { card: Card; borderColor: stri
   return (
     <>
       {hasArt && (
-        <img
+        <Image
           src={getCardArtPath(card)}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          sizes={SIZES_ATTR}
+          quality={70}
+          className="object-cover"
           onError={() => setHasArt(false)}
-          loading="lazy"
         />
       )}
       {!hasArt && (
