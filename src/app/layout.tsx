@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import UnlockCelebration from "@/components/UnlockCelebration";
+import LivePulse from "@/components/LivePulse";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,10 +39,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full bg-background text-foreground">
-        <main className="pt-12 pb-[76px]">
+        <main className="pt-12 pb-[112px]">
           {children}
         </main>
         <UnlockCelebration />
+        <LivePulse />
         <Navigation />
       </body>
     </html>

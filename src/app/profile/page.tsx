@@ -14,6 +14,8 @@ import { getShowcases, getActiveShowcaseId, SHOWCASE_THEMES, ShowcaseTheme } fro
 import { ACHIEVEMENTS, ACHIEVEMENT_CATEGORIES, getAchievementRarityColor, getAchievementById } from '@/lib/achievements';
 import { AchievementCategory } from '@/data/types';
 import { getVipState, type VipState } from '@/lib/vip';
+import { getPlayerActivityEvents, REACTION_TYPES, type PulseEvent } from '@/lib/pulse';
+import { SOCIAL_FEED_CONFIG } from '@/data/social-feed';
 
 function LazySection({ children, height }: { children: React.ReactNode; height: number }) {
   const [visible, setVisible] = useState(false);
@@ -48,6 +50,7 @@ export default function ProfilePage() {
   const [pinnedBadgeIds, setPinnedBadgeIds] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<AchievementCategory | 'all'>('all');
   const [vip, setVip] = useState<VipState | null>(null);
+  const [activityEvents, setActivityEvents] = useState<PulseEvent[]>([]);
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -75,6 +78,7 @@ export default function ProfilePage() {
     setEarnedIds(new Set(getEarnedAchievements().map(a => a.achievementId)));
     setPinnedBadgeIds(getPinnedBadges());
     setVip(getVipState());
+    setActivityEvents(getPlayerActivityEvents().slice(0, 10));
   }, []);
 
   const tierColor = TIER_COLORS[collectorLevel.tier] || '#818cf8';
@@ -295,6 +299,54 @@ export default function ProfilePage() {
           <span className="text-muted text-xs">→</span>
         </div>
       </Link>
+
+      {/* Your Activity */}
+      {activityEvents.length > 0 && (
+        <section className="mb-8">
+          <span className="text-[11px] uppercase tracking-[0.08em] text-muted mb-3 block">Your Activity</span>
+          <div className="space-y-2">
+            {activityEvents.map((event) => {
+              const config = SOCIAL_FEED_CONFIG[event.type];
+              const totalReactions = Object.values(event.reactions).reduce((a, b) => a + b, 0);
+              return (
+                <div key={event.id} className="flex items-start gap-3 p-3 rounded-xl bg-surface/40 border border-border/20">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
+                    style={{ backgroundColor: `${event.accent}15` }}
+                  >
+                    {event.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span
+                        className="text-[8px] uppercase tracking-[0.1em] font-bold px-1.5 py-0.5 rounded-full"
+                        style={{ backgroundColor: `${config.color}20`, color: config.color }}
+                      >
+                        {config.label}
+                      </span>
+                      <span className="text-[10px] text-muted/50">{event.timestamp}</span>
+                    </div>
+                    <div className="text-xs font-medium text-foreground/90 leading-snug">{event.text}</div>
+                    {event.subtext && (
+                      <div className="text-[10px] text-muted mt-0.5">{event.subtext}</div>
+                    )}
+                    {totalReactions > 0 && (
+                      <div className="flex items-center gap-1 mt-1.5">
+                        {REACTION_TYPES.filter(r => event.reactions[r.id] > 0).map(r => (
+                          <span key={r.id} className="flex items-center gap-0.5 text-[10px] text-muted">
+                            {r.emoji} <span className="font-mono">{event.reactions[r.id]}</span>
+                          </span>
+                        ))}
+                        <span className="text-[9px] text-muted/40 ml-1">{totalReactions} reactions</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Season Track — no entrance animation */}
       <section className="mb-8">

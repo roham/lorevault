@@ -16,6 +16,7 @@ import { getVipState } from '@/lib/vip';
 import { FEED_CONTENT } from '@/data/feed-content';
 import FeedCard from '@/components/FeedCard';
 import SocialFeed from '@/components/SocialFeed';
+import { getFomoCount } from '@/lib/pulse';
 
 const TIER_COLORS: Record<string, string> = {
   Newcomer: '#6b7094',
@@ -41,6 +42,7 @@ export default function Home() {
   const [collectorLevel, setCollectorLevel] = useState({ level: 1, tier: 'Newcomer' as string, progressPercent: 0, currentXP: 0, xpForNextLevel: 100, xpForCurrentLevel: 0 });
   const [dailyMission, setDailyMission] = useState<{ description: string; progress: number; target: number; reward: string } | null>(null);
   const [vipTier, setVipTier] = useState<{ name: string; color: string }>({ name: 'Bronze', color: '#CD7F32' });
+  const [fomo, setFomo] = useState({ legendaries: 0, epics: 0, packs: 0 });
 
   useEffect(() => {
     if (shouldShowWelcome()) {
@@ -56,6 +58,7 @@ export default function Home() {
 
     const vs = getVipState();
     setVipTier({ name: vs.tier.name, color: vs.tier.color });
+    setFomo(getFomoCount());
     const missions = getDailyMissions();
     const incomplete = missions.find(m => !m.completed);
     if (incomplete) setDailyMission(incomplete);
@@ -268,6 +271,28 @@ export default function Home() {
             Active now
           </span>
         </div>
+
+        {/* FOMO Counter */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex gap-2 mb-3"
+        >
+          <div className="flex-1 p-2.5 rounded-xl bg-gradient-to-r from-orange-500/5 to-red-500/5 border border-orange-500/15">
+            <div className="text-lg font-bold font-mono text-orange-400">{fomo.legendaries}</div>
+            <div className="text-[9px] text-muted">Legendaries pulled today</div>
+          </div>
+          <div className="flex-1 p-2.5 rounded-xl bg-gradient-to-r from-purple-500/5 to-blue-500/5 border border-purple-500/15">
+            <div className="text-lg font-bold font-mono text-purple-400">{fomo.epics}</div>
+            <div className="text-[9px] text-muted">Epics pulled today</div>
+          </div>
+          <div className="flex-1 p-2.5 rounded-xl bg-gradient-to-r from-accent/5 to-cyan-500/5 border border-accent/15">
+            <div className="text-lg font-bold font-mono text-accent">{fomo.packs.toLocaleString()}</div>
+            <div className="text-[9px] text-muted">Packs opened today</div>
+          </div>
+        </motion.div>
+
         <SocialFeed />
       </section>
 
