@@ -1,10 +1,10 @@
 'use client';
 
 import { Achievement, AchievementRarity, AchievementCategory } from '@/data/types';
-import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge } from '@/lib/store';
+import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge, getCardMeta } from '@/lib/store';
 
 // ---------------------------------------------------------------------------
-// Achievement definitions — 20 achievements
+// Achievement definitions — 28 achievements across 5 categories
 // ---------------------------------------------------------------------------
 export const ACHIEVEMENTS: Achievement[] = [
   {
@@ -283,6 +283,14 @@ export function checkAchievements(): string[] {
 
   // Check each
   tryEarn('first-pull', owned.length > 5); // starter cards don't count
+  tryEarn('day-one', (() => {
+    const meta = getCardMeta();
+    const allDates = Object.values(meta).map(c => c.acquiredAt).filter(Boolean).sort();
+    if (allDates.length < 2) return false;
+    const first = new Date(allDates[0]).getTime();
+    const latest = new Date(allDates[allDates.length - 1]).getTime();
+    return (latest - first) < 86400000 && owned.length > 10;
+  })());
   tryEarn('set-starter', new Set(owned.map(c => c.setSlug)).size >= 3);
   tryEarn('battle-tested', stats.battlesWon >= 5);
   tryEarn('quiz-whiz', stats.longestTriviaStreak >= 5);

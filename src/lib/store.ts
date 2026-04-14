@@ -514,6 +514,60 @@ export function deleteDeck(id: string) {
   setItem(KEYS.savedDecks, decks);
 }
 
+// ===== Population Data =====
+
+export interface PopulationData {
+  totalMinted: number;
+  currentOwners: number;
+  serialTier: 'genesis' | 'low' | 'mid' | 'standard';
+}
+
+// Seeded hash for deterministic per-card population
+function hashCode(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+const POP_RANGES: Record<string, [number, number]> = {
+  legendary: [10, 49],
+  epic: [50, 199],
+  rare: [200, 999],
+  uncommon: [1000, 4999],
+  common: [3000, 9999],
+};
+
+const PARALLEL_DIVISORS: Record<string, number> = {
+  base: 1,
+  silver: 2,
+  gold: 4,
+  holographic: 8,
+  obsidian: 20,
+};
+
+export function getPopulationData(card: { id: string; scarcity: string; parallel: string; serialNumber: number }): PopulationData {
+  const [min, max] = POP_RANGES[card.scarcity] || [1000, 5000];
+  const divisor = PARALLEL_DIVISORS[card.parallel] || 1;
+  const seed = hashCode(card.id);
+  const range = max - min;
+  const basePop = min + (seed % range);
+  const totalMinted = Math.max(Math.floor(basePop / divisor), card.scarcity === 'legendary' ? 5 : 10);
+
+  // currentOwners: 60-90% of totalMinted, seeded
+  const ownerPct = 0.6 + ((seed % 31) / 100);
+  const currentOwners = Math.max(1, Math.floor(totalMinted * ownerPct));
+
+  // Serial tier based on position relative to population
+  let serialTier: PopulationData['serialTier'] = 'standard';
+  if (card.serialNumber === 1) serialTier = 'genesis';
+  else if (card.serialNumber <= 10) serialTier = 'low';
+  else if (card.serialNumber <= Math.floor(totalMinted * 0.1)) serialTier = 'mid';
+
+  return { totalMinted, currentOwners, serialTier };
+}
+
 // ===== Pinned Badges =====
 
 const PINNED_BADGES_KEY = 'lorevault_pinned_badges';

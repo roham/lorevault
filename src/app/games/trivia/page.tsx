@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { TRIVIA_QUESTIONS, TriviaQuestion } from '@/data/trivia';
 import { saveTriviaRecord } from '@/lib/store';
 import { ALL_CARDS } from '@/data/cards';
-import { SCARCITY_CONFIG } from '@/data/types';
+import { SCARCITY_CONFIG, Achievement } from '@/data/types';
+import { checkAchievements, getAchievementById } from '@/lib/achievements';
+import AchievementCelebration from '@/components/AchievementCelebration';
 
 type Phase = 'intro' | 'question' | 'answered' | 'results';
 
@@ -48,6 +50,22 @@ export default function TriviaPage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(Date.now());
   const [multiplier, setMultiplier] = useState(1);
+  const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  // Check achievements when trivia results are shown
+  useEffect(() => {
+    if (phase === 'results') {
+      const newIds = checkAchievements();
+      if (newIds.length > 0) {
+        const achievements = newIds
+          .map(id => getAchievementById(id))
+          .filter(Boolean) as Achievement[];
+        setCelebrationQueue(achievements);
+        setTimeout(() => setShowCelebration(true), 1200);
+      }
+    }
+  }, [phase]);
 
   // Prepare question set
   const startGame = useCallback(() => {
@@ -319,6 +337,20 @@ export default function TriviaPage() {
             </Link>
           </div>
         </motion.div>
+
+        {/* Achievement celebration */}
+        <AchievementCelebration
+          visible={showCelebration && celebrationQueue.length > 0}
+          achievement={celebrationQueue[0] ?? null}
+          onDone={() => {
+            if (celebrationQueue.length <= 1) {
+              setShowCelebration(false);
+              setCelebrationQueue([]);
+            } else {
+              setCelebrationQueue(prev => prev.slice(1));
+            }
+          }}
+        />
       </div>
     );
   }

@@ -3,7 +3,7 @@
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
 import { Card, SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getCardMeta, getAgingTiers, getOriginBadge, type AgingTiers, type OriginBadge } from '@/lib/store';
+import { getCardMeta, getAgingTiers, getOriginBadge, getPopulationData, type AgingTiers, type OriginBadge, type PopulationData } from '@/lib/store';
 
 function getCardArtPath(card: Card): string {
   const base = `${card.setSlug}-${card.character}-${card.moment}`.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -115,6 +115,15 @@ function AgingOverlays({ tiers }: { tiers: AgingTiers | null }) {
   );
 }
 
+function getSerialColor(tier: PopulationData['serialTier']): string {
+  switch (tier) {
+    case 'genesis': return '#ffd700';
+    case 'low': return '#f59e0b';
+    case 'mid': return '#c0c0c0';
+    default: return 'rgba(255,255,255,0.4)';
+  }
+}
+
 export default function CardItem(props: CardItemProps) {
   if (props.interactive === false) return <CardItemStatic {...props} />;
   return <CardItemInteractive {...props} />;
@@ -145,6 +154,10 @@ function CardItemStatic({
   const [originBadge] = useState<OriginBadge | null>(() => {
     if (typeof window === 'undefined') return null;
     return getOriginBadge(card.id);
+  });
+  const [popData] = useState<PopulationData | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return getPopulationData(card);
   });
   const s = SIZE_MAP[size];
   const borderColor = scarcityConfig.color;
@@ -228,8 +241,14 @@ function CardItemStatic({
               {isSealed ? 'Tap to reveal' : card.moment}
             </div>
             <div className="flex items-center justify-between mt-0.5">
-              <span className={`${s.serial} font-mono font-bold uppercase tracking-wider`} style={{ color: borderColor }}>{scarcityConfig.label}</span>
-              {!isSealed && card.scarcity !== 'common' && <span className={`${s.serial} font-mono text-white/40`}>#{card.serialNumber.toString().padStart(card.maxSerial.toString().length, '0')}/{card.maxSerial}</span>}
+              <span className={`${s.serial} font-mono font-bold uppercase tracking-wider`} style={{ color: borderColor }}>
+                {scarcityConfig.label}{popData && (size === 'lg' || size === 'xl') ? ` · ${popData.totalMinted.toLocaleString()}` : ''}
+              </span>
+              {!isSealed && card.scarcity !== 'common' && popData && (
+                <span className={`${s.serial} font-mono font-bold`} style={{ color: getSerialColor(popData.serialTier) }}>
+                  {popData.serialTier === 'genesis' ? '✦ ' : popData.serialTier === 'low' ? '★ ' : ''}#{card.serialNumber}/{popData.totalMinted}
+                </span>
+              )}
             </div>
           </div>
           {showPrice && card.listed && (
@@ -268,6 +287,10 @@ function CardItemInteractive({
   const [originBadge] = useState<OriginBadge | null>(() => {
     if (typeof window === 'undefined') return null;
     return getOriginBadge(card.id);
+  });
+  const [popData] = useState<PopulationData | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return getPopulationData(card);
   });
   const s = SIZE_MAP[size];
 
@@ -479,11 +502,11 @@ function CardItemInteractive({
             </div>
             <div className="flex items-center justify-between mt-0.5">
               <span className={`${s.serial} font-mono font-bold uppercase tracking-wider`} style={{ color: borderColor }}>
-                {scarcityConfig.label}
+                {scarcityConfig.label}{popData && (size === 'lg' || size === 'xl') ? ` · ${popData.totalMinted.toLocaleString()}` : ''}
               </span>
-              {card.scarcity !== 'common' && (
-                <span className={`${s.serial} font-mono text-white/40`}>
-                  #{card.serialNumber.toString().padStart(card.maxSerial.toString().length, '0')}/{card.maxSerial}
+              {card.scarcity !== 'common' && popData && (
+                <span className={`${s.serial} font-mono font-bold`} style={{ color: getSerialColor(popData.serialTier) }}>
+                  {popData.serialTier === 'genesis' ? '✦ ' : popData.serialTier === 'low' ? '★ ' : ''}#{card.serialNumber}/{popData.totalMinted}
                 </span>
               )}
             </div>

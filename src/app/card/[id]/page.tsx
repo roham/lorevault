@@ -7,7 +7,7 @@ import CardItem from '@/components/CardItem';
 import PriceChart from '@/components/marketplace/PriceChart';
 import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getOwnedCardIds, addOwnedCards, getBattleRecords, getCardMeta, getAgingTiers, type AgingTiers } from '@/lib/store';
+import { getOwnedCardIds, addOwnedCards, getBattleRecords, getCardMeta, getAgingTiers, getPopulationData, type AgingTiers, type PopulationData } from '@/lib/store';
 import CardJourney from '@/components/CardJourney';
 import { CardEvent } from '@/data/types';
 import {
@@ -29,6 +29,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [cardBattleStats, setCardBattleStats] = useState<{ wins: number; total: number }>({ wins: 0, total: 0 });
   const [agingTiers, setAgingTiers] = useState<AgingTiers | null>(null);
   const [cardHistory, setCardHistory] = useState<{ history: CardEvent[]; acquiredAt: string } | null>(null);
+  const [popData, setPopData] = useState<PopulationData | null>(null);
 
   const card = ALL_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
@@ -52,6 +53,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
       }
       setCardBattleStats({ wins, total });
       setAgingTiers(getAgingTiers(card.id));
+      setPopData(getPopulationData(card));
       const meta = getCardMeta();
       const m = meta[card.id];
       if (m?.history) {
@@ -165,7 +167,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           {/* Metadata chips */}
           <div className="flex flex-wrap gap-2 mt-3 mb-4">
             <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: scarcityConfig.color, background: `${scarcityConfig.color}15`, border: `1px solid ${scarcityConfig.color}25` }}>
-              {scarcityConfig.label}
+              {scarcityConfig.label}{popData ? ` · ${popData.totalMinted.toLocaleString()} Exist` : ''}
             </span>
             {card.parallel !== 'base' && (
               <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-surface border border-border capitalize">
@@ -173,8 +175,15 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               </span>
             )}
             {card.scarcity !== 'common' && (
-              <span className="px-2.5 py-1 rounded-lg text-xs font-mono bg-surface border border-border">
-                #{card.serialNumber}/{card.maxSerial}
+              <span
+                className="px-2.5 py-1 rounded-lg text-xs font-mono border"
+                style={{
+                  background: popData?.serialTier === 'genesis' ? '#ffd70015' : popData?.serialTier === 'low' ? '#f59e0b15' : popData?.serialTier === 'mid' ? '#c0c0c015' : undefined,
+                  borderColor: popData?.serialTier === 'genesis' ? '#ffd70030' : popData?.serialTier === 'low' ? '#f59e0b30' : popData?.serialTier === 'mid' ? '#c0c0c030' : undefined,
+                  color: popData?.serialTier === 'genesis' ? '#ffd700' : popData?.serialTier === 'low' ? '#f59e0b' : popData?.serialTier === 'mid' ? '#c0c0c0' : undefined,
+                }}
+              >
+                {popData?.serialTier === 'genesis' ? '✦ ' : popData?.serialTier === 'low' ? '★ ' : ''}#{card.serialNumber}/{popData?.totalMinted ?? card.maxSerial}
               </span>
             )}
             <span className="px-2.5 py-1 rounded-lg text-xs bg-surface border border-border">
@@ -199,6 +208,60 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#d4a030', background: '#d4a03015', border: '1px solid #d4a03025' }}>⏳ Ancient</span>
             )}
           </div>
+
+          {/* Population counter */}
+          {popData && (
+            <div className="p-3 rounded-xl bg-surface/50 border border-border/50 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-center">
+                    <div className="text-lg font-bold font-mono" style={{ color: scarcityConfig.color }}>
+                      {popData.totalMinted.toLocaleString()}
+                    </div>
+                    <div className="text-[9px] text-muted uppercase">Minted</div>
+                  </div>
+                  <div className="w-px h-8 bg-border/30" />
+                  <div className="text-center">
+                    <div className="text-lg font-bold font-mono text-foreground">
+                      {popData.currentOwners.toLocaleString()}
+                    </div>
+                    <div className="text-[9px] text-muted uppercase">Collectors</div>
+                  </div>
+                </div>
+                {card.scarcity !== 'common' && (
+                  <div className="text-right">
+                    <div className="text-xs font-mono font-bold" style={{
+                      color: popData.serialTier === 'genesis' ? '#ffd700' : popData.serialTier === 'low' ? '#f59e0b' : popData.serialTier === 'mid' ? '#c0c0c0' : '#818cf8',
+                    }}>
+                      #{card.serialNumber}
+                    </div>
+                    <div className="text-[9px] text-muted">
+                      {popData.serialTier === 'genesis' ? 'Genesis Serial' : popData.serialTier === 'low' ? 'Low Serial' : popData.serialTier === 'mid' ? 'Silver Serial' : `of ${popData.totalMinted.toLocaleString()}`}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* Dot visualization for legendaries */}
+              {card.scarcity === 'legendary' && popData.totalMinted <= 50 && (
+                <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-border/20">
+                  {Array.from({ length: popData.totalMinted }, (_, i) => (
+                    <div
+                      key={i}
+                      className="w-2 h-2 rounded-full"
+                      style={{
+                        background: i + 1 === card.serialNumber ? scarcityConfig.color : `${scarcityConfig.color}25`,
+                        boxShadow: i + 1 === card.serialNumber ? `0 0 6px ${scarcityConfig.color}` : 'none',
+                      }}
+                      title={i + 1 === card.serialNumber ? `This card (#${card.serialNumber})` : `#${i + 1}`}
+                    />
+                  ))}
+                  <span className="text-[8px] text-muted ml-1 self-center">
+                    You own #{card.serialNumber}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Price + Market Data section */}
           <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
