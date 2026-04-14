@@ -1,5 +1,35 @@
 # LoreVault Master Plan: 100 Users to Millions
 
+## Agent Architecture
+
+```
+Master Odin (CEO-only deploy/stop — Roham)
+│  Reads all domain outputs. Draws cross-product parallels.
+│  The ONLY agent that sees across product boundaries.
+│
+├── LoreVault Odin (team lead can deploy/stop)
+│   ├── Dispatches Frigga for research
+│   ├── Writes to lorevault-wiki/ ONLY
+│   ├── Issues directives to lorevault-wiki/DIRECTIVES.md
+│   └── Product daemon reads directives and builds
+│
+├── Collectibles Odin (Collectibles team lead can deploy/stop)
+│   └── Owns Top Shot, All Day, platform strategy
+│
+├── Consumer Finance Odin (CF team lead can deploy/stop)
+│   └── Owns Peak Money, DeFi, Flow token strategy
+│
+└── Company Odin (CEO-only — existing deployed odin:odin)
+    └── Owns ops, process, people, infrastructure
+```
+
+**Permission model:**
+- Master Odin: CEO deploys, CEO stops. Nobody else.
+- Domain Odins: respective team lead deploys/stops. CEO can override.
+- Context isolation: each domain Odin writes to its own storage. Cross-product signals noted but not acted on — Master Odin synthesizes.
+
+---
+
 ## The Complete Lever Map
 
 Every lever a digital collectibles startup can pull, organized by domain. The infinite research loop cycles through these — going wide first (what are all the levers?), then deep (what's the best play for each?), then creative (what has nobody tried?).
