@@ -134,7 +134,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Lore Node Cascades: unlocking a node reveals 2-3 adjacent hint nodes (greyed-out silhouettes with "?" markers). Requirements only visible when parent is unlocked. Progressive revelation loop. (B) Ghost Card Breadcrumbs: each ghost card pulled reveals 1 hidden condition hint for a related ghost in a "Whispers" section on the ghost card detail. (C) Narrative Fusion Events: when 2+ players (phantom) own the same character's cards, generate "crossover lore" events in LivePulse (e.g., "Odin met Sherlock at the crossroads of worlds"). Cross-set character interactions. (D) "Chronicle" page (`/chronicle`): auto-generated story of the player's collecting journey — first pack, first legendary, first forge, prestige — rendered as an illustrated timeline with lore callbacks.
 - **Why**: Narrative Depth at 9 has strong lore content but no emergent narrative. Cascades + breadcrumbs create exploration arcs. Chronicle makes the player's own journey a narrative. Social Proof at 9 needs ambient social narrative, not just leaderboards. Pushes Narrative Depth 9→10 and Social Proof 9→10.
 - **Acceptance criteria**: Codex shows hint nodes after parent unlock. Ghost card detail shows whisper hint. LivePulse generates crossover events. Chronicle page renders player journey.
-- **Status**: PENDING
+- **Status**: DONE — commit ac697b7, v8.36
 
 ---
 
@@ -155,3 +155,4 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-013**: Ghost Cards + Hidden Pull Mechanics — DONE (v8.33, 2026-04-14). Score: 95→97 (+2).
 - **DIRECTIVE-014**: Collector Prestige — Meta-Completion Layer — DONE (v8.34, 2026-04-14). Score: 97→98 (+1).
 - **DIRECTIVE-015**: Scarcity Gradient Ascension — Parallel Transmute + Burn + Population Decay — DONE (v8.35, 2026-04-14). Score: 98→99 (+1).
+- **DIRECTIVE-016**: Discovery Cascade + Narrative Fusion + Chronicle — DONE (v8.36, 2026-04-14). Score: 99→100 (+1).
