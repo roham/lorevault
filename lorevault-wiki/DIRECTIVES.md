@@ -156,7 +156,7 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **What to build**: (A) Enhanced Share Card — generate a card image snapshot with OG metadata for social preview. Deep link `/card/[id]` with proper `<meta>` tags for Twitter Card + Open Graph. Share buttons: Twitter, copy link, download image. (B) Pack Opening Replay — after opening a pack, "Share This Pull" button generates a 3-second animated GIF/video-like sequence of the reveal. Sharable URL. (C) Referral System — unique referral code per collector. Referred user gets bonus starter pack. Referrer gets exclusive "Recruiter" badge + 1 free rare card per referral. `lorevault_referral_code` + `lorevault_referrals` in localStorage. Display on profile. (D) Challenge Links — "I bet you can't beat my score" sharable challenge URLs for Battle and Trivia modes. Recipient sees challenger's score and tries to beat it. (E) PWA Install Prompt — manifest.json + service worker + "Add to Home Screen" banner after 2nd visit.
 - **Why**: Viral coefficient currently at ~0 — no sharing mechanism that actually reaches non-users. Every pack open is a potential social media post. Every legendary pull is a flex moment that recruits new users. Referral codes convert passive word-of-mouth into tracked growth. PWA installability turns web visitors into retained app users. Deep links with rich previews convert social impressions into visits.
 - **Acceptance criteria**: Share button generates card image with social metadata. Pack opening share generates shareable URL. Referral codes generate and track. Challenge links encode scores. manifest.json + SW registration. OG/Twitter meta tags on card detail pages.
-- **Status**: PENDING
+- **Status**: DONE — commit fedf382, v8.38
 
 ---
 
@@ -179,3 +179,4 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **DIRECTIVE-015**: Scarcity Gradient Ascension — Parallel Transmute + Burn + Population Decay — DONE (v8.35, 2026-04-14). Score: 98→99 (+1).
 - **DIRECTIVE-016**: Discovery Cascade + Narrative Fusion + Chronicle — DONE (v8.36, 2026-04-14). Score: 99→100 (+1).
 - **DIRECTIVE-017**: Daily Engagement Engine + Retention Hooks — DONE (v8.37, 2026-04-14). Score: 100/100 maintained. Growth: 6→17/50.
+- **DIRECTIVE-018**: Viral Sharing + Social Growth + PWA — DONE (v8.38, 2026-04-14). Growth: 17→31/50.
