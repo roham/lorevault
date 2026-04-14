@@ -110,7 +110,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) 6 "ghost" card variants in `src/data/cards.ts` with `ghost-` ID prefix — visually distinct alternate Legendaries with inverted gradients and unique lore. Not shown in collection grid, marketplace, or guide. (B) Hidden pull conditions in `generatePack()` in `src/lib/store.ts`: (1) 13th pack opened, (2) owning exactly 5 Legendaries, (3) pulling Epic on matching day-of-week hash, (4) 7-day login streak, (5) owning all 20 chars from one set, (6) 3rd forge completed. Each condition met + 15% chance = ghost card replaces one pull. Add `lorevault_packs_opened` counter. (C) Ghost card sealed state: pure black overlay with white border pulse (`@keyframes ghost-pulse`). Reveal adds 400ms color-invert flash (`filter: invert(1)`) before settling. (D) Mutation overlay in `src/lib/card-dna.ts`: `getMutationState(cardId)` checks 60+ days owned AND 50+ battles AND Legacy Score >= 70. Returns tier from DNA particle (embers→ember, snow→frost, void-dust→void). Active mutation renders slow-breathing halo (box-shadow pulse, 4s, 0.3 opacity) in CardItem at md+ sizes. No label. (E) Hidden achievement `ghost-finder`: displays as `???` until earned, unlocks on first ghost card reveal, real name: "Void Walker".
 - **Why**: Discovery at 9 is fully documented. A 10 requires mechanics that collectors stumble upon and share externally. Ghost cards are the digital equivalent of error variants — value from unexpected existence. Mutation rewards long-term ownership with an unlabeled visual distinction. The hidden achievement creates genuine shock.
 - **Acceptance criteria**: 6 ghost cards exist with `ghost-` prefix, not in browse/marketplace. `generatePack()` silently evaluates 6 conditions with 15% trigger. Ghost sealed state has black overlay + white pulse. Reveal includes invert flash. `getMutationState()` returns correct tier. Mutated cards show breathing halo. `ghost-finder` achievement shows `???` until earned. No UI text references ghost cards anywhere.
-- **Status**: PENDING
+- **Status**: DONE — commit 1957c96, v8.33
 
 ### DIRECTIVE-014: Collector Prestige — Meta-Completion Layer
 - **Priority**: P0
@@ -135,4 +135,5 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **DIRECTIVE-009**: Provenance Deepening — DONE (v8.29, 2026-04-14). Score: 86→90 (+4).
 - **DIRECTIVE-010**: Card DNA — Procedural Visual Identity — DONE (v8.30, 2026-04-14). Score: 90→91 (+1).
 - **DIRECTIVE-011**: Live Pulse Feed + Collector Reactions — DONE (v8.31, 2026-04-14). Score: 91→93 (+2).
-- **DIRECTIVE-012**: Seasonal Vault + Countdown Forge — DONE (v8.32, 2026-04-14). Score: 93→TBD.
+- **DIRECTIVE-012**: Seasonal Vault + Countdown Forge — DONE (v8.32, 2026-04-14). Score: 93→95 (+2).
+- **DIRECTIVE-013**: Ghost Cards + Hidden Pull Mechanics — DONE (v8.33, 2026-04-14). Score: 95→TBD.
