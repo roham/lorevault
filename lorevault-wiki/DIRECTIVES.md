@@ -196,7 +196,7 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **What to build**: (A) Collection Comparison — "Compare with friend" feature: generate a shareable collection summary (total cards, rarest card, set completion %) as a visual card. Copy-link button generates a URL with base64-encoded collection snapshot. Visitor sees the comparison card and their own stats side-by-side. (B) Social Challenge — "I challenge you to beat my score" flow after battle/trivia: generates a challenge link with the player's score embedded. Recipient visits, plays, and sees both scores compared. Challenge results persist in localStorage. (C) Collection Flex — share "My LoreVault" card to Twitter showing: total cards, rarest pull, longest streak, collector level, badge. Creates social proof + FOMO for non-users. (D) Pack Opening Replay — share a replay-link of your best pack opening (cards pulled, scarcities). Recipient sees the reveal animation with the sharer's cards.
 - **Why**: Viral at 9 means sharing exists but is passive (link + text). The missing point requires active social mechanics: challenges create competitive engagement, collection comparisons create FOMO, collection flex creates aspirational content. Each transforms a passive share into an interactive experience that pulls the recipient deeper into the app.
 - **Acceptance criteria**: Collection comparison with shareable summary. Social challenge with score comparison. "My LoreVault" flex card for Twitter. Pack opening replay sharing. All client-side with URL-encoded state.
-- **Status**: PENDING
+- **Status**: DONE — commit 054d310, v8.43
 
 ---
 
@@ -224,3 +224,4 @@ _Collectibility Score maxed at 100/100. New optimization target: Growth Score (R
 - **DIRECTIVE-020**: Onboarding Funnel + Conversion Optimization — DONE (v8.40, 2026-04-14). Growth: 39→42/50.
 - **DIRECTIVE-021**: Weekly Events + D7 Engagement Depth — DONE (v8.41, 2026-04-14). Growth: 42→45/50.
 - **DIRECTIVE-022**: Endgame + Month-End FOMO + Leaderboard — DONE (v8.42, 2026-04-14). Growth: 45→49/50.
+- **DIRECTIVE-023**: Social Challenges + Collection Comparison — DONE (v8.43, 2026-04-14). Growth: 49→50/50. **GROWTH SCORE MAXED.**
