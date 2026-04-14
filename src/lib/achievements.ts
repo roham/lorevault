@@ -1,10 +1,11 @@
 'use client';
 
 import { Achievement, AchievementRarity, AchievementCategory } from '@/data/types';
-import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge, getCardMeta } from '@/lib/store';
+import { getOwnedCards, getEarnedAchievements, earnAchievement, getGameStats, getStreak, getCollectorLevel, getAgingTiers, getOriginBadge, getCardMeta, getUnlockedLoreNodes } from '@/lib/store';
+import { getSecretNodes } from '@/data/lore-graph';
 
 // ---------------------------------------------------------------------------
-// Achievement definitions — 28 achievements across 5 categories
+// Achievement definitions — 33 achievements across 5 categories
 // ---------------------------------------------------------------------------
 export const ACHIEVEMENTS: Achievement[] = [
   {
@@ -259,6 +260,52 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: 'special',
     mockPercent: 9,
   },
+  // Lore Codex achievements
+  {
+    id: 'lore-seeker',
+    name: 'Lore Seeker',
+    description: 'Unlock your first Codex node',
+    icon: 'L',
+    rarity: 'common',
+    category: 'discovery',
+    mockPercent: 60,
+  },
+  {
+    id: 'lore-scholar',
+    name: 'Lore Scholar',
+    description: 'Unlock 10 Codex nodes',
+    icon: 'S',
+    rarity: 'uncommon',
+    category: 'discovery',
+    mockPercent: 25,
+  },
+  {
+    id: 'lore-master',
+    name: 'Lore Master',
+    description: 'Unlock 30 Codex nodes',
+    icon: 'M',
+    rarity: 'epic',
+    category: 'discovery',
+    mockPercent: 5,
+  },
+  {
+    id: 'secret-thread',
+    name: 'Secret Thread',
+    description: 'Discover a secret cross-set lore thread',
+    icon: '?',
+    rarity: 'rare',
+    category: 'special',
+    mockPercent: 8,
+  },
+  {
+    id: 'codex-complete',
+    name: 'Grand Archivist',
+    description: 'Unlock every node in the Lore Codex',
+    icon: 'A',
+    rarity: 'legendary',
+    category: 'special',
+    mockPercent: 1,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -333,6 +380,15 @@ export function checkAchievements(): string[] {
     const t = getAgingTiers(c.id);
     return t.battle === 'battle-worn' || t.battle === 'veteran';
   }));
+
+  // Lore Codex
+  const unlockedLore = getUnlockedLoreNodes();
+  const secretNodes = getSecretNodes();
+  tryEarn('lore-seeker', unlockedLore.length >= 1);
+  tryEarn('lore-scholar', unlockedLore.length >= 10);
+  tryEarn('lore-master', unlockedLore.length >= 30);
+  tryEarn('secret-thread', secretNodes.some(n => unlockedLore.includes(n.id)));
+  tryEarn('codex-complete', unlockedLore.length >= 48);
 
   return newlyEarned;
 }

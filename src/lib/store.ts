@@ -635,3 +635,33 @@ export function generatePack(setSlug?: string): Card[] {
 
   return drawn;
 }
+
+// ===== Lore Codex =====
+
+import { LORE_GRAPH, LoreNode } from '@/data/lore-graph';
+
+export function getUnlockedLoreNodes(): string[] {
+  const owned = getOwnedCards();
+  const ownedCharacters = new Set(owned.map(c => c.character));
+
+  return LORE_GRAPH
+    .filter(node => node.requiredCharacters.every(ch => ownedCharacters.has(ch)))
+    .map(node => node.id);
+}
+
+export function isLoreNodeUnlocked(nodeId: string): boolean {
+  const node = LORE_GRAPH.find(n => n.id === nodeId);
+  if (!node) return false;
+  const owned = getOwnedCards();
+  const ownedCharacters = new Set(owned.map(c => c.character));
+  return node.requiredCharacters.every(ch => ownedCharacters.has(ch));
+}
+
+export function getCodexCompletionPercent(): number {
+  const unlocked = getUnlockedLoreNodes();
+  return Math.round((unlocked.length / LORE_GRAPH.length) * 100);
+}
+
+export function getLoreNodesForCard(character: string): LoreNode[] {
+  return LORE_GRAPH.filter(node => node.requiredCharacters.includes(character));
+}

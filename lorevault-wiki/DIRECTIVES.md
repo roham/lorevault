@@ -70,7 +70,7 @@ This file is the bridge between the strategy daemon (Odin) and the product daemo
 - **What to build**: (A) Lore Codex page (`/codex`) with node-graph of lore entries. Nodes unlock based on cards owned. Framer Motion animated reveal. (B) `src/data/lore-graph.ts` — directed graph: ~40 nodes across 6 sets, 6 secret nodes requiring cross-set combinations. Each node: id, title, text, requiredCards[], connections[]. (C) LoreFragment component on card detail — "Lore Unlocked" badge when fragment available. (D) Secret threads discovered by cross-set combos → trigger unique achievements. (E) Codex completion % feeds into leaderboard ranking.
 - **Why**: Passive lore is wallpaper. A gated graph turns lore into a collectibility driver — cards become keys, not just assets. Lore Depth is tied for biggest gap at 6/10.
 - **Acceptance criteria**: Codex page renders node graph with locked/unlocked states. Owning required cards unlocks nodes with animated reveal. 6+ secret nodes require cross-set combos. Secret thread discovery grants achievement. Codex % visible on collector profile.
-- **Status**: PENDING
+- **Status**: DONE — commit TBD, v8.28
 
 ### DIRECTIVE-009: Provenance Deepening — Lineage & Market History
 - **Priority**: P1

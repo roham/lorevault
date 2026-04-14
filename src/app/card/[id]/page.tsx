@@ -9,6 +9,7 @@ import { ALL_CARDS } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
 import { getOwnedCardIds, addOwnedCards, getBattleRecords, getCardMeta, getAgingTiers, getPopulationData, type AgingTiers, type PopulationData } from '@/lib/store';
 import CardJourney from '@/components/CardJourney';
+import LoreFragment from '@/components/LoreFragment';
 import { CardEvent } from '@/data/types';
 import {
   getCardMarketData,
@@ -439,6 +440,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           <div className="p-4 rounded-2xl bg-surface/50 border border-border/50 mb-6">
             <div className="text-[10px] text-muted uppercase tracking-wider mb-2">From the Source</div>
             <p className="text-sm text-foreground/70 italic leading-relaxed">{card.loreText}</p>
+            <LoreFragment character={card.character} />
           </div>
 
           {/* Related cards */}

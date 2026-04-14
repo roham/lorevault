@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { generatePhantomCollectors, getCollectorRank, RANK_CONFIG, type PhantomCollector, type CollectorRank } from '@/data/leaderboard-seeds';
-import { getOwnedCards, getStreak, getEarnedAchievements, getCollectorLevel } from '@/lib/store';
+import { getOwnedCards, getStreak, getEarnedAchievements, getCollectorLevel, getCodexCompletionPercent } from '@/lib/store';
 import { ACHIEVEMENTS, getAchievementRarityColor, getAchievementById } from '@/lib/achievements';
 import { PROFILE } from '@/data/profile';
 
-type LeaderboardTab = 'cards' | 'rare' | 'age' | 'badges';
+type LeaderboardTab = 'cards' | 'rare' | 'age' | 'badges' | 'codex';
 
 interface LeaderboardEntry {
   id: string;
@@ -25,6 +25,7 @@ const TAB_CONFIG: { id: LeaderboardTab; label: string; icon: string; unit: strin
   { id: 'rare', label: 'Rarest Collection', icon: '💎', unit: 'rare+' },
   { id: 'age', label: 'Oldest Card', icon: '⏳', unit: 'days' },
   { id: 'badges', label: 'Achievements', icon: '🏆', unit: 'badges' },
+  { id: 'codex', label: 'Lore Codex', icon: '📖', unit: '%' },
 ];
 
 export default function HallPage() {
@@ -44,6 +45,7 @@ export default function HallPage() {
     const pRank = getCollectorRank(owned.length, rareCount, earned.length);
     setPlayerRank(pRank);
 
+    const codexPct = getCodexCompletionPercent();
     const phantoms = generatePhantomCollectors();
     const playerEntry: LeaderboardEntry = {
       id: 'player',
@@ -60,14 +62,14 @@ export default function HallPage() {
       const pEntries = phantoms.map(p => ({
         id: p.id,
         username: p.username,
-        value: t === 'cards' ? p.totalCards : t === 'rare' ? p.rareCards : t === 'age' ? p.oldestCardDays : p.achievementCount,
+        value: t === 'cards' ? p.totalCards : t === 'rare' ? p.rareCards : t === 'age' ? p.oldestCardDays : t === 'codex' ? p.codexPercent : p.achievementCount,
         rank: p.rank,
         isPlayer: false,
         lastActive: p.lastActive,
         pinnedBadges: p.pinnedBadges,
       }));
 
-      const pVal = t === 'cards' ? owned.length : t === 'rare' ? rareCount : t === 'age' ? oldestDays : earned.length;
+      const pVal = t === 'cards' ? owned.length : t === 'rare' ? rareCount : t === 'age' ? oldestDays : t === 'codex' ? codexPct : earned.length;
       const all = [...pEntries, { ...playerEntry, value: pVal }];
       all.sort((a, b) => b.value - a.value);
       return all;
