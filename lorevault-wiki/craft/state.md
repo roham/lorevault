@@ -1,6 +1,6 @@
 # Craft Daemon State
-Round: 1
-Current prototype: play (Round 2 next)
+Round: 2
+Current prototype: all (all above 60 — ready for deploy)
 
 ## Scores (updated after every gate-pass)
 | Prototype | Round | V | E | Cl | Co | M | D | N | Composite |
@@ -11,6 +11,9 @@ Current prototype: play (Round 2 next)
 | play      | 1     | 5 | 4 | 4  | 3  | 4 | 3 | 4 | 56        |
 | story     | 1     | 5 | 5 | 4  | 4  | 4 | 4 | 5 | 63        |
 | chase     | 1     | 5 | 4 | 4  | 4  | 4 | 4 | 3 | 58        |
+| play      | 2     | 6 | 5 | 4  | 4  | 4 | 4 | 4 | 65        |
+| story     | 2     | 6 | 5 | 4  | 4  | 4 | 5 | 5 | 67        |
+| chase     | 2     | 6 | 5 | 4  | 5  | 4 | 5 | 3 | 67        |
 
 ## Round 1 Synopsis
 - All three prototypes: emoji symbols replaced with actual card art images
@@ -18,7 +21,13 @@ Current prototype: play (Round 2 next)
 - Play: intro hero cards, battle card art, VS divider, scarcity labels, collection art
 - Story: world selection hero triptychs, chapter thumbnails, locked card silhouettes
 - Chase: set selection hero backgrounds, binder art, fanned pack art, opening burst, reveal art
-- Story crossed 60 threshold (63). Play (56) and Chase (58) need Round 2.
+
+## Round 2 Synopsis
+- All three prototypes: atmospheric dark radial gradient backgrounds on every phase
+- Play: victory glow burst, reward card flip+shimmer animation, larger reward display (w-48)
+- Story: floating ambient card art on intro, world-colored gradient on story map
+- Chase: ambient intro cards, set-colored pack phases, shimmer on reveal, spring "NEW" badge, celebration burst on summary
+- All three crossed 60 threshold: play=65, story=67, chase=67
 
 ## Persona Validation (every 5 rounds)
 | Prototype | Discoverer | Completionist | Competitor | Casual |

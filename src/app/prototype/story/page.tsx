@@ -73,9 +73,34 @@ export default function StoryPrototype() {
   // ═══════════════════════════════════════════
   if (phase === 'intro') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-8">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-8 relative overflow-hidden"
+        style={{ background: 'radial-gradient(ellipse at 50% 40%, #1a1828 0%, #0a0c18 50%, #000000 100%)' }}
+      >
+        {/* Floating ambient card art */}
+        {(() => {
+          const heroes = getWorldHeroCards('olympus');
+          return heroes.map((card, i) => (
+            <motion.div
+              key={card.id}
+              className="absolute w-[120px] aspect-[5/7] rounded-xl overflow-hidden pointer-events-none"
+              style={{
+                opacity: 0.06,
+                filter: 'blur(2px)',
+                left: `${20 + i * 25}%`,
+                top: `${25 + Math.abs(i - 1) * 15}%`,
+                transform: `rotate(${(i - 1) * 12}deg)`,
+              }}
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <StoryCardArt card={card} />
+            </motion.div>
+          ));
+        })()}
+
         <motion.div
-          className="text-center"
+          className="text-center relative z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2 }}
@@ -264,7 +289,10 @@ export default function StoryPrototype() {
     return (
       <div
         className="min-h-screen px-4 pt-4"
-        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+        style={{
+          paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+          background: `radial-gradient(ellipse at 50% 0%, ${selectedWorld.gradientFrom}80 0%, #080c18 40%, #000000 100%)`,
+        }}
       >
         {/* Header — progress */}
         <div className="flex items-center justify-between mb-6">

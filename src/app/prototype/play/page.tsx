@@ -310,7 +310,10 @@ export default function PlayPrototype() {
     return (
       <div
         className="min-h-screen px-4 pt-4 flex flex-col"
-        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+        style={{
+          paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+          background: 'radial-gradient(ellipse at 50% 30%, #1a1028 0%, #080c18 50%, #000000 100%)',
+        }}
       >
         {/* Round indicator */}
         <div className="text-center mb-4">
@@ -412,7 +415,10 @@ export default function PlayPrototype() {
     return (
       <div
         className="min-h-screen px-4 pt-4 flex flex-col"
-        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+        style={{
+          paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+          background: 'radial-gradient(ellipse at 50% 30%, #1a1028 0%, #080c18 50%, #000000 100%)',
+        }}
       >
         {/* Round header */}
         <div className="text-center mb-4">
@@ -534,6 +540,7 @@ export default function PlayPrototype() {
     return (
       <div
         className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
+        style={{ background: 'radial-gradient(ellipse at 50% 40%, #1a1028 0%, #080c18 50%, #000000 100%)' }}
         onClick={nextRound}
         role="button"
         tabIndex={0}
@@ -681,9 +688,23 @@ export default function PlayPrototype() {
 
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-6"
-        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+        className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
+        style={{
+          paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+          background: 'radial-gradient(ellipse at 50% 40%, #1a1028 0%, #080c18 50%, #000000 100%)',
+        }}
       >
+        {/* Victory glow burst */}
+        {won && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.2, 0] }}
+            transition={{ duration: 1.2, delay: 0.2 }}
+            style={{ background: 'radial-gradient(circle at 50% 50%, #22c55e40, transparent 70%)' }}
+          />
+        )}
+
         <motion.div
           className="text-center w-full max-w-sm"
           initial={{ opacity: 0, y: 20 }}
@@ -712,16 +733,27 @@ export default function PlayPrototype() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <div
-                className="w-44 aspect-[5/7] rounded-xl overflow-hidden relative mb-3"
+              <motion.div
+                className="w-48 aspect-[5/7] rounded-xl overflow-hidden relative mb-3"
                 style={{
                   background: `linear-gradient(145deg, ${reward.gradientFrom}, ${reward.gradientTo})`,
                   border: `2px solid ${SCARCITY_CONFIG[reward.scarcity].color}`,
-                  boxShadow: `0 0 40px ${SCARCITY_CONFIG[reward.scarcity].color}30, 0 8px 32px rgba(0,0,0,0.5)`,
+                  boxShadow: `0 0 60px ${SCARCITY_CONFIG[reward.scarcity].color}35, 0 8px 32px rgba(0,0,0,0.5)`,
                 }}
+                initial={{ rotateY: 90, scale: 0.6 }}
+                animate={{ rotateY: 0, scale: 1 }}
+                transition={{ delay: 0.3, duration: 0.6, type: 'spring', stiffness: 100 }}
               >
                 <CardArtImg card={reward} />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 30%, transparent 60%)' }} />
+                {/* Shimmer sweep */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)' }}
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '200%' }}
+                  transition={{ delay: 0.9, duration: 0.8, ease: 'easeInOut' }}
+                />
                 <div
                   className="absolute bottom-2 left-2 right-2 text-center py-1 rounded-lg"
                   style={{ background: `${SCARCITY_CONFIG[reward.scarcity].color}20` }}
@@ -733,7 +765,7 @@ export default function PlayPrototype() {
                     {reward.scarcity}
                   </span>
                 </div>
-              </div>
+              </motion.div>
               <h3 className="text-sm font-semibold text-foreground">{reward.character}</h3>
               <p className="text-[10px] text-muted italic">{reward.moment}</p>
 
@@ -771,7 +803,6 @@ export default function PlayPrototype() {
                     )}
                     {/* Set membership + progress */}
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-sm">{set.icon}</span>
                       <span className="text-[10px] text-foreground/60">{set.name}</span>
                     </div>
                     {/* Mini progress bar with animated fill */}

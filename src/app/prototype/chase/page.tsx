@@ -107,9 +107,34 @@ export default function ChasePrototype() {
   // ═══════════════════════════════════════════
   if (phase === 'intro') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-8">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-8 relative overflow-hidden"
+        style={{ background: 'radial-gradient(ellipse at 50% 40%, #0f1a2e 0%, #080c18 50%, #000000 100%)' }}
+      >
+        {/* Floating ambient card art */}
+        {(() => {
+          const heroes = getSetHeroCards('asgard');
+          return heroes.map((card, i) => (
+            <motion.div
+              key={card.id}
+              className="absolute w-[110px] aspect-[5/7] rounded-xl overflow-hidden pointer-events-none"
+              style={{
+                opacity: 0.06,
+                filter: 'blur(2px)',
+                left: `${15 + i * 28}%`,
+                top: `${30 + Math.abs(i - 1) * 12}%`,
+                transform: `rotate(${(i - 1) * 10}deg)`,
+              }}
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <ChaseCardArt card={card} />
+            </motion.div>
+          ));
+        })()}
+
         <motion.div
-          className="text-center"
+          className="text-center relative z-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2 }}
@@ -155,7 +180,10 @@ export default function ChasePrototype() {
     return (
       <div
         className="min-h-screen px-4 pt-4"
-        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+        style={{
+          paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+          background: 'radial-gradient(ellipse at 50% 20%, #0f1a2e 0%, #080c18 40%, #000000 100%)',
+        }}
       >
         <motion.div
           className="text-center mb-6"
@@ -252,7 +280,10 @@ export default function ChasePrototype() {
     return (
       <div
         className="min-h-screen px-3 pt-2"
-        style={{ paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))' }}
+        style={{
+          paddingBottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+          background: `radial-gradient(ellipse at 50% 0%, ${selectedSet.gradientFrom}80 0%, #080c18 40%, #000000 100%)`,
+        }}
       >
         {/* Binder header */}
         <div className="flex items-center justify-between mb-3">
@@ -507,6 +538,7 @@ export default function ChasePrototype() {
     return (
       <div
         className="min-h-screen flex flex-col items-center justify-center px-8"
+        style={{ background: `radial-gradient(ellipse at 50% 50%, ${selectedSet.gradientFrom}60 0%, #080c18 50%, #000000 100%)` }}
         onClick={() => {
           const pack = generatePack(selectedSet.slug);
           const newIds = pack.map(c => c.id);
@@ -573,7 +605,10 @@ export default function ChasePrototype() {
   // ═══════════════════════════════════════════
   if (phase === 'pack-opening' && selectedSet) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: `radial-gradient(ellipse at 50% 50%, ${selectedSet.gradientFrom}40 0%, #080c18 50%, #000000 100%)` }}
+      >
         <motion.div
           className="relative w-44 h-56 rounded-xl overflow-hidden"
           animate={{
@@ -608,7 +643,8 @@ export default function ChasePrototype() {
 
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-6"
+        className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
+        style={{ background: 'radial-gradient(ellipse at 50% 50%, #0f1020 0%, #080c18 50%, #000000 100%)' }}
         onClick={() => {
           if (currentRevealIndex < packCards.length - 1) {
             setCurrentRevealIndex(prev => prev + 1);
@@ -654,17 +690,25 @@ export default function ChasePrototype() {
             exit={{ opacity: 0, scale: 0.9, y: -30 }}
             transition={{ duration: 0.5, delay: 0.15, type: 'spring', stiffness: 200, damping: 20 }}
           >
-            {/* Card visual — full art */}
+            {/* Card visual — full art with shimmer */}
             <div
               className="relative w-52 aspect-[5/7] rounded-xl overflow-hidden mb-4"
               style={{
                 background: `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`,
                 border: `2px solid ${scarcityConfig.color}`,
-                boxShadow: `0 0 40px ${scarcityConfig.color}25, 0 8px 32px rgba(0,0,0,0.5)`,
+                boxShadow: `0 0 60px ${scarcityConfig.color}30, 0 8px 32px rgba(0,0,0,0.5)`,
               }}
             >
               <ChaseCardArt card={card} />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 30%, transparent 60%)' }} />
+              {/* Shimmer sweep */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%)' }}
+                initial={{ x: '-100%' }}
+                animate={{ x: '200%' }}
+                transition={{ delay: 0.5, duration: 0.7, ease: 'easeInOut' }}
+              />
               <div
                 className="absolute bottom-2 left-2 right-2 text-center py-1 rounded-lg"
                 style={{ background: `${scarcityConfig.color}20`, backdropFilter: 'blur(4px)' }}
@@ -682,16 +726,17 @@ export default function ChasePrototype() {
             {/* NEW badge + set context */}
             {isFromThisSet && isNewForSet && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="px-3 py-1.5 rounded-full text-center"
+                initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 0.4, type: 'spring', stiffness: 200, damping: 12 }}
+                className="px-4 py-2 rounded-full text-center"
                 style={{
-                  background: 'rgba(34, 197, 94, 0.12)',
-                  border: '1px solid rgba(34, 197, 94, 0.25)',
+                  background: 'rgba(34, 197, 94, 0.15)',
+                  border: '1px solid rgba(34, 197, 94, 0.35)',
+                  boxShadow: '0 0 20px rgba(34, 197, 94, 0.15)',
                 }}
               >
-                <span className="text-[10px] font-bold text-green-400">NEW FOR YOUR SET</span>
+                <span className="text-[11px] font-bold text-green-400 tracking-wider">NEW FOR YOUR SET</span>
               </motion.div>
             )}
 
@@ -741,9 +786,23 @@ export default function ChasePrototype() {
 
     return (
       <div
-        className="min-h-screen flex flex-col items-center justify-center px-6"
-        style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
+        className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
+        style={{
+          paddingBottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+          background: 'radial-gradient(ellipse at 50% 40%, #0f1020 0%, #080c18 50%, #000000 100%)',
+        }}
       >
+        {/* Celebration burst for new cards */}
+        {newCount > 0 && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.15, 0] }}
+            transition={{ duration: 1.5, delay: 0.1 }}
+            style={{ background: 'radial-gradient(circle at 50% 50%, #22c55e30, transparent 70%)' }}
+          />
+        )}
+
         <motion.div
           className="text-center w-full max-w-sm"
           initial={{ opacity: 0, y: 20 }}
@@ -753,9 +812,9 @@ export default function ChasePrototype() {
           {newCount > 0 ? (
             <motion.div
               className="mb-6"
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
             >
               <h3 className="type-subheading text-green-400 mb-1">
                 {newCount} New {newCount === 1 ? 'Card' : 'Cards'}!
