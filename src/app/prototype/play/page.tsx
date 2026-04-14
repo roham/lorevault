@@ -384,9 +384,9 @@ export default function PlayPrototype() {
           </div>
         </div>
 
-        {/* Stat picker */}
+        {/* Stat picker with visual bars */}
         <div className="space-y-2 max-w-xs mx-auto w-full">
-          {STATS.map(stat => {
+          {STATS.map((stat, i) => {
             const val = getCardStat(battle.playerPick!, stat);
             return (
               <motion.button
@@ -398,16 +398,31 @@ export default function PlayPrototype() {
                   border: '1px solid rgba(255,255,255,0.06)',
                 }}
                 whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.06 }}
               >
                 <span className="text-lg">{STAT_ICONS[stat]}</span>
-                <div className="flex-1 text-left">
-                  <div className="text-xs text-foreground/80">{STAT_LABELS[stat]}</div>
-                </div>
-                <div
-                  className="text-sm font-bold font-mono"
-                  style={{ color: STAT_COLORS[stat] }}
-                >
-                  {val}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-foreground/70">{STAT_LABELS[stat]}</span>
+                    <span
+                      className="text-xs font-bold font-mono"
+                      style={{ color: STAT_COLORS[stat] }}
+                    >
+                      {val}
+                    </span>
+                  </div>
+                  {/* Stat bar */}
+                  <div className="w-full h-1 rounded-full bg-white/5 overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: STAT_COLORS[stat] }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${val}%` }}
+                      transition={{ duration: 0.5, delay: 0.1 + i * 0.06 }}
+                    />
+                  </div>
                 </div>
               </motion.button>
             );
@@ -593,21 +608,33 @@ export default function PlayPrototype() {
               <h3 className="text-sm font-semibold text-foreground">{reward.character}</h3>
               <p className="text-[10px] text-muted italic">{reward.moment}</p>
 
-              {/* "Found money" — show value after 3+ wins */}
+              {/* "Found money" — show value + social proof after 3+ wins */}
               {showValues && reward.price && (
                 <motion.div
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 }}
-                  className="mt-3 px-4 py-2 rounded-full"
-                  style={{
-                    background: 'rgba(34, 197, 94, 0.1)',
-                    border: '1px solid rgba(34, 197, 94, 0.2)',
-                  }}
+                  className="mt-3"
                 >
-                  <span className="text-[11px] text-green-400 font-medium">
-                    Worth ${reward.price.toFixed(2)} on the market
-                  </span>
+                  <div
+                    className="px-4 py-2 rounded-full inline-block"
+                    style={{
+                      background: 'rgba(34, 197, 94, 0.1)',
+                      border: '1px solid rgba(34, 197, 94, 0.2)',
+                    }}
+                  >
+                    <span className="text-[11px] text-green-400 font-medium">
+                      Worth ${reward.price.toFixed(2)} on the market
+                    </span>
+                  </div>
+                  <motion.p
+                    className="text-[9px] text-muted/30 mt-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.2 }}
+                  >
+                    {Math.floor(Math.random() * 40 + 12)} players own this card
+                  </motion.p>
                 </motion.div>
               )}
             </motion.div>
