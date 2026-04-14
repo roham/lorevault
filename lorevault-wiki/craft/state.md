@@ -1,6 +1,7 @@
 # Craft Daemon State
 Round: 3
-Current prototype: chase
+Status: COMPLETE — all three prototypes scored 60+, deployed to production
+Production deploy: 2026-04-14
 
 ## Scoring Correction (Round 3 daemon)
 Previous daemon recorded raw scores as composite. Composite = (Raw/140)×100.
