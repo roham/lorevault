@@ -47,6 +47,7 @@ import { earnAchievement, addCollectorXP, progressDailyMission } from '@/lib/sto
 import BaseballShareCard from '@/components/baseball/BaseballShareCard';
 import { getStadiumTheme, type StadiumTheme, type CrowdReactionType } from '@/lib/baseball/stadium-themes';
 import { CrowdReaction } from '@/components/baseball/CrowdReaction';
+import { gameAudio } from '@/lib/baseball/audio';
 
 // ===== Animation Phase State Machine =====
 
@@ -701,8 +702,14 @@ function PlayPageInner() {
   const [state, dispatch] = useReducer(boardReducer, initialState);
   const [selectedInnings, setSelectedInnings] = useState<3 | 9>(3);
   const [showShare, setShowShare] = useState(false);
+  const [audioMuted, setAudioMuted] = useState(() => gameAudio.isMuted());
   const logRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sync audio mute state
+  useEffect(() => {
+    return gameAudio.onMuteChange(setAudioMuted);
+  }, []);
 
   // Initialize pregame on mount — load cards + player roster, defer AI until difficulty chosen
   // If ?drafted=true, load draft rosters and skip pregame
@@ -903,6 +910,7 @@ function PlayPageInner() {
     if (batterCard.stats.type !== 'hitter' || pitcherCard.stats.type !== 'pitcher') return;
 
     const outcomeRoll = rollD20();
+    gameAudio.play('dice_rattle');
     dispatch({ type: 'START_OUTCOME_ROLL', value: outcomeRoll });
 
     pendingResolution.current = {
@@ -1032,6 +1040,29 @@ function PlayPageInner() {
     if (newState.isGameOver && isPlayerBat && runsScored > 0) crowd = 'walk_off';
     if (crowd) dispatch({ type: 'SET_CROWD', crowdReaction: crowd });
 
+    // Sound effects based on outcome
+    const isHit = ['single', 'double', 'triple', 'homerun'].includes(outcome);
+    if (isHit) gameAudio.play('bat_crack');
+    if (outcome === 'homerun') {
+      gameAudio.playSequence([
+        { cue: 'crowd_roar', delay: 150 },
+        { cue: 'organ_riff', delay: 500 },
+      ]);
+    } else if (outcome === 'strikeout') {
+      gameAudio.play('umpire_call');
+      gameAudio.playSequence([{ cue: isPlayerBat ? 'crowd_groan' : 'crowd_roar', delay: 200 }]);
+    } else if (outcome === 'groundout_dp') {
+      gameAudio.playSequence([{ cue: 'crowd_gasp', delay: 100 }]);
+    } else if (outcome === 'triple') {
+      gameAudio.playSequence([{ cue: 'crowd_roar', delay: 200 }]);
+    } else if (runsScored > 0) {
+      gameAudio.playSequence([{ cue: 'crowd_roar', delay: 200 }]);
+    }
+    // Walk-off fanfare
+    if (newState.isGameOver && isPlayerBat && runsScored > 0) {
+      gameAudio.playSequence([{ cue: 'organ_riff', delay: 300 }]);
+    }
+
     if (!newState.isGameOver && !isHalfInningOver) {
       timerRef.current = setTimeout(() => dispatch({ type: 'RETURN_IDLE' }), 2000);
     }
@@ -1048,6 +1079,7 @@ function PlayPageInner() {
     if (!batterCard || !pitcherCard) return;
     if (pitcherCard.stats.type !== 'pitcher') return;
 
+    gameAudio.play('dice_rattle');
     const controlRollValue = rollD20();
     const controlResult = resolveControlRoll(controlRollValue, (pitcherCard.stats as PitcherStats).control);
     dispatch({
@@ -1082,6 +1114,7 @@ function PlayPageInner() {
 
     const stealResult = resolveSteal(roll, runnerSpeed, catcherDefense, runnerCard.character, fromBase);
 
+    gameAudio.play('dice_rattle');
     dispatch({
       type: 'START_STEAL_ROLL',
       stealData: {
@@ -1149,11 +1182,12 @@ function PlayPageInner() {
         isHalfInningOver, isGameOver: newState.isGameOver,
       });
 
-      // Trigger crowd reaction for steal
+      // Trigger crowd reaction + sound for steal
       dispatch({
         type: 'SET_CROWD',
         crowdReaction: success ? 'steal_success' : 'steal_caught',
       });
+      gameAudio.play(success ? 'crowd_roar' : 'crowd_groan');
 
       // Auto-advance back to idle
       if (!newState.isGameOver && !isHalfInningOver) {
@@ -1400,7 +1434,16 @@ function PlayPageInner() {
               <span className="text-lg font-bold tabular-nums">{game.score.home}</span>
             </div>
           </div>
-          <OutDots outs={game.inning.outs} />
+          <div className="flex items-center gap-2">
+            <OutDots outs={game.inning.outs} />
+            <button
+              onClick={() => gameAudio.toggleMute()}
+              className="text-muted/40 hover:text-muted/70 transition-colors text-sm"
+              title={audioMuted ? 'Unmute' : 'Mute'}
+            >
+              {audioMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A'}
+            </button>
+          </div>
         </div>
 
         {/* Stadium name strip */}
