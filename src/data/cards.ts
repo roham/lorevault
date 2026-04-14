@@ -112,6 +112,28 @@ const SET_CHARACTERS = {
     { character: 'Pandora', moment: 'Opening the Box', loreText: '"Only Hope remained there in an unbreakable home within, under the rim of the great jar."', symbol: '📦', gradientFrom: '#0a0a2e', gradientTo: '#06061a' },
     { character: 'Odysseus', moment: 'The Bow of Odysseus', loreText: '"And Odysseus of many wiles stripped him of his rags and sprang to the great threshold with his bow and his quiver full of arrows."', symbol: '🏹', gradientFrom: '#1a2e14', gradientTo: '#101a0c' },
   ],
+  'asgard': [
+    { character: 'Odin', moment: 'Hanging on Yggdrasil', loreText: '"I know that I hung on the windswept tree for nine full nights, wounded by a spear and offered to Odin — myself to myself."', symbol: '🌳', gradientFrom: '#0d1a2e', gradientTo: '#060d1a' },
+    { character: 'Odin', moment: 'The Sacrifice of the Eye', loreText: '"Odin gave his eye to the well of Mimir, and every morning he drinks wisdom from the well — that is the price of sight beyond sight."', symbol: '👁️', gradientFrom: '#1a0d2e', gradientTo: '#0d061a' },
+    { character: 'Thor', moment: 'Battle with the Midgard Serpent', loreText: '"The son of Odin goes nine paces back, when felled by the serpent, fearless of fame."', symbol: '⚡', gradientFrom: '#2e1a0a', gradientTo: '#1a0d06' },
+    { character: 'Loki', moment: 'Bound Beneath the Mountain', loreText: '"There shall Loki lie until Ragnarok. And the venom drips, and Sigyn holds the bowl."', symbol: '🐍', gradientFrom: '#1a1a0a', gradientTo: '#0d0d06' },
+    { character: 'Freya', moment: 'Weeping Tears of Gold', loreText: '"She wept, and her tears were red gold. She searched all the worlds for Od, and to unknown peoples she gave strange names."', symbol: '✨', gradientFrom: '#2e200a', gradientTo: '#1a130a' },
+    { character: 'Fenrir', moment: 'The Breaking of Gleipnir', loreText: '"The wolf shall gape wide open — his upper jaw shall reach to heaven and his lower to earth. He would gape still more if there were room."', symbol: '🐺', gradientFrom: '#1a1a1a', gradientTo: '#0a0a0a' },
+    { character: 'Heimdall', moment: 'Sounding the Gjallarhorn', loreText: '"Heimdall blows his horn, hard blows the horn. Odin speaks with Mimir\'s head."', symbol: '📯', gradientFrom: '#0a1a2e', gradientTo: '#060d1a' },
+    { character: 'Baldur', moment: 'Struck by the Mistletoe', loreText: '"All things shall weep for Baldur — living and lifeless — if they weep for him at all. Only one refused."', symbol: '🌿', gradientFrom: '#1a2e1a', gradientTo: '#0d1a0d' },
+    { character: 'Hel', moment: 'Ruling Niflheim', loreText: '"To Hel he gave authority over nine worlds, so that she must administer board and lodging to those sent to her: those who die of illness or old age."', symbol: '💀', gradientFrom: '#0a0a1a', gradientTo: '#060614' },
+    { character: 'Jormungandr', moment: 'Releasing the World from Its Coils', loreText: '"The Midgard Serpent shall blow so much venom that all the sky and sea shall be spattered with it; it is terrible."', symbol: '🌊', gradientFrom: '#0a1a1a', gradientTo: '#06100d' },
+    { character: 'Tyr', moment: 'The Binding of Fenrir', loreText: '"He placed his hand in the wolf\'s mouth as a pledge. When Fenrir saw he was bound, he bit the hand off at the wrist — it is called the wolf\'s joint."', symbol: '⚔️', gradientFrom: '#2e140a', gradientTo: '#1a0c06' },
+    { character: 'Sigurd', moment: 'Slaying Fafnir', loreText: '"Dig a trench and sit in it. When the serpent creeps to water, stab him in the heart from below."', symbol: '🗡️', gradientFrom: '#14200a', gradientTo: '#0c1406' },
+    { character: 'Brynhildr', moment: 'Waking on the Shield-Fortress', loreText: '"He cut the corslet from her; she awoke. She sat up and looked at Sigurd, and said: Who stripped the byrnie from me? Who broke my sleep?"', symbol: '🛡️', gradientFrom: '#2e0a14', gradientTo: '#1a060c' },
+    { character: 'Ragnar', moment: 'In the Pit of Serpents', loreText: '"How the young pigs would grunt if they knew what the old boar suffers — it laughs the mouth of Lodbrók."', symbol: '🐉', gradientFrom: '#2e1a0a', gradientTo: '#1a1006' },
+    { character: 'The Norns', moment: 'Weaving Fate at Urd\'s Well', loreText: '"There they twisted the thread of fate. In the east and west they hid the ends. There the lord of lands was to have his portion."', symbol: '🧵', gradientFrom: '#0a1428', gradientTo: '#060c1a' },
+    { character: 'Huginn & Muninn', moment: 'Returning at Dawn to Odin', loreText: '"Huginn and Muninn fly each day over the spacious earth. I fear for Huginn, that he come not back, yet more anxious am I for Muninn."', symbol: '🐦‍⬛', gradientFrom: '#14141a', gradientTo: '#0a0a10' },
+    { character: 'Sif', moment: 'The Shearing of Her Hair', loreText: '"Loki had cut off all of Sif\'s hair for mischief. When Thor found out, he seized Loki and would have broken every bone in his body."', symbol: '🌾', gradientFrom: '#2e2414', gradientTo: '#1a180c' },
+    { character: 'Idun', moment: 'Stolen by Thiazi', loreText: '"Idun was carried away to Jotunheim in the eagle\'s talons. The gods grew old and grey without her apples, and their powers began to wane."', symbol: '🍎', gradientFrom: '#0a2e14', gradientTo: '#061a0c' },
+    { character: 'Skadi', moment: 'Choosing a Husband by His Feet', loreText: '"She chose the one with the finest feet, thinking it must be Baldur — but it was Njord. She had wanted a god of mountains; she got a god of the sea."', symbol: '🏔️', gradientFrom: '#0a1e2e', gradientTo: '#06101a' },
+    { character: 'Surtr', moment: 'Engulfing the World in Fire', loreText: '"Surtr fares from the south with the scourge of branches — the sun of the slaughter-gods shines from his sword. Rock falls, and fiends rend the heavens."', symbol: '🔥', gradientFrom: '#2e0a0a', gradientTo: '#1a0606' },
+  ],
 };
 
 const scarcities: Scarcity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
@@ -162,6 +184,7 @@ export function generateCards(): Card[] {
       'wonderland': 'Wonderland Descending',
       'gothic-horror': 'The Castle of Otranto',
       'olympus': 'Olympus Rising',
+      'asgard': 'Asgard Unleashed',
     }[setSlug]!;
 
     for (let i = 0; i < characters.length; i++) {

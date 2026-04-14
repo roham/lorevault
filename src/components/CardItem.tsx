@@ -350,7 +350,7 @@ function CardItemInteractive({
           {/* Set badge */}
           <div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
             <span className="text-[8px]">
-              {card.setSlug === 'baker-street' ? '🔍' : card.setSlug === 'enchanted-kingdom' ? '👑' : card.setSlug === 'wonderland' ? '🐇' : card.setSlug === 'gothic-horror' ? '🦇' : '⚡'}
+              {card.setSlug === 'baker-street' ? '🔍' : card.setSlug === 'enchanted-kingdom' ? '👑' : card.setSlug === 'wonderland' ? '🐇' : card.setSlug === 'gothic-horror' ? '🦇' : card.setSlug === 'olympus' ? '⚡' : '❄️'}
             </span>
           </div>
 

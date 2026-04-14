@@ -38,6 +38,7 @@ const SET_AESTHETICS = {
   'wonderland': 'Surreal wonderland, psychedelic yet dark, impossible geometry, vivid teal and violet, dreamlike',
   'gothic-horror': 'Gothic horror, castle ruins and mist, crimson and deep shadow, Victorian horror, candlelight',
   'olympus': 'Ancient Greek mythology, marble and gold, epic scale, divine light, Mediterranean storm',
+  'asgard': 'Norse mythology, frost and storm, glacial blues and steel grey, runic magic, Viking age grandeur, Bifrost light piercing storm clouds',
 };
 
 // Scarcity affects drama/intensity of the image itself
