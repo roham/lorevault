@@ -20,6 +20,7 @@ import {
   BaseballCard,
 } from './types';
 import { generateHitterChart, generatePitcherChart, resolveChart } from './charts';
+import { evolveHitterChart } from './evolution';
 
 // ===== Dice =====
 
@@ -55,6 +56,7 @@ export function resolveAtBat(
   pitcherStats: PitcherStats,
   batterName: string,
   pitcherName: string,
+  hitterEvolutionTier?: number,
 ): { outcome: AtBatOutcome; controlResult: 'pitcher' | 'hitter'; description: string } {
   const controlResult = resolveControlRoll(controlRoll, pitcherStats.control);
 
@@ -63,7 +65,10 @@ export function resolveAtBat(
     const chart = generatePitcherChart(pitcherStats);
     outcome = resolveChart(chart, outcomeRoll);
   } else {
-    const chart = generateHitterChart(hitterStats);
+    let chart = generateHitterChart(hitterStats);
+    if (hitterEvolutionTier && hitterEvolutionTier > 0) {
+      chart = evolveHitterChart(chart, hitterEvolutionTier);
+    }
     outcome = resolveChart(chart, outcomeRoll);
   }
 

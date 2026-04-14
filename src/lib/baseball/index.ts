@@ -5,3 +5,4 @@ export * from './engine';
 export * from './game';
 export * from './ai';
 export * from './records';
+export * from './evolution';

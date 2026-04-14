@@ -40,7 +40,8 @@ import { OutcomeReveal } from '@/components/baseball/OutcomeReveal';
 import { ParticleBurst } from '@/components/baseball/ParticleBurst';
 import { ScreenShake } from '@/components/baseball/ScreenShake';
 import { StealReveal } from '@/components/baseball/StealReveal';
-import { saveGameRecord, awardGameXP, XPBreakdown } from '@/lib/baseball/records';
+import { saveGameRecord, awardGameXP, XPBreakdown, getCharacterXP } from '@/lib/baseball/records';
+import { getEvolutionTier, getEvolutionInfo, EVOLUTION_TIERS } from '@/lib/baseball/evolution';
 import { checkAchievements } from '@/lib/achievements';
 import { earnAchievement, addCollectorXP, progressDailyMission } from '@/lib/store';
 import BaseballShareCard from '@/components/baseball/BaseballShareCard';
@@ -101,6 +102,8 @@ interface BoardState {
   stadiumTheme: StadiumTheme | null;
   // Crowd reaction
   crowdReaction: CrowdReactionType | null;
+  // Evolution tiers per card (only player hitters)
+  cardEvolutions: Map<string, number>;
 }
 
 type BoardAction =
@@ -153,6 +156,7 @@ function boardReducer(state: BoardState, action: BoardAction): BoardState {
         xpBreakdown: [],
         stadiumTheme: getStadiumTheme(action.aiRoster.name),
         crowdReaction: null,
+        cardEvolutions: buildEvolutionMap(action.playerRoster),
       };
 
     case 'INIT_GAME':
@@ -306,7 +310,23 @@ const initialState: BoardState = {
   prePlayerRoster: null,
   stadiumTheme: null,
   crowdReaction: null,
+  cardEvolutions: new Map(),
 };
+
+// ===== Build evolution map from XP data =====
+
+function buildEvolutionMap(roster: Roster): Map<string, number> {
+  const xpData = getCharacterXP();
+  const evoMap = new Map<string, number>();
+  for (const slot of roster.hitters) {
+    const charXP = xpData.get(slot.cardId);
+    if (charXP && charXP.totalXP > 0) {
+      const tier = getEvolutionTier(charXP.totalXP);
+      if (tier > 0) evoMap.set(slot.cardId, tier);
+    }
+  }
+  return evoMap;
+}
 
 // ===== Diamond SVG with animated runners =====
 
@@ -577,11 +597,13 @@ function PlayerCard({
   label,
   cards,
   highlighted,
+  evolutionTier,
 }: {
   cardId: string | null;
   label: string;
   cards: CardRegistry;
   highlighted?: boolean;
+  evolutionTier?: number;
 }) {
   const card = cardId ? cards.get(cardId) : null;
   if (!card) return (
@@ -592,6 +614,7 @@ function PlayerCard({
 
   const stats = card.stats;
   const isPitcher = stats.type === 'pitcher';
+  const evoTier = evolutionTier && evolutionTier > 0 ? EVOLUTION_TIERS[evolutionTier] : null;
 
   return (
     <motion.div
@@ -600,10 +623,24 @@ function PlayerCard({
           ? 'bg-surface border-amber-500/30 shadow-[0_0_12px_rgba(251,191,36,0.1)]'
           : 'bg-surface border-border/40'
       }`}
+      style={evoTier && !highlighted ? {
+        borderColor: `${evoTier.borderColor}40`,
+        boxShadow: `0 0 8px ${evoTier.glowColor}`,
+      } : undefined}
       animate={highlighted ? { scale: [1, 1.02, 1] } : {}}
       transition={{ duration: 0.4 }}
     >
-      <span className="text-[10px] text-muted/50 uppercase tracking-wider">{label}</span>
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] text-muted/50 uppercase tracking-wider">{label}</span>
+        {evoTier && (
+          <span
+            className="text-[7px] font-black tracking-wider px-1.5 py-0.5 rounded-full"
+            style={{ color: evoTier.borderColor, backgroundColor: `${evoTier.borderColor}15`, border: `1px solid ${evoTier.borderColor}30` }}
+          >
+            {evoTier.label}
+          </span>
+        )}
+      </div>
       <h3 className="text-sm font-bold truncate mt-0.5">{card.character}</h3>
       <div className="flex gap-2 mt-1.5 text-[10px] text-muted">
         {isPitcher ? (
@@ -835,6 +872,10 @@ function PlayPageInner() {
     }
   }, [state.animPhase, state.game, state.difficulty, state.cards]);
 
+  // ===== Evolution map ref (stable for stale closures) =====
+  const cardEvolutionsRef = useRef<Map<string, number>>(state.cardEvolutions);
+  cardEvolutionsRef.current = state.cardEvolutions;
+
   // ===== Pending resolution ref =====
   const pendingResolution = useRef<{
     game: GameState;
@@ -888,9 +929,11 @@ function PlayPageInner() {
     if (!data) return;
     const { game, cards, controlRoll, outcomeRoll, hitterStats, pitcherStats, batterCard, pitcherCard, batterSlot } = data;
 
+    const hitterEvoTier = cardEvolutionsRef.current.get(batterSlot.cardId) ?? 0;
     const { outcome, controlResult, description } = resolveAtBat(
       controlRoll, outcomeRoll, hitterStats, pitcherStats,
       batterCard.character, pitcherCard.character,
+      hitterEvoTier,
     );
 
     const isOut = ['strikeout', 'groundout', 'flyout', 'groundout_dp'].includes(outcome);
@@ -1376,6 +1419,7 @@ function PlayPageInner() {
             label={isPlayerBatting ? 'Your batter' : 'AI batter'}
             cards={state.cards}
             highlighted={state.controlResult === 'hitter' && (showControlResult || showOutcome)}
+            evolutionTier={state.cardEvolutions.get(batterSlot.cardId)}
           />
           <PlayerCard
             cardId={pitcherId}
@@ -1633,6 +1677,19 @@ function PlayPageInner() {
                             <div className="flex items-center gap-2 min-w-0">
                               <span className="text-[11px] font-bold truncate">{xp.character}</span>
                               {xp.mvpBonus > 0 && <span className="text-[8px] text-amber-400 font-bold">MVP</span>}
+                              {(() => {
+                                const evoTier = state.cardEvolutions.get(xp.cardId);
+                                if (!evoTier || evoTier <= 0) return null;
+                                const tier = EVOLUTION_TIERS[evoTier];
+                                return (
+                                  <span
+                                    className="text-[7px] font-black tracking-wider"
+                                    style={{ color: tier.borderColor }}
+                                  >
+                                    {tier.label}
+                                  </span>
+                                );
+                              })()}
                             </div>
                             <div className="flex items-center gap-1.5 text-[10px] text-muted/50 shrink-0">
                               {xp.hrBonus > 0 && <span className="text-amber-400">+{xp.hrBonus}HR</span>}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { getGameHistory, getWinLossRecord, getTopCharacters, type CharacterXP } from '@/lib/baseball/records';
+import { getEvolutionInfo, EVOLUTION_TIERS } from '@/lib/baseball/evolution';
 
 interface SavedLineup {
   name: string;
@@ -268,7 +269,21 @@ export default function BaseballHub() {
                       {i + 1}
                     </span>
                     <div>
-                      <span className="text-sm font-bold">{char.character}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold">{char.character}</span>
+                        {(() => {
+                          const evo = getEvolutionInfo(char.totalXP);
+                          if (evo.tier === 0) return null;
+                          return (
+                            <span
+                              className="text-[7px] font-black tracking-wider px-1.5 py-0.5 rounded-full"
+                              style={{ color: evo.borderColor, backgroundColor: `${evo.borderColor}15`, border: `1px solid ${evo.borderColor}30` }}
+                            >
+                              {evo.label}
+                            </span>
+                          );
+                        })()}
+                      </div>
                       <div className="flex items-center gap-2 text-[10px] text-muted">
                         <span>{char.gamesPlayed}G</span>
                         <span>{char.totalHits}H</span>
@@ -278,6 +293,27 @@ export default function BaseballHub() {
                           <span className="text-amber-400">{char.mvpAwards} MVP</span>
                         )}
                       </div>
+                      {/* Evolution progress bar */}
+                      {(() => {
+                        const evo = getEvolutionInfo(char.totalXP);
+                        if (evo.tier >= 3) return null; // maxed out
+                        return (
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <div className="flex-1 h-1 rounded-full bg-border/20 overflow-hidden max-w-[80px]">
+                              <div
+                                className="h-full rounded-full transition-all"
+                                style={{
+                                  width: `${evo.progress * 100}%`,
+                                  backgroundColor: evo.nextTier?.borderColor || '#666',
+                                }}
+                              />
+                            </div>
+                            <span className="text-[8px] text-muted/40">
+                              {evo.xpToNext} to {evo.nextTier?.name}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                   <span className="text-xs font-bold text-accent tabular-nums">{char.totalXP} XP</span>

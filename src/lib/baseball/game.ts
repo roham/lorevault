@@ -50,12 +50,16 @@ export interface AtBatResult {
  * Execute one at-bat in the game.
  * This is the core game loop step — call this repeatedly to play a full game.
  *
+ * cardEvolutions: optional Map<cardId, evolutionTier> for evolved hit charts.
+ * Only player hitters accumulate XP, so only their charts get modified.
+ *
  * Returns the updated state, the play log entry, and flags.
  */
 export function playAtBat(
   state: GameState,
   cards: CardRegistry,
   attemptSteal?: { fromBase: 'first' | 'second' },
+  cardEvolutions?: Map<string, number>,
 ): AtBatResult {
   if (state.isGameOver) {
     throw new Error('Game is already over');
@@ -149,6 +153,7 @@ export function playAtBat(
   const outcomeRoll = rollD20();
 
   // ===== Resolve At-Bat =====
+  const hitterEvoTier = cardEvolutions?.get(batterSlot.cardId) ?? 0;
   const { outcome, controlResult, description } = resolveAtBat(
     controlRoll,
     outcomeRoll,
@@ -156,6 +161,7 @@ export function playAtBat(
     pitcherStats,
     batterCard.character,
     pitcherCard.character,
+    hitterEvoTier,
   );
 
   // ===== Is it an out? =====
