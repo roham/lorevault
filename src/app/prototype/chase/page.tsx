@@ -306,6 +306,12 @@ export default function ChasePrototype() {
         {/* Vignette */}
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%)' }} />
+        {/* Noise texture — kills flat-app feel */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundSize: '128px 128px',
+        }} />
         {/* Ambient particles */}
         {Array.from({ length: 6 }).map((_, i) => {
           const size = 2 + (i % 3);
@@ -322,17 +328,38 @@ export default function ChasePrototype() {
           );
         })}
 
-        {/* Hero Banner — dramatic set identity */}
-        <div className="relative z-10 overflow-hidden" style={{ height: '150px' }}>
-          {/* Hero card art as blurred background */}
+        {/* Hero Banner — dramatic set identity (260px for atmosphere) */}
+        <div className="relative z-10 overflow-hidden" style={{ height: '260px' }}>
+          {/* Sharp hero art — not blurred, with gradient fade */}
           <div className="absolute inset-0">
-            <div className="absolute inset-0 scale-125" style={{ filter: 'blur(24px) brightness(0.35) saturate(1.3)' }}>
+            <motion.div
+              className="absolute inset-0"
+              style={{ opacity: 0.55, filter: 'saturate(1.4)' }}
+              initial={{ scale: 1.08, opacity: 0 }}
+              animate={{ scale: 1, opacity: 0.55 }}
+              transition={{ duration: 1.4, ease: 'easeOut' }}
+            >
               <ChaseCardArt card={getSetHeroCards(selectedSet.slug)[0]} />
-            </div>
+            </motion.div>
+            {/* Bottom fade to void */}
             <div className="absolute inset-0" style={{
-              background: `linear-gradient(to bottom, ${selectedSet.gradientFrom}60 0%, rgba(5,8,16,0.97) 100%)`
+              background: `linear-gradient(to bottom, transparent 15%, ${selectedSet.gradientFrom}30 40%, rgba(5,8,16,0.95) 85%, #050810 100%)`
+            }} />
+            {/* Top darken for status bar */}
+            <div className="absolute top-0 left-0 right-0 h-16" style={{
+              background: 'linear-gradient(to bottom, rgba(5,8,16,0.7), transparent)'
+            }} />
+            {/* Inner shadow for depth */}
+            <div className="absolute inset-0" style={{
+              boxShadow: 'inset 0 -40px 60px -20px rgba(5,8,16,0.9), inset 0 0 80px rgba(0,0,0,0.3)'
             }} />
           </div>
+          {/* Noise texture overlay */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            opacity: 0.04,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundSize: '128px 128px',
+          }} />
           {/* Back button */}
           <button
             onClick={() => {
@@ -340,101 +367,158 @@ export default function ChasePrototype() {
               setSelectedSetSlug(null);
               setPhase('select-set');
             }}
-            className="absolute top-3 left-3 text-[10px] text-white/30 flex items-center gap-1 z-10 py-1 px-1"
+            className="absolute top-3 left-3 text-[10px] text-white/40 flex items-center gap-1 z-10 py-1.5 px-2 rounded-lg"
+            style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)' }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 18 9 12 15 6" />
             </svg>
             Sets
           </button>
-          {/* Hero content */}
-          <div className="relative h-full flex flex-col justify-end px-4 pb-3">
-            <h2 className="text-lg font-bold text-foreground tracking-tight">{selectedSet.name}</h2>
-            <div className="flex items-baseline gap-1.5 mt-1">
-              <span className="text-3xl font-bold text-white font-mono leading-none">{ownedInSet}</span>
-              <span className="text-base text-white/25 font-mono">/ {totalInSet}</span>
-            </div>
+          {/* Hero content — display-size set name + prominent stats */}
+          <div className="relative h-full flex flex-col justify-end px-5 pb-4">
+            <motion.h2
+              className="text-2xl font-bold text-foreground tracking-tight leading-tight"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {selectedSet.name}
+            </motion.h2>
+            <motion.div
+              className="flex items-baseline gap-2 mt-1.5"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              <span className="text-4xl font-bold text-white font-mono leading-none">{ownedInSet}</span>
+              <span className="text-lg text-white/20 font-mono">/ {totalInSet}</span>
+              {totalInSet > 0 && (
+                <span className="text-xs font-medium ml-1" style={{
+                  color: ownedInSet === totalInSet ? '#22c55e' : `${selectedSet.gradientTo}90`
+                }}>
+                  {Math.round((ownedInSet / totalInSet) * 100)}%
+                </span>
+              )}
+            </motion.div>
             {/* Segmented progress — each pip = one card */}
-            <div className="flex gap-[3px] mt-2.5">
-              {setCards.map((card) => (
+            <motion.div
+              className="flex gap-[3px] mt-3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {setCards.map((card, idx) => (
                 <motion.div
                   key={card.character}
-                  className="h-1.5 flex-1 rounded-full"
+                  className="h-2 flex-1 rounded-full"
                   style={{
                     background: ownedCharacters.has(card.character)
                       ? selectedSet.gradientTo
                       : 'rgba(255,255,255,0.06)',
+                    boxShadow: ownedCharacters.has(card.character)
+                      ? `0 0 6px ${selectedSet.gradientTo}40`
+                      : 'none',
                   }}
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.5, delay: setCards.indexOf(card) * 0.02 }}
+                  transition={{ duration: 0.5, delay: idx * 0.025 }}
                 />
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
 
         {/* Content below hero */}
         <div className="relative z-10 px-3 pt-3">
 
-        {/* Chase Card — the one you want most */}
+        {/* Chase Card — full-width emotional anchor */}
         {chaseCard && !isFinishing && (
           <motion.div
-            className="mb-4 p-3 rounded-xl relative overflow-hidden"
+            className="mb-5 rounded-xl relative overflow-hidden cursor-pointer"
             style={{
-              background: 'rgba(12, 14, 24, 0.85)',
-              border: `1px solid ${SCARCITY_CONFIG[chaseCard.scarcity].color}15`,
-              boxShadow: `0 0 30px ${SCARCITY_CONFIG[chaseCard.scarcity].color}06`,
+              background: 'rgba(8, 10, 20, 0.9)',
+              border: `1px solid ${SCARCITY_CONFIG[chaseCard.scarcity].color}18`,
+              boxShadow: `0 0 40px ${SCARCITY_CONFIG[chaseCard.scarcity].color}08, 0 4px 20px rgba(0,0,0,0.4)`,
             }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            onClick={() => packs > 0 ? setPhase('pack-ready') : undefined}
           >
-            <div className="flex items-center gap-3">
-              {/* Chase card art — silhouette with warm glow */}
+            {/* Rarity glow behind card */}
+            <motion.div
+              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/3 w-[200px] h-[200px] rounded-full pointer-events-none"
+              style={{ background: `radial-gradient(circle, ${SCARCITY_CONFIG[chaseCard.scarcity].color}15, transparent 70%)`, filter: 'blur(40px)' }}
+              animate={{ opacity: [0.4, 0.8, 0.4], scale: [0.95, 1.05, 0.95] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <div className="flex flex-col items-center py-5 px-4 relative">
+              {/* Label */}
+              <div className="text-[9px] tracking-[0.25em] font-medium mb-3" style={{ color: `${SCARCITY_CONFIG[chaseCard.scarcity].color}70` }}>YOUR CHASE</div>
+              {/* Large ghost card — the thing you want */}
               <div
-                className="w-[60px] h-[84px] rounded-lg relative overflow-hidden flex-shrink-0"
+                className="w-[120px] h-[168px] rounded-xl relative overflow-hidden mb-4"
                 style={{
-                  background: `linear-gradient(145deg, ${chaseCard.gradientFrom}25, ${chaseCard.gradientTo}15)`,
-                  border: `1.5px solid ${SCARCITY_CONFIG[chaseCard.scarcity].color}20`,
-                  boxShadow: `inset 0 0 20px ${SCARCITY_CONFIG[chaseCard.scarcity].color}12, 0 0 20px ${SCARCITY_CONFIG[chaseCard.scarcity].color}08`,
+                  background: `linear-gradient(145deg, ${chaseCard.gradientFrom}20, ${chaseCard.gradientTo}12)`,
+                  border: `2px solid ${SCARCITY_CONFIG[chaseCard.scarcity].color}20`,
+                  boxShadow: `inset 0 0 30px ${SCARCITY_CONFIG[chaseCard.scarcity].color}10, 0 0 30px ${SCARCITY_CONFIG[chaseCard.scarcity].color}06, 0 8px 32px rgba(0,0,0,0.5)`,
                 }}
               >
-                {/* Ghost art — visible but unreachable */}
-                <div className="absolute inset-0 opacity-[0.18]">
+                {/* Ghost art — visible but frosted, unreachable */}
+                <div className="absolute inset-0 opacity-[0.15]" style={{ filter: 'blur(0.5px)' }}>
                   <ChaseCardArt card={chaseCard} />
                 </div>
-                {/* Traveling shimmer */}
+                {/* Pulsing frosted overlay */}
                 <motion.div
                   className="absolute inset-0 pointer-events-none"
-                  style={{ background: `linear-gradient(105deg, transparent 25%, ${SCARCITY_CONFIG[chaseCard.scarcity].color}10 50%, transparent 75%)` }}
-                  animate={{ x: [-80, 80] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
+                  style={{ background: `radial-gradient(ellipse at 50% 40%, ${SCARCITY_CONFIG[chaseCard.scarcity].color}08, transparent 70%)` }}
+                  animate={{ opacity: [0.3, 0.7, 0.3] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 />
-                {/* Lock icon */}
+                {/* Traveling shimmer — slow, deliberate */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ background: `linear-gradient(105deg, transparent 30%, ${SCARCITY_CONFIG[chaseCard.scarcity].color}08 50%, transparent 70%)` }}
+                  animate={{ x: [-120, 120] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                />
+                {/* Lock icon — centered, prominent */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SCARCITY_CONFIG[chaseCard.scarcity].color} strokeWidth="1.5" opacity={0.35}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={SCARCITY_CONFIG[chaseCard.scarcity].color} strokeWidth="1.5" opacity={0.3}>
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 </div>
+                {/* Scarcity bar at bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: `${SCARCITY_CONFIG[chaseCard.scarcity].color}40` }} />
               </div>
-              {/* Chase card info */}
-              <div className="flex-1 min-w-0">
-                <div className="text-[8px] tracking-[0.2em] mb-1" style={{ color: `${SCARCITY_CONFIG[chaseCard.scarcity].color}60` }}>YOUR CHASE</div>
-                <div className="text-sm font-semibold text-foreground/90 truncate">{chaseCard.character}</div>
-                <div className="text-[10px] italic text-muted/35 truncate mt-0.5">{chaseCard.moment}</div>
-                <div className="flex items-center gap-1.5 mt-2">
+              {/* Chase card info — centered below card */}
+              <div className="text-center">
+                <div className="text-sm font-semibold text-foreground/90">{chaseCard.character}</div>
+                <div className="text-[11px] italic text-muted/35 mt-0.5">{chaseCard.moment}</div>
+                <div className="flex items-center justify-center gap-1.5 mt-2.5">
                   <motion.div
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: SCARCITY_CONFIG[chaseCard.scarcity].color }}
-                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: SCARCITY_CONFIG[chaseCard.scarcity].color, boxShadow: `0 0 6px ${SCARCITY_CONFIG[chaseCard.scarcity].color}60` }}
+                    animate={{ opacity: [0.5, 1, 0.5], scale: [0.9, 1.1, 0.9] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
-                  <span className="text-[9px] font-medium" style={{ color: SCARCITY_CONFIG[chaseCard.scarcity].color }}>
+                  <span className="text-[10px] font-medium" style={{ color: SCARCITY_CONFIG[chaseCard.scarcity].color }}>
                     {SCARCITY_CONFIG[chaseCard.scarcity].label}
                   </span>
                 </div>
+                {/* Inline CTA — drives action from desire */}
+                {packs > 0 && (
+                  <motion.div
+                    className="mt-3 text-[10px] font-medium tracking-wide"
+                    style={{ color: `${SCARCITY_CONFIG[chaseCard.scarcity].color}80` }}
+                    animate={{ opacity: [0.5, 0.9, 0.5] }}
+                    transition={{ duration: 2.5, repeat: Infinity }}
+                  >
+                    Tap to open a pack
+                  </motion.div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -487,86 +571,103 @@ export default function ChasePrototype() {
           </motion.div>
         )}
 
-        {/* Binder grid — 3 columns for premium card display */}
-        <div className="grid grid-cols-3 gap-3">
-          {setCards.map((card, i) => {
-            const isOwned = ownedCharacters.has(card.character);
+        {/* Binder grid — 3 columns, premium card display */}
+        {(() => {
+          // Completion ratio drives empty slot warmth
+          const completionRatio = totalInSet > 0 ? ownedInSet / totalInSet : 0;
+          // Warmth intensifies as you get closer to completion
+          const emptyGlowIntensity = completionRatio < 0.3 ? 0.08 : completionRatio < 0.6 ? 0.15 : completionRatio < 0.85 ? 0.25 : 0.4;
+          const emptyPulse = completionRatio >= 0.6; // Slots start breathing when >60% complete
 
-            return (
-              <motion.div
-                key={card.character}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.03 }}
-                className="relative"
-              >
-                <button
-                  className="w-full text-left"
-                  onClick={() => isOwned ? setInspectedCard(card) : undefined}
-                >
-                  <div
-                    className="aspect-[5/7] rounded-lg overflow-hidden relative"
-                    style={{
-                      background: isOwned
-                        ? `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`
-                        : 'rgba(12, 12, 22, 0.8)',
-                      border: isOwned
-                        ? `1.5px solid ${SCARCITY_CONFIG[card.scarcity].color}40`
-                        : `1.5px solid ${selectedSet.gradientTo}12`,
-                      boxShadow: isOwned
-                        ? `0 4px 16px rgba(0,0,0,0.5), 0 0 12px ${SCARCITY_CONFIG[card.scarcity].color}15`
-                        : `0 0 8px ${selectedSet.gradientTo}06`,
-                    }}
+          return (
+            <div className="grid grid-cols-3 gap-3">
+              {setCards.map((card, i) => {
+                const isOwned = ownedCharacters.has(card.character);
+                const scarcityColor = SCARCITY_CONFIG[card.scarcity].color;
+
+                return (
+                  <motion.div
+                    key={card.character}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.03 }}
+                    className="relative"
                   >
-                    {isOwned ? (
-                      <>
-                        {/* Owned card — full art */}
-                        <ChaseCardArt card={card} />
-                        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 40%)' }} />
-                        {/* Scarcity indicator */}
-                        <div
-                          className="absolute bottom-0 left-0 right-0 h-[2px]"
-                          style={{ background: SCARCITY_CONFIG[card.scarcity].color }}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        {/* Empty slot — ghost silhouette with chromatic inner glow */}
-                        <div className="absolute inset-0 opacity-[0.12]">
-                          <ChaseCardArt card={card} />
-                        </div>
-                        {/* Chromatic inner glow — warm, not cold */}
-                        <motion.div
-                          className="absolute inset-0 rounded-lg pointer-events-none"
-                          style={{ boxShadow: `inset 0 0 18px 4px ${selectedSet.gradientTo}15` }}
-                          animate={{ opacity: [0.3, 0.8, 0.3] }}
-                          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.2 }}
-                        />
-                        {/* Card number / position indicator */}
-                        <div className="absolute bottom-1 right-1.5">
-                          <span className="text-[8px] font-mono text-white/10">#{i + 1}</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </button>
+                    <button
+                      className="w-full text-left"
+                      onClick={() => isOwned ? setInspectedCard(card) : undefined}
+                    >
+                      <div
+                        className="aspect-[5/7] rounded-lg overflow-hidden relative"
+                        style={{
+                          background: isOwned
+                            ? `linear-gradient(145deg, ${card.gradientFrom}, ${card.gradientTo})`
+                            : 'rgba(10, 10, 20, 0.85)',
+                          border: isOwned
+                            ? `1.5px solid ${scarcityColor}50`
+                            : `1.5px solid ${scarcityColor}${completionRatio > 0.6 ? '18' : '0a'}`,
+                          boxShadow: isOwned
+                            ? `0 4px 16px rgba(0,0,0,0.5), 0 0 12px ${scarcityColor}20`
+                            : `inset 0 0 20px ${scarcityColor}${Math.round(emptyGlowIntensity * 255).toString(16).padStart(2, '0')}`,
+                        }}
+                      >
+                        {isOwned ? (
+                          <>
+                            {/* Owned card — full art with shine */}
+                            <ChaseCardArt card={card} />
+                            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 40%)' }} />
+                            {/* Top-edge highlight — physical lift simulation */}
+                            <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'rgba(255,255,255,0.12)' }} />
+                            {/* Scarcity bar */}
+                            <div
+                              className="absolute bottom-0 left-0 right-0 h-[2px]"
+                              style={{ background: scarcityColor, boxShadow: `0 0 8px ${scarcityColor}40` }}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            {/* Empty slot — ghost silhouette, glowing not dark */}
+                            <div className="absolute inset-0 opacity-[0.08]">
+                              <ChaseCardArt card={card} />
+                            </div>
+                            {/* Warm inner glow — intensity adapts to completion */}
+                            <motion.div
+                              className="absolute inset-0 rounded-lg pointer-events-none"
+                              style={{
+                                boxShadow: `inset 0 0 20px 6px ${scarcityColor}${Math.round(emptyGlowIntensity * 255).toString(16).padStart(2, '0')}`,
+                                background: `radial-gradient(ellipse at 50% 40%, ${scarcityColor}06, transparent 70%)`,
+                              }}
+                              animate={emptyPulse ? { opacity: [0.4, 0.9, 0.4] } : { opacity: 0.6 }}
+                              transition={emptyPulse ? { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.3 } : {}}
+                            />
+                            {/* Rarity dot + card number */}
+                            <div className="absolute bottom-1.5 left-0 right-0 flex items-center justify-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ background: `${scarcityColor}35` }} />
+                              <span className="text-[7px] font-mono" style={{ color: `${scarcityColor}30` }}>#{i + 1}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </button>
 
-                {/* Character name — always visible, 10px min per Odin feedback */}
-                <div
-                  className="text-[10px] text-center mt-1 truncate leading-tight px-0.5"
-                  style={{
-                    color: isOwned ? 'var(--color-foreground)' : 'var(--color-muted)',
-                    opacity: isOwned ? 0.8 : 0.25,
-                  }}
-                >
-                  {card.character.length > 12
-                    ? card.character.split(' ').slice(-1)[0]
-                    : card.character}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                    {/* Character name — always visible */}
+                    <div
+                      className="text-[10px] text-center mt-1.5 truncate leading-tight px-0.5"
+                      style={{
+                        color: isOwned ? 'var(--color-foreground)' : scarcityColor,
+                        opacity: isOwned ? 0.85 : 0.3,
+                      }}
+                    >
+                      {card.character.length > 12
+                        ? card.character.split(' ').slice(-1)[0]
+                        : card.character}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Card inspection overlay */}
         <AnimatePresence>
