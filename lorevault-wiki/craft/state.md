@@ -1,7 +1,9 @@
 # Craft Daemon State
-Round: 4
-Status: COMPLETE — all three prototypes verified 60+, deployed to production (R4)
-Production deploy: 2026-04-14
+Round: 5
+Status: COMPLETE — all three prototypes improved. Starting Round 6.
+CEO feedback: "Kind of shit. Look way too much like raw prototypes, not real products."
+Honest recalibration: previous 60+ scores were self-graded against "what we had before." When graded against real shipped products (Pokemon TCG Pocket, Marvel Snap), these are 45-55 range, not 60+.
+R5 post-scores: play=54.3, story=45.7, chase=62.9. All below 80+ target — continuing.
 
 ## Scoring Correction History
 R2 daemon inflated scores (recorded raw as composite). Actual R2 composites: play=46.4, story=47.9, chase=47.9.
@@ -23,6 +25,16 @@ R4 daemon re-verified all three with honest scoring. Chase was borderline at ~58
 | story     | 3     | 8 | 7 | 5  | 5  | 5 | 7 | 6 | 88  | 62.9      |
 | chase     | 3     | 8 | 7 | 5  | 5  | 5 | 7 | 4 | 86  | 61.4      |
 | chase     | 4     | 8 | 8 | 6  | 6  | 5 | 7 | 6 | 95  | 67.9      |
+| play      | 5     | 6 | 7 | 5  | 5  | 5 | 6 | 5 | 76  | 54.3      |
+| story     | 5     | 5 | 5 | 5  | 5  | 5 | 5 | 5 | 64  | 45.7      |
+| chase     | 5     | 7 | 7 | 6  | 6  | 5 | 6 | 6 | 88  | 62.9      |
+
+## Round 5 Synopsis
+- Honest recalibration from CEO feedback: all scores re-graded against real shipped products
+- Play (round-result): 800ms tension hold, screen shake on impact, 25 multicolor particles, 200px cards with 3D perspective, near-miss margin text, counterfactual stat display. 45.0→54.3
+- Story (story-map): 220px hero banner with card art, 56×56 chapter landmarks with card art, ghost silhouettes for locked chapters at 8% opacity, "cards to discover" reframe. 37.1→45.7
+- Chase (binder): 260px hero banner with sharp art + noise texture, 120×168 chase card feature with frosted pulsing glow (tappable → pack), completion-adaptive empty slot warmth, rarity-colored dots. 50.0→62.9
+- Cross-prototype patterns: hero banners and ghost/silhouette treatments are highest-impact; connecting desire to action boosts Conversion
 
 ## Round 4 Synopsis
 - Chase only (Play + Story verified at 60+ without changes)
@@ -54,9 +66,11 @@ R4 daemon re-verified all three with honest scoring. Chase was borderline at ~58
 - Chase: ambient intro cards, set-colored pack phases, shimmer on reveal, spring "NEW" badge, celebration burst on summary
 - All three crossed 60 threshold: play=65, story=67, chase=67
 
-## Persona Validation (every 5 rounds)
+## Persona Validation (Round 5)
 | Prototype | Discoverer | Completionist | Competitor | Casual |
 |-----------|-----------|---------------|-----------|--------|
-| play      | N         | N             | N         | N      |
-| story     | N         | N             | N         | N      |
-| chase     | N         | N             | N         | N      |
+| play      | Partial — battle tension is engaging but no discovery/surprise moment yet | N — no collection depth shown in battle | Partial — stat comparison + near-miss creates competition feel | Partial — tap-to-continue is casual-friendly but battle is complex |
+| story     | Partial — hero banner + locked "cards to discover" creates curiosity | N — no completion tracking in story map (only chapter progress) | N — no competitive element in story | Partial — visual map is browseable but locked content may frustrate |
+| chase     | Y — ghost silhouettes + chase card create discovery desire | Partial — completion % and adaptive glow show progress, but no set-completion celebration yet | N — no competitive element in chase | Partial — binder is browseable, pack opening is simple |
+
+Key gaps: Completionist is weak across all three (no celebration/reward for milestones). Competitor is only served by Play. Discoverer is best served by Chase. Casual needs simpler entry points.
