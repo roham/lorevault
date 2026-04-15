@@ -565,6 +565,14 @@ export default function PlayPrototype() {
     const playerVal = getCardStat(battle.playerPick, battle.selectedStat);
     const aiVal = getCardStat(battle.aiPick, battle.selectedStat);
     const won = battle.roundWinner === 'player';
+    const margin = Math.abs(playerVal - aiVal);
+    // Counterfactual: which available stat would have won for the player?
+    const counterfactualStat = !won ? battle.availableStats.find(s => {
+      if (s === battle.selectedStat) return false;
+      const pv = getCardStat(battle.playerPick!, s);
+      const av = getCardStat(battle.aiPick!, s);
+      return pv > av;
+    }) : null;
 
     return (
       <div
@@ -585,12 +593,20 @@ export default function PlayPrototype() {
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%)' }} />
 
-        {/* Impact flash — instant burst on mount */}
+        {/* Heartbeat pulse during tension hold */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none z-[5]"
+          style={{ background: 'radial-gradient(circle at 50% 45%, rgba(255,255,255,0.04), transparent 50%)' }}
+          animate={{ scale: [1, 1.04, 1, 1.04, 1], opacity: [0, 0.6, 0, 0.6, 0] }}
+          transition={{ duration: 1.6, times: [0, 0.25, 0.5, 0.75, 1], ease: 'easeInOut' }}
+        />
+
+        {/* Impact flash — at reveal moment (1.2s), not on mount */}
         <motion.div
           className="absolute inset-0 pointer-events-none z-20"
-          initial={{ opacity: 0.4 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0, 0.5, 0] }}
+          transition={{ duration: 1.5, times: [0, 0.78, 0.83, 1] }}
           style={{ background: won ? '#22c55e' : '#ef4444' }}
         />
 
@@ -599,57 +615,75 @@ export default function PlayPrototype() {
           <motion.div
             className="absolute inset-0 pointer-events-none"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.12 }}
-            transition={{ duration: 0.8, delay: 1.0 }}
-            style={{ background: 'radial-gradient(circle at 50% 45%, #22c55e40, transparent 60%)' }}
+            animate={{ opacity: 0.18 }}
+            transition={{ duration: 0.6, delay: 1.4 }}
+            style={{ background: 'radial-gradient(circle at 50% 40%, #22c55e50, transparent 60%)' }}
           />
         )}
 
-        {/* Win particles — energy shards burst outward */}
-        {won && Array.from({ length: 10 }).map((_, i) => {
-          const angle = (i / 10) * 360;
+        {/* Win particles — bigger, multicolored, timed after impact slam */}
+        {won && Array.from({ length: 25 }).map((_, i) => {
+          const angle = (i / 25) * 360 + Math.random() * 15;
           const rad = (angle * Math.PI) / 180;
-          const dist = 80 + Math.random() * 40;
+          const dist = 100 + Math.random() * 80;
+          const colors = ['#ffd54f', '#22c55e', '#a78bfa', '#ffffff'];
+          const size = 2 + Math.random() * 3;
           return (
             <motion.div
               key={`particle-${i}`}
-              className="absolute w-1.5 h-1.5 rounded-full pointer-events-none z-10"
-              style={{ background: '#a78bfa', left: '50%', top: '45%' }}
-              initial={{ x: 0, y: 0, opacity: 0.8, scale: 1 }}
+              className="absolute rounded-full pointer-events-none z-10"
+              style={{
+                background: colors[i % colors.length],
+                width: `${size}px`,
+                height: `${size}px`,
+                left: '50%',
+                top: '40%',
+              }}
+              initial={{ x: 0, y: 0, opacity: 0.9, scale: 1 }}
               animate={{
                 x: Math.cos(rad) * dist,
-                y: Math.sin(rad) * dist,
+                y: Math.sin(rad) * dist - 30,
                 opacity: 0,
-                scale: 0.3,
+                scale: 0.15,
               }}
-              transition={{ duration: 0.7, delay: 1.1 + i * 0.02, ease: 'easeOut' }}
+              transition={{ duration: 0.9, delay: 1.25 + i * 0.012, ease: 'easeOut' }}
             />
           );
         })}
 
-        {/* Cards — vertical axis, larger */}
-        <div className="flex flex-col items-center gap-3 mb-4 relative z-10">
+        {/* Cards — vertical axis, screen shake on reveal */}
+        <motion.div
+          className="flex flex-col items-center gap-2 mb-4 relative z-10"
+          animate={{ x: [0, 0, 0, -5, 6, -4, 3, -1, 0], y: [0, 0, 0, 3, -4, 2, -2, 1, 0] }}
+          transition={{ duration: 0.25, delay: 1.15, ease: 'easeOut' }}
+        >
           {/* Player card + stat */}
           <motion.div className="text-center"
             initial={{ y: -15, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}>
-            <div className="w-[140px] aspect-[5/7] rounded-xl overflow-hidden relative mx-auto mb-2"
+            <div className="w-[200px] aspect-[5/7] rounded-xl overflow-hidden relative mx-auto mb-2"
               style={{
                 background: `linear-gradient(145deg, ${battle.playerPick.gradientFrom}, ${battle.playerPick.gradientTo})`,
                 border: `2px solid ${won ? '#22c55e' : 'rgba(239,68,68,0.3)'}`,
-                boxShadow: won ? `0 0 40px rgba(34,197,94,0.3)` : 'none',
+                boxShadow: won
+                  ? '0 0 40px rgba(34,197,94,0.3), inset 0 -4px 12px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)'
+                  : 'inset 0 -4px 12px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)',
+                transform: 'perspective(800px) rotateX(2deg)',
               }}>
               <CardArtImg card={battle.playerPick} />
+              {/* Shine overlay for card depth */}
+              <div className="absolute inset-0 pointer-events-none"
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)', mixBlendMode: 'overlay' }} />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%)' }} />
               <div className="absolute bottom-1.5 left-0 right-0 text-center">
-                <span className="text-[9px] text-white/80 font-medium drop-shadow-lg">{battle.playerPick.character}</span>
+                <span className="text-[10px] text-white/85 font-semibold drop-shadow-lg">{battle.playerPick.character}</span>
               </div>
             </div>
-            {/* Player stat — appears first */}
+            {/* Player stat — appears first, bigger */}
             <motion.div
               className="font-bold font-mono"
-              style={{ color: STAT_COLORS[battle.selectedStat], fontSize: won ? '28px' : '20px' }}
+              style={{ color: STAT_COLORS[battle.selectedStat], fontSize: won ? '32px' : '22px' }}
               initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: won ? [1, 1.3, 1.05] : 1, opacity: won ? 1 : 0.5 }}
               transition={{ delay: 0.3, duration: won ? 0.4 : 0.2 }}
@@ -666,65 +700,92 @@ export default function PlayPrototype() {
             <div className="w-8 h-px bg-white/10" />
           </motion.div>
 
-          {/* AI card — dramatic delayed flip */}
+          {/* AI card — dramatic delayed slam reveal */}
           <motion.div className="text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}>
+            transition={{ delay: 0.8 }}>
             <motion.div
-              className="w-[140px] aspect-[5/7] rounded-xl overflow-hidden relative mx-auto mb-2"
+              className="w-[200px] aspect-[5/7] rounded-xl overflow-hidden relative mx-auto mb-2"
               style={{
                 background: `linear-gradient(145deg, ${battle.aiPick.gradientFrom}, ${battle.aiPick.gradientTo})`,
                 border: `2px solid ${!won ? '#22c55e' : 'rgba(239,68,68,0.3)'}`,
-                boxShadow: !won ? '0 0 40px rgba(34,197,94,0.3)' : 'none',
+                boxShadow: !won
+                  ? '0 0 40px rgba(34,197,94,0.3), inset 0 -4px 12px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)'
+                  : 'inset 0 -4px 12px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1)',
+                transform: 'perspective(800px) rotateX(-2deg)',
               }}
-              initial={{ rotateY: 90, scale: 0.85 }}
-              animate={{ rotateY: 0, scale: 1 }}
-              transition={{ delay: 0.6, duration: 0.5, type: 'spring', stiffness: 100, damping: 12 }}
+              initial={{ rotateY: 90, scale: 0.7 }}
+              animate={{ rotateY: 0, scale: [0.7, 1.08, 1] }}
+              transition={{ delay: 1.2, duration: 0.35, type: 'spring', stiffness: 150, damping: 12 }}
             >
               <CardArtImg card={battle.aiPick} />
+              {/* Shine overlay for card depth */}
+              <div className="absolute inset-0 pointer-events-none"
+                style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)', mixBlendMode: 'overlay' }} />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%)' }} />
               <div className="absolute bottom-1.5 left-0 right-0 text-center">
-                <span className="text-[9px] text-white/80 font-medium drop-shadow-lg">{battle.aiPick.character}</span>
+                <span className="text-[10px] text-white/85 font-semibold drop-shadow-lg">{battle.aiPick.character}</span>
               </div>
             </motion.div>
-            {/* AI stat — punches in after flip settles */}
+            {/* AI stat — slams in after card settles */}
             <motion.div
               className="font-bold font-mono"
-              style={{ color: STAT_COLORS[battle.selectedStat], fontSize: !won ? '28px' : '20px' }}
-              initial={{ opacity: 0, scale: 1.8 }}
+              style={{ color: STAT_COLORS[battle.selectedStat], fontSize: !won ? '32px' : '22px' }}
+              initial={{ opacity: 0, scale: 2.2 }}
               animate={{ scale: !won ? [1, 1.3, 1.05] : 1, opacity: !won ? 1 : 0.5 }}
-              transition={{ delay: 1.0, duration: 0.35 }}
+              transition={{ delay: 1.6, duration: 0.3 }}
             >
               {aiVal}
             </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* Result text — appears after both stats visible */}
         <motion.div
-          className="text-center mb-4 relative z-10"
+          className="text-center mb-3 relative z-10"
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1.3, type: 'spring', stiffness: 200, damping: 15 }}
+          transition={{ delay: 1.9, type: 'spring', stiffness: 200, damping: 15 }}
         >
           <h3 className="type-subheading"
             style={{ color: won ? '#22c55e' : '#ef4444' }}>
             {won ? 'You win this round!' : 'AI wins this round'}
           </h3>
+          {/* Near-miss margin */}
+          <motion.p
+            className="text-[11px] mt-1 font-mono"
+            style={{ color: won ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2.1 }}
+          >
+            {won ? `Won by ${margin}` : `Lost by ${margin}`}
+          </motion.p>
+          {/* Counterfactual on loss — what WOULD have won */}
+          {!won && counterfactualStat && (
+            <motion.p
+              className="text-[10px] mt-1 text-muted/40 italic"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2.3 }}
+            >
+              {STAT_LABELS[counterfactualStat]} would have won
+            </motion.p>
+          )}
         </motion.div>
 
         {/* Score */}
         <motion.div className="flex gap-6 text-sm font-mono relative z-10"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }}>
           <span style={{ color: '#22c55e' }}>You: {battle.playerScore}</span>
           <span style={{ color: '#ef4444' }}>AI: {battle.aiScore}</span>
         </motion.div>
 
         {/* Tap hint */}
         <motion.div className="absolute bottom-8 left-0 right-0 text-center"
-          initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ delay: 1.8 }}>
-          <span className="text-[10px] text-muted/30">
+          initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} transition={{ delay: 2.6 }}>
+          <span className="text-[11px] text-muted/30">
             {battle.playerScore >= 2 || battle.aiScore >= 2 ? 'Tap to see results' : 'Tap for next round'}
           </span>
         </motion.div>
