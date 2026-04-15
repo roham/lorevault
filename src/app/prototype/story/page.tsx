@@ -333,38 +333,75 @@ export default function StoryPrototype() {
           );
         })()}
 
-        {/* Content */}
-        <div className="relative z-10 px-4 pt-4">
-        {/* Header — progress */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="type-subheading text-foreground">{selectedWorld.name}</h2>
-            <p className="text-[10px] text-muted mt-0.5">
-              Chapter {unlockedCount} of {totalCount}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-20 h-1.5 rounded-full bg-border/30 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: selectedWorld.accentColor }}
-                initial={{ width: 0 }}
-                animate={{ width: `${(unlockedCount / totalCount) * 100}%` }}
-                transition={{ duration: 1, ease: 'easeOut' }}
-              />
+        {/* Hero Banner — world card art dominates the top */}
+        {(() => {
+          const heroes = getWorldHeroCards(selectedWorld.setSlug);
+          const hero = heroes[0];
+          return (
+            <div className="relative w-full h-[220px] overflow-hidden">
+              {/* Hero card art background */}
+              {hero && (
+                <motion.div
+                  className="absolute inset-0"
+                  initial={{ scale: 1.1, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 0.6 }}
+                  transition={{ duration: 1.2, ease: 'easeOut' }}
+                >
+                  <StoryCardArt card={hero} />
+                </motion.div>
+              )}
+              {/* Gradient overlays — world-colored top, dark bottom for content bleed */}
+              <div className="absolute inset-0" style={{
+                background: `linear-gradient(180deg, ${selectedWorld.gradientFrom}80 0%, transparent 40%, rgba(5,8,16,0.8) 75%, #050810 100%)`,
+              }} />
+              {/* Inner shadow for depth */}
+              <div className="absolute inset-0" style={{
+                boxShadow: 'inset 0 -30px 60px rgba(5,8,16,0.9)',
+              }} />
+              {/* World title + progress overlaid at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 px-5 pb-4">
+                <motion.h2
+                  className="type-heading text-foreground mb-1 drop-shadow-lg"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  {selectedWorld.name}
+                </motion.h2>
+                <div className="flex items-center gap-3">
+                  <p className="text-[11px] text-white/60">
+                    Chapter {unlockedCount} of {totalCount}
+                  </p>
+                  <div className="flex-1 max-w-[100px] h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: selectedWorld.accentColor, boxShadow: `0 0 8px ${selectedWorld.accentColor}60` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(unlockedCount / totalCount) * 100}%` }}
+                      transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono" style={{ color: selectedWorld.accentColor }}>
+                    {unlockedCount}/{totalCount}
+                  </span>
+                </div>
+              </div>
             </div>
-            <span className="text-[10px] font-mono" style={{ color: selectedWorld.accentColor }}>
-              {unlockedCount}/{totalCount}
-            </span>
-          </div>
-        </div>
+          );
+        })()}
+
+        {/* Content */}
+        <div className="relative z-10 px-4 pt-2">
 
         {/* Story nodes — vertical timeline with connecting path */}
         <div className="max-w-md mx-auto relative">
-          {/* Vertical journey path */}
+          {/* Vertical journey path — glowing */}
           <div
-            className="absolute left-[36px] top-4 bottom-4 w-px"
-            style={{ background: `linear-gradient(to bottom, transparent, ${selectedWorld.accentColor}25 5%, ${selectedWorld.accentColor}15 95%, transparent)` }}
+            className="absolute left-[36px] top-4 bottom-4 w-[2px]"
+            style={{
+              background: `linear-gradient(to bottom, ${selectedWorld.accentColor}40, ${selectedWorld.accentColor}20 60%, ${selectedWorld.accentColor}08 100%)`,
+              boxShadow: `0 0 8px ${selectedWorld.accentColor}15`,
+            }}
           />
           <div className="space-y-3">
           {selectedWorld.chapters.map((chapter, i) => {
@@ -471,8 +508,8 @@ function StoryNodeCard({
             : isNext
               ? `1px solid ${accentColor}20`
               : '1px solid rgba(255,255,255,0.03)',
-          opacity: !isUnlocked && !isNext ? 0.5 : 1,
-          boxShadow: isNext ? `0 0 25px ${accentColor}10` : 'none',
+          opacity: !isUnlocked && !isNext ? 0.4 : 1,
+          boxShadow: isNext ? `0 0 30px ${accentColor}12, inset 0 1px 0 rgba(255,255,255,0.03)` : isUnlocked ? `inset 0 1px 0 rgba(255,255,255,0.03)` : 'none',
         }}
       >
         {/* Shimmer for next locked chapter */}
@@ -486,32 +523,47 @@ function StoryNodeCard({
         )}
         {/* Chapter header */}
         <div className="flex items-center gap-3">
-          {/* Chapter thumbnail — card art of first required character */}
+          {/* Chapter landmark — card art of first required character */}
           {(() => {
             const firstChar = chapter.requiredCharacters[0];
             const heroCard = firstChar ? ALL_CARDS.find(c => c.character === firstChar && c.setSlug === setSlug) : null;
             return (
               <div
-                className="w-10 h-10 rounded-lg overflow-hidden relative flex-shrink-0"
+                className="w-14 h-14 rounded-xl overflow-hidden relative flex-shrink-0"
                 style={{
                   background: isUnlocked && heroCard
                     ? `linear-gradient(145deg, ${heroCard.gradientFrom}, ${heroCard.gradientTo})`
-                    : `${accentColor}08`,
-                  border: isUnlocked ? `1px solid ${accentColor}30` : '1px solid rgba(255,255,255,0.05)',
+                    : isNext ? `${accentColor}12` : `${accentColor}06`,
+                  border: isUnlocked
+                    ? `1.5px solid ${accentColor}50`
+                    : isNext ? `1.5px solid ${accentColor}30` : '1.5px solid rgba(255,255,255,0.04)',
+                  boxShadow: isUnlocked
+                    ? `0 0 16px ${accentColor}20, inset 0 -3px 8px rgba(0,0,0,0.4)`
+                    : isNext ? `0 0 12px ${accentColor}10` : 'none',
                 }}
               >
                 {isUnlocked && heroCard ? (
                   <>
                     <StoryCardArt card={heroCard} />
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 50%)' }} />
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%)' }} />
+                    {/* Shine overlay */}
+                    <div className="absolute inset-0 pointer-events-none"
+                      style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%)', mixBlendMode: 'overlay' }} />
                   </>
-                ) : (
+                ) : isNext ? (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <motion.div
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ background: accentColor, boxShadow: `0 0 8px ${accentColor}60` }}
-                      animate={{ opacity: [0.3, 0.7, 0.3] }}
-                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                      className="w-5 h-5 rounded-full"
+                      style={{ background: `radial-gradient(circle, ${accentColor}40, ${accentColor}15)`, boxShadow: `0 0 16px ${accentColor}40` }}
+                      animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                  </div>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{ background: 'rgba(255,255,255,0.08)' }}
                     />
                   </div>
                 )}
@@ -554,60 +606,71 @@ function StoryNodeCard({
 
         {/* Next locked chapter: teaser + card silhouettes */}
         {!isUnlocked && isNext && (
-          <div className="mt-3 ml-[52px]">
-            <p className="text-[11px] text-muted/50 italic mb-3">{chapter.teaser}</p>
+          <div className="mt-3 ml-[66px]">
+            <p className="text-[12px] text-muted/60 italic mb-3">{chapter.teaser}</p>
 
-            {/* Card silhouettes — mini cards showing owned vs missing */}
-            <div className="flex flex-wrap gap-2">
+            {/* Card silhouettes — larger, more contrast between owned and missing */}
+            <div className="flex flex-wrap gap-2.5">
               {chapter.requiredCharacters.map(charName => {
                 const isOwned = ownedCharacters.has(charName);
-                // Look up card for this character's symbol + gradients
                 const cardData = ALL_CARDS.find(c => c.character === charName && c.setSlug === setSlug);
-                const symbol = cardData?.symbol || '?';
                 const gradFrom = cardData?.gradientFrom || '#1a1a2e';
                 const gradTo = cardData?.gradientTo || '#0a0b14';
 
                 return (
                   <div key={charName} className="flex flex-col items-center gap-1">
                     <div
-                      className="w-9 h-[50px] rounded-md relative overflow-hidden"
+                      className="w-11 h-[60px] rounded-lg relative overflow-hidden"
                       style={{
                         background: isOwned
                           ? `linear-gradient(145deg, ${gradFrom}, ${gradTo})`
-                          : 'rgba(15, 15, 25, 0.8)',
+                          : `linear-gradient(145deg, ${gradFrom}15, ${gradTo}10)`,
                         border: isOwned
-                          ? `1.5px solid ${accentColor}50`
-                          : '1.5px solid rgba(255,255,255,0.06)',
-                        boxShadow: isOwned ? `0 0 8px ${accentColor}15` : 'none',
+                          ? `1.5px solid ${accentColor}60`
+                          : `1.5px solid ${accentColor}12`,
+                        boxShadow: isOwned
+                          ? `0 0 12px ${accentColor}20, inset 0 -3px 8px rgba(0,0,0,0.4)`
+                          : `inset 0 -2px 6px rgba(0,0,0,0.3)`,
                       }}
                     >
                       {isOwned && cardData ? (
-                        <StoryCardArt card={cardData} />
+                        <>
+                          <StoryCardArt card={cardData} />
+                          {/* Shine overlay */}
+                          <div className="absolute inset-0 pointer-events-none"
+                            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%)', mixBlendMode: 'overlay' }} />
+                        </>
+                      ) : cardData ? (
+                        <>
+                          {/* Ghost silhouette — faint card art visible through fog */}
+                          <div className="absolute inset-0 opacity-[0.08]">
+                            <StoryCardArt card={cardData} />
+                          </div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-3 h-3 rounded-full" style={{ background: `${accentColor}15`, boxShadow: `0 0 8px ${accentColor}10` }} />
+                          </div>
+                        </>
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-[10px] text-white/10">?</span>
+                          <span className="text-[10px] text-white/08">?</span>
                         </div>
                       )}
-                      {!isOwned && (
-                        <div className="absolute inset-0" style={{ background: 'rgba(15,15,25,0.7)' }} />
-                      )}
-                      {/* Checkmark overlay for owned */}
                       {isOwned && (
                         <div
-                          className="absolute -bottom-px -right-px w-3.5 h-3.5 rounded-tl-md flex items-center justify-center"
+                          className="absolute -bottom-px -right-px w-4 h-4 rounded-tl-lg flex items-center justify-center"
                           style={{ background: accentColor }}
                         >
-                          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3">
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="3">
                             <polyline points="20 6 9 17 4 12" />
                           </svg>
                         </div>
                       )}
                     </div>
                     <span
-                      className="text-[8px] max-w-[40px] text-center truncate leading-tight"
+                      className="text-[9px] max-w-[48px] text-center truncate leading-tight"
                       style={{
                         color: isOwned ? accentColor : 'var(--color-muted)',
-                        opacity: isOwned ? 0.8 : 0.35,
+                        opacity: isOwned ? 0.9 : 0.3,
                       }}
                     >
                       {charName.split(' ').pop()}
@@ -619,18 +682,18 @@ function StoryNodeCard({
 
             {/* Progress hint */}
             {ownedCount > 0 && ownedCount < totalRequired && (
-              <p className="text-[10px] mt-2" style={{ color: `${accentColor}80` }}>
+              <p className="text-[11px] mt-2.5 font-medium" style={{ color: `${accentColor}90` }}>
                 {totalRequired - ownedCount} more {totalRequired - ownedCount === 1 ? 'card' : 'cards'} to unlock
               </p>
             )}
           </div>
         )}
 
-        {/* Distant locked chapters: just show character count */}
+        {/* Distant locked chapters: fog-covered mystery */}
         {!isUnlocked && !isNext && (
-          <div className="mt-1 ml-[52px]">
-            <span className="text-[9px] text-muted/25">
-              {totalRequired} {totalRequired === 1 ? 'card' : 'cards'} needed
+          <div className="mt-1 ml-[66px]">
+            <span className="text-[10px] italic" style={{ color: `${accentColor}25` }}>
+              {totalRequired} {totalRequired === 1 ? 'card' : 'cards'} to discover
             </span>
           </div>
         )}
