@@ -97,8 +97,13 @@ function MoodboardBody() {
   // Load manifest (once token is resolved — either from URL or localStorage)
   useEffect(() => {
     if (!token) return; // wait for token resolution
-    const url = `/api/moodboard/items?k=${encodeURIComponent(token)}`;
-    fetch(url, { cache: 'no-store' })
+    // Cache-buster _t defeats any stale SW cache key; `cache: 'no-store'` + explicit
+    // `pragma`/`cache-control` headers defeat any intermediate HTTP cache.
+    const url = `/api/moodboard/items?k=${encodeURIComponent(token)}&_t=${Date.now()}`;
+    fetch(url, {
+      cache: 'no-store',
+      headers: { 'cache-control': 'no-cache', pragma: 'no-cache' },
+    })
       .then((r) => {
         if (!r.ok) throw new Error(`items ${r.status}`);
         return r.json();
