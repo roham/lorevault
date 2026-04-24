@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 });
   }
   const manifestPath = path.join(process.cwd(), 'public', 'moodboard-art', 'manifest.json');
-  const minPromptVersion = parseInt(request.nextUrl.searchParams.get('minPromptVersion') ?? '3', 10);
+  const minPromptVersion = parseInt(request.nextUrl.searchParams.get('minPromptVersion') ?? '4', 10);
   try {
     const raw = await fs.readFile(manifestPath, 'utf8');
     const manifest = JSON.parse(raw);
