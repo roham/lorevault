@@ -27,6 +27,7 @@ export default function BinderCard({ card }: { card: Card }) {
   return (
     <div
       className="binder-card relative select-none flex-shrink-0"
+      data-set={card.setSlug}
       style={{
         width: 260,
         height: 364,
@@ -115,6 +116,9 @@ export default function BinderCard({ card }: { card: Card }) {
           <div className="text-sm font-semibold text-white/90 truncate">{card.name}</div>
           <div className="text-[10px] text-white/40 truncate">{card.character} &middot; {scarcityConfig.label}</div>
         </div>
+
+        {/* Set-accent hover glow — DESIGN-DIRECTION.md: set-accent color on hover */}
+        <div className="set-accent-ring absolute inset-0 pointer-events-none" />
 
         {/* Edge highlight */}
         <div className="absolute inset-0 pointer-events-none rounded-xl card-edge-light" />

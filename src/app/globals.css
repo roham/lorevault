@@ -208,6 +208,31 @@ body {
   filter: blur(0.5px);
 }
 
+/* ======= PER-SET ACCENT HOVER GLOW (DESIGN-DIRECTION.md) ======= */
+/* Each set has an accent color from the approved design direction.
+   The .set-accent-ring div uses inset box-shadow so it stays within
+   overflow:hidden bounds and never leaks through paint containment. */
+.binder-card { --sa: transparent; }
+.binder-card[data-set="baker-street"]      { --sa: rgba(210, 140,  50, 0.38); } /* Amber/sepia */
+.binder-card[data-set="enchanted-kingdom"] { --sa: rgba(210, 100, 140, 0.38); } /* Rose/gold */
+.binder-card[data-set="wonderland"]        { --sa: rgba( 40, 180, 155, 0.38); } /* Teal/violet */
+.binder-card[data-set="gothic-horror"]     { --sa: rgba(190,  40,  50, 0.38); } /* Crimson/bone */
+.binder-card[data-set="olympus"]           { --sa: rgba(200, 165,  50, 0.38); } /* Gold/marble */
+.binder-card[data-set="asgard"]            { --sa: rgba(130, 165, 210, 0.38); } /* Steel/rune-gold */
+
+.set-accent-ring {
+  box-shadow:
+    inset 0 0  0 1px var(--sa),
+    inset 0 0 28px var(--sa),
+    inset 0 0 60px var(--sa);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  border-radius: inherit;
+}
+.binder-card:hover .set-accent-ring {
+  opacity: 1;
+}
+
 /* ======= CARD AGING EFFECTS ======= */
 
 /* Pristine: factory-fresh light sweep */

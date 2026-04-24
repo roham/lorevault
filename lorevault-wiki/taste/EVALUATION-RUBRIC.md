@@ -1,6 +1,6 @@
 # Evaluation Rubric — LoreVault Taste Daemon
 
-_Last scored: 2026-04-24T16:45:00Z (cycle 5, Taste-Update)_
+_Last scored: 2026-04-24T17:02:00Z (cycle 6, Design-Pass)_
 
 Target by cycle 200: every dimension ≥ 7.
 
@@ -14,7 +14,7 @@ Target by cycle 200: every dimension ≥ 7.
 | 6 | Route coverage | 8/10 | /, /moodboard, /collection all 200 + zero console errors; Marketplace/Games not yet walked | cycle-3 |
 | 7 | Best-practice hygiene | ? | Pending grep/lint | cycle-3 |
 | 8 | IA clarity | 6/10 | All key routes reachable; home is pre-auth landing (no nav by design); Marketplace visible in app | cycle-3 |
-| 9 | Design coherence | ? | Pending DESIGN-DIRECTION.md review | cycle-3 |
+| 9 | Design coherence | 6/10 | Per-set accent hover glow applied to BinderCard grid (DESIGN-DIRECTION.md: set-accent on hover). Baker Street=amber, Enchanted=rose, Wonderland=teal, Gothic=crimson, Olympus=gold, Asgard=steel. Compliance checklist: card palette ✓ (partial), moodboard TBD, nav TBD, pure-white TBD | cycle-6 |
 | 10 | Cycle efficiency | 8/10 | 4 cycles, all green builds; taste model now live | cycle-4 |
 
 ## Dimension Definitions

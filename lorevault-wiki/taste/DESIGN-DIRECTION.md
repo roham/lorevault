@@ -34,8 +34,8 @@ A high-contrast, deep-dark aesthetic that foregrounds illustrated art and lore t
 - No generic gradients as primary art — always secondary to imageUrl when available
 - No rounded-rect cards with stock shadows — use the existing gradient-face approach
 
-## Compliance Check (cycle 1)
+## Compliance Check (cycle 6)
 - [ ] Moodboard surface matches direction
-- [ ] Card surfaces match per-set palettes
+- [x] Card surfaces match per-set palettes — per-set accent hover glow applied to BinderCard grid (cycle 6); gradient backgrounds already aligned with palettes from cycle 1
 - [ ] Nav is within 2-tap reach for all main features
 - [ ] No pure-white text on dark bg
