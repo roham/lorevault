@@ -82,11 +82,26 @@ function MoodboardBody() {
       const stored = localStorage.getItem(LS_TOKEN);
       if (stored) setToken(stored);
     }
-    // Nuclear cache bust: force any prior SW to update, drop all CacheStorage entries.
-    // Prior versions of the SW cached 403 responses from the token-gated endpoints.
+    // Nuclear cache bust. `/moodboard` never wants a service worker — every
+    // prior gen cached 403s from the token-gated API. Unregister any SW here
+    // (then caches.delete for good measure). If unregistration releases the
+    // page from SW control, reload once so fetches go straight to network.
     if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then((regs) => {
-        regs.forEach((r) => r.update().catch(() => {}));
+        if (regs.length === 0) return;
+        const hasController = !!navigator.serviceWorker.controller;
+        Promise.all(regs.map((r) => r.unregister().catch(() => false))).then(() => {
+          if (hasController && !sessionStorage.getItem('lv_sw_nuked')) {
+            sessionStorage.setItem('lv_sw_nuked', '1');
+            if (typeof caches !== 'undefined') {
+              caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).finally(() => {
+                window.location.reload();
+              });
+            } else {
+              window.location.reload();
+            }
+          }
+        });
       }).catch(() => {});
     }
     if (typeof caches !== 'undefined') {
