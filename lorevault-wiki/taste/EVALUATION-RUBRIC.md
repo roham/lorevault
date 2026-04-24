@@ -1,13 +1,13 @@
 # Evaluation Rubric — LoreVault Taste Daemon
 
-_Last scored: 2026-04-24T15:38:00Z (cycle 4, Taste-Update)_
+_Last scored: 2026-04-24T16:45:00Z (cycle 5, Taste-Update)_
 
 Target by cycle 200: every dimension ≥ 7.
 
 | # | Dimension | Score | Notes | Last Updated |
 |---|---|---|---|---|
 | 1 | Art system quality | 4/10 | Real art visible in /collection for several characters; no imageUrl in cards.ts yet | cycle-3 |
-| 2 | Taste-model approval | 4/10 | 66 votes; 17% approval rate (vs 55% target); strong rejections on victorian-engraving (0/8); pulp-scifi promising at 67% | cycle-4 |
+| 2 | Taste-model approval | 4/10 | 104 votes; 14% approval rate (vs 55% target); CEO wants EPIC/GRAND/WILD — injected into prompt template; mtg-mythic 100% (1v), frazetta 100% (1v), pulp-scifi 67% (3v) leading | cycle-5 |
 | 3 | Coverage | 3/10 | 134 items in manifest (need ≥ 400; ~34% of target); state.json was stale at 88 | cycle-4 |
 | 4 | Build health | 9/10 | Green build; lint pending full run | cycle-3 |
 | 5 | Lighthouse mobile | ? | Pending Lighthouse run | cycle-3 |
