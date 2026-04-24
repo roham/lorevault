@@ -1,7 +1,7 @@
 # Design Direction — LoreVault
 
-_Last updated: 2026-04-24T07:52:46Z (cycle 1)_
-_Status: DRAFT — not yet applied. Will be refined as taste votes accumulate._
+_Last updated: 2026-04-24T20:10:00Z (cycle 7)_
+_Status: IN PROGRESS — moodboard and card grid aligned; nav compliance pending._
 
 ## Chosen Direction
 
@@ -34,8 +34,8 @@ A high-contrast, deep-dark aesthetic that foregrounds illustrated art and lore t
 - No generic gradients as primary art — always secondary to imageUrl when available
 - No rounded-rect cards with stock shadows — use the existing gradient-face approach
 
-## Compliance Check (cycle 6)
-- [ ] Moodboard surface matches direction
+## Compliance Check (cycle 7)
+- [x] Moodboard surface matches direction — set-accent glow on card image (border+shadow per set), accent-colored style label, off-white #f0f0e8 text + CTAs (cycle 7)
 - [x] Card surfaces match per-set palettes — per-set accent hover glow applied to BinderCard grid (cycle 6); gradient backgrounds already aligned with palettes from cycle 1
 - [ ] Nav is within 2-tap reach for all main features
-- [ ] No pure-white text on dark bg
+- [x] No pure-white text on dark bg — moodboard + results pages use #f0f0e8 (cycle 7)

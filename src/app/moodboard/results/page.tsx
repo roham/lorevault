@@ -104,7 +104,7 @@ function Body() {
   }, [votes]);
 
   return (
-    <div className="min-h-screen bg-[#0a0b14] text-white px-6 py-10">
+    <div className="min-h-screen bg-[#0a0b14] text-[#f0f0e8] px-6 py-10">
       <div className="max-w-4xl mx-auto space-y-10">
         <header>
           <h1 className="text-2xl font-semibold">Mood-board results</h1>
@@ -123,7 +123,7 @@ function Body() {
               <div key={r.key} className="flex items-center gap-3 px-4 py-3 border-t border-white/5 first:border-t-0">
                 <div className="flex-1 truncate">{r.label}</div>
                 <div className="w-36 h-1 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-white/80" style={{ width: `${Math.round(r.approval * 100)}%` }} />
+                  <div className="h-full bg-[#f0f0e8]/80" style={{ width: `${Math.round(r.approval * 100)}%` }} />
                 </div>
                 <div className="w-12 text-right text-sm tabular-nums">{Math.round(r.approval * 100)}%</div>
                 <div className="w-10 text-right text-xs text-white/40 tabular-nums">{r.total}</div>
@@ -140,7 +140,7 @@ function Body() {
               <div key={r.key} className="flex items-center gap-3 px-4 py-3 border-t border-white/5 first:border-t-0">
                 <div className="flex-1 truncate">{r.label}</div>
                 <div className="w-36 h-1 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full bg-white/80" style={{ width: `${Math.round(r.approval * 100)}%` }} />
+                  <div className="h-full bg-[#f0f0e8]/80" style={{ width: `${Math.round(r.approval * 100)}%` }} />
                 </div>
                 <div className="w-12 text-right text-sm tabular-nums">{Math.round(r.approval * 100)}%</div>
                 <div className="w-10 text-right text-xs text-white/40 tabular-nums">{r.total}</div>
@@ -188,7 +188,7 @@ function Body() {
 
 export default function ResultsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0b14] text-white/60 p-10">Loading…</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0b14] text-[#f0f0e8]/60 p-10">Loading…</div>}>
       <Body />
     </Suspense>
   );

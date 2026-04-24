@@ -25,6 +25,19 @@ type Manifest = {
 
 type LocalVote = { vote: 'yes' | 'no' | 'other'; comment?: string; at: number };
 
+// Per-set accent colors — mirrors BinderCard/globals.css set-accent values
+const SET_ACCENT_RGB: Record<string, string> = {
+  'baker-street':      '210,140,50',
+  'enchanted-kingdom': '210,100,140',
+  'wonderland':        '40,180,155',
+  'gothic-horror':     '190,40,50',
+  'olympus':           '200,165,50',
+  'asgard':            '130,165,210',
+};
+function accentRgb(set: string | undefined): string {
+  return set ? (SET_ACCENT_RGB[set] ?? '200,200,200') : '200,200,200';
+}
+
 const LS_KEY = 'lorevault_moodboard_votes_v1';
 const LS_VOTER = 'lorevault_moodboard_voter_v1';
 const LS_TOKEN = 'lorevault_moodboard_token_v1';
@@ -275,10 +288,10 @@ function MoodboardBody() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0b14] text-white flex flex-col">
+    <div className="min-h-screen bg-[#0a0b14] text-[#f0f0e8] flex flex-col">
       <div className="fixed top-0 left-0 right-0 h-1 bg-white/5 z-50">
         <div
-          className="h-full bg-white/80 transition-[width] duration-300"
+          className="h-full bg-[#f0f0e8]/80 transition-[width] duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -296,17 +309,23 @@ function MoodboardBody() {
           <img
             src={current.path}
             alt={`${current.character} in ${current.style}`}
-            className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_20px_80px_-20px_rgba(0,0,0,0.8)] border border-white/10"
+            className="w-full aspect-[2/3] object-cover rounded-xl border border-white/10"
+            style={{
+              boxShadow: `0 20px 80px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(${accentRgb(current.set)},0.25), 0 0 48px rgba(${accentRgb(current.set)},0.12)`,
+            }}
             loading="eager"
           />
           <figcaption className="text-center">
-            <div className="text-lg font-medium">{current.character}</div>
-            <div className="text-xs uppercase tracking-[0.2em] text-white/40 mt-1">
+            <div className="text-lg font-medium tracking-tight text-[#f0f0e8]">{current.character}</div>
+            <div
+              className="text-xs uppercase tracking-[0.2em] mt-1"
+              style={{ color: `rgba(${accentRgb(current.set)},0.85)` }}
+            >
               {current.style}
               {current.set ? ` · ${current.set}` : ''}
             </div>
             {current.moment && (
-              <div className="text-[11px] text-white/30 mt-1 italic">{current.moment}</div>
+              <div className="text-[11px] text-[#f0f0e8]/30 mt-1 italic">{current.moment}</div>
             )}
           </figcaption>
         </figure>
@@ -331,7 +350,7 @@ function MoodboardBody() {
             </button>
             <button
               onClick={onYes}
-              className="flex-1 rounded-2xl bg-white text-black py-4 font-semibold hover:bg-white/90 active:scale-[0.98] transition"
+              className="flex-1 rounded-2xl bg-[#f0f0e8] text-[#0a0b14] py-4 font-semibold hover:bg-[#f0f0e8]/90 active:scale-[0.98] transition"
               aria-label="Approve"
             >
               ✓ <span className="opacity-60 text-xs ml-1">(Y)</span>
@@ -359,7 +378,7 @@ function MoodboardBody() {
               </button>
               <button
                 onClick={onSendComment}
-                className="flex-1 rounded-2xl bg-white text-black py-3 font-semibold text-sm hover:bg-white/90"
+                className="flex-1 rounded-2xl bg-[#f0f0e8] text-[#0a0b14] py-3 font-semibold text-sm hover:bg-[#f0f0e8]/90"
               >
                 Send
               </button>
@@ -379,7 +398,7 @@ function MoodboardBody() {
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0a0b14] text-white flex items-center justify-center px-6">
+    <div className="min-h-screen bg-[#0a0b14] text-[#f0f0e8] flex items-center justify-center px-6">
       {children}
     </div>
   );
