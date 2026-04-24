@@ -68,7 +68,7 @@ You do not do everything every cycle. You pick **one track** based on state and 
 
 ### Selection rule (evaluate top-to-bottom, first match wins)
 
-1. **Art-Seed** — if `manifest.items.length < 50`, pick this. **Run `node scripts/seed-moodboard.mjs --count=50 --concurrency=10`** (batched parallel generation — ~3 min vs ~30 min serial). Commit the manifest + webp files, push, let Vercel deploy. Do NOT LLM-drive each image call.
+1. **Art-Seed** — if `manifest.items.length < 40`, pick this. **Run `node scripts/seed-moodboard.mjs --count=50 --concurrency=5 --rpm=5`** (rate-limiter-aware batched generation — current OpenAI tier is 5 RPM, auto-bumps to tier 2 after 7 days + $50). Commit the manifest + webp files from the VM, push, let Vercel deploy. Do NOT LLM-drive each image call. A few pairs will moderation-block permanently (snow-white × pulp, evil-queen × sumi-e, red-riding-hood × pulp) — that's expected; the script skips them.
 2. **Build-Red** — if the last build on `main` is failing (check `gh api repos/roham/lorevault/commits/main/statuses`), pick this. Fix the build. Nothing else matters until green.
 3. **Audit-Hot** — if `EXPERIENCE-AUDIT.md` has no entry in the last 12 hours OR any route's verdict < 3/5, pick this. Playwright-walk 3 routes at 375×812, screenshot every state, fix the top 1 issue.
 4. **Taste-Update** — if there are > 20 new CEO votes since last update to `TASTE-MODEL.md`, pick this. Re-read votes from KV, re-cluster, rewrite the taste model. No other changes.
