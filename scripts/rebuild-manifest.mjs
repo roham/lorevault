@@ -11,8 +11,11 @@ const MANIFEST = path.join(ART_DIR, 'manifest.json');
 
 // NOTE: keep these inline and in sync with seed-moodboard.mjs — this is a recovery utility.
 // Only the slugs matter for matching; full metadata is looked up by seed script on next run.
-const PROMPT_VERSION = 5;
-// Files modified after this instant are treated as v5 regen output.
+// Dynamically read PROMPT_VERSION from seed-moodboard.mjs so these stay in sync.
+const seedSrc = await fs.readFile(path.join(path.dirname(path.resolve('./scripts/rebuild-manifest.mjs')), 'seed-moodboard.mjs'), 'utf8').catch(() => '');
+const versionMatch = seedSrc.match(/const PROMPT_VERSION\s*=\s*(\d+)/);
+const PROMPT_VERSION = versionMatch ? parseInt(versionMatch[1], 10) : 1;
+// Files modified after this instant are treated as current-version regen output.
 // Default: last 90 minutes.
 const V5_CUTOFF = Date.now() - (parseInt(process.argv[2] || '90', 10) * 60_000);
 
