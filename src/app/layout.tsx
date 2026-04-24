@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navigation from "@/components/Navigation";
-import MarketplaceFAB from "@/components/marketplace/MarketplaceFAB";
+import MainChrome from "@/components/MainChrome";
+import MainContent from "@/components/MainContent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +17,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "LoreVault — Collect the Legends",
   description: "Open packs. Pull legends. Build your vault. Premium digital collectibles from the greatest stories ever told.",
+  manifest: "/manifest.json",
+  openGraph: {
+    title: "LoreVault — Collect the Legends",
+    description: "Premium digital collectibles from the greatest stories ever told.",
+    siteName: "LoreVault",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "LoreVault — Collect the Legends",
+    description: "Open packs. Pull legends. Build your vault.",
+  },
 };
 
 export const viewport: Viewport = {
@@ -38,11 +50,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full bg-background text-foreground">
-        <main className="pb-20">
-          {children}
-        </main>
-        <MarketplaceFAB />
-        <Navigation />
+        <MainContent>{children}</MainContent>
+        <MainChrome />
       </body>
     </html>
   );

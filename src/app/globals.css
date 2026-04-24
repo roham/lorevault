@@ -24,7 +24,23 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Type scale */
+  --text-display: 36px;
+  --text-heading: 22px;
+  --text-subheading: 15px;
+  --text-body: 13px;
+  --text-caption: 11px;
+  --text-micro: 9px;
 }
+
+/* Type utility classes */
+.type-display { font-size: var(--text-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+.type-heading { font-size: var(--text-heading); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+.type-subheading { font-size: var(--text-subheading); font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+.type-body { font-size: var(--text-body); font-weight: 400; line-height: 1.5; }
+.type-caption { font-size: var(--text-caption); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.3; }
+.type-micro { font-size: var(--text-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.2; }
 
 * {
   box-sizing: border-box;
@@ -155,59 +171,192 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 
-.glow-epic { animation: epic-glow 2s ease-in-out infinite; }
+/* Scarcity glow: hover-only except legendary (persistent) */
+.glow-rare:hover { animation: rare-glow 2.5s ease-in-out infinite; }
+.glow-epic:hover { animation: epic-glow 2s ease-in-out infinite; }
 .glow-legendary { animation: legendary-glow 1.5s ease-in-out infinite; }
-.glow-rare { animation: rare-glow 2.5s ease-in-out infinite; }
 .glow-obsidian { animation: obsidian-edge 2s ease-in-out infinite; }
 
+/* Physical card depth */
+.card-depth {
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.5),
+    0 4px 8px rgba(0,0,0,0.35),
+    0 12px 40px rgba(0,0,0,0.25);
+  transition: box-shadow 0.3s ease;
+}
+.card-depth:hover {
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.4),
+    0 8px 16px rgba(0,0,0,0.3),
+    0 20px 60px rgba(0,0,0,0.2);
+}
+
+/* Edge highlight — simulates light source */
+.card-edge-light {
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,255,255,0.02);
+}
+
+/* Card edge thickness */
+.card-edge-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 2px; right: 2px;
+  height: 2px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 0 0 10px 10px;
+  filter: blur(0.5px);
+}
+
+/* ======= CARD AGING EFFECTS ======= */
+
+/* Pristine: factory-fresh light sweep */
+.aging-pristine-sheen {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent 60%
+  );
+  background-size: 250% 100%;
+  animation: pristine-sheen 4s ease-in-out infinite;
+}
+@keyframes pristine-sheen {
+  0% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
+}
+
+/* Bonded: warm glow pulse */
+.aging-bonded-glow {
+  background: radial-gradient(ellipse at 50% 40%, rgba(255, 180, 60, 0.08) 0%, transparent 70%);
+  animation: bonded-pulse 6s ease-in-out infinite;
+}
+@keyframes bonded-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Ancient: deep amber patina glow */
+.aging-ancient-glow {
+  background: radial-gradient(ellipse at 50% 40%, rgba(255, 160, 40, 0.12) 0%, rgba(180, 100, 20, 0.04) 50%, transparent 75%);
+  animation: ancient-pulse 8s ease-in-out infinite;
+}
+@keyframes ancient-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Parallel: Silver — clean light sweep */
+.silver-effect {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(220,220,220,0.12) 45%,
+    rgba(255,255,255,0.18) 50%,
+    rgba(220,220,220,0.12) 55%,
+    transparent 60%
+  );
+  background-size: 250% 100%;
+  animation: silver-sweep 3s ease-in-out infinite;
+}
+@keyframes silver-sweep {
+  0% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
+}
+
+/* Parallel: Gold — warm sweep + ambient glow */
+.gold-effect {
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(255,200,0,0.08) 42%,
+    rgba(255,215,0,0.22) 50%,
+    rgba(255,200,0,0.08) 58%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  animation: gold-sweep 4s ease-in-out infinite;
+}
+.gold-ambient {
+  background: radial-gradient(ellipse at 30% 20%, rgba(255,215,0,0.06), transparent 70%);
+}
+@keyframes gold-sweep {
+  0% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
+}
+
+/* Parallel: Holographic — rainbow shift + prismatic lines */
 .holo-effect {
   background: linear-gradient(
     125deg,
-    rgba(255, 0, 128, 0.15) 0%,
-    rgba(0, 255, 128, 0.1) 15%,
-    rgba(128, 0, 255, 0.15) 30%,
-    rgba(255, 128, 0, 0.1) 45%,
-    rgba(0, 128, 255, 0.15) 60%,
-    rgba(255, 0, 255, 0.1) 75%,
-    rgba(128, 255, 0, 0.15) 90%,
-    rgba(255, 0, 128, 0.15) 100%
+    rgba(255,0,128,0.12) 0%,
+    rgba(0,255,200,0.12) 20%,
+    rgba(100,0,255,0.12) 40%,
+    rgba(255,200,0,0.10) 60%,
+    rgba(0,100,255,0.12) 80%,
+    rgba(255,0,128,0.12) 100%
   );
-  background-size: 300% 300%;
-  animation: holo-shimmer 6s ease-in-out infinite;
+  background-size: 400% 400%;
+  animation: holo-shift 5s ease-in-out infinite;
   mix-blend-mode: screen;
 }
-
-.gold-effect {
-  background: linear-gradient(
+.holo-lines {
+  background: repeating-linear-gradient(
     135deg,
-    rgba(255, 215, 0, 0.05) 0%,
-    rgba(255, 180, 0, 0.18) 25%,
-    rgba(255, 215, 0, 0.05) 50%,
-    rgba(255, 200, 0, 0.15) 75%,
-    rgba(255, 215, 0, 0.05) 100%
+    transparent 0px,
+    rgba(255,255,255,0.03) 1px,
+    transparent 2px,
+    transparent 6px
   );
-  background-size: 200% 200%;
-  animation: shimmer 4s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+@keyframes holo-shift {
+  0% { background-position: 0% 0%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 50% 100%; }
+  75% { background-position: 0% 50%; }
+  100% { background-position: 0% 0%; }
 }
 
-.silver-effect {
-  background: linear-gradient(
-    135deg,
-    rgba(192, 192, 192, 0.05) 0%,
-    rgba(220, 220, 220, 0.14) 25%,
-    rgba(192, 192, 192, 0.05) 50%,
-    rgba(200, 200, 200, 0.12) 75%,
-    rgba(192, 192, 192, 0.05) 100%
-  );
-  background-size: 200% 200%;
-  animation: shimmer 3s ease-in-out infinite;
+/* Parallel: Obsidian — void depth + edge pulse */
+.obsidian-depth {
+  background: radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,0.4) 100%);
 }
+@keyframes obsidian-pulse {
+  0%, 100% { border-color: rgba(99,102,241,0.12); }
+  50% { border-color: rgba(99,102,241,0.28); }
+}
+
+/* Corner accents for rare+ scarcity */
+.corner-accent { position: absolute; pointer-events: none; }
+.corner-accent::before,
+.corner-accent::after { content: ''; position: absolute; }
+.corner-tl { top: 4px; left: 4px; }
+.corner-tl::before { top: 0; left: 0; width: var(--accent-size); height: 2px; background: var(--accent-color); border-radius: 1px; }
+.corner-tl::after { top: 0; left: 0; width: 2px; height: var(--accent-size); background: var(--accent-color); border-radius: 1px; }
+.corner-tr { top: 4px; right: 4px; }
+.corner-tr::before { top: 0; right: 0; width: var(--accent-size); height: 2px; background: var(--accent-color); border-radius: 1px; }
+.corner-tr::after { top: 0; right: 0; width: 2px; height: var(--accent-size); background: var(--accent-color); border-radius: 1px; }
+.corner-bl { bottom: 4px; left: 4px; }
+.corner-bl::before { bottom: 0; left: 0; width: var(--accent-size); height: 2px; background: var(--accent-color); border-radius: 1px; }
+.corner-bl::after { bottom: 0; left: 0; width: 2px; height: var(--accent-size); background: var(--accent-color); border-radius: 1px; }
+.corner-br { bottom: 4px; right: 4px; }
+.corner-br::before { bottom: 0; right: 0; width: var(--accent-size); height: 2px; background: var(--accent-color); border-radius: 1px; }
+.corner-br::after { bottom: 0; right: 0; width: 2px; height: var(--accent-size); background: var(--accent-color); border-radius: 1px; }
 
 .skeleton {
   background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-hover) 50%, var(--color-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
+}
+
+/* Content-visibility for card grids — skip rendering off-screen cards */
+.card-grid-perf {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
 }
 
 /* Selection styling */
@@ -300,6 +449,67 @@ table tbody tr {
 .price-flash-up { animation: price-flash-green 0.6s ease-out; }
 .price-flash-down { animation: price-flash-red 0.6s ease-out; }
 
+/* Ghost card pulsing white border */
+@keyframes ghost-pulse {
+  0%, 100% { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 8px rgba(255,255,255,0.05); }
+  50% { border-color: rgba(255,255,255,0.5); box-shadow: 0 0 20px rgba(255,255,255,0.15); }
+}
+.ghost-sealed-border {
+  animation: ghost-pulse 3s ease-in-out infinite;
+}
+
+/* Ghost card reveal invert flash */
+@keyframes ghost-reveal-flash {
+  0% { filter: invert(1) brightness(2); }
+  40% { filter: invert(1) brightness(1.5); }
+  100% { filter: invert(0) brightness(1); }
+}
+.ghost-reveal-flash {
+  animation: ghost-reveal-flash 400ms ease-out forwards;
+}
+
+/* Mutation halo — breathing glow for long-held battle-tested cards */
+@keyframes mutation-halo {
+  0%, 100% { box-shadow: 0 0 12px rgba(168,85,247,0.15), inset 0 0 8px rgba(168,85,247,0.05); }
+  50% { box-shadow: 0 0 24px rgba(168,85,247,0.3), inset 0 0 16px rgba(168,85,247,0.1); }
+}
+@keyframes mutation-halo-gold {
+  0%, 100% { box-shadow: 0 0 12px rgba(255,215,0,0.15), inset 0 0 8px rgba(255,215,0,0.05); }
+  50% { box-shadow: 0 0 24px rgba(255,215,0,0.3), inset 0 0 16px rgba(255,215,0,0.1); }
+}
+.mutation-halo {
+  animation: mutation-halo 4s ease-in-out infinite;
+}
+.mutation-halo-gold {
+  animation: mutation-halo-gold 4s ease-in-out infinite;
+}
+
+/* Prestige animated gradient border */
+@keyframes prestige-rotate {
+  0% { --prestige-angle: 0deg; }
+  100% { --prestige-angle: 360deg; }
+}
+@property --prestige-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.prestige-border {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.prestige-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--prestige-angle), #ffd700, #ff8c00, #ffd700, #ffaa00, #ffd700);
+  z-index: -1;
+  animation: prestige-rotate 4s linear infinite;
+  opacity: 0.4;
+}
+
 /* Marketplace filter panel backdrop */
 .filter-panel-bg {
   background: linear-gradient(180deg, var(--color-surface) 0%, rgba(18, 20, 31, 0.95) 100%);
@@ -356,4 +566,131 @@ table tbody tr {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Sortable binder card — CSS-only hover/active (replaces Framer Motion whileHover/whileTap) */
+.sortable-binder-card {
+  transition: transform 150ms ease, opacity 150ms ease;
+}
+.sortable-binder-card:hover {
+  transform: scale(1.03) translateY(-4px);
+}
+.sortable-binder-card:active {
+  transform: scale(1.05);
+}
+
+/* Drag source placeholder — shows where the card came from */
+.drag-source-placeholder {
+  outline: 2px dashed rgba(129, 140, 248, 0.3);
+  outline-offset: -2px;
+  border-radius: 0.75rem;
+}
+
+/* During drag — promote all binder cards to compositor layers */
+.binder-grid-dragging .binder-card,
+.binder-grid-dragging .sortable-binder-card {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+/* When not dragging — reclaim GPU memory */
+.binder-card {
+  will-change: auto;
+}
+/* Disable hover effects during drag to prevent re-layout */
+.binder-grid-dragging .sortable-binder-card:hover {
+  transform: translateZ(0);
+}
+
+/* ======= STADIUM AMBIENT ANIMATIONS ======= */
+/* Each animation class is applied to the ambient overlay div on the play page */
+/* driven by stadium-themes.ts config. Purely cosmetic, CSS-only, GPU-friendly. */
+
+/* Olympus Arena: slow golden shimmer expanding from top */
+@keyframes olympus-shimmer {
+  0%, 100% { opacity: 0.6; background-position: 50% -10%; }
+  50% { opacity: 1; background-position: 50% 5%; }
+}
+.stadium-olympus {
+  background: radial-gradient(ellipse at 50% -10%, rgba(251,191,36,0.08) 0%, transparent 50%);
+  animation: olympus-shimmer 8s ease-in-out infinite;
+}
+
+/* Asgard: aurora borealis — dual-tone shifting glow */
+@keyframes asgard-aurora {
+  0%, 100% {
+    background: radial-gradient(ellipse at 30% -10%, rgba(56,189,248,0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% -10%, rgba(20,184,166,0.04) 0%, transparent 40%);
+  }
+  50% {
+    background: radial-gradient(ellipse at 60% -10%, rgba(56,189,248,0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 40% -10%, rgba(20,184,166,0.07) 0%, transparent 40%);
+  }
+}
+.stadium-asgard {
+  animation: asgard-aurora 10s ease-in-out infinite;
+}
+
+/* Baker Street: fog drift — horizontal translate on blurred overlay */
+@keyframes baker-fog {
+  0%, 100% { opacity: 0.5; transform: translateX(0); }
+  50% { opacity: 0.8; transform: translateX(15px); }
+}
+.stadium-baker {
+  background: radial-gradient(ellipse at 50% 40%, rgba(217,178,119,0.05) 0%, transparent 50%);
+  filter: blur(40px);
+  animation: baker-fog 12s ease-in-out infinite;
+}
+
+/* Wonderland: floating sparkle — scale + opacity dance */
+@keyframes wonderland-float {
+  0%, 100% {
+    opacity: 0.5;
+    background: radial-gradient(ellipse at 30% 0%, rgba(168,85,247,0.05) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 0%, rgba(236,72,153,0.03) 0%, transparent 40%);
+  }
+  33% {
+    opacity: 0.8;
+    background: radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.07) 0%, transparent 40%),
+                radial-gradient(ellipse at 30% 0%, rgba(236,72,153,0.05) 0%, transparent 40%);
+  }
+  66% {
+    opacity: 0.6;
+    background: radial-gradient(ellipse at 60% 0%, rgba(168,85,247,0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 0%, rgba(236,72,153,0.06) 0%, transparent 40%);
+  }
+}
+.stadium-wonderland {
+  animation: wonderland-float 9s ease-in-out infinite;
+}
+
+/* Horror Hollow: slow red pulse — breathing darkness */
+@keyframes horror-breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.stadium-horror {
+  background: radial-gradient(ellipse at 50% 20%, rgba(239,68,68,0.04) 0%, transparent 50%);
+  animation: horror-breathe 6s ease-in-out infinite;
+}
+
+/* Fairy Tale Field: gentle green sparkle drift */
+@keyframes fairy-drift {
+  0%, 100% { opacity: 0.5; transform: translateY(0); }
+  50% { opacity: 0.9; transform: translateY(-8px); }
+}
+.stadium-fairy {
+  background: radial-gradient(ellipse at 50% 0%, rgba(52,211,153,0.05) 0%, transparent 50%);
+  animation: fairy-drift 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stadium-olympus,
+  .stadium-asgard,
+  .stadium-baker,
+  .stadium-wonderland,
+  .stadium-horror,
+  .stadium-fairy {
+    animation: none;
+  }
 }

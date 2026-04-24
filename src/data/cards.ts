@@ -112,6 +112,28 @@ const SET_CHARACTERS = {
     { character: 'Pandora', moment: 'Opening the Box', loreText: '"Only Hope remained there in an unbreakable home within, under the rim of the great jar."', symbol: '📦', gradientFrom: '#0a0a2e', gradientTo: '#06061a' },
     { character: 'Odysseus', moment: 'The Bow of Odysseus', loreText: '"And Odysseus of many wiles stripped him of his rags and sprang to the great threshold with his bow and his quiver full of arrows."', symbol: '🏹', gradientFrom: '#1a2e14', gradientTo: '#101a0c' },
   ],
+  'asgard': [
+    { character: 'Odin', moment: 'Hanging on Yggdrasil', loreText: '"I know that I hung on the windswept tree for nine full nights, wounded by a spear and offered to Odin — myself to myself."', symbol: '🌳', gradientFrom: '#0d1a2e', gradientTo: '#060d1a' },
+    { character: 'Odin', moment: 'The Sacrifice of the Eye', loreText: '"Odin gave his eye to the well of Mimir, and every morning he drinks wisdom from the well — that is the price of sight beyond sight."', symbol: '👁️', gradientFrom: '#1a0d2e', gradientTo: '#0d061a' },
+    { character: 'Thor', moment: 'Battle with the Midgard Serpent', loreText: '"The son of Odin goes nine paces back, when felled by the serpent, fearless of fame."', symbol: '⚡', gradientFrom: '#2e1a0a', gradientTo: '#1a0d06' },
+    { character: 'Loki', moment: 'Bound Beneath the Mountain', loreText: '"There shall Loki lie until Ragnarok. And the venom drips, and Sigyn holds the bowl."', symbol: '🐍', gradientFrom: '#1a1a0a', gradientTo: '#0d0d06' },
+    { character: 'Freya', moment: 'Weeping Tears of Gold', loreText: '"She wept, and her tears were red gold. She searched all the worlds for Od, and to unknown peoples she gave strange names."', symbol: '✨', gradientFrom: '#2e200a', gradientTo: '#1a130a' },
+    { character: 'Fenrir', moment: 'The Breaking of Gleipnir', loreText: '"The wolf shall gape wide open — his upper jaw shall reach to heaven and his lower to earth. He would gape still more if there were room."', symbol: '🐺', gradientFrom: '#1a1a1a', gradientTo: '#0a0a0a' },
+    { character: 'Heimdall', moment: 'Sounding the Gjallarhorn', loreText: '"Heimdall blows his horn, hard blows the horn. Odin speaks with Mimir\'s head."', symbol: '📯', gradientFrom: '#0a1a2e', gradientTo: '#060d1a' },
+    { character: 'Baldur', moment: 'Struck by the Mistletoe', loreText: '"All things shall weep for Baldur — living and lifeless — if they weep for him at all. Only one refused."', symbol: '🌿', gradientFrom: '#1a2e1a', gradientTo: '#0d1a0d' },
+    { character: 'Hel', moment: 'Ruling Niflheim', loreText: '"To Hel he gave authority over nine worlds, so that she must administer board and lodging to those sent to her: those who die of illness or old age."', symbol: '💀', gradientFrom: '#0a0a1a', gradientTo: '#060614' },
+    { character: 'Jormungandr', moment: 'Releasing the World from Its Coils', loreText: '"The Midgard Serpent shall blow so much venom that all the sky and sea shall be spattered with it; it is terrible."', symbol: '🌊', gradientFrom: '#0a1a1a', gradientTo: '#06100d' },
+    { character: 'Tyr', moment: 'The Binding of Fenrir', loreText: '"He placed his hand in the wolf\'s mouth as a pledge. When Fenrir saw he was bound, he bit the hand off at the wrist — it is called the wolf\'s joint."', symbol: '⚔️', gradientFrom: '#2e140a', gradientTo: '#1a0c06' },
+    { character: 'Sigurd', moment: 'Slaying Fafnir', loreText: '"Dig a trench and sit in it. When the serpent creeps to water, stab him in the heart from below."', symbol: '🗡️', gradientFrom: '#14200a', gradientTo: '#0c1406' },
+    { character: 'Brynhildr', moment: 'Waking on the Shield-Fortress', loreText: '"He cut the corslet from her; she awoke. She sat up and looked at Sigurd, and said: Who stripped the byrnie from me? Who broke my sleep?"', symbol: '🛡️', gradientFrom: '#2e0a14', gradientTo: '#1a060c' },
+    { character: 'Ragnar', moment: 'In the Pit of Serpents', loreText: '"How the young pigs would grunt if they knew what the old boar suffers — it laughs the mouth of Lodbrók."', symbol: '🐉', gradientFrom: '#2e1a0a', gradientTo: '#1a1006' },
+    { character: 'The Norns', moment: 'Weaving Fate at Urd\'s Well', loreText: '"There they twisted the thread of fate. In the east and west they hid the ends. There the lord of lands was to have his portion."', symbol: '🧵', gradientFrom: '#0a1428', gradientTo: '#060c1a' },
+    { character: 'Huginn & Muninn', moment: 'Returning at Dawn to Odin', loreText: '"Huginn and Muninn fly each day over the spacious earth. I fear for Huginn, that he come not back, yet more anxious am I for Muninn."', symbol: '🐦‍⬛', gradientFrom: '#14141a', gradientTo: '#0a0a10' },
+    { character: 'Sif', moment: 'The Shearing of Her Hair', loreText: '"Loki had cut off all of Sif\'s hair for mischief. When Thor found out, he seized Loki and would have broken every bone in his body."', symbol: '🌾', gradientFrom: '#2e2414', gradientTo: '#1a180c' },
+    { character: 'Idun', moment: 'Stolen by Thiazi', loreText: '"Idun was carried away to Jotunheim in the eagle\'s talons. The gods grew old and grey without her apples, and their powers began to wane."', symbol: '🍎', gradientFrom: '#0a2e14', gradientTo: '#061a0c' },
+    { character: 'Skadi', moment: 'Choosing a Husband by His Feet', loreText: '"She chose the one with the finest feet, thinking it must be Baldur — but it was Njord. She had wanted a god of mountains; she got a god of the sea."', symbol: '🏔️', gradientFrom: '#0a1e2e', gradientTo: '#06101a' },
+    { character: 'Surtr', moment: 'Engulfing the World in Fire', loreText: '"Surtr fares from the south with the scourge of branches — the sun of the slaughter-gods shines from his sword. Rock falls, and fiends rend the heavens."', symbol: '🔥', gradientFrom: '#2e0a0a', gradientTo: '#1a0606' },
+  ],
 };
 
 const scarcities: Scarcity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
@@ -162,6 +184,7 @@ export function generateCards(): Card[] {
       'wonderland': 'Wonderland Descending',
       'gothic-horror': 'The Castle of Otranto',
       'olympus': 'Olympus Rising',
+      'asgard': 'Asgard Unleashed',
     }[setSlug]!;
 
     for (let i = 0; i < characters.length; i++) {
@@ -228,3 +251,182 @@ export function generateCards(): Card[] {
 export const ALL_CARDS = generateCards();
 export const LISTED_CARDS = ALL_CARDS.filter(c => c.listed);
 // OWNED_CARDS no longer static — use store.getOwnedCards() instead
+
+// ===== Ghost Cards — Hidden variant legendaries =====
+// NOT in ALL_CARDS, not in marketplace, not in guide
+// Only obtainable through secret pull conditions in generatePack()
+export const GHOST_CARDS: Card[] = [
+  {
+    id: 'ghost-void-odin',
+    name: 'Odin — The Void Between Worlds',
+    character: 'Odin',
+    set: 'Asgard Unleashed',
+    setSlug: 'asgard',
+    moment: 'The Void Between Worlds',
+    scarcity: 'legendary',
+    parallel: 'obsidian',
+    serialNumber: 1,
+    maxSerial: 3,
+    loreText: '"In the space between Yggdrasil\'s branches, where light has never reached, the All-Father saw what no eye was meant to see. He returned changed — his missing eye now a window into the void itself."',
+    price: 0,
+    listed: false,
+    owned: false,
+    gradientFrom: '#000000',
+    gradientTo: '#0a0a2e',
+    symbol: '◐',
+  },
+  {
+    id: 'ghost-mirror-sherlock',
+    name: 'Sherlock Holmes — The Impossible Deduction',
+    character: 'Sherlock Holmes',
+    set: 'Baker Street Files',
+    setSlug: 'baker-street',
+    moment: 'The Impossible Deduction',
+    scarcity: 'legendary',
+    parallel: 'holographic',
+    serialNumber: 1,
+    maxSerial: 3,
+    loreText: '"There exists one case — only one — that Holmes refused to speak of. Not because it was unsolvable, but because the solution revealed something about the nature of observation itself that no rational mind should accept."',
+    price: 0,
+    listed: false,
+    owned: false,
+    gradientFrom: '#0a0a0a',
+    gradientTo: '#1a1a3e',
+    symbol: '◈',
+  },
+  {
+    id: 'ghost-crimson-dracula',
+    name: 'Dracula — The First Night',
+    character: 'Dracula',
+    set: 'The Castle of Otranto',
+    setSlug: 'gothic-horror',
+    moment: 'The First Night',
+    scarcity: 'legendary',
+    parallel: 'obsidian',
+    serialNumber: 1,
+    maxSerial: 3,
+    loreText: '"Before the castle, before the title, before the centuries of hunger — there was a man who made a choice in a room with no windows. What he chose cannot be named, only inherited."',
+    price: 0,
+    listed: false,
+    owned: false,
+    gradientFrom: '#1a0000',
+    gradientTo: '#000a0a',
+    symbol: '☽',
+  },
+  {
+    id: 'ghost-inverse-zeus',
+    name: 'Zeus — The Unthrown Lightning',
+    character: 'Zeus',
+    set: 'Olympus Rising',
+    setSlug: 'olympus',
+    moment: 'The Unthrown Lightning',
+    scarcity: 'legendary',
+    parallel: 'holographic',
+    serialNumber: 1,
+    maxSerial: 3,
+    loreText: '"There is one bolt that Zeus forged and never threw. It sits in a chamber beneath Olympus that even the gods pretend does not exist. It is the bolt that could unmake what was made. Some say he keeps it as mercy. Others say as threat."',
+    price: 0,
+    listed: false,
+    owned: false,
+    gradientFrom: '#0a0a00',
+    gradientTo: '#00001a',
+    symbol: '⊘',
+  },
+  {
+    id: 'ghost-forgotten-alice',
+    name: 'Alice — The Door She Didn\'t Open',
+    character: 'Alice',
+    set: 'Wonderland Descending',
+    setSlug: 'wonderland',
+    moment: 'The Door She Didn\'t Open',
+    scarcity: 'legendary',
+    parallel: 'obsidian',
+    serialNumber: 1,
+    maxSerial: 3,
+    loreText: '"In every telling, Alice chooses one door. But there is a door in Wonderland that is not small and not large, not locked and not open. It is the door that Alice walked past without seeing. On the other side is the story that was never told."',
+    price: 0,
+    listed: false,
+    owned: false,
+    gradientFrom: '#000a1a',
+    gradientTo: '#0a0000',
+    symbol: '◇',
+  },
+  {
+    id: 'ghost-true-queen',
+    name: 'Snow White — The True Queen',
+    character: 'Snow White',
+    set: 'The Enchanted Kingdom',
+    setSlug: 'enchanted-kingdom',
+    moment: 'The True Queen',
+    scarcity: 'legendary',
+    parallel: 'gold',
+    serialNumber: 1,
+    maxSerial: 3,
+    loreText: '"The mirror answered truthfully every time it was asked. But there is a question that was never asked — and the answer to the unasked question is the reason Snow White\'s skin is white as snow, her lips red as blood, and her hair black as ebony."',
+    price: 0,
+    listed: false,
+    owned: false,
+    gradientFrom: '#0a000a',
+    gradientTo: '#00000a',
+    symbol: '⟡',
+  },
+];
+
+export function getGhostCardById(id: string): Card | undefined {
+  return GHOST_CARDS.find(c => c.id === id);
+}
+
+// Ghost Card Whispers: each ghost reveals a cryptic hint for a related ghost
+export interface GhostWhisper {
+  fromGhostId: string;
+  toGhostId: string;
+  hint: string;
+  conditionHint: string; // vague hint about how to find the target ghost
+}
+
+export const GHOST_WHISPERS: GhostWhisper[] = [
+  {
+    fromGhostId: 'ghost-void-odin',
+    toGhostId: 'ghost-inverse-zeus',
+    hint: 'In the void, the All-Father glimpsed another throne — a lightning bolt that refuses to fall.',
+    conditionHint: 'The sky-king hides his shame beneath the mountain',
+  },
+  {
+    fromGhostId: 'ghost-mirror-sherlock',
+    toGhostId: 'ghost-crimson-dracula',
+    hint: 'The impossible deduction led to a castle where the mirrors show no reflection.',
+    conditionHint: 'Legends know one who never dies',
+  },
+  {
+    fromGhostId: 'ghost-crimson-dracula',
+    toGhostId: 'ghost-true-queen',
+    hint: 'The first night whispered of another who looked into a mirror and saw not beauty, but a crown.',
+    conditionHint: 'Complete an enchanted collection to see the truth',
+  },
+  {
+    fromGhostId: 'ghost-inverse-zeus',
+    toGhostId: 'ghost-void-odin',
+    hint: 'The unthrown bolt once resonated with a distant hum — a one-eyed god staring into the dark between branches.',
+    conditionHint: 'The void opens on the thirteenth attempt',
+  },
+  {
+    fromGhostId: 'ghost-forgotten-alice',
+    toGhostId: 'ghost-mirror-sherlock',
+    hint: 'Behind the door she never opened was a room where every deduction led to the same impossible conclusion.',
+    conditionHint: 'A weekly pattern hides the detective\'s secret',
+  },
+  {
+    fromGhostId: 'ghost-true-queen',
+    toGhostId: 'ghost-forgotten-alice',
+    hint: 'The true queen\'s mirror showed a girl falling — not down, but sideways through a door that shouldn\'t exist.',
+    conditionHint: 'Devotion across seven days reveals the forgotten',
+  },
+];
+
+export function getWhispersForGhost(ghostId: string): GhostWhisper[] {
+  return GHOST_WHISPERS.filter(w => w.fromGhostId === ghostId);
+}
+
+export function isGhostCard(cardId: string): boolean {
+  return cardId.startsWith('ghost-');
+}

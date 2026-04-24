@@ -5,8 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { TRIVIA_QUESTIONS, TriviaQuestion } from '@/data/trivia';
 import { saveTriviaRecord } from '@/lib/store';
+import { getReferralLink } from '@/lib/referral';
+import { encodeSocialChallenge } from '@/lib/store';
 import { ALL_CARDS } from '@/data/cards';
-import { SCARCITY_CONFIG } from '@/data/types';
+import { SCARCITY_CONFIG, Achievement } from '@/data/types';
+import { checkAchievements, getAchievementById } from '@/lib/achievements';
+import AchievementCelebration from '@/components/AchievementCelebration';
 
 type Phase = 'intro' | 'question' | 'answered' | 'results';
 
@@ -48,6 +52,22 @@ export default function TriviaPage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(Date.now());
   const [multiplier, setMultiplier] = useState(1);
+  const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  // Check achievements when trivia results are shown
+  useEffect(() => {
+    if (phase === 'results') {
+      const newIds = checkAchievements();
+      if (newIds.length > 0) {
+        const achievements = newIds
+          .map(id => getAchievementById(id))
+          .filter(Boolean) as Achievement[];
+        setCelebrationQueue(achievements);
+        setTimeout(() => setShowCelebration(true), 1200);
+      }
+    }
+  }, [phase]);
 
   // Prepare question set
   const startGame = useCallback(() => {
@@ -247,7 +267,7 @@ export default function TriviaPage() {
             {score > 3000 ? '🏆' : score > 1500 ? '🌟' : '📚'}
           </motion.span>
 
-          <h1 className="text-3xl font-bold mb-1">
+          <h1 className="type-display mb-1">
             {score > 3000 ? 'Lore Master!' : score > 1500 ? 'Well Played!' : 'Keep Learning!'}
           </h1>
 
@@ -304,7 +324,7 @@ export default function TriviaPage() {
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
             <motion.button
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 text-white font-bold text-sm"
               whileTap={{ scale: 0.95 }}
@@ -314,11 +334,69 @@ export default function TriviaPage() {
             >
               Play Again
             </motion.button>
+            <button
+              onClick={() => {
+                const stars = '⭐'.repeat(Math.min(5, Math.floor(score / 1000)));
+                const text = `🧠 LoreVault Trivia\n📊 ${score.toLocaleString()} pts | ${maxStreak} streak\n${stars}\n\nCan you beat my score?`;
+                const url = `${window.location.origin}/games/trivia`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
+              }}
+              className="px-5 py-3 rounded-xl bg-[#1da1f2]/10 border border-[#1da1f2]/20 text-[#1da1f2] text-sm font-bold"
+            >
+              Share Score
+            </button>
             <Link href="/games" className="px-6 py-3 rounded-xl bg-surface border border-border text-sm font-medium flex items-center">
               Games Hub
             </Link>
           </div>
+
+          {/* Post-achievement social actions */}
+          {score > 2000 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+              className="mt-6 p-3 rounded-xl bg-accent/5 border border-accent/15 text-center max-w-sm mx-auto"
+            >
+              <div className="text-[10px] text-muted mb-2">Challenge a friend to beat your score</div>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => {
+                    const challenge = encodeSocialChallenge('trivia', score);
+                    const url = `${window.location.origin}/games/trivia?challenge=${challenge}`;
+                    navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20 text-[10px] font-bold text-accent"
+                >
+                  Copy Challenge Link
+                </button>
+                <button
+                  onClick={() => {
+                    const url = getReferralLink();
+                    navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-surface border border-border text-[10px] font-bold text-muted"
+                >
+                  Invite to LoreVault
+                </button>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
+
+        {/* Achievement celebration */}
+        <AchievementCelebration
+          visible={showCelebration && celebrationQueue.length > 0}
+          achievement={celebrationQueue[0] ?? null}
+          onDone={() => {
+            if (celebrationQueue.length <= 1) {
+              setShowCelebration(false);
+              setCelebrationQueue([]);
+            } else {
+              setCelebrationQueue(prev => prev.slice(1));
+            }
+          }}
+        />
       </div>
     );
   }

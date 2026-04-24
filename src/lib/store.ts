@@ -1,7 +1,8 @@
 'use client';
 
-import { Card, BattleRecord, TriviaRecord, GameStats, SavedDeck } from '@/data/types';
-import { ALL_CARDS } from '@/data/cards';
+import { Card, CardEvent, BattleRecord, TriviaRecord, GameStats, SavedDeck, CollectorLevel, XPSource, XP_VALUES, getLevelFromXP, getXPForLevel, getTierForLevel, EarnedAchievement } from '@/data/types';
+import { ALL_CARDS, GHOST_CARDS, isGhostCard } from '@/data/cards';
+import { recordMonthlyXP } from '@/lib/vip';
 
 // Local storage keys
 const KEYS = {
@@ -15,6 +16,9 @@ const KEYS = {
   triviaRecords: 'lorevault_trivia',
   gameStats: 'lorevault_game_stats',
   savedDecks: 'lorevault_decks',
+  achievements: 'lorevault_achievements',
+  seasonProgress: 'lorevault_season_progress',
+  dailyMissions: 'lorevault_daily_missions',
 };
 
 function getItem<T>(key: string, fallback: T): T {
@@ -57,14 +61,160 @@ export function getOwnedCardIds(): string[] {
 
 export function getOwnedCards(): Card[] {
   const ids = new Set(getOwnedCardIds());
-  return ALL_CARDS.filter(c => ids.has(c.id));
+  return [...ALL_CARDS, ...GHOST_CARDS].filter(c => ids.has(c.id));
 }
 
 export function addOwnedCards(cardIds: string[]) {
   const current = getOwnedCardIds();
   const merged = [...new Set([...current, ...cardIds])];
   setItem(KEYS.ownedCardIds, merged);
+  // Initialize collectibility metadata for new cards
+  const meta = getCardMeta();
+  const now = new Date().toISOString();
+  for (const id of cardIds) {
+    if (!meta[id]) {
+      meta[id] = {
+        sealed: true,
+        acquiredAt: now,
+        battleCount: 0,
+        tradeCount: 0,
+        history: [{ type: 'pulled', date: now }],
+      };
+    }
+  }
+  setItem('lorevault_card_meta', meta);
   return merged;
+}
+
+export function removeOwnedCards(cardIds: string[]): string[] {
+  const current = getOwnedCardIds();
+  const toRemove = new Set(cardIds);
+  const remaining = current.filter(id => !toRemove.has(id));
+  setItem(KEYS.ownedCardIds, remaining);
+  return remaining;
+}
+
+// Card collectibility metadata (sealed state, history, aging)
+type CardMeta = Record<string, {
+  sealed: boolean;
+  acquiredAt: string;
+  battleCount: number;
+  tradeCount: number;
+  history: CardEvent[];
+}>;
+
+export function getCardMeta(): CardMeta {
+  return getItem<CardMeta>('lorevault_card_meta', {});
+}
+
+export function revealCard(cardId: string): void {
+  const meta = getCardMeta();
+  if (meta[cardId]) {
+    meta[cardId].sealed = false;
+    meta[cardId].history.push({ type: 'revealed', date: new Date().toISOString() });
+    setItem('lorevault_card_meta', meta);
+  }
+}
+
+export function recordBattle(cardId: string, won: boolean): void {
+  const meta = getCardMeta();
+  if (meta[cardId]) {
+    meta[cardId].battleCount++;
+    meta[cardId].history.push({
+      type: won ? 'battle_win' : 'battle_loss',
+      date: new Date().toISOString(),
+    });
+    setItem('lorevault_card_meta', meta);
+  }
+}
+
+export function getCardAge(cardId: string): number {
+  const meta = getCardMeta();
+  if (!meta[cardId]?.acquiredAt) return 0;
+  return Math.floor((Date.now() - new Date(meta[cardId].acquiredAt).getTime()) / 86400000);
+}
+
+export type AgingBattleTier = 'pristine' | 'seasoned' | 'battle-worn' | 'veteran';
+export type AgingTimeTier = 'bonded' | 'ancient';
+
+export interface AgingTiers {
+  battle: AgingBattleTier | null;
+  time: AgingTimeTier | null;
+}
+
+export function getAgingTiers(cardId: string): AgingTiers {
+  const meta = getCardMeta();
+  const m = meta[cardId];
+  if (!m) return { battle: null, time: null };
+
+  const ageDays = m.acquiredAt
+    ? Math.floor((Date.now() - new Date(m.acquiredAt).getTime()) / 86400000)
+    : 0;
+  const battles = m.battleCount ?? 0;
+  const trades = (m.history?.filter((e: { type: string }) => e.type === 'traded') ?? []).length;
+
+  let battle: AgingBattleTier | null = null;
+  if (battles >= 100 && ageDays >= 60) battle = 'veteran';
+  else if (battles >= 50) battle = 'battle-worn';
+  else if (battles >= 10) battle = 'seasoned';
+  else if (battles === 0 && trades === 0 && ageDays < 7) battle = 'pristine';
+
+  let time: AgingTimeTier | null = null;
+  if (ageDays >= 90) time = 'ancient';
+  else if (ageDays >= 30) time = 'bonded';
+
+  return { battle, time };
+}
+
+export interface OriginBadge {
+  id: string;
+  label: string;
+  icon: string;
+  color: string;
+}
+
+export function getOriginBadge(cardId: string): OriginBadge | null {
+  const meta = getCardMeta();
+  const m = meta[cardId];
+  if (!m) return null;
+
+  // Compute first-ever acquisition timestamp across all cards
+  const allDates = Object.values(meta)
+    .map(c => c.acquiredAt)
+    .filter(Boolean)
+    .sort();
+  const firstEverDate = allDates[0];
+
+  // Genesis: card was pulled in the very first pack opening (within 60s of first-ever card)
+  if (firstEverDate && m.acquiredAt) {
+    const diff = Math.abs(new Date(m.acquiredAt).getTime() - new Date(firstEverDate).getTime());
+    if (diff < 60000) {
+      return { id: 'genesis', label: 'Genesis', icon: '✦', color: '#ffd700' };
+    }
+  }
+
+  // OG: among the first 10 cards ever acquired
+  if (m.acquiredAt && allDates.indexOf(m.acquiredAt) < 10) {
+    return { id: 'og', label: 'OG', icon: '⚡', color: '#f59e0b' };
+  }
+
+  // Veteran: aging tier veteran
+  const tiers = getAgingTiers(cardId);
+  if (tiers.battle === 'veteran') {
+    return { id: 'veteran', label: 'Veteran', icon: '🏛', color: '#b8860b' };
+  }
+
+  // Pristine: aging tier pristine
+  if (tiers.battle === 'pristine') {
+    return { id: 'pristine', label: 'Pristine', icon: '✦', color: '#e0e7ff' };
+  }
+
+  return null;
+}
+
+export function isCardSealed(cardId: string): boolean {
+  const meta = getCardMeta();
+  return meta[cardId]?.sealed ?? false;
 }
 
 export function getShowcaseIds(): string[] {
@@ -106,6 +256,7 @@ export function resetAll() {
   if (typeof window === 'undefined') return;
   Object.values(KEYS).forEach(key => localStorage.removeItem(key));
   localStorage.removeItem('lorevault_onboarding');
+  localStorage.removeItem('lorevault_vip_monthly');
 }
 
 export function recordVisit() {
@@ -165,6 +316,116 @@ export function generateFirstPack(): Card[] {
   drawn.sort((a, b) => scarcityOrder[a.scarcity] - scarcityOrder[b.scarcity]);
 
   return drawn;
+}
+
+// ===== Collector Level System =====
+
+export function getCollectorLevel(): CollectorLevel {
+  const xp = getXP();
+  const level = getLevelFromXP(xp);
+  const tier = getTierForLevel(level);
+  const xpForCurrent = getXPForLevel(level);
+  const xpForNext = getXPForLevel(level + 1);
+  const progressPercent = xpForNext > xpForCurrent
+    ? Math.min(100, Math.round(((xp - xpForCurrent) / (xpForNext - xpForCurrent)) * 100))
+    : 100;
+
+  return {
+    level,
+    tier,
+    currentXP: xp,
+    xpForCurrentLevel: xpForCurrent,
+    xpForNextLevel: xpForNext,
+    progressPercent,
+  };
+}
+
+export function getCollectorXP(): number {
+  return getXP();
+}
+
+export function addCollectorXP(amount: number, source: XPSource): { previousLevel: number; newLevel: number; xpAdded: number } {
+  const prevXP = getXP();
+  const prevLevel = getLevelFromXP(prevXP);
+  const xpToAdd = amount || XP_VALUES[source];
+  addXP(xpToAdd);
+  addPassXP(xpToAdd);
+  recordMonthlyXP(xpToAdd);
+  const newXP = prevXP + xpToAdd;
+  const newLevel = getLevelFromXP(newXP);
+  return { previousLevel: prevLevel, newLevel, xpAdded: xpToAdd };
+}
+
+// ===== Achievement Storage =====
+
+export function getEarnedAchievements(): EarnedAchievement[] {
+  return getItem<EarnedAchievement[]>(KEYS.achievements, []);
+}
+
+export function earnAchievement(achievementId: string): boolean {
+  const earned = getEarnedAchievements();
+  if (earned.some(a => a.achievementId === achievementId)) return false;
+  earned.push({ achievementId, earnedAt: new Date().toISOString() });
+  setItem(KEYS.achievements, earned);
+  return true;
+}
+
+export function hasAchievement(achievementId: string): boolean {
+  return getEarnedAchievements().some(a => a.achievementId === achievementId);
+}
+
+// ===== Season / Battle Pass =====
+
+export function getSeasonTier(): number {
+  return getItem<number>(KEYS.seasonProgress, 0);
+}
+
+export function advanceSeasonTier(amount: number = 1): number {
+  const current = getSeasonTier();
+  const next = Math.min(current + amount, 30);
+  setItem(KEYS.seasonProgress, next);
+  return next;
+}
+
+// ===== Daily Missions =====
+
+export interface DailyMission {
+  id: string;
+  description: string;
+  target: number;
+  progress: number;
+  reward: string;
+  completed: boolean;
+}
+
+export function getDailyMissions(): DailyMission[] {
+  const stored = getItem<{ date: string; missions: DailyMission[] } | null>(KEYS.dailyMissions, null);
+  const today = new Date().toISOString().split('T')[0];
+  if (stored && stored.date === today) return stored.missions;
+
+  // Generate fresh missions each day
+  const missions: DailyMission[] = [
+    { id: 'daily-packs', description: 'Open 2 packs', target: 2, progress: 0, reward: '+1 Season Tier', completed: false },
+    { id: 'daily-battle', description: 'Win a card battle', target: 1, progress: 0, reward: '+1 Season Tier', completed: false },
+    { id: 'daily-trivia', description: 'Score 3+ in trivia', target: 3, progress: 0, reward: '+1 Season Tier', completed: false },
+    { id: 'daily-baseball', description: 'Win a baseball game', target: 1, progress: 0, reward: '+1 Season Tier', completed: false },
+  ];
+  setItem(KEYS.dailyMissions, { date: today, missions });
+  return missions;
+}
+
+export function updateDailyMission(missionId: string, progress: number) {
+  const today = new Date().toISOString().split('T')[0];
+  const stored = getItem<{ date: string; missions: DailyMission[] } | null>(KEYS.dailyMissions, null);
+  if (!stored || stored.date !== today) return;
+  const missions = stored.missions.map(m => {
+    if (m.id === missionId) {
+      const newProgress = Math.min(m.target, progress);
+      return { ...m, progress: newProgress, completed: newProgress >= m.target };
+    }
+    return m;
+  });
+  setItem(KEYS.dailyMissions, { date: today, missions });
 }
 
 // ===== Game State =====
@@ -263,8 +524,149 @@ export function deleteDeck(id: string) {
   setItem(KEYS.savedDecks, decks);
 }
 
+// ===== Population Data =====
+
+export interface PopulationData {
+  totalMinted: number;
+  currentOwners: number;
+  serialTier: 'genesis' | 'low' | 'mid' | 'standard';
+}
+
+// Seeded hash for deterministic per-card population
+function hashCode(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+const POP_RANGES: Record<string, [number, number]> = {
+  legendary: [10, 49],
+  epic: [50, 199],
+  rare: [200, 999],
+  uncommon: [1000, 2999],
+  common: [5000, 9999],
+};
+
+const PARALLEL_DIVISORS: Record<string, number> = {
+  base: 1,
+  silver: 2,
+  gold: 4,
+  holographic: 8,
+  obsidian: 20,
+};
+
+export function getPopulationData(card: { id: string; scarcity: string; parallel: string; serialNumber: number }): PopulationData {
+  const [min, max] = POP_RANGES[card.scarcity] || [1000, 5000];
+  const divisor = PARALLEL_DIVISORS[card.parallel] || 1;
+  const seed = hashCode(card.id);
+  const range = max - min;
+  const basePop = min + (seed % range);
+  const totalMinted = Math.max(Math.floor(basePop / divisor), card.scarcity === 'legendary' ? 5 : 10);
+
+  // currentOwners: 60-90% of totalMinted, seeded
+  const ownerPct = 0.6 + ((seed % 31) / 100);
+  const currentOwners = Math.max(1, Math.floor(totalMinted * ownerPct));
+
+  // Serial tier based on position relative to population
+  let serialTier: PopulationData['serialTier'] = 'standard';
+  if (card.serialNumber === 1) serialTier = 'genesis';
+  else if (card.serialNumber <= 10) serialTier = 'low';
+  else if (card.serialNumber <= Math.floor(totalMinted * 0.1)) serialTier = 'mid';
+
+  return { totalMinted, currentOwners, serialTier };
+}
+
+// ===== Pinned Badges =====
+
+const PINNED_BADGES_KEY = 'lorevault_pinned_badges';
+
+export function getPinnedBadges(): string[] {
+  return getItem<string[]>(PINNED_BADGES_KEY, []);
+}
+
+export function setPinnedBadges(badgeIds: string[]) {
+  setItem(PINNED_BADGES_KEY, badgeIds.slice(0, 3));
+}
+
+export function togglePinnedBadge(badgeId: string): string[] {
+  const current = getPinnedBadges();
+  if (current.includes(badgeId)) {
+    const updated = current.filter(id => id !== badgeId);
+    setPinnedBadges(updated);
+    return updated;
+  }
+  if (current.length >= 3) return current; // max 3
+  const updated = [...current, badgeId];
+  setPinnedBadges(updated);
+  return updated;
+}
+
+// ===== Pack Counter =====
+const PACKS_OPENED_KEY = 'lorevault_packs_opened';
+
+export function getPacksOpened(): number {
+  return getItem<number>(PACKS_OPENED_KEY, 0);
+}
+
+function incrementPacksOpened(): number {
+  const count = getPacksOpened() + 1;
+  setItem(PACKS_OPENED_KEY, count);
+  return count;
+}
+
+// ===== Ghost Card Pull Conditions =====
+import { getForgeHistory } from '@/lib/seasonal-vault';
+
+function checkGhostConditions(): Card | null {
+  const owned = getOwnedCards();
+  const ownedIds = new Set(owned.map(c => c.id));
+  const ownedLegendaries = owned.filter(c => c.scarcity === 'legendary').length;
+  const packsOpened = getPacksOpened();
+  const streak = getStreak();
+
+  // Map of ghost card → condition
+  const conditions: [string, boolean][] = [
+    // Ghost 0: 13th pack opened
+    ['ghost-void-odin', packsOpened === 13],
+    // Ghost 1: owning 5+ legendaries
+    ['ghost-mirror-sherlock', ownedLegendaries >= 5],
+    // Ghost 2: pulling on day-of-week matching set hash
+    ['ghost-crimson-dracula', (() => {
+      const dayHash = Math.abs('gothic-horror'.split('').reduce((h, c) => ((h << 5) - h) + c.charCodeAt(0), 0)) % 7;
+      return new Date().getDay() === dayHash;
+    })()],
+    // Ghost 3: 7-day login streak
+    ['ghost-inverse-zeus', streak >= 7],
+    // Ghost 4: owning all 20 characters from a single set
+    ['ghost-forgotten-alice', (() => {
+      const setCharCounts: Record<string, Set<string>> = {};
+      for (const c of owned) {
+        if (!setCharCounts[c.setSlug]) setCharCounts[c.setSlug] = new Set();
+        setCharCounts[c.setSlug].add(c.character);
+      }
+      return Object.values(setCharCounts).some(chars => chars.size >= 20);
+    })()],
+    // Ghost 5: 3rd forge completed
+    ['ghost-true-queen', getForgeHistory().length >= 3],
+  ];
+
+  // Check each condition — if met AND card not owned AND 15% roll
+  for (const [ghostId, condMet] of conditions) {
+    if (condMet && !ownedIds.has(ghostId) && Math.random() < 0.15) {
+      return GHOST_CARDS.find(c => c.id === ghostId) || null;
+    }
+  }
+
+  return null;
+}
+
 // Generate a pack of cards (weighted by scarcity)
 export function generatePack(setSlug?: string): Card[] {
+  // Increment pack counter
+  incrementPacksOpened();
+
   const pool = setSlug && setSlug !== 'mixed'
     ? ALL_CARDS.filter(c => c.setSlug === setSlug)
     : ALL_CARDS;
@@ -299,9 +701,1080 @@ export function generatePack(setSlug?: string): Card[] {
     }
   }
 
-  // Sort: rarest last (for dramatic reveal)
+  // Ghost card injection — silently check hidden conditions
+  const ghostCard = checkGhostConditions();
+  if (ghostCard) {
+    // Replace the least-rare card (first in the array before sort)
+    drawn[0] = ghostCard;
+  }
+
+  // Sort: rarest last (for dramatic reveal), ghost cards always last
   const scarcityOrder = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
-  drawn.sort((a, b) => scarcityOrder[a.scarcity] - scarcityOrder[b.scarcity]);
+  drawn.sort((a, b) => {
+    const aGhost = isGhostCard(a.id) ? 1 : 0;
+    const bGhost = isGhostCard(b.id) ? 1 : 0;
+    if (aGhost !== bGhost) return aGhost - bGhost;
+    return scarcityOrder[a.scarcity] - scarcityOrder[b.scarcity];
+  });
 
   return drawn;
+}
+
+// ===== Lore Codex =====
+
+import { LORE_GRAPH, LoreNode } from '@/data/lore-graph';
+
+export function getUnlockedLoreNodes(): string[] {
+  const owned = getOwnedCards();
+  const ownedCharacters = new Set(owned.map(c => c.character));
+
+  return LORE_GRAPH
+    .filter(node => node.requiredCharacters.every(ch => ownedCharacters.has(ch)))
+    .map(node => node.id);
+}
+
+export function isLoreNodeUnlocked(nodeId: string): boolean {
+  const node = LORE_GRAPH.find(n => n.id === nodeId);
+  if (!node) return false;
+  const owned = getOwnedCards();
+  const ownedCharacters = new Set(owned.map(c => c.character));
+  return node.requiredCharacters.every(ch => ownedCharacters.has(ch));
+}
+
+export function getCodexCompletionPercent(): number {
+  const unlocked = getUnlockedLoreNodes();
+  return Math.round((unlocked.length / LORE_GRAPH.length) * 100);
+}
+
+export function getLoreNodesForCard(character: string): LoreNode[] {
+  return LORE_GRAPH.filter(node => node.requiredCharacters.includes(character));
+}
+
+// Cascade: nodes adjacent to any unlocked node become "hinted" (visible silhouette + requirements)
+export function getHintedLoreNodes(): string[] {
+  if (typeof window === 'undefined') return [];
+  const unlocked = new Set(getUnlockedLoreNodes());
+  const hinted = new Set<string>();
+
+  for (const node of LORE_GRAPH) {
+    if (unlocked.has(node.id)) {
+      // All connections of an unlocked node become hinted
+      for (const connId of node.connections) {
+        if (!unlocked.has(connId)) {
+          hinted.add(connId);
+        }
+      }
+    }
+  }
+
+  return Array.from(hinted);
+}
+
+// Track newly unlocked lore nodes and fire events
+export function checkLoreUnlocks(): string[] {
+  if (typeof window === 'undefined') return [];
+  const current = getUnlockedLoreNodes();
+  const prevKey = 'lorevault_lore_unlocked';
+  // Seed with current on first write to avoid false "new unlock" events for existing collection
+  const prev: string[] = getItem(prevKey, current);
+  const newUnlocks = current.filter(id => !prev.includes(id));
+
+  if (newUnlocks.length > 0) {
+    setItem(prevKey, current);
+    for (const nodeId of newUnlocks) {
+      const node = LORE_GRAPH.find(n => n.id === nodeId);
+      if (node) {
+        window.dispatchEvent(new CustomEvent('lore-unlock', { detail: { nodeId, title: node.title, secret: !!node.secret } }));
+      }
+    }
+  } else if (!localStorage.getItem(prevKey)) {
+    // First visit — persist baseline so future unlocks are detected correctly
+    setItem(prevKey, current);
+  }
+
+  return newUnlocks;
+}
+
+// ===== Collector Prestige =====
+
+export interface PrestigeState {
+  unlocked: boolean;
+  level: number;
+  unlockedAt: string | null;
+  challengesCompleted: string[];
+}
+
+const PRESTIGE_KEY = 'lorevault_prestige';
+
+export function getPrestigeState(): PrestigeState {
+  return getItem<PrestigeState>(PRESTIGE_KEY, {
+    unlocked: false,
+    level: 0,
+    unlockedAt: null,
+    challengesCompleted: [],
+  });
+}
+
+function setPrestigeState(state: PrestigeState): void {
+  setItem(PRESTIGE_KEY, state);
+}
+
+export function checkPrestigeUnlock(): boolean {
+  const prestige = getPrestigeState();
+  if (prestige.unlocked) return false; // already unlocked
+
+  const earned = getEarnedAchievements();
+  // All non-prestige achievements earned (33 standard + ghost-finder = 34, excluding collector-prestige itself)
+  const allEarned = earned.length >= 34;
+
+  const codexPercent = getCodexCompletionPercent();
+  const codexComplete = codexPercent >= 100;
+
+  const owned = getOwnedCards();
+  const setsBySlug: Record<string, Set<string>> = {};
+  for (const c of owned) {
+    if (!setsBySlug[c.setSlug]) setsBySlug[c.setSlug] = new Set();
+    setsBySlug[c.setSlug].add(c.character);
+  }
+  const setsComplete = Object.values(setsBySlug).filter(chars => chars.size >= 20).length;
+
+  if (allEarned && codexComplete && setsComplete >= 4) {
+    setPrestigeState({
+      unlocked: true,
+      level: 1,
+      unlockedAt: new Date().toISOString(),
+      challengesCompleted: [],
+    });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('prestige-unlock'));
+    }
+    return true;
+  }
+  return false;
+}
+
+export type PrestigeChallenge = {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+};
+
+export const PRESTIGE_CHALLENGES: PrestigeChallenge[] = [
+  { id: 'forge-legendary', name: 'Master Forger', description: 'Forge a Legendary card', icon: '🔨' },
+  { id: 'all-parallels', name: 'Parallel Collector', description: 'Own all 4 parallel types', icon: '◈' },
+  { id: 'ancient-legendary', name: 'Timeless Legend', description: 'Own a Legendary card aged 60+ days', icon: '⏳' },
+  { id: 'ghost-collector', name: 'Phantom Keeper', description: 'Own 3+ Ghost cards', icon: '◐' },
+  { id: 'hall-apex', name: 'Apex Predator', description: 'Reach top 3 on any leaderboard', icon: '👑' },
+  { id: 'max-legacy', name: 'Living Legend', description: 'Own a card with Legacy Score 90+', icon: '✦' },
+];
+
+export function checkPrestigeChallenges(): string[] {
+  const prestige = getPrestigeState();
+  if (!prestige.unlocked) return [];
+
+  const newlyCompleted: string[] = [];
+  const completed = new Set(prestige.challengesCompleted);
+  const owned = getOwnedCards();
+
+  function tryComplete(id: string, condition: boolean) {
+    if (!completed.has(id) && condition) {
+      newlyCompleted.push(id);
+    }
+  }
+
+  // forge-legendary: check forge history for legendary output
+  tryComplete('forge-legendary', (() => {
+    try {
+      const history = JSON.parse(localStorage.getItem('lorevault_forge_history') || '[]');
+      return history.some((h: { outputCardId: string }) => {
+        const card = [...ALL_CARDS, ...GHOST_CARDS].find(c => c.id === h.outputCardId);
+        return card?.scarcity === 'legendary';
+      });
+    } catch { return false; }
+  })());
+
+  // all-parallels: own base + silver + gold + holographic or obsidian
+  const parallels = new Set(owned.map(c => c.parallel));
+  tryComplete('all-parallels', parallels.has('silver') && parallels.has('gold') && (parallels.has('holographic') || parallels.has('obsidian')));
+
+  // ancient-legendary: legendary card aged 60+ days
+  tryComplete('ancient-legendary', (() => {
+    const meta = getCardMeta();
+    return owned.some(c => {
+      if (c.scarcity !== 'legendary') return false;
+      const m = meta[c.id];
+      if (!m?.acquiredAt) return false;
+      const days = Math.floor((Date.now() - new Date(m.acquiredAt).getTime()) / 86400000);
+      return days >= 60;
+    });
+  })());
+
+  // ghost-collector: 3+ ghost cards
+  tryComplete('ghost-collector', owned.filter(c => isGhostCard(c.id)).length >= 3);
+
+  // hall-apex: top 3 leaderboard (check stored rank)
+  tryComplete('hall-apex', (() => {
+    try {
+      const rank = JSON.parse(localStorage.getItem('lorevault_hall_rank') || '0');
+      return rank > 0 && rank <= 3;
+    } catch { return false; }
+  })());
+
+  // max-legacy: legacy score 90+
+  tryComplete('max-legacy', (() => {
+    const meta = getCardMeta();
+    return owned.some(c => {
+      const m = meta[c.id];
+      if (!m) return false;
+      const days = m.acquiredAt ? Math.floor((Date.now() - new Date(m.acquiredAt).getTime()) / 86400000) : 0;
+      const legacy = Math.min(100, Math.floor((m.history?.length || 0) * 3 + days * 0.5 + (m.battleCount || 0) * 0.8));
+      return legacy >= 90;
+    });
+  })());
+
+  if (newlyCompleted.length > 0) {
+    const updated = { ...prestige, challengesCompleted: [...prestige.challengesCompleted, ...newlyCompleted] };
+    updated.level = 1 + updated.challengesCompleted.length;
+    setPrestigeState(updated);
+  }
+
+  return newlyCompleted;
+}
+
+// ===== Parallel Transmute =====
+
+const PARALLEL_ORDER = ['base', 'silver', 'gold', 'holographic', 'obsidian'] as const;
+
+export function getNextParallel(current: string): string | null {
+  const idx = PARALLEL_ORDER.indexOf(current as typeof PARALLEL_ORDER[number]);
+  if (idx === -1 || idx >= PARALLEL_ORDER.length - 1) return null;
+  return PARALLEL_ORDER[idx + 1];
+}
+
+export function canTransmute(cardIds: string[], owned: Card[]): { valid: boolean; reason?: string } {
+  if (cardIds.length !== 3) return { valid: false, reason: 'Select 3 cards' };
+  if (new Set(cardIds).size !== 3) return { valid: false, reason: 'Select 3 different cards' };
+  const cards = cardIds.map(id => owned.find(c => c.id === id)).filter(Boolean) as Card[];
+  if (cards.length !== 3) return { valid: false, reason: 'Cards not found' };
+
+  const character = cards[0].character;
+  const parallel = cards[0].parallel;
+  const scarcity = cards[0].scarcity;
+  if (!cards.every(c => c.character === character)) return { valid: false, reason: 'Must be same character' };
+  if (!cards.every(c => c.parallel === parallel)) return { valid: false, reason: 'Must be same parallel' };
+  if (!cards.every(c => c.scarcity === scarcity)) return { valid: false, reason: 'Must be same scarcity' };
+  if (!getNextParallel(parallel)) return { valid: false, reason: 'Already max parallel' };
+
+  return { valid: true };
+}
+
+export interface TransmuteEntry {
+  id: string;
+  inputCardIds: string[];
+  outputCardId: string;
+  date: string;
+  fromParallel: string;
+  toParallel: string;
+}
+
+export function getTransmuteHistory(): TransmuteEntry[] {
+  return getItem<TransmuteEntry[]>('lorevault_transmute_history', []);
+}
+
+export function addTransmuteEntry(entry: TransmuteEntry): void {
+  const history = getTransmuteHistory();
+  history.unshift(entry);
+  setItem('lorevault_transmute_history', history.slice(0, 20));
+}
+
+// ===== Card Burn =====
+
+export interface BurnEntry {
+  cardId: string;
+  character: string;
+  scarcity: string;
+  xpGained: number;
+  date: string;
+}
+
+export function getBurnHistory(): BurnEntry[] {
+  return getItem<BurnEntry[]>('lorevault_burn_history', []);
+}
+
+export function burnCard(cardId: string): BurnEntry | null {
+  const owned = getOwnedCards();
+  const card = owned.find(c => c.id === cardId);
+  if (!card) return null;
+
+  // XP value: 2× normal pack pull XP based on scarcity
+  const XP_BY_SCARCITY: Record<string, number> = {
+    common: 20,
+    uncommon: 50,
+    rare: 100,
+    epic: 200,
+    legendary: 500,
+  };
+  const xpGained = (XP_BY_SCARCITY[card.scarcity] || 20) * 2;
+
+  // Remove from collection
+  removeOwnedCards([cardId]);
+
+  // Record burn in card meta history
+  const meta = getCardMeta();
+  if (meta[cardId]) {
+    meta[cardId].history.push({
+      type: 'traded' as const,
+      date: new Date().toISOString(),
+      detail: 'burned',
+    });
+    setItem('lorevault_card_meta', meta);
+  }
+
+  // Grant XP
+  addXP(xpGained);
+
+  // Record burn
+  const entry: BurnEntry = {
+    cardId,
+    character: card.character,
+    scarcity: card.scarcity,
+    xpGained,
+    date: new Date().toISOString(),
+  };
+  const history = getBurnHistory();
+  history.unshift(entry);
+  setItem('lorevault_burn_history', history.slice(0, 50));
+
+  return entry;
+}
+
+// ===== Population Decay Visual =====
+
+export function getPopulationDecayTier(card: Card): 'bright' | 'normal' | 'faded' {
+  const popData = getPopulationData(card);
+  if (!popData || card.scarcity === 'common') return 'normal';
+
+  const pct = card.serialNumber / popData.totalMinted;
+  if (pct <= 0.25) return 'bright'; // Low serial — brighter
+  if (pct >= 0.75) return 'faded'; // High serial — desaturated
+  return 'normal';
+}
+
+// ===== Daily Free Pack =====
+
+export function getDailyPackState(): { available: boolean; nextResetMs: number } {
+  if (typeof window === 'undefined') return { available: false, nextResetMs: 0 };
+  const lastClaim = getItem<string>('lorevault_daily_pack', '');
+  const now = new Date();
+  const todayUTC = now.toISOString().slice(0, 10);
+
+  if (lastClaim === todayUTC) {
+    // Already claimed today — compute ms until midnight UTC
+    const tomorrow = new Date(todayUTC);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    return { available: false, nextResetMs: tomorrow.getTime() - now.getTime() };
+  }
+
+  return { available: true, nextResetMs: 0 };
+}
+
+export function claimDailyPack(): boolean {
+  if (typeof window === 'undefined') return false;
+  const todayUTC = new Date().toISOString().slice(0, 10);
+  const lastClaim = getItem<string>('lorevault_daily_pack', '');
+  if (lastClaim === todayUTC) return false;
+
+  setItem('lorevault_daily_pack', todayUTC);
+  return true;
+}
+
+// ===== Daily Mission Progress Helper =====
+
+export function progressDailyMission(missionId: string, amount: number = 1) {
+  // Map generic mission IDs to the existing daily mission IDs
+  const idMap: Record<string, string> = {
+    'open-pack': 'daily-packs',
+    'win-battle': 'daily-battle',
+    'play-trivia': 'daily-trivia',
+    'win-baseball': 'daily-baseball',
+  };
+  const mapped = idMap[missionId] || missionId;
+  const missions = getDailyMissions();
+  const mission = missions.find(m => m.id === mapped);
+  if (mission && !mission.completed) {
+    updateDailyMission(mapped, mission.progress + amount);
+  }
+}
+
+// ===== Login Calendar =====
+
+export interface LoginCalendarState {
+  weekStart: string; // ISO date of the Monday this week started
+  days: boolean[]; // 7 booleans, index 0 = day 1
+  currentDay: number; // 0-6, which day of the streak we're on
+  claimedToday: boolean;
+}
+
+export const LOGIN_REWARDS: { day: number; label: string; icon: string; xp: number }[] = [
+  { day: 1, label: '50 XP', icon: '✨', xp: 50 },
+  { day: 2, label: '100 XP', icon: '⭐', xp: 100 },
+  { day: 3, label: '200 XP', icon: '💫', xp: 200 },
+  { day: 4, label: 'Rare Card', icon: '🃏', xp: 150 },
+  { day: 5, label: '300 XP', icon: '🔥', xp: 300 },
+  { day: 6, label: 'Badge', icon: '🏆', xp: 250 },
+  { day: 7, label: 'Legendary Pack', icon: '👑', xp: 500 },
+];
+
+export function getLoginCalendar(): LoginCalendarState {
+  if (typeof window === 'undefined') return { weekStart: '', days: Array(7).fill(false), currentDay: 0, claimedToday: false };
+  // Ensure streak is current before reading it
+  recordVisit();
+  const todayUTC = new Date().toISOString().slice(0, 10);
+  const streak = getStreak();
+  let state = getItem<LoginCalendarState>('lorevault_login_calendar', {
+    weekStart: todayUTC,
+    days: Array(7).fill(false),
+    currentDay: 0,
+    claimedToday: false,
+  });
+
+  // If streak is 0 or reset, start fresh and persist
+  if (streak === 0 || (streak === 1 && !state.claimedToday)) {
+    state = { weekStart: todayUTC, days: Array(7).fill(false), currentDay: 0, claimedToday: false };
+    setItem('lorevault_login_calendar', state);
+  }
+
+  // Check if already claimed today
+  const lastClaimDate = getItem<string>('lorevault_login_calendar_date', '');
+  if (lastClaimDate === todayUTC) {
+    state.claimedToday = true;
+  } else {
+    state.claimedToday = false;
+  }
+
+  return state;
+}
+
+export function claimLoginDay(): { reward: typeof LOGIN_REWARDS[number]; newState: LoginCalendarState } | null {
+  if (typeof window === 'undefined') return null;
+  const todayUTC = new Date().toISOString().slice(0, 10);
+  const lastClaimDate = getItem<string>('lorevault_login_calendar_date', '');
+  if (lastClaimDate === todayUTC) return null; // Already claimed
+
+  const state = getLoginCalendar();
+  if (state.currentDay === 7) {
+    // Reset calendar for next cycle
+    state.days = Array(7).fill(false);
+    state.currentDay = 0;
+    state.weekStart = todayUTC;
+  }
+
+  const dayIndex = state.currentDay;
+  state.days[dayIndex] = true;
+  state.currentDay = dayIndex + 1;
+  state.claimedToday = true;
+
+  const reward = LOGIN_REWARDS[dayIndex];
+  addXP(reward.xp);
+
+  setItem('lorevault_login_calendar', state);
+  setItem('lorevault_login_calendar_date', todayUTC);
+
+  return { reward, newState: state };
+}
+
+// ===== Monthly Collector Pass =====
+
+export interface CollectorPassTier {
+  tier: number;
+  xpRequired: number;
+  freeReward: { label: string; icon: string };
+  premiumReward?: { label: string; icon: string };
+}
+
+export const COLLECTOR_PASS_TIERS: CollectorPassTier[] = Array.from({ length: 30 }, (_, i) => {
+  const tier = i + 1;
+  const xpRequired = tier * 150; // 150, 300, 450, ... 4500
+  const freeRewards = [
+    { label: '25 XP', icon: '✨' }, { label: '50 XP', icon: '⭐' }, { label: 'Common Card', icon: '🃏' },
+    { label: '75 XP', icon: '💫' }, { label: 'Uncommon Card', icon: '🎴' }, { label: '100 XP', icon: '🔥' },
+    { label: '150 XP', icon: '💎' }, { label: 'Rare Card', icon: '🃏' }, { label: '200 XP', icon: '⚡' },
+    { label: 'Pack Credit', icon: '📦' },
+  ];
+  const premiumRewards = [
+    null, { label: 'Silver Parallel', icon: '🥈' }, null,
+    { label: 'Gold Parallel', icon: '🥇' }, null, { label: 'Exclusive Badge', icon: '🏅' },
+    null, null, { label: 'Holo Parallel', icon: '🌈' }, { label: 'Epic Card', icon: '💜' },
+  ];
+  return {
+    tier,
+    xpRequired,
+    freeReward: freeRewards[(tier - 1) % 10],
+    premiumReward: tier === 30
+      ? { label: 'Legendary Card', icon: '👑' }
+      : premiumRewards[(tier - 1) % 10] || undefined,
+  };
+});
+
+export interface CollectorPassState {
+  monthKey: string; // "2026-04"
+  xpEarned: number;
+  currentTier: number;
+  claimedTiers: number[];
+}
+
+export function getCollectorPass(): CollectorPassState {
+  if (typeof window === 'undefined') return { monthKey: '', xpEarned: 0, currentTier: 0, claimedTiers: [] };
+  const now = new Date();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  let state = getItem<CollectorPassState>('lorevault_collector_pass', {
+    monthKey,
+    xpEarned: 0,
+    currentTier: 0,
+    claimedTiers: [],
+  });
+
+  // Monthly reset
+  if (state.monthKey !== monthKey) {
+    state = { monthKey, xpEarned: 0, currentTier: 0, claimedTiers: [] };
+    setItem('lorevault_collector_pass', state);
+  }
+
+  // Derive current tier from total XP
+  let tier = 0;
+  let totalRequired = 0;
+  for (const t of COLLECTOR_PASS_TIERS) {
+    totalRequired += t.xpRequired;
+    if (state.xpEarned >= totalRequired) tier = t.tier;
+    else break;
+  }
+  if (state.currentTier !== tier) {
+    state.currentTier = tier;
+    setItem('lorevault_collector_pass', state);
+  }
+
+  return state;
+}
+
+export function addPassXP(amount: number) {
+  if (typeof window === 'undefined') return;
+  const state = getCollectorPass();
+  state.xpEarned += amount;
+  // Recalculate tier
+  let tier = 0;
+  let totalRequired = 0;
+  for (const t of COLLECTOR_PASS_TIERS) {
+    totalRequired += t.xpRequired;
+    if (state.xpEarned >= totalRequired) tier = t.tier;
+    else break;
+  }
+  state.currentTier = tier;
+  setItem('lorevault_collector_pass', state);
+}
+
+export function claimPassTier(tier: number): boolean {
+  if (typeof window === 'undefined') return false;
+  const state = getCollectorPass();
+  if (state.currentTier < tier || state.claimedTiers.includes(tier)) return false;
+  state.claimedTiers.push(tier);
+  setItem('lorevault_collector_pass', state);
+  return true;
+}
+
+// ===== Weekly Challenges =====
+
+export interface WeeklyChallenge {
+  id: string;
+  description: string;
+  target: number;
+  progress: number;
+  reward: string;
+  completed: boolean;
+  icon: string;
+}
+
+const WEEKLY_CHALLENGE_POOL = [
+  { id: 'win-5-battles', description: 'Win 5 battles', target: 5, reward: 'Bonus Pack', icon: '⚔️' },
+  { id: 'collect-3-set', description: 'Collect 3 cards from one set', target: 3, reward: 'Rare Pack', icon: '📚' },
+  { id: 'codex-50', description: 'Reach 50% codex completion', target: 50, reward: 'XP Boost', icon: '📖' },
+  { id: 'open-10-packs', description: 'Open 10 packs', target: 10, reward: 'Epic Pack', icon: '📦' },
+  { id: 'forge-3', description: 'Forge 3 cards', target: 3, reward: 'Gold Parallel', icon: '🔨' },
+  { id: 'trivia-5000', description: 'Score 5000+ in trivia', target: 5000, reward: 'Badge', icon: '🧠' },
+  { id: 'burn-5', description: 'Burn 5 cards', target: 5, reward: 'Legendary Pack', icon: '🔥' },
+  { id: 'earn-500xp', description: 'Earn 500 XP', target: 500, reward: 'Bonus Pack', icon: '⭐' },
+];
+
+function getWeekKey(): string {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+  const week1 = new Date(d.getFullYear(), 0, 4);
+  const weekNum = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+  return `${d.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+}
+
+export function getWeeklyChallenges(): WeeklyChallenge[] {
+  if (typeof window === 'undefined') return [];
+  const weekKey = getWeekKey();
+  const stateKey = 'lorevault_weekly_challenges';
+  const stored = getItem<{ weekKey: string; challenges: WeeklyChallenge[] }>(stateKey, { weekKey: '', challenges: [] });
+
+  if (stored.weekKey !== weekKey) {
+    // Generate 3 challenges for this week from pool using week-seeded selection
+    let seed = 0;
+    for (let i = 0; i < weekKey.length; i++) seed = ((seed << 5) - seed + weekKey.charCodeAt(i)) | 0;
+    const pool = [...WEEKLY_CHALLENGE_POOL];
+    const selected: WeeklyChallenge[] = [];
+    for (let i = 0; i < 3 && pool.length > 0; i++) {
+      seed = (seed * 16807) % 2147483647;
+      const idx = Math.abs(seed) % pool.length;
+      const ch = pool.splice(idx, 1)[0];
+      selected.push({ ...ch, progress: 0, completed: false });
+    }
+    const newState = { weekKey, challenges: selected };
+    setItem(stateKey, newState);
+    return selected;
+  }
+
+  return stored.challenges;
+}
+
+export function updateWeeklyChallenge(challengeId: string, progress: number) {
+  if (typeof window === 'undefined') return;
+  const weekKey = getWeekKey();
+  const stateKey = 'lorevault_weekly_challenges';
+  const stored = getItem<{ weekKey: string; challenges: WeeklyChallenge[] }>(stateKey, { weekKey, challenges: [] });
+  if (stored.weekKey !== weekKey) return;
+  const ch = stored.challenges.find(c => c.id === challengeId);
+  if (ch) {
+    ch.progress = Math.min(progress, ch.target);
+    ch.completed = ch.progress >= ch.target;
+    setItem(stateKey, stored);
+  }
+}
+
+// ===== Collector Milestones =====
+
+export interface CollectorMilestone {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  titlePrefix: string; // e.g., "Vault Keeper" prefix shown on profile
+  check: () => boolean;
+}
+
+export function getCollectorMilestones(): { milestone: CollectorMilestone; earned: boolean }[] {
+  if (typeof window === 'undefined') return [];
+
+  const owned = getOwnedCards();
+  const xp = getXP();
+  const level = getCollectorLevel();
+  const forgeHistory = getItem<unknown[]>('lorevault_forge_history', []);
+  const burnHistory = getBurnHistory();
+  const streak = getStreak();
+
+  const milestones: CollectorMilestone[] = [
+    { id: 'century', title: 'Century', description: 'Own 100 cards', icon: '💯', titlePrefix: 'Centurion', check: () => owned.length >= 100 },
+    { id: 'vault-keeper', title: 'Vault Keeper', description: 'Own 200 cards', icon: '🏛️', titlePrefix: 'Vault Keeper', check: () => owned.length >= 200 },
+    { id: 'xp-king', title: 'XP Sovereign', description: 'Reach Level 20', icon: '👑', titlePrefix: 'Sovereign', check: () => level.level >= 20 },
+    { id: 'forge-master', title: 'Forge Master', description: 'Forge 10 cards', icon: '🔨', titlePrefix: 'Forge Master', check: () => forgeHistory.length >= 10 },
+    { id: 'pyromaniac', title: 'Pyromaniac', description: 'Burn 10 cards', icon: '🔥', titlePrefix: 'Pyromaniac', check: () => burnHistory.length >= 10 },
+    { id: 'dedicated', title: 'Dedicated', description: '14-day login streak', icon: '📅', titlePrefix: 'Dedicated', check: () => streak >= 14 },
+    { id: 'legendary-hoarder', title: 'Legendary Hoarder', description: 'Own 10 Legendary cards', icon: '⚡', titlePrefix: 'Legendary', check: () => owned.filter(c => c.scarcity === 'legendary').length >= 10 },
+    { id: 'set-collector', title: 'Set Collector', description: 'Complete 3 sets', icon: '📚', titlePrefix: 'Set Collector', check: () => {
+      const sets = new Map<string, Set<string>>();
+      for (const c of owned) {
+        if (!sets.has(c.setSlug)) sets.set(c.setSlug, new Set());
+        sets.get(c.setSlug)!.add(c.character);
+      }
+      let complete = 0;
+      for (const chars of sets.values()) if (chars.size >= 15) complete++;
+      return complete >= 3;
+    }},
+    { id: 'all-scarcity', title: 'Full Spectrum', description: 'Own every scarcity tier', icon: '🌈', titlePrefix: 'Prismatic', check: () => {
+      const tiers = new Set(owned.map(c => c.scarcity));
+      return tiers.size >= 5;
+    }},
+    { id: 'marathon', title: 'Marathon', description: '30-day login streak', icon: '🏃', titlePrefix: 'Marathon', check: () => streak >= 30 },
+  ];
+
+  return milestones.map(m => ({ milestone: m, earned: m.check() }));
+}
+
+export function getActiveTitlePrefix(): string {
+  if (typeof window === 'undefined') return '';
+  return getItem<string>('lorevault_title_prefix', '');
+}
+
+export function setActiveTitlePrefix(prefix: string) {
+  if (typeof window === 'undefined') return;
+  setItem('lorevault_title_prefix', prefix);
+}
+
+// ===== Featured Set Event (Weekly Rotation) =====
+
+const SET_ROTATION = ['baker-street', 'enchanted-kingdom', 'wonderland', 'gothic-horror', 'olympus', 'asgard'];
+
+export interface FeaturedSetEvent {
+  setSlug: string;
+  setName: string;
+  setIcon: string;
+  weekKey: string;
+  xpMultiplier: number;
+  endsAt: string; // ISO date of next Monday
+}
+
+export function getFeaturedSetEvent(): FeaturedSetEvent | null {
+  if (typeof window === 'undefined') return null;
+  const weekKey = getWeekKey();
+  // Deterministic rotation: hash weekKey to pick set index, avoid consecutive repeats
+  let hash = 0;
+  for (let i = 0; i < weekKey.length; i++) hash = ((hash << 5) - hash + weekKey.charCodeAt(i)) | 0;
+  let idx = Math.abs(hash) % SET_ROTATION.length;
+  // Check previous week to avoid repeat
+  const prevSlug = getItem<string>('lorevault_prev_event_set', '');
+  if (SET_ROTATION[idx] === prevSlug) idx = (idx + 1) % SET_ROTATION.length;
+  const slug = SET_ROTATION[idx];
+  setItem('lorevault_prev_event_set', slug);
+
+  // Calculate next Monday for countdown
+  const now = new Date();
+  const daysUntilMonday = (8 - now.getDay()) % 7 || 7;
+  const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
+  nextMonday.setHours(0, 0, 0, 0);
+
+  const setNames: Record<string, { name: string; icon: string }> = {
+    'baker-street': { name: 'Baker Street Files', icon: '🔍' },
+    'enchanted-kingdom': { name: 'The Enchanted Kingdom', icon: '👑' },
+    'wonderland': { name: 'Wonderland Descending', icon: '🐇' },
+    'gothic-horror': { name: 'The Castle of Otranto', icon: '🦇' },
+    'olympus': { name: 'Olympus Rising', icon: '⚡' },
+    'asgard': { name: 'Asgard Unleashed', icon: '❄️' },
+  };
+
+  const info = setNames[slug] || { name: slug, icon: '📦' };
+  return {
+    setSlug: slug,
+    setName: info.name,
+    setIcon: info.icon,
+    weekKey,
+    xpMultiplier: 2,
+    endsAt: nextMonday.toISOString(),
+  };
+}
+
+export function getEventBadges(): string[] {
+  if (typeof window === 'undefined') return [];
+  return getItem<string[]>('lorevault_event_badges', []);
+}
+
+export function earnEventBadge(weekKey: string, setSlug: string): boolean {
+  if (typeof window === 'undefined') return false;
+  const badges = getEventBadges();
+  const badgeId = `${weekKey}-${setSlug}`;
+  if (badges.includes(badgeId)) return false;
+  badges.push(badgeId);
+  setItem('lorevault_event_badges', badges);
+  return true;
+}
+
+// ===== 7-Day Challenge Chain =====
+
+export interface ChallengeChainDay {
+  day: number; // 1-7
+  description: string;
+  icon: string;
+  completed: boolean;
+}
+
+export interface ChallengeChainState {
+  weekKey: string;
+  days: ChallengeChainDay[];
+  allComplete: boolean;
+  rewardClaimed: boolean;
+}
+
+const CHAIN_DAYS: { description: string; icon: string }[] = [
+  { description: 'Open 2 packs', icon: '📦' },
+  { description: 'Win a battle', icon: '⚔️' },
+  { description: 'Collect 3 new cards', icon: '🃏' },
+  { description: 'Forge a card', icon: '🔨' },
+  { description: 'Complete a trivia round', icon: '🧠' },
+  { description: 'Earn 200 XP', icon: '⭐' },
+  { description: 'Claim all daily rewards', icon: '🎁' },
+];
+
+export function getChallengeChain(): ChallengeChainState {
+  if (typeof window === 'undefined') return { weekKey: '', days: [], allComplete: false, rewardClaimed: false };
+  const weekKey = getWeekKey();
+  const stored = getItem<ChallengeChainState>('lorevault_challenge_chain', {
+    weekKey: '',
+    days: [],
+    allComplete: false,
+    rewardClaimed: false,
+  });
+
+  if (stored.weekKey !== weekKey) {
+    const fresh: ChallengeChainState = {
+      weekKey,
+      days: CHAIN_DAYS.map((d, i) => ({ day: i + 1, description: d.description, icon: d.icon, completed: false })),
+      allComplete: false,
+      rewardClaimed: false,
+    };
+    setItem('lorevault_challenge_chain', fresh);
+    return fresh;
+  }
+
+  return stored;
+}
+
+export function completeChallengeChainDay(day: number): boolean {
+  if (typeof window === 'undefined') return false;
+  const state = getChallengeChain();
+  const d = state.days.find(d => d.day === day);
+  if (!d || d.completed) return false;
+  // Can only complete current day (previous must be done)
+  if (day > 1 && !state.days.find(d => d.day === day - 1)?.completed) return false;
+  d.completed = true;
+  state.allComplete = state.days.every(d => d.completed);
+  setItem('lorevault_challenge_chain', state);
+  return true;
+}
+
+export function claimChainReward(): boolean {
+  if (typeof window === 'undefined') return false;
+  const state = getChallengeChain();
+  if (!state.allComplete || state.rewardClaimed) return false;
+  state.rewardClaimed = true;
+  setItem('lorevault_challenge_chain', state);
+  addPackCredits(1);
+  addXP(500);
+  addPassXP(500);
+  earnEventBadge(state.weekKey, 'weekly-warrior');
+  return true;
+}
+
+// ===== Monthly Leaderboard =====
+
+export interface LeaderboardEntry {
+  name: string;
+  xp: number;
+  level: number;
+  tier: string;
+  isPlayer: boolean;
+}
+
+export function getMonthlyLeaderboard(): { monthKey: string; entries: LeaderboardEntry[]; playerRank: number; daysLeft: number } {
+  if (typeof window === 'undefined') return { monthKey: '', entries: [], playerRank: 0, daysLeft: 0 };
+  const now = new Date();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const daysLeft = lastDay - now.getDate();
+
+  // Get player's monthly XP from collector pass
+  const pass = getCollectorPass();
+  const playerXP = pass.xpEarned;
+  const playerLevel = getCollectorLevel();
+
+  // Generate seeded AI leaderboard entries (deterministic per month)
+  const names = ['VaultMaster', 'LoreKeeper', 'CardSage', 'MythHunter', 'GhostPuller', 'SetKing', 'RarityChaser', 'ForgeHero', 'PackRat', 'LegendSeeker', 'CardShark', 'LoreWitch', 'VaultBoss', 'MythWalker'];
+  let seed = 0;
+  for (let i = 0; i < monthKey.length; i++) seed = ((seed << 5) - seed + monthKey.charCodeAt(i)) | 0;
+  const aiEntries: LeaderboardEntry[] = [];
+  for (let i = 0; i < 9; i++) {
+    seed = (seed * 16807) % 2147483647;
+    const xp = 500 + Math.abs(seed) % 4000;
+    const lvl = Math.floor(xp / 200) + 1;
+    aiEntries.push({
+      name: names[Math.abs(seed) % names.length] + (Math.abs(seed) % 99 + 1),
+      xp,
+      level: lvl,
+      tier: lvl >= 15 ? 'Elite' : lvl >= 10 ? 'Connoisseur' : lvl >= 5 ? 'Enthusiast' : 'Collector',
+      isPlayer: false,
+    });
+  }
+
+  const playerEntry: LeaderboardEntry = {
+    name: 'You',
+    xp: playerXP,
+    level: playerLevel.level,
+    tier: playerLevel.tier,
+    isPlayer: true,
+  };
+
+  const allEntries = [...aiEntries, playerEntry].sort((a, b) => b.xp - a.xp);
+  const playerRank = allEntries.findIndex(e => e.isPlayer) + 1;
+
+  return { monthKey, entries: allEntries.slice(0, 10), playerRank, daysLeft };
+}
+
+// ===== Month-End FOMO =====
+
+export function getMonthEndBonus(): { active: boolean; multiplier: number; daysLeft: number; label: string } {
+  if (typeof window === 'undefined') return { active: false, multiplier: 1, daysLeft: 0, label: '' };
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const daysLeft = lastDay - now.getDate();
+
+  if (daysLeft <= 2) {
+    return { active: true, multiplier: 1.5, daysLeft, label: 'Final Sprint — 1.5x XP' };
+  }
+  return { active: false, multiplier: 1, daysLeft, label: '' };
+}
+
+// ===== Smart CTA =====
+
+export interface SmartCTA {
+  label: string;
+  sublabel: string;
+  link: string;
+  icon: string;
+  priority: number;
+}
+
+export function getSmartCTA(): SmartCTA {
+  if (typeof window === 'undefined') return { label: 'Open Packs', sublabel: 'Pull cards. Chase rarities.', link: '/packs', icon: '📦', priority: 0 };
+
+  const packs = getPackCredits();
+  const calendar = getLoginCalendar();
+  const missions = getDailyMissions();
+  const incompleteMission = missions.find(m => !m.completed);
+
+  // Priority: unclaimed login > available packs > incomplete mission > default
+  if (calendar && !calendar.claimedToday && calendar.currentDay < 7) {
+    return { label: 'Claim Today\'s Reward', sublabel: `Day ${calendar.currentDay + 1} login reward waiting`, link: '/', icon: '🎁', priority: 3 };
+  }
+  if (packs > 0) {
+    return { label: `Open ${packs} Pack${packs > 1 ? 's' : ''}`, sublabel: 'Your packs are ready to open', link: '/packs', icon: '📦', priority: 2 };
+  }
+  if (incompleteMission) {
+    return { label: incompleteMission.description, sublabel: `${incompleteMission.progress}/${incompleteMission.target} — ${incompleteMission.reward}`, link: '/challenges', icon: '🎯', priority: 1 };
+  }
+  return { label: 'Earn More Packs', sublabel: 'Complete challenges to earn packs', link: '/challenges', icon: '⭐', priority: 0 };
+}
+
+// ===== Morning Toast =====
+
+export function getPendingActions(): string[] {
+  if (typeof window === 'undefined') return [];
+  const actions: string[] = [];
+
+  const calendar = getLoginCalendar();
+  if (calendar && !calendar.claimedToday && calendar.currentDay < 7) {
+    actions.push('Unclaimed login reward');
+  }
+
+  const dailyPack = getDailyPackState();
+  if (dailyPack.available) {
+    actions.push('Daily free pack available');
+  }
+
+  const missions = getDailyMissions();
+  const incomplete = missions.filter(m => !m.completed);
+  if (incomplete.length > 0) {
+    actions.push(`${incomplete.length} daily mission${incomplete.length > 1 ? 's' : ''} to complete`);
+  }
+
+  return actions;
+}
+
+// ===== Collection Flex (Shareable Stats) =====
+
+export interface CollectionFlex {
+  totalCards: number;
+  uniqueCharacters: number;
+  rarestCard: { name: string; scarcity: string } | null;
+  collectorLevel: number;
+  collectorTier: string;
+  longestStreak: number;
+  setsStarted: number;
+  encoded: string; // Base64 encoded for URL sharing
+}
+
+export function getCollectionFlex(): CollectionFlex {
+  if (typeof window === 'undefined') return { totalCards: 0, uniqueCharacters: 0, rarestCard: null, collectorLevel: 0, collectorTier: 'Newcomer', longestStreak: 0, setsStarted: 0, encoded: '' };
+
+  const owned = getOwnedCards();
+  const uniqueChars = new Set(owned.map(c => c.character));
+  const level = getCollectorLevel();
+  const streak = getStreak();
+
+  // Find rarest card
+  const scarcityRank: Record<string, number> = { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4 };
+  let rarestCard: { name: string; scarcity: string } | null = null;
+  let highestRank = -1;
+  for (const card of owned) {
+    const rank = scarcityRank[card.scarcity] || 0;
+    if (rank > highestRank) {
+      highestRank = rank;
+      rarestCard = { name: `${card.character} — ${card.moment}`, scarcity: card.scarcity };
+    }
+  }
+
+  const setsStarted = new Set(owned.map(c => c.setSlug)).size;
+
+  const data = {
+    t: owned.length,
+    u: uniqueChars.size,
+    l: level.level,
+    ti: level.tier,
+    s: streak,
+    ss: setsStarted,
+    r: rarestCard?.name || '',
+    rs: rarestCard?.scarcity || '',
+  };
+  const encoded = typeof btoa !== 'undefined' ? btoa(JSON.stringify(data)) : '';
+
+  return {
+    totalCards: owned.length,
+    uniqueCharacters: uniqueChars.size,
+    rarestCard,
+    collectorLevel: level.level,
+    collectorTier: level.tier,
+    longestStreak: streak,
+    setsStarted,
+    encoded,
+  };
+}
+
+export function decodeCollectionFlex(encoded: string): Partial<CollectionFlex> {
+  try {
+    const data = JSON.parse(atob(encoded));
+    return {
+      totalCards: data.t || 0,
+      uniqueCharacters: data.u || 0,
+      collectorLevel: data.l || 0,
+      collectorTier: data.ti || 'Newcomer',
+      longestStreak: data.s || 0,
+      setsStarted: data.ss || 0,
+      rarestCard: data.r ? { name: data.r, scarcity: data.rs || 'common' } : null,
+    };
+  } catch {
+    return {};
+  }
+}
+
+// ===== Social Challenge =====
+
+export interface SocialChallenge {
+  game: 'battle' | 'trivia';
+  score: number;
+  difficulty?: string;
+  encoded: string;
+}
+
+export function encodeSocialChallenge(game: 'battle' | 'trivia', score: number, difficulty?: string): string {
+  const data = { g: game, s: score, d: difficulty || '' };
+  return typeof btoa !== 'undefined' ? btoa(JSON.stringify(data)) : '';
+}
+
+export function decodeSocialChallenge(encoded: string): SocialChallenge | null {
+  try {
+    const data = JSON.parse(atob(encoded));
+    return { game: data.g, score: data.s, difficulty: data.d, encoded };
+  } catch {
+    return null;
+  }
 }

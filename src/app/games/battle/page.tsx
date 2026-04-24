@@ -5,12 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Card, SCARCITY_CONFIG, BattleRound } from '@/data/types';
 import { getOwnedCards, saveBattleRecord, addPackCredits } from '@/lib/store';
+import { getReferralLink } from '@/lib/referral';
+import { encodeSocialChallenge } from '@/lib/store';
 import { ALL_CARDS } from '@/data/cards';
 import {
   StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS,
   getCharacterStats, getEffectiveStat,
 } from '@/data/stats';
 import { Difficulty, seededRandom, aiPickCard, aiChooseStat } from '@/lib/ai';
+import { checkAchievements, getAchievementById } from '@/lib/achievements';
+import AchievementCelebration from '@/components/AchievementCelebration';
+import { Achievement } from '@/data/types';
 import BattleCard from '@/components/games/BattleCard';
 
 type Phase =
@@ -59,6 +64,8 @@ export default function BattlePage() {
 
   // Confetti particles for victory
   const [confetti, setConfetti] = useState<Array<{ id: number; x: number; delay: number; color: string }>>([]);
+  const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     const owned = getOwnedCards();
@@ -72,6 +79,20 @@ export default function BattlePage() {
     const autoIds = sorted.slice(0, Math.min(5, sorted.length)).map(c => c.id);
     setSelectedIds(new Set(autoIds));
   }, []);
+
+  // Check achievements after battle ends
+  useEffect(() => {
+    if (gameResult) {
+      const newIds = checkAchievements();
+      if (newIds.length > 0) {
+        const achievements = newIds
+          .map(id => getAchievementById(id))
+          .filter(Boolean) as Achievement[];
+        setCelebrationQueue(achievements);
+        setTimeout(() => setShowCelebration(true), 1500);
+      }
+    }
+  }, [gameResult]);
 
   // Toggle card in/out of selected deck
   const toggleCard = useCallback((id: string) => {
@@ -472,7 +493,7 @@ export default function BattlePage() {
             {gameResult === 'win' ? '🏆' : '💀'}
           </motion.div>
 
-          <h1 className="text-3xl font-bold mb-1">
+          <h1 className="type-display mb-1">
             {gameResult === 'win' ? 'Victory!' : 'Defeated'}
           </h1>
           <p className="text-muted text-sm mb-1">
@@ -543,7 +564,7 @@ export default function BattlePage() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
             <motion.button
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-sm"
               whileTap={{ scale: 0.95 }}
@@ -551,11 +572,70 @@ export default function BattlePage() {
             >
               {gameResult === 'lose' ? 'Try Again' : 'Battle Again'}
             </motion.button>
+            <button
+              onClick={() => {
+                const result = gameResult === 'win' ? '🏆 VICTORY' : '💀 DEFEAT';
+                const stars = gameResult === 'win' ? '⭐'.repeat(Math.min(5, playerScore)) : '';
+                const text = `${result} ${playerScore}-${aiScore}\n${DIFFICULTY_CONFIG[difficulty].icon} ${DIFFICULTY_CONFIG[difficulty].label} difficulty\n${stars}\n\nThink you can beat me?`;
+                const url = `${window.location.origin}/games/battle`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=550,height=420');
+              }}
+              className="px-5 py-3 rounded-xl bg-[#1da1f2]/10 border border-[#1da1f2]/20 text-[#1da1f2] text-sm font-bold"
+            >
+              Share Result
+            </button>
             <Link href="/games" className="px-6 py-3 rounded-xl bg-surface border border-border text-sm font-medium flex items-center">
               Games Hub
             </Link>
           </div>
+
+          {/* Post-achievement social actions */}
+          {gameResult === 'win' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+              className="mt-6 p-3 rounded-xl bg-accent/5 border border-accent/15 text-center max-w-sm mx-auto"
+            >
+              <div className="text-[10px] text-muted mb-2">Challenge a friend to beat your score</div>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => {
+                    const challenge = encodeSocialChallenge('battle', playerScore, difficulty);
+                    const url = `${window.location.origin}/games/battle?challenge=${challenge}`;
+                    navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20 text-[10px] font-bold text-accent"
+                >
+                  Copy Challenge Link
+                </button>
+                <button
+                  onClick={() => {
+                    const url = getReferralLink();
+                    navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url));
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-surface border border-border text-[10px] font-bold text-muted"
+                >
+                  Invite to LoreVault
+                </button>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
+
+        {/* Achievement celebration */}
+        <AchievementCelebration
+          visible={showCelebration && celebrationQueue.length > 0}
+          achievement={celebrationQueue[0] ?? null}
+          onDone={() => {
+            if (celebrationQueue.length <= 1) {
+              setShowCelebration(false);
+              setCelebrationQueue([]);
+            } else {
+              setCelebrationQueue(prev => prev.slice(1));
+            }
+          }}
+        />
       </div>
     );
   }

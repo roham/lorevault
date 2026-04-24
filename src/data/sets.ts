@@ -46,4 +46,13 @@ export const SETS: CardSet[] = [
     gradientFrom: '#2e2a0a',
     gradientTo: '#69601b',
   },
+  {
+    name: 'Asgard Unleashed',
+    slug: 'asgard',
+    description: 'The Nine Realms at war — Odin, Thor, Loki, and the Norse pantheon face Ragnarok. Ice, storm, runic magic, and the twilight of the gods.',
+    cardCount: 20,
+    icon: '❄️',
+    gradientFrom: '#0a1a2e',
+    gradientTo: '#1b3a5c',
+  },
 ];

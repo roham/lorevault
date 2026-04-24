@@ -373,7 +373,7 @@ function fuzzyMatch(text: string, pattern: string): number {
   return matched / Math.max(text.length, pattern.length) * 0.7; // Partial score
 }
 
-function scoreCard(card: Card, terms: string[]): number {
+export function scoreCard(card: Card, terms: string[]): number {
   const fields = [
     { text: card.character, weight: 3 },
     { text: card.moment, weight: 2 },

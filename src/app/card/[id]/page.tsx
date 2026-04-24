@@ -5,19 +5,25 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import PriceChart from '@/components/marketplace/PriceChart';
-import { ALL_CARDS } from '@/data/cards';
+import { ALL_CARDS, GHOST_CARDS, isGhostCard, getWhispersForGhost } from '@/data/cards';
 import { SCARCITY_CONFIG, PARALLEL_CONFIG } from '@/data/types';
-import { getOwnedCardIds, addOwnedCards, getBattleRecords } from '@/lib/store';
+import { getOwnedCardIds, addOwnedCards, getBattleRecords, getCardMeta, getAgingTiers, getPopulationData, burnCard, type AgingTiers, type PopulationData } from '@/lib/store';
+import CardJourney from '@/components/CardJourney';
+import LoreFragment from '@/components/LoreFragment';
+import { CardEvent } from '@/data/types';
 import {
   getCardMarketData,
   isWatchlisted,
   addToWatchlist,
   removeFromWatchlist,
 } from '@/lib/marketData';
+import ShareCard from '@/components/social/ShareCard';
+import { generateValueHistory, computeLegacyScore, getLegacyTierConfig, type LegacyData, type ValuePoint } from '@/lib/legacy';
 import {
   StatKey, STAT_LABELS, STAT_ICONS, STAT_COLORS,
   getCharacterStats, getEffectiveStat,
 } from '@/data/stats';
+import { generateCardDNA, getDNATraitString, type CardDNA } from '@/lib/card-dna';
 
 export default function CardDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -25,8 +31,18 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
   const [watched, setWatched] = useState(false);
   const [bought, setBought] = useState(false);
   const [cardBattleStats, setCardBattleStats] = useState<{ wins: number; total: number }>({ wins: 0, total: 0 });
+  const [agingTiers, setAgingTiers] = useState<AgingTiers | null>(null);
+  const [cardHistory, setCardHistory] = useState<{ history: CardEvent[]; acquiredAt: string } | null>(null);
+  const [popData, setPopData] = useState<PopulationData | null>(null);
+  const [showShare, setShowShare] = useState(false);
+  const [legacyData, setLegacyData] = useState<LegacyData | null>(null);
+  const [valueHistory, setValueHistory] = useState<ValuePoint[]>([]);
+  const [cardDNA, setCardDNA] = useState<CardDNA | null>(null);
+  const [burnConfirm, setBurnConfirm] = useState(false);
+  const [burned, setBurned] = useState(false);
+  const [burnXP, setBurnXP] = useState(0);
 
-  const card = ALL_CARDS.find(c => c.id === id);
+  const card = ALL_CARDS.find(c => c.id === id) || GHOST_CARDS.find(c => c.id === id);
   const marketData = card ? getCardMarketData(card.id) : null;
 
   useEffect(() => {
@@ -47,8 +63,20 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
         }
       }
       setCardBattleStats({ wins, total });
+      setAgingTiers(getAgingTiers(card.id));
+      setPopData(getPopulationData(card));
+      setValueHistory(generateValueHistory(card));
+      setCardDNA(generateCardDNA(card.id, card.serialNumber));
+      if (isOwned) {
+        setLegacyData(computeLegacyScore(card.id, card));
+      }
+      const meta = getCardMeta();
+      const m = meta[card.id];
+      if (m?.history) {
+        setCardHistory({ history: m.history, acquiredAt: m.acquiredAt });
+      }
     }
-  }, [card]);
+  }, [card, isOwned]);
 
   const toggleWatch = useCallback(() => {
     if (!card) return;
@@ -112,6 +140,14 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           >
             {watched ? '★ Watching' : '☆ Watch'}
           </button>
+          {isOwned && (
+            <button
+              onClick={() => setShowShare(true)}
+              className="px-3 py-1.5 rounded-lg bg-surface border border-border text-xs text-muted hover:text-foreground"
+            >
+              📤 Share
+            </button>
+          )}
           <Link
             href="/marketplace"
             className="px-3 py-1.5 rounded-lg bg-surface border border-border text-xs text-muted hover:text-foreground"
@@ -155,7 +191,7 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           {/* Metadata chips */}
           <div className="flex flex-wrap gap-2 mt-3 mb-4">
             <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: scarcityConfig.color, background: `${scarcityConfig.color}15`, border: `1px solid ${scarcityConfig.color}25` }}>
-              {scarcityConfig.label}
+              {scarcityConfig.label}{popData ? ` · ${popData.totalMinted.toLocaleString()} Exist` : ''}
             </span>
             {card.parallel !== 'base' && (
               <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-surface border border-border capitalize">
@@ -163,14 +199,106 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               </span>
             )}
             {card.scarcity !== 'common' && (
-              <span className="px-2.5 py-1 rounded-lg text-xs font-mono bg-surface border border-border">
-                #{card.serialNumber}/{card.maxSerial}
+              <span
+                className="px-2.5 py-1 rounded-lg text-xs font-mono border"
+                style={{
+                  background: popData?.serialTier === 'genesis' ? '#ffd70015' : popData?.serialTier === 'low' ? '#f59e0b15' : popData?.serialTier === 'mid' ? '#c0c0c015' : undefined,
+                  borderColor: popData?.serialTier === 'genesis' ? '#ffd70030' : popData?.serialTier === 'low' ? '#f59e0b30' : popData?.serialTier === 'mid' ? '#c0c0c030' : undefined,
+                  color: popData?.serialTier === 'genesis' ? '#ffd700' : popData?.serialTier === 'low' ? '#f59e0b' : popData?.serialTier === 'mid' ? '#c0c0c0' : undefined,
+                }}
+              >
+                {popData?.serialTier === 'genesis' ? '✦ ' : popData?.serialTier === 'low' ? '★ ' : ''}#{card.serialNumber}/{popData?.totalMinted ?? card.maxSerial}
               </span>
             )}
             <span className="px-2.5 py-1 rounded-lg text-xs bg-surface border border-border">
               {card.set}
             </span>
+            {agingTiers?.battle === 'pristine' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#e0e7ff', background: '#e0e7ff15', border: '1px solid #e0e7ff25' }}>✦ Pristine</span>
+            )}
+            {agingTiers?.battle === 'seasoned' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#d4a76a', background: '#d4a76a15', border: '1px solid #d4a76a25' }}>⚔ Seasoned</span>
+            )}
+            {agingTiers?.battle === 'battle-worn' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#c0855c', background: '#c0855c15', border: '1px solid #c0855c25' }}>⚔ Battle-Worn</span>
+            )}
+            {agingTiers?.battle === 'veteran' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#b8860b', background: '#b8860b15', border: '1px solid #b8860b25' }}>🏛 Veteran</span>
+            )}
+            {agingTiers?.time === 'bonded' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#ffb43c', background: '#ffb43c15', border: '1px solid #ffb43c25' }}>♥ Bonded</span>
+            )}
+            {agingTiers?.time === 'ancient' && (
+              <span className="px-2.5 py-1 rounded-lg text-xs font-bold" style={{ color: '#d4a030', background: '#d4a03015', border: '1px solid #d4a03025' }}>⏳ Ancient</span>
+            )}
           </div>
+
+          {/* Card DNA trait strip */}
+          {cardDNA && (
+            <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-xl bg-surface/30 border border-border/30">
+              <span className="text-[9px] text-muted uppercase tracking-wider shrink-0">DNA</span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent/80">{cardDNA.background.label}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent/80">{cardDNA.border.label}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent/80">{cardDNA.particle.label}</span>
+              </div>
+              <span className="text-sm ml-auto opacity-20">{cardDNA.watermark}</span>
+            </div>
+          )}
+
+          {/* Population counter */}
+          {popData && (
+            <div className="p-3 rounded-xl bg-surface/50 border border-border/50 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-center">
+                    <div className="text-lg font-bold font-mono" style={{ color: scarcityConfig.color }}>
+                      {popData.totalMinted.toLocaleString()}
+                    </div>
+                    <div className="text-[9px] text-muted uppercase">Minted</div>
+                  </div>
+                  <div className="w-px h-8 bg-border/30" />
+                  <div className="text-center">
+                    <div className="text-lg font-bold font-mono text-foreground">
+                      {popData.currentOwners.toLocaleString()}
+                    </div>
+                    <div className="text-[9px] text-muted uppercase">Collectors</div>
+                  </div>
+                </div>
+                {card.scarcity !== 'common' && (
+                  <div className="text-right">
+                    <div className="text-xs font-mono font-bold" style={{
+                      color: popData.serialTier === 'genesis' ? '#ffd700' : popData.serialTier === 'low' ? '#f59e0b' : popData.serialTier === 'mid' ? '#c0c0c0' : '#818cf8',
+                    }}>
+                      #{card.serialNumber}
+                    </div>
+                    <div className="text-[9px] text-muted">
+                      {popData.serialTier === 'genesis' ? 'Genesis Serial' : popData.serialTier === 'low' ? 'Low Serial' : popData.serialTier === 'mid' ? 'Early Serial' : `of ${popData.totalMinted.toLocaleString()}`}
+                    </div>
+                  </div>
+                )}
+              </div>
+              {/* Dot visualization for legendaries */}
+              {card.scarcity === 'legendary' && popData.totalMinted <= 50 && (
+                <div className="flex flex-wrap gap-1 mt-3 pt-3 border-t border-border/20">
+                  {Array.from({ length: popData.totalMinted }, (_, i) => (
+                    <div
+                      key={i}
+                      className="w-2 h-2 rounded-full"
+                      style={{
+                        background: i + 1 === card.serialNumber ? scarcityConfig.color : `${scarcityConfig.color}25`,
+                        boxShadow: i + 1 === card.serialNumber ? `0 0 6px ${scarcityConfig.color}` : 'none',
+                      }}
+                      title={i + 1 === card.serialNumber ? `This card (#${card.serialNumber})` : `#${i + 1}`}
+                    />
+                  ))}
+                  <span className="text-[8px] text-muted ml-1 self-center">
+                    You own #{card.serialNumber}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Price + Market Data section */}
           <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
@@ -254,14 +382,55 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
               >
                 <span className="text-green-400 font-bold text-sm">Added to your collection!</span>
               </motion.div>
+            ) : burned ? (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center"
+              >
+                <span className="text-red-400 font-bold text-sm">Burned for +{burnXP} XP</span>
+              </motion.div>
             ) : isOwned ? (
-              <div className="flex gap-2">
-                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
-                  List for Sale
-                </button>
-                <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
-                  Offer Trade
-                </button>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
+                    List for Sale
+                  </button>
+                  <button className="flex-1 py-2.5 rounded-xl bg-surface border border-border text-foreground text-sm font-semibold hover:bg-surface-hover transition-colors">
+                    Offer Trade
+                  </button>
+                </div>
+                {burnConfirm ? (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        const result = burnCard(card.id);
+                        if (result) {
+                          setBurned(true);
+                          setBurnXP(result.xpGained);
+                          setIsOwned(false);
+                        }
+                        setBurnConfirm(false);
+                      }}
+                      className="flex-1 py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-bold"
+                    >
+                      Confirm Burn (irreversible)
+                    </button>
+                    <button
+                      onClick={() => setBurnConfirm(false)}
+                      className="flex-1 py-2 rounded-xl bg-surface border border-border text-muted text-xs font-semibold"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setBurnConfirm(true)}
+                    className="w-full py-2 rounded-xl bg-surface/40 border border-red-500/10 text-red-400/60 text-xs font-semibold hover:bg-red-500/5 transition-colors"
+                  >
+                    🔥 Burn for XP
+                  </button>
+                )}
               </div>
             ) : (
               <div className="flex gap-2">
@@ -329,11 +498,139 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
             );
           })()}
 
+          {/* Value History Sparkline */}
+          {valueHistory.length > 0 && (
+            <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[10px] text-muted uppercase tracking-wider">Estimated Value History</div>
+                <div className="text-xs font-bold font-mono text-foreground">
+                  ${valueHistory[valueHistory.length - 1]?.value.toFixed(2)}
+                </div>
+              </div>
+              {(() => {
+                const prices = valueHistory.map(p => p.value);
+                const max = Math.max(...prices);
+                const min = Math.min(...prices);
+                const spread = max - min || 1;
+                const h = 60;
+                const w = 100;
+                const isUp = prices[prices.length - 1] >= prices[0];
+                const points = prices.map((p, i) => ({
+                  x: (i / (prices.length - 1)) * w,
+                  y: h - ((p - min) / spread) * (h - 8) - 4,
+                }));
+                const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
+                const color = isUp ? 'rgb(34,197,94)' : 'rgb(239,68,68)';
+                const pctChange = ((prices[prices.length - 1] - prices[0]) / prices[0] * 100).toFixed(1);
+                return (
+                  <>
+                    <svg viewBox={`0 0 ${w} ${h}`} className="w-full" preserveAspectRatio="none" style={{ height: h }}>
+                      <defs>
+                        <linearGradient id="valueGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
+                          <stop offset="100%" stopColor={color} stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d={areaPath} fill="url(#valueGrad)" />
+                      <path d={linePath} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <span className="text-[9px] text-muted">90 day trend</span>
+                      <span className={`text-[10px] font-bold ${isUp ? 'text-green-400' : 'text-red-400'}`}>
+                        {isUp ? '+' : ''}{pctChange}%
+                      </span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Legacy Score — owned cards only */}
+          {isOwned && legacyData && (
+            <div className="p-4 rounded-2xl bg-surface border border-border mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[10px] text-muted uppercase tracking-wider">Legacy Score</div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                    style={{
+                      color: getLegacyTierConfig(legacyData.tier).color,
+                      background: `${getLegacyTierConfig(legacyData.tier).color}15`,
+                    }}
+                  >
+                    {getLegacyTierConfig(legacyData.tier).label}
+                  </span>
+                  <span className="text-lg font-bold font-mono text-foreground">{legacyData.score}</span>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                {([
+                  { key: 'age' as const, label: 'Age', icon: '⏳', max: 30 },
+                  { key: 'battles' as const, label: 'Battles', icon: '⚔️', max: 30 },
+                  { key: 'lineage' as const, label: 'Lineage', icon: '📜', max: 20 },
+                  { key: 'rarity' as const, label: 'Rarity', icon: '💎', max: 20 },
+                ]).map(dim => (
+                  <div key={dim.key} className="flex items-center gap-2">
+                    <span className="text-[10px] w-4">{dim.icon}</span>
+                    <span className="text-[9px] text-muted w-12">{dim.label}</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-border/40 overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full bg-accent/60"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(legacyData.breakdown[dim.key] / dim.max) * 100}%` }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                      />
+                    </div>
+                    <span className="text-[9px] font-mono text-muted w-6 text-right">
+                      {legacyData.breakdown[dim.key]}/{dim.max}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Card Journey — provenance timeline */}
+          {isOwned && cardHistory && (
+            <CardJourney history={cardHistory.history} acquiredAt={cardHistory.acquiredAt} />
+          )}
+
           {/* Lore text */}
           <div className="p-4 rounded-2xl bg-surface/50 border border-border/50 mb-6">
             <div className="text-[10px] text-muted uppercase tracking-wider mb-2">From the Source</div>
             <p className="text-sm text-foreground/70 italic leading-relaxed">{card.loreText}</p>
+            <LoreFragment character={card.character} />
           </div>
+
+          {/* Ghost Card Whispers — breadcrumbs to related ghosts */}
+          {isOwned && isGhostCard(card.id) && (() => {
+            const whispers = getWhispersForGhost(card.id);
+            if (whispers.length === 0) return null;
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="p-4 rounded-2xl mb-6 border"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.02), rgba(129,140,248,0.05))',
+                  borderColor: 'rgba(129,140,248,0.15)',
+                }}
+              >
+                <div className="text-[10px] uppercase tracking-wider mb-3 text-purple-400">Whispers from the Void</div>
+                <div className="space-y-3">
+                  {whispers.map(w => (
+                    <div key={w.toGhostId} className="pl-3 border-l-2 border-purple-500/20">
+                      <p className="text-xs text-foreground/60 italic leading-relaxed">&ldquo;{w.hint}&rdquo;</p>
+                      <p className="text-[10px] text-muted/50 mt-1">{w.conditionHint}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })()}
 
           {/* Related cards */}
           {relatedCards.length > 0 && (
@@ -357,6 +654,11 @@ export default function CardDetailPage({ params }: { params: Promise<{ id: strin
           )}
         </motion.div>
       </div>
+
+      {/* Share modal */}
+      {showShare && card && (
+        <ShareCard card={card} onClose={() => setShowShare(false)} />
+      )}
     </div>
   );
 }

@@ -6,9 +6,87 @@ import Link from 'next/link';
 import CardItem from '@/components/CardItem';
 import { SETS } from '@/data/sets';
 import { Card, SCARCITY_CONFIG } from '@/data/types';
-import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addOwnedCards, addXP, getOwnedCardIds } from '@/lib/store';
+import { generatePack, generateFirstPack, getPackCredits, usePackCredit, addPackCredits, addOwnedCards, addXP, getOwnedCardIds, revealCard, getDailyPackState, claimDailyPack, progressDailyMission } from '@/lib/store';
 import { getOnboardingState, updateOnboarding, checkUnlocks } from '@/lib/onboarding';
+import { checkAchievements, getAchievementById } from '@/lib/achievements';
+import AchievementCelebration from '@/components/AchievementCelebration';
+import { Achievement } from '@/data/types';
 import { useSearchParams } from 'next/navigation';
+import { isSeasonActive, getSeasonTimeRemaining, CURRENT_SEASON } from '@/lib/seasonal-vault';
+import { SEASONAL_CARDS } from '@/data/seasonal-cards';
+
+function SeasonBanner() {
+  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 });
+  const [active, setActive] = useState(true);
+
+  useEffect(() => {
+    setActive(isSeasonActive());
+    setTime(getSeasonTimeRemaining());
+    const interval = setInterval(() => {
+      setTime(getSeasonTimeRemaining());
+      setActive(isSeasonActive());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-6 p-4 rounded-2xl overflow-hidden relative"
+      style={{
+        background: active
+          ? `linear-gradient(135deg, ${CURRENT_SEASON.gradientFrom}20, ${CURRENT_SEASON.gradientTo}20)`
+          : 'linear-gradient(135deg, rgba(107,112,148,0.1), rgba(107,112,148,0.05))',
+        border: active ? `1px solid ${CURRENT_SEASON.gradientFrom}30` : '1px solid rgba(107,112,148,0.2)',
+      }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">{active ? CURRENT_SEASON.icon : '🔒'}</span>
+          <div>
+            <div className="text-xs font-bold" style={{ color: active ? '#f97316' : '#6b7094' }}>
+              {CURRENT_SEASON.subtitle}
+            </div>
+            <div className="text-[10px] text-muted">
+              {active ? '3 exclusive legendaries — only available this season' : 'Season ended — vault sealed'}
+            </div>
+          </div>
+        </div>
+        {active && time.total > 0 && (
+          <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/20">
+            <span className="text-[10px] font-bold font-mono text-red-400">
+              {time.days}d {time.hours}h {time.minutes}m {time.seconds}s
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Seasonal card preview */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar">
+        {SEASONAL_CARDS.map((card) => (
+          <div key={card.id} className="relative shrink-0">
+            <CardItem card={card} size="sm" interactive={false} />
+            {!active && (
+              <div className="absolute inset-0 rounded-xl bg-black/60 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="text-lg">🔒</span>
+                  <div className="text-[8px] font-bold text-muted mt-0.5">VAULT SEALED</div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {active && (
+        <Link href="/forge" className="mt-3 block text-center text-[10px] text-orange-400 hover:text-orange-300 font-bold">
+          Forge cards at seasonal discount (2 instead of 3) →
+        </Link>
+      )}
+    </motion.div>
+  );
+}
 
 function PacksContent() {
   const searchParams = useSearchParams();
@@ -23,15 +101,45 @@ function PacksContent() {
   const [anticipationPhase, setAnticipationPhase] = useState(false);
   const [selectedSet, setSelectedSet] = useState<string>('');
   const [isGuidedMode, setIsGuidedMode] = useState(false);
+  const [revealedInSession, setRevealedInSession] = useState<Set<string>>(new Set());
+  const [revealingCardId, setRevealingCardId] = useState<string | null>(null);
+  const [celebrationQueue, setCelebrationQueue] = useState<Achievement[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [achievementsChecked, setAchievementsChecked] = useState(false);
+  const [dailyPackAvailable, setDailyPackAvailable] = useState(false);
+  const [dailyCountdown, setDailyCountdown] = useState('');
 
   useEffect(() => {
     setPackCreditsState(getPackCredits());
+    const dp = getDailyPackState();
+    setDailyPackAvailable(dp.available);
     // Auto-open first pack if coming from welcome screen
     if (isFirstPack && !getOnboardingState().hasOpenedFirstPack) {
       setIsGuidedMode(true);
       openPack('mixed', true);
     }
   }, [isFirstPack]);
+
+  // Daily pack countdown timer
+  useEffect(() => {
+    if (dailyPackAvailable) return;
+    const tick = () => {
+      const dp = getDailyPackState();
+      if (dp.available) {
+        setDailyPackAvailable(true);
+        setDailyCountdown('');
+        return;
+      }
+      const ms = dp.nextResetMs;
+      const h = Math.floor(ms / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      setDailyCountdown(`${h}h ${m}m ${s}s`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [dailyPackAvailable]);
 
   const openPack = useCallback((setSlug: string, rigged: boolean = false) => {
     if (!usePackCredit()) return;
@@ -76,6 +184,21 @@ function PacksContent() {
     }
   }, [currentReveal, revealedCards.length]);
 
+  const handleCardTap = useCallback((card: Card) => {
+    if (revealedInSession.has(card.id) || revealingCardId) return;
+    setRevealingCardId(card.id);
+    // Phase 1 (0-500ms): Ring expansion + scale pulse (visual only via motion state)
+    // Phase 2 (500ms): Flash + reveal — flip forceRevealed, persist to localStorage
+    setTimeout(() => {
+      revealCard(card.id);
+      setRevealedInSession(prev => new Set([...prev, card.id]));
+    }, 500);
+    // Phase 3 (1200ms): Clear revealing state (particles still visible but completing)
+    setTimeout(() => {
+      setRevealingCardId(null);
+    }, 1200);
+  }, [revealedInSession, revealingCardId]);
+
   const resetPack = useCallback(() => {
     setRevealedCards([]);
     setCurrentReveal(-1);
@@ -83,9 +206,31 @@ function PacksContent() {
     setAnticipationPhase(false);
     setNewCards(new Set());
     setDuplicates(new Set());
+    setRevealedInSession(new Set());
+    setRevealingCardId(null);
+    setAchievementsChecked(false);
+    setCelebrationQueue([]);
+    setShowCelebration(false);
   }, []);
 
-  const allRevealed = currentReveal >= revealedCards.length - 1 && revealedCards.length > 0;
+  const currentCardRevealed = revealedCards[currentReveal] ? revealedInSession.has(revealedCards[currentReveal].id) : false;
+  const allRevealed = currentReveal >= revealedCards.length - 1 && revealedCards.length > 0 && currentCardRevealed;
+
+  // Check achievements when pack is fully revealed
+  useEffect(() => {
+    if (allRevealed && !achievementsChecked) {
+      setAchievementsChecked(true);
+      const newIds = checkAchievements();
+      if (newIds.length > 0) {
+        const achievements = newIds
+          .map(id => getAchievementById(id))
+          .filter(Boolean) as Achievement[];
+        setCelebrationQueue(achievements);
+        // Small delay so user sees the "pack complete" state first
+        setTimeout(() => setShowCelebration(true), 800);
+      }
+    }
+  }, [allRevealed, achievementsChecked]);
 
   // Full-screen pack opening experience
   if (isOpening) {
@@ -181,27 +326,33 @@ function PacksContent() {
               />
             )}
 
-            {/* Card count */}
+            {/* Card count — dots hide rarity until revealed */}
             <div className="absolute top-6 left-0 right-0 flex justify-center">
               <div className="flex items-center gap-2">
-                {revealedCards.map((card, idx) => (
-                  <motion.div
-                    key={idx}
-                    className="w-3 h-3 rounded-full transition-all"
-                    animate={{
-                      scale: idx === currentReveal ? 1.3 : 1,
-                      opacity: idx <= currentReveal ? 1 : 0.3,
-                    }}
-                    style={{
-                      background: idx <= currentReveal ? SCARCITY_CONFIG[card.scarcity].color : '#1f2237',
-                      boxShadow: idx === currentReveal ? `0 0 8px ${SCARCITY_CONFIG[card.scarcity].color}` : 'none',
-                    }}
-                  />
-                ))}
+                {revealedCards.map((card, idx) => {
+                  const dotRevealed = revealedInSession.has(card.id);
+                  return (
+                    <motion.div
+                      key={idx}
+                      className="w-3 h-3 rounded-full transition-all"
+                      animate={{
+                        scale: idx === currentReveal ? 1.3 : 1,
+                        opacity: idx <= currentReveal ? 1 : 0.3,
+                      }}
+                      style={{
+                        background: idx < currentReveal || (idx === currentReveal && dotRevealed)
+                          ? SCARCITY_CONFIG[card.scarcity].color
+                          : idx <= currentReveal ? '#4a4e6a' : '#1f2237',
+                        boxShadow: idx === currentReveal && dotRevealed
+                          ? `0 0 8px ${SCARCITY_CONFIG[card.scarcity].color}` : 'none',
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
-            {/* The card */}
+            {/* The card — sealed reveal flow */}
             <AnimatePresence mode="wait">
               {currentCard && (
                 <motion.div
@@ -211,13 +362,58 @@ function PacksContent() {
                   exit={{ scale: 0.8, opacity: 0, x: -200 }}
                   transition={{ type: 'spring', stiffness: 150, damping: 15 }}
                   className={`relative ${
-                    currentCard.scarcity === 'legendary' ? 'glow-legendary' :
-                    currentCard.scarcity === 'epic' ? 'glow-epic' :
-                    currentCard.scarcity === 'rare' ? 'glow-rare' : ''
-                  } rounded-xl`}
+                    revealedInSession.has(currentCard.id) ? (
+                      currentCard.scarcity === 'legendary' ? 'glow-legendary' :
+                      currentCard.scarcity === 'epic' ? 'glow-epic' :
+                      currentCard.scarcity === 'rare' ? 'glow-rare' : ''
+                    ) : ''
+                  } rounded-xl cursor-pointer`}
+                  onClick={() => handleCardTap(currentCard)}
                 >
-                  {/* Burst for epic/legendary */}
-                  {(currentCard.scarcity === 'epic' || currentCard.scarcity === 'legendary') && (
+                  {/* Rarity gate ring — expanding glow on tap (Honkai pattern) */}
+                  {revealingCardId === currentCard.id && (
+                    <motion.div
+                      className="absolute inset-0 z-30 pointer-events-none rounded-xl"
+                      initial={{ opacity: 0.9, scale: 0.85 }}
+                      animate={{ opacity: 0, scale: 1.6 }}
+                      transition={{ duration: 0.7, ease: 'easeOut' }}
+                      style={{
+                        border: `3px solid ${SCARCITY_CONFIG[currentCard.scarcity].color}`,
+                        boxShadow: `0 0 40px ${SCARCITY_CONFIG[currentCard.scarcity].color}80, inset 0 0 40px ${SCARCITY_CONFIG[currentCard.scarcity].color}30`,
+                      }}
+                    />
+                  )}
+
+                  {/* Scale pulse wrapper during reveal */}
+                  <motion.div
+                    animate={revealingCardId === currentCard.id
+                      ? { scale: [1, 1.08, 0.97, 1.04, 1] }
+                      : { scale: 1 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  >
+                    <CardItem
+                      card={currentCard}
+                      size="lg"
+                      interactive={false}
+                      forceRevealed={revealedInSession.has(currentCard.id)}
+                    />
+                  </motion.div>
+
+                  {/* Reveal flash — bright burst covers the seal-break moment */}
+                  {revealedInSession.has(currentCard.id) && (
+                    <motion.div
+                      className="absolute inset-0 z-30 pointer-events-none rounded-xl"
+                      initial={{ opacity: 0.95 }}
+                      animate={{ opacity: 0 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      style={{
+                        background: `radial-gradient(circle at 50% 50%, ${SCARCITY_CONFIG[currentCard.scarcity].color}aa, ${SCARCITY_CONFIG[currentCard.scarcity].color}40, transparent)`,
+                      }}
+                    />
+                  )}
+
+                  {/* Radial burst for epic/legendary — fires on REVEAL, not arrive */}
+                  {revealedInSession.has(currentCard.id) && (currentCard.scarcity === 'epic' || currentCard.scarcity === 'legendary') && (
                     <motion.div
                       initial={{ opacity: 1, scale: 0.5 }}
                       animate={{ opacity: 0, scale: 5 }}
@@ -231,105 +427,129 @@ function PacksContent() {
                     />
                   )}
 
-                  {/* Particles for legendary */}
-                  {currentCard.scarcity === 'legendary' && (
+                  {/* Particles — fire on REVEAL, count scales with rarity */}
+                  {revealedInSession.has(currentCard.id) && currentCard.scarcity !== 'common' && currentCard.scarcity !== 'uncommon' && (
                     <>
-                      {Array.from({ length: 12 }).map((_, pi) => (
+                      {Array.from({ length: currentCard.scarcity === 'legendary' ? 24 : currentCard.scarcity === 'epic' ? 16 : 8 }).map((_, pi) => (
                         <motion.div
                           key={pi}
                           initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
                           animate={{
                             opacity: 0,
-                            y: -120 - Math.random() * 80,
-                            x: (Math.random() - 0.5) * 160,
+                            y: -100 - Math.random() * 100,
+                            x: (Math.random() - 0.5) * 200,
                             scale: 0,
                           }}
-                          transition={{ duration: 2 + Math.random(), delay: 0.1 + pi * 0.06 }}
+                          transition={{ duration: 1.5 + Math.random(), delay: pi * 0.03 }}
                           className="absolute z-30 pointer-events-none"
                           style={{
                             left: `${10 + Math.random() * 80}%`,
-                            bottom: `${5 + Math.random() * 40}%`,
+                            bottom: `${10 + Math.random() * 40}%`,
                             width: 3 + Math.random() * 5,
                             height: 3 + Math.random() * 5,
                             borderRadius: '50%',
-                            background: '#f59e0b',
-                            boxShadow: '0 0 8px #f59e0b',
+                            background: SCARCITY_CONFIG[currentCard.scarcity].color,
+                            boxShadow: `0 0 8px ${SCARCITY_CONFIG[currentCard.scarcity].color}`,
                           }}
                         />
                       ))}
                     </>
                   )}
-
-                  <CardItem card={currentCard} size="lg" />
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Card info */}
+            {/* Card info — sealed: tap prompt / revealed: character details */}
             {currentCard && (
               <motion.div
-                key={`info-${currentReveal}`}
+                key={`info-${currentReveal}-${revealedInSession.has(currentCard.id) ? 'r' : 's'}`}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.3 }}
                 className="mt-4 text-center"
               >
-                <p className="text-lg font-bold">{currentCard.character}</p>
-                <p className="text-sm text-muted">{currentCard.moment}</p>
-                <div className="flex items-center justify-center gap-2 mt-1">
-                  <span className="text-sm font-bold" style={{ color: SCARCITY_CONFIG[currentCard.scarcity].color }}>
-                    {SCARCITY_CONFIG[currentCard.scarcity].label}
-                  </span>
-                  {currentCard.parallel !== 'base' && (
-                    <span className="text-xs text-muted capitalize">• {currentCard.parallel}</span>
-                  )}
-                  {currentCard.scarcity !== 'common' && (
-                    <span className="text-xs text-muted font-mono">#{currentCard.serialNumber}/{currentCard.maxSerial}</span>
-                  )}
-                </div>
-
-                {/* Guided tutorial text (first pack only) */}
-                {isGuidedMode && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="text-xs text-accent/80 mt-2 max-w-xs mx-auto italic"
+                {!revealedInSession.has(currentCard.id) ? (
+                  /* Sealed state — pulse "Tap to reveal" */
+                  <motion.div
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
                   >
-                    {currentReveal === 0 && 'Your first card. Every card captures a legendary moment from the world\'s greatest stories.'}
-                    {currentReveal === 1 && 'Each card belongs to a themed set. Complete sets to earn exclusive rewards.'}
-                    {currentReveal === 2 && currentCard.scarcity !== 'common' && `A ${SCARCITY_CONFIG[currentCard.scarcity].label} card! Only ${currentCard.maxSerial} of these exist.`}
-                    {currentReveal === 2 && currentCard.scarcity === 'common' && 'Common cards are the foundation. Collect them all to complete your sets.'}
-                    {currentReveal === 3 && 'Cards come in parallels — Silver, Gold, Holographic, and the ultra-rare Obsidian.'}
-                    {currentReveal === 4 && 'Your collection has begun. 2 more packs are waiting.'}
-                  </motion.p>
-                )}
+                    <p className="text-base text-white/60 font-medium">Tap to reveal</p>
+                  </motion.div>
+                ) : (
+                  /* Revealed state — character info with entrance animation */
+                  <>
+                    <motion.p
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="text-lg font-bold"
+                    >
+                      {currentCard.character}
+                    </motion.p>
+                    <p className="text-sm text-muted">{currentCard.moment}</p>
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <span className="text-sm font-bold" style={{ color: SCARCITY_CONFIG[currentCard.scarcity].color }}>
+                        {SCARCITY_CONFIG[currentCard.scarcity].label}
+                      </span>
+                      {currentCard.parallel !== 'base' && (
+                        <span className="text-xs text-muted capitalize">• {currentCard.parallel}</span>
+                      )}
+                      {currentCard.scarcity !== 'common' && (
+                        <span className="text-xs text-muted font-mono">#{currentCard.serialNumber}/{currentCard.maxSerial}</span>
+                      )}
+                    </div>
 
-                {!isGuidedMode && (
-                  <motion.p
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className={`text-xs mt-1 font-bold ${
-                      newCards.has(currentCard.id) ? 'text-green-400' : 'text-yellow-400/70'
-                    }`}
-                  >
-                    {newCards.has(currentCard.id) ? '✨ NEW CARD!' : '↻ Already in collection'}
-                  </motion.p>
+                    {/* Guided tutorial text (first pack only) — shows after reveal */}
+                    {isGuidedMode && (
+                      <motion.p
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="text-xs text-accent/80 mt-2 max-w-xs mx-auto italic"
+                      >
+                        {currentReveal === 0 && 'Your first card. Every card captures a legendary moment from the world\'s greatest stories.'}
+                        {currentReveal === 1 && 'Each card belongs to a themed set. Complete sets to earn exclusive rewards.'}
+                        {currentReveal === 2 && currentCard.scarcity !== 'common' && `A ${SCARCITY_CONFIG[currentCard.scarcity].label} card! Only ${currentCard.maxSerial} of these exist.`}
+                        {currentReveal === 2 && currentCard.scarcity === 'common' && 'Common cards are the foundation. Collect them all to complete your sets.'}
+                        {currentReveal === 3 && 'Cards come in parallels — Silver, Gold, Holographic, and the ultra-rare Obsidian.'}
+                        {currentReveal === 4 && 'Your collection has begun. 2 more packs are waiting.'}
+                      </motion.p>
+                    )}
+
+                    {!isGuidedMode && (
+                      <motion.p
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        className={`text-xs mt-1 font-bold ${
+                          newCards.has(currentCard.id) ? 'text-green-400' : 'text-yellow-400/70'
+                        }`}
+                      >
+                        {newCards.has(currentCard.id) ? 'NEW CARD!' : 'Already in collection'}
+                      </motion.p>
+                    )}
+                  </>
                 )}
               </motion.div>
             )}
 
-            {/* Action buttons */}
+            {/* Action buttons — gated on reveal state */}
             <div className="mt-8 flex items-center gap-3">
               {!allRevealed ? (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={revealNext}
-                  className="px-10 py-3.5 rounded-2xl bg-accent text-white font-bold text-sm shadow-lg shadow-accent/20"
-                >
-                  Next Card
-                </motion.button>
+                <AnimatePresence>
+                  {currentCardRevealed && currentReveal < revealedCards.length - 1 && (
+                    <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={revealNext}
+                      className="px-10 py-3.5 rounded-2xl bg-accent text-white font-bold text-sm shadow-lg shadow-accent/20"
+                    >
+                      Next Card
+                    </motion.button>
+                  )}
+                </AnimatePresence>
               ) : (
                 <div className="flex flex-col items-center gap-3">
                   <div className="text-center mb-2">
@@ -388,7 +608,7 @@ function PacksContent() {
                       transition={{ delay: idx * 0.08 }}
                       className="relative"
                     >
-                      <CardItem card={card} size="sm" />
+                      <CardItem card={card} size="sm" interactive={false} forceRevealed={true} />
                       <div className={`absolute -top-1 -right-1 px-1 py-0.5 rounded text-[7px] font-bold ${
                         newCards.has(card.id) ? 'bg-green-500 text-white' : 'bg-yellow-500/80 text-white'
                       }`}>
@@ -401,6 +621,20 @@ function PacksContent() {
             )}
           </div>
         )}
+
+        {/* Achievement celebration */}
+        <AchievementCelebration
+          visible={showCelebration && celebrationQueue.length > 0}
+          achievement={celebrationQueue[0] ?? null}
+          onDone={() => {
+            if (celebrationQueue.length <= 1) {
+              setShowCelebration(false);
+              setCelebrationQueue([]);
+            } else {
+              setCelebrationQueue(prev => prev.slice(1));
+            }
+          }}
+        />
       </div>
     );
   }
@@ -409,13 +643,54 @@ function PacksContent() {
   return (
     <div className="px-4 pt-6 pb-24">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="text-xl font-bold">Open Packs</h1>
+        <h1 className="type-heading">Open Packs</h1>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-accent/10 border border-accent/20">
           <span className="text-sm">🎁</span>
           <span className="text-sm font-bold text-accent">{packCredits}</span>
         </div>
       </div>
-      <p className="text-xs text-muted mb-6">5 cards per pack. Guaranteed 1 Uncommon+. Cards added permanently.</p>
+      <p className="text-xs text-muted mb-4">5 cards per pack. Guaranteed 1 Uncommon+. Cards added permanently.</p>
+
+      {/* Daily Free Pack */}
+      {dailyPackAvailable ? (
+        <motion.button
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            if (claimDailyPack()) {
+              setDailyPackAvailable(false);
+              progressDailyMission('open-pack');
+              // Grant 1 free credit so openPack's usePackCredit() succeeds
+              addPackCredits(1);
+              openPack('mixed');
+            }
+          }}
+          className="w-full mb-4 p-4 rounded-2xl text-left bg-gradient-to-r from-emerald-500/15 to-teal-500/15 border-2 border-emerald-500/30"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🎁</span>
+            <div className="flex-1">
+              <div className="text-sm font-bold text-emerald-400">Daily Free Pack</div>
+              <div className="text-[10px] text-muted">Guaranteed Uncommon+. Claim now!</div>
+            </div>
+            <span className="text-xs text-emerald-400 font-bold bg-emerald-400/10 px-2 py-1 rounded-lg">FREE</span>
+          </div>
+        </motion.button>
+      ) : (
+        <div className="mb-4 p-3 rounded-xl bg-surface/40 border border-border/30">
+          <div className="flex items-center gap-3">
+            <span className="text-xl opacity-50">🎁</span>
+            <div className="flex-1">
+              <div className="text-xs text-muted">Daily pack claimed</div>
+              <div className="text-[10px] text-muted/50">{dailyCountdown ? `Next pack in ${dailyCountdown}` : 'Next pack at midnight UTC'}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Season Countdown + Exclusive Cards */}
+      <SeasonBanner />
 
       {packCredits <= 0 && (
         <div className="mb-6 p-4 rounded-2xl bg-surface border border-border text-center">

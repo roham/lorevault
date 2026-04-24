@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'>
+  <rect width='512' height='512' rx='32' fill='#0a0b14'/>
+  <rect x='8' y='8' width='176' height='176' rx='28' fill='none' stroke='#818cf8' stroke-width='2'/>
+  <text x='96' y='110' text-anchor='middle' font-size='72' fill='#818cf8' font-family='system-ui' font-weight='bold'>LV</text>
+  <text x='96' y='145' text-anchor='middle' font-size='18' fill='#6b7094' font-family='system-ui'>VAULT</text>
+</svg>

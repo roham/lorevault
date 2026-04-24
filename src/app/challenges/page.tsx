@@ -58,7 +58,7 @@ export default function ChallengesPage() {
       {/* Header with streak */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold">Missions</h1>
+          <h1 className="type-heading">Missions</h1>
           <p className="text-xs text-muted">{activeChallenges.length} active</p>
         </div>
         <div className="flex items-center gap-3">
