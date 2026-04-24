@@ -1,5 +1,7 @@
-// LoreVault Service Worker — stale-while-revalidate for all assets
-const CACHE_NAME = 'lorevault-v2';
+// LoreVault Service Worker — stale-while-revalidate for static assets only.
+// /api/* is always network-only (fixes cached 403s from token-gated endpoints).
+// /moodboard* is always network-only (dynamic survey surface).
+const CACHE_NAME = 'lorevault-v3';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -18,6 +20,11 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Never cache API or moodboard traffic — token gates make stale responses dangerous
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/moodboard')) {
+    return; // fall through to default network behavior
+  }
 
   // Network-first for HTML pages
   if (event.request.headers.get('accept')?.includes('text/html')) {
