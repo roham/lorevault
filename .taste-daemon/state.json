@@ -1,0 +1,16 @@
+{
+  "cycle": 2,
+  "today": "2026-04-24",
+  "todaySpendUsd": 9.69,
+  "lastTasteModelUpdate": null,
+  "lastAuditAt": null,
+  "lastArtAt": "2026-04-24T08:13:07Z",
+  "manifestItems": 57,
+  "consecutiveBuildFails": 0,
+  "commentClusterCentroids": [],
+  "moderationBlockList": [
+    "snow-white::risograph-duotone",
+    "snow-white::pulp-scifi",
+    "evil-queen::pixel-16bit"
+  ]
+}
