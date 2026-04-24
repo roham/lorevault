@@ -68,7 +68,7 @@ You do not do everything every cycle. You pick **one track** based on state and 
 
 ### Selection rule (evaluate top-to-bottom, first match wins)
 
-1. **Art-Seed** — if `manifest.items.length < 50`, pick this. Generate broadly across 20 characters × 20 styles × 1 variant each. Seed the mood-board so the CEO has something to vote on.
+1. **Art-Seed** — if `manifest.items.length < 50`, pick this. **Run `node scripts/seed-moodboard.mjs --count=50 --concurrency=10`** (batched parallel generation — ~3 min vs ~30 min serial). Commit the manifest + webp files, push, let Vercel deploy. Do NOT LLM-drive each image call.
 2. **Build-Red** — if the last build on `main` is failing (check `gh api repos/roham/lorevault/commits/main/statuses`), pick this. Fix the build. Nothing else matters until green.
 3. **Audit-Hot** — if `EXPERIENCE-AUDIT.md` has no entry in the last 12 hours OR any route's verdict < 3/5, pick this. Playwright-walk 3 routes at 375×812, screenshot every state, fix the top 1 issue.
 4. **Taste-Update** — if there are > 20 new CEO votes since last update to `TASTE-MODEL.md`, pick this. Re-read votes from KV, re-cluster, rewrite the taste model. No other changes.
