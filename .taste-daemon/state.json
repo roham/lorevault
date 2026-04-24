@@ -1,13 +1,29 @@
 {
-  "cycle": 4,
+  "cycle": 7,
   "today": "2026-04-24",
   "todaySpendUsd": 9.69,
-  "lastTasteModelUpdate": "2026-04-24T15:38:00Z",
+  "lastTasteModelUpdate": "2026-04-24T16:45:00Z",
   "lastAuditAt": "2026-04-24T14:35:20.756720Z",
   "lastArtAt": "2026-04-24T08:13:07Z",
-  "manifestItems": 134,
+  "manifestItems": 267,
   "consecutiveBuildFails": 0,
-  "commentClusterCentroids": [],
+  "commentClusterCentroids": [
+    {
+      "id": 1,
+      "label": "Need more epic / go wilder / too simple",
+      "count": 12
+    },
+    {
+      "id": 2,
+      "label": "Too old school / too static",
+      "count": 3
+    },
+    {
+      "id": 3,
+      "label": "Good start, need more epic",
+      "count": 2
+    }
+  ],
   "moderationBlockList": [
     "snow-white::risograph-duotone",
     "snow-white::pulp-scifi",
