@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-const TOKEN = process.env.MOODBOARD_TOKEN;
+const TOKEN = process.env.MOODBOARD_TOKEN?.trim();
 
 export async function GET(request: NextRequest) {
   const tok = request.nextUrl.searchParams.get('k');
