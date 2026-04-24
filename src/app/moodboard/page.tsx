@@ -82,6 +82,16 @@ function MoodboardBody() {
       const stored = localStorage.getItem(LS_TOKEN);
       if (stored) setToken(stored);
     }
+    // Nuclear cache bust: force any prior SW to update, drop all CacheStorage entries.
+    // Prior versions of the SW cached 403 responses from the token-gated endpoints.
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.update().catch(() => {}));
+      }).catch(() => {});
+    }
+    if (typeof caches !== 'undefined') {
+      caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k)))).catch(() => {});
+    }
   }, [urlToken]);
 
   // Load manifest (once token is resolved — either from URL or localStorage)
