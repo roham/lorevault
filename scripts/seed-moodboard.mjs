@@ -28,7 +28,7 @@ const CONCURRENCY = parseInt(args.concurrency ?? '5', 10);
 const RATE_LIMIT_PER_MIN = parseInt(args.rpm ?? '5', 10); // gpt-image-1 tier-1 = 5/min
 const MAX_RETRIES = parseInt(args.retries ?? '4', 10);
 const FORCE = args.force === 'true' || args.force === '1';
-const PROMPT_VERSION = 5; // v5: density + ornate detail restored, safety-neutral language preserved
+const PROMPT_VERSION = 6; // v6: MODES not styles — photoreal-time-travel, mythic-cosmic, cyber-reimagined, dream-psychedelic, painterly-epic, ornate-ritual
 
 const OUT_DIR = path.resolve(process.cwd(), 'public/moodboard-art');
 const MANIFEST = path.join(OUT_DIR, 'manifest.json');
@@ -139,39 +139,29 @@ const CHARACTERS = [
     origin: 'Hesiod, c.700 BCE' },
 ];
 
-// Style descriptions are aimed at peak collectible-card art — premium mythic-rare TCG,
-// holographic, cinematic. Each description forces density of detail, dramatic lighting,
-// and a hero-shot composition.
+// v6 reconceives STYLES as MODES — not illustration traditions but rendering LENSES
+// that can be applied to any character. User directive: not historically accurate,
+// photorealistic time-travel; not reverent, wilder; not period-illustrated, lived-in.
+// Six modes = six ways to see the same subject.
 const STYLES = [
-  // Powerhouse painterly — the Frazetta/Struzan/Amano lineage
-  { slug: 'frazetta-painterly', style: 'Frazetta painterly fantasy', desc: 'Frank Frazetta oil-on-board fantasy painting — heroic anatomy, volumetric amber-and-crimson lighting, dynamic diagonal composition, impasto brushwork, epic mood, museum fantasy masterwork' },
-  { slug: 'struzan-poster', style: 'Drew Struzan theatrical', desc: 'Drew Struzan theatrical movie poster — cinematic hero-shot, airbrush-meets-pencil realism, golden rim light and deep negative space, supporting scene elements orbiting the subject, 1980s blockbuster grandeur' },
-  { slug: 'alex-ross-realism', style: 'Alex Ross hyper-realist', desc: 'Alex Ross gouache hyper-realism — photoreal figure study, dramatic low-angle hero framing, sculptural lighting, saturated color against muted sky, iconic comic-cover gravitas' },
-  { slug: 'amano-ethereal', style: 'Yoshitaka Amano ethereal', desc: 'Yoshitaka Amano ethereal watercolor — translucent washes, elongated figures, metallic gold leaf accents, negative space bloom, dreamlike fantasy royalty, Final Fantasy concept-art splendor' },
-  { slug: 'mtg-mythic', style: 'Premium mythic card art', desc: 'Premium mythic-rare TCG art — lush painterly fantasy, dramatic action in a detailed environment, cinematic rim light, chromatic saturation, atmospheric effects, premium collectible-card composition' },
-  { slug: 'beksinski-surreal', style: 'Beksiński dark surrealism', desc: 'Zdzisław Beksiński dark surrealism — otherworldly decay, ochre and blood palette, architectural dread, painterly textures, unsettling sublime' },
-  { slug: 'ghibli-painted', style: 'Studio Ghibli painted', desc: 'Studio Ghibli painted background — Kazuo Oga-style atmospheric perspective, soft gouache, luminous natural light, hand-painted environmental richness, humane awe' },
-  { slug: 'mucha-maximal', style: 'Mucha maximal Art Nouveau', desc: 'Alphonse Mucha maximalist Art Nouveau — ornamental gilded frame integrated into the composition, flowing hair as decorative border, halo of botanical filigree, jewel-tone flat color against gold leaf, stained-glass pattern backdrop' },
-  // Refined historical — pushed toward their most dramatic expressions
-  { slug: 'baroque-oil', style: 'Baroque oil chiaroscuro', desc: 'Caravaggio tenebrism oil painting — single dramatic directional light source out of deep black, jewel-tone velvet and gold, visible impasto, theatrical religious-painting gravitas, museum old-master finish' },
-  { slug: 'dore-etching', style: 'Gustave Doré engraving', desc: 'Gustave Doré steel engraving — infinite fine crosshatch depth, apocalyptic chiaroscuro, Inferno-level dramatic density, sepia monochrome, sublime Victorian fantasy illustration' },
-  { slug: 'tarot-baroque', style: 'Baroque tarot card', desc: 'Baroque tarot card illustration in the Rider-Waite-Smith lineage pushed to maximum — ornate gold-foil frame integrated into the art, symbolic iconography encoded in the composition, jewel-tone flat color plates, medieval illumination density' },
-  { slug: 'stained-glass', style: 'Cathedral stained glass', desc: 'Cathedral stained-glass panel at maximum density — heavy black leaded lines defining every contour, saturated jewel-tone glass (ruby, sapphire, emerald), backlit cathedral luminosity, ornamental tracery border' },
-  { slug: 'german-expressionist', style: 'Expressionist woodblock', desc: 'German expressionist woodblock print in the Kirchner/Nolde lineage — jagged gouged lines, stark psychological intensity, bold chromatic accents against monochrome chaos, Caligari-era cinema atmosphere' },
-  { slug: 'moebius-comic', style: 'Moebius comic panel', desc: 'Jean Giraud "Moebius" comic art — clean confident linework, flat washed alien color, surreal architectural detail, 1970s Métal Hurlant grandeur, dreamlike hero composition' },
-  { slug: 'golden-age-illustration', style: 'Golden Age storybook', desc: 'Golden Age of Illustration — Arthur Rackham and Edmund Dulac combined, watercolor and ink, gnarled detailed trees and delicate figures, borderline gilt frame, Edwardian fantasy book-plate quality' },
-  { slug: 'deco-travel-poster', style: 'Art Deco hero poster', desc: 'Art Deco theatrical poster — bold geometric shapes, stylized silhouette at heroic scale, ziggurat-era sunburst behind subject, gold leaf and three-color saturated palette, 1930s monumental graphic design' },
-  { slug: 'cyberpunk-noir', style: 'Cyberpunk neon epic', desc: 'Cyberpunk neon-noir with epic scale — magenta/cyan chromatic lighting against deep black, rain-slick mirrored surfaces, holographic atmosphere, Syd Mead meets Blade Runner 2049 futurist grandeur' },
-  { slug: 'victorian-engraving', style: 'Victorian steel engraving', desc: 'Victorian steel-plate engraving at maximum density — infinite crosshatch and stipple, sepia monochrome, 1880s Harper\'s frontispiece-quality period detail, dramatic theatrical lighting' },
-  { slug: 'noir-poster-30s', style: '1930s noir poster', desc: '1930s theatrical noir movie poster — silver halide grain, hard chiaroscuro, smoke and rain, limited palette of charcoal, blood and cream, dramatic typography-free hero composition' },
-  { slug: 'silent-film-still', style: 'Expressionist silent-film still', desc: 'German expressionist silent-film still — Caligari / Metropolis / Nosferatu lineage, black-and-white with soft halation grain, theatrical extreme lighting, painted-set architectural drama' },
-  { slug: 'pulp-scifi', style: '1950s pulp cover', desc: '1950s pulp science-fiction magazine cover — gouache paint, saturated primary palette, dynamic low-angle hero pose, retro-futurist grandeur, pulp-heroic energy' },
-  { slug: 'cel-anime-modern', style: 'Cinematic anime cel', desc: 'Cinematic anime key-art — detailed Makoto Shinkai / Production I.G lineage, volumetric god-ray lighting, painted sky with particle bloom, crisp cel-shaded figure against atmospheric depth' },
-  { slug: 'chiaroscuro-woodcut', style: 'Dürer woodcut density', desc: 'Albrecht Dürer woodcut at maximum density — stark black on cream, heavy hatching defining every form, medieval detail in clothing and environment, apocalyptic gravitas' },
-  { slug: 'sumi-e', style: 'Akira Kurosawa sumi-e', desc: 'Cinematic sumi-e ink painting — Kurosawa framing meets Sesshu Toyo mastery, bold sweeping brushstrokes with explosive density at focal point, silver-leaf background hints, dramatic negative space with a single vivid chromatic accent' },
-  // Canon-devotee line styles — for fans of the originary Victorian/Edwardian illustration tradition
-  { slug: 'paget-linework', style: 'Sidney Paget ink illustration', desc: 'Sidney Paget 1891 Strand Magazine ink and wash — fine hatched line, gaslit fog, precise Victorian architectural and costume detail, two-figure silhouette compositions, the canonical visual register devoted Sherlockians expect' },
-  { slug: 'tenniel-ink', style: 'John Tenniel wood-engraving', desc: 'John Tenniel 1865 wood-engraving — precise cross-hatched line, no paint, blue-pinafore canonical Alice, the White-Rabbit waistcoat-and-watch register, the definitive illustration tradition of the Carroll canon' },
+  { slug: 'witness-photoreal',
+    style: 'The Witness — photoreal time-travel',
+    desc: 'Cinematic photorealism as if captured by a present-day master cinematographer who time-traveled with modern camera gear. Roger Deakins cinematography + Emmanuel Lubezki naturalism. Accurate period setting rendered with full modern-film realism: skin pores, fabric weave, dust in the air, volumetric haze, soft natural or practical lighting, documentary observational framing elevated to theatrical cinema. Not illustration. Not painting. Photograph-grade realism, dramatic and lived-in.' },
+  { slug: 'mythic-cosmic',
+    style: 'The Mythic — god-tier cosmic scale',
+    desc: 'The character at mythic scale, rendered against a cosmic backdrop. Aurora and nebulae, sacred geometry diagrams floating in the air, glyphs etched into light, cosmological diagrams overlaid, divine particulate, god-rays from above. Alex Ross iconic gravitas + Tarot plate symbolism + Greek pediment composition + Dune-cinematic grandeur. Scale absolute: the figure is monumental, the universe responds to them.' },
+  { slug: 'modern-reimagined',
+    style: 'The Modern — speculative/cyber reimagining',
+    desc: 'The character relocated to NOW or a near-future. Cyber-Prometheus trailing fiber-optic fire across a neon skyline. Urban-gothic Dracula on a rain-slick 2026 rooftop with skyline glow. Holmes with augmented-reality evidence overlay. Alice in a maximalist bioluminescent virtual tunnel. Contemporary materials, clothing touches, tech, urban textures — but the mythic weight of the original is kept. Blade Runner 2049 + A24 speculative fiction + modern editorial photography.' },
+  { slug: 'dream-psychedelic',
+    style: 'The Dream — psychedelic spiritual revelation',
+    desc: 'Pure vision. Surreal, dreamlike, spiritually-charged — the character rendered as a mandala of meaning. Visible aura fields, sacred-geometry frames, kaleidoscopic fractal color, impossible physics, glyphs floating, mystical light rays. Alex Grey transcendental + Moebius liminal + Studio Ghibli spirits + Rumi visionary + Hilma af Klint occult diagrammatic. Reality softened into revelation.' },
+  { slug: 'painterly-epic',
+    style: 'The Painterly — maximalist oil-painting epic',
+    desc: 'Masterwork oil painting at extreme density and scale. Frank Frazetta scale-and-drama + Alex Ross photoreal gravitas + Boris Vallejo fantasy grandeur + Drew Struzan theatrical composition. Museum-grade painterly finish, heroic posing, jewel-tone palette, every inch textured, impasto brushwork, cinematic hero-shot composition. Magic: The Gathering mythic-rare elevated past its ceiling.' },
+  { slug: 'ornate-ritual',
+    style: 'The Ornate — sacred density ritual',
+    desc: 'Ornamental maximum. Iconographic overload: sacred geometry integrated into the composition, gold-leaf filigree, illuminated-manuscript density, tarot frame + Byzantine icon + Mucha botanical border + stained-glass rosette + Klimt gold pattern. The frame IS part of the art. Symbolic objects orbit the figure. Every edge of the canvas is alive with meaning.' },
 ];
 
 function seededShuffle(arr, seed) {
@@ -185,54 +175,66 @@ function seededShuffle(arr, seed) {
   return out;
 }
 
-// Combos that have moderation-blocked across v2/v3/v4 runs. Permanently skip
-// to avoid wasting API calls. Hard-coded here so they don't pollute the pool.
-const KNOWN_BLOCKED = new Set([
-  'medusa::alex-ross-realism',
-  'dracula::struzan-poster',
-  'frankenstein-monster::amano-ethereal',
-  'frankenstein-monster::baroque-oil',
-  'evil-queen::frazetta-painterly',
-  'evil-queen::sumi-e',
-  'snow-white::risograph-duotone', // legacy, style removed
-  'snow-white::pulp-scifi',
-  'the-hound::frazetta-painterly',
-]);
+// v6 uses MODES (new slugs); old style-level blocks no longer apply.
+// Will re-populate as we learn which char×mode combos trip moderation.
+const KNOWN_BLOCKED = new Set([]);
 
-function pickPairs(count) {
-  // First pass: at least one of every STYLE. Pair each style with a random character.
+// How many variants per (character, mode) cell. 3 means 3 renders per cell
+// (different compositional interpretations). Each variant is a distinct image.
+const VARIANTS_PER_CELL = parseInt(args.variants ?? '3', 10);
+
+// Variant composition-tweaks — each variant biases the image toward a
+// different compositional archetype so the user can compare.
+const VARIANT_DIRECTIVES = [
+  'Composition: intimate close-up hero portrait — face and iconography dominant, environment softly out of focus behind.',
+  'Composition: wide cinematic establishing shot — the figure embedded in an expansive, richly-detailed environment with deep atmospheric layers.',
+  'Composition: iconic symmetric hero — the character centered and monumental, with symbolic objects arrayed around them, pure mythic presence.',
+  'Composition: dynamic three-quarter action beat — the figure mid-gesture, diagonal energy, rich environmental storytelling.',
+];
+
+// v6: pick (character, mode, variant) triples. Default coverage: every
+// character × every mode × VARIANTS_PER_CELL variants. Cheapest path is to
+// iterate CHARACTERS × STYLES × VARIANTS up to the count cap.
+function pickTriples(count) {
   const shuffledChars = seededShuffle(CHARACTERS, 7);
-  const firstPass = STYLES.map((s, i) => [shuffledChars[i % shuffledChars.length], s])
-    .filter(([c, s]) => !KNOWN_BLOCKED.has(`${c.slug}::${s.slug}`));
-  // Second pass: fill the rest by seeded-shuffling all remaining (char, style) pairs.
-  const used = new Set(firstPass.map(([c, s]) => `${c.slug}::${s.slug}`));
   const all = [];
-  for (const c of CHARACTERS) for (const s of STYLES) {
-    const key = `${c.slug}::${s.slug}`;
-    if (!used.has(key) && !KNOWN_BLOCKED.has(key)) all.push([c, s]);
+  // Pass 1: one of every (char, mode, variant=1) — guarantees breadth
+  for (const c of shuffledChars) {
+    for (const s of STYLES) {
+      if (!KNOWN_BLOCKED.has(`${c.slug}::${s.slug}`)) {
+        all.push([c, s, 1]);
+      }
+    }
   }
-  const fill = seededShuffle(all, 42).slice(0, Math.max(0, count - firstPass.length));
-  return [...firstPass, ...fill].slice(0, count);
+  // Pass 2: remaining variants 2..N
+  for (let v = 2; v <= VARIANTS_PER_CELL; v++) {
+    for (const c of shuffledChars) {
+      for (const s of STYLES) {
+        if (!KNOWN_BLOCKED.has(`${c.slug}::${s.slug}`)) {
+          all.push([c, s, v]);
+        }
+      }
+    }
+  }
+  return all.slice(0, count);
 }
 
-// v5 prompt — leads with explicit craft/density/ornament vocabulary. Safe language
-// (no violence words) but prose is longer and every clause insists on painterly
-// richness: oil painting finish, extreme detail density at every edge, multi-source
-// lighting, ornate surface work, jewel-tone saturation.
-function buildPrompt(c, s) {
+// v6 prompt — MODE-driven. The character is the subject; the mode is the lens.
+// Not historically-accurate illustration — think "time-traveler with modern camera"
+// or "mythic-cosmic reimagining." Variants differ by compositional archetype.
+function buildPrompt(c, s, variant = 1) {
+  const variantDirective = VARIANT_DIRECTIVES[(variant - 1) % VARIANT_DIRECTIVES.length];
   return [
-    `Masterwork oil painting for a premium collectible trading card — museum-grade painterly finish with extreme detail density at every edge of the composition, in the tradition of Magic: The Gathering mythic-rare elevated toward the cinematic grandeur of Drew Struzan theatrical posters and the painterly depth of Frank Frazetta and Alex Ross.`,
-    `${c.character}, ${c.moment}.`,
-    `Setting, richly layered across four depth planes: ${c.scene}. Foreground objects rendered in razor-sharp detail with visible brushwork; midground staged with atmospheric depth; background dissolving into painterly haze and luminous distance; ornamental filigree or environmental motifs echoing at every edge of the frame.`,
-    `Hero anchor: ${c.iconography} — painted with jewel-like precision and treated as the compositional symbol.`,
-    `Composition: ${c.composition}. Strong cinematic framing with purposeful negative space; the figure feels monumental yet embedded in a textured world.`,
-    `Lighting: multi-source chiaroscuro — a dominant directional key light carving the figure, a cool fill from a secondary source (moonlight, lantern, firelight, stained-glass window), and a rim light defining silhouette against the background. Volumetric atmosphere with visible particulates — dust, mist, falling embers, candle smoke.`,
-    `Color: jewel-tone saturation with deep velvet shadows and a limited but luxurious palette; luminous focal highlights catching gilt, glass, flame, or water.`,
-    `Surface: impasto oil-paint texture with gilt-illumination detail, museum-quality rendering, film-still cinematic quality, rich painterly brushwork throughout — every fabric fold, every texture, every surface articulated.`,
-    `Mood: contemplative, dignified, mythic — stillness carries the drama, not action.`,
-    `Style register: ${s.desc}.`,
-    `Portrait orientation, 2:3 trading-card aspect ratio composition.`,
-    `No text, no letters, no words, no watermark, no card frame, no border.`,
+    `Premium collectible trading-card artwork — maximalist, epic, cinematic, and unforgettable.`,
+    `MODE (the lens): ${s.desc}`,
+    `SUBJECT: ${c.character} — ${c.moment}.`,
+    `SETTING: ${c.scene}`,
+    `HERO DETAIL: ${c.iconography}`,
+    variantDirective,
+    `Dramatic multi-source lighting with strong rim light and volumetric atmosphere. Rich jewel-tone color, extreme detail density, particulate atmosphere (dust, embers, light rays, haze). Every edge of the frame alive. Background cleanly resolved — not muddy — so the setting reads as an immersive world, not backdrop.`,
+    `Mood: awe, wonder, mythic gravitas, revelation. Wilder than tasteful — push toward the extraordinary.`,
+    `Portrait orientation, 2:3 trading-card aspect.`,
+    `No text, letters, watermark, logo, signature, frame, or border.`,
     `Public-domain character from ${c.origin}.`,
   ].join(' ');
 }
@@ -264,8 +266,8 @@ function parseRetryAfterSeconds(text) {
   return m ? parseInt(m[1], 10) + 1 : 15;
 }
 
-async function generate(c, s) {
-  const prompt = buildPrompt(c, s);
+async function generate(c, s, variant = 1) {
+  const prompt = buildPrompt(c, s, variant);
   let lastErr = null;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     await limiter.acquire();
@@ -283,7 +285,7 @@ async function generate(c, s) {
         n: 1,
       }),
     });
-    if (res.ok) { const j = await res.json(); return await processImage(c, s, prompt, j); }
+    if (res.ok) { const j = await res.json(); return await processImage(c, s, prompt, j, variant); }
     const body = await res.text();
     if (res.status === 429) {
       const wait = parseRetryAfterSeconds(body);
@@ -300,24 +302,24 @@ async function generate(c, s) {
   throw lastErr ?? new Error('max retries exceeded');
 }
 
-async function processImage(c, s, prompt, j) {
+async function processImage(c, s, prompt, j, variant = 1) {
   const b64 = j.data?.[0]?.b64_json;
   if (!b64) throw new Error(`no b64_json in response: ${JSON.stringify(j).slice(0, 200)}`);
   const png = Buffer.from(b64, 'base64');
   const webp = await sharp(png).webp({ quality: 85 }).toBuffer();
   const dir = path.join(OUT_DIR, c.slug);
   await fs.mkdir(dir, { recursive: true });
-  const fname = `${s.slug}-1.webp`;
+  const fname = `${s.slug}-${variant}.webp`;
   await fs.writeFile(path.join(dir, fname), webp);
   return {
-    id: `${c.slug}-${s.slug}-1`,
+    id: `${c.slug}-${s.slug}-${variant}`,
     character: c.character,
     characterSlug: c.slug,
     set: c.set,
     moment: c.moment,
     style: s.style,
     styleSlug: s.slug,
-    variant: 1,
+    variant,
     path: `/moodboard-art/${c.slug}/${fname}`,
     prompt,
     promptVersion: PROMPT_VERSION,
@@ -332,19 +334,19 @@ async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true });
   let existing = { version: 1, items: [] };
   try { existing = JSON.parse(await fs.readFile(MANIFEST, 'utf8')); } catch {}
-  // If --force: regenerate even if the ID exists (for prompt-template upgrades).
-  // Otherwise: skip IDs we already have at the current PROMPT_VERSION.
+  // If --force: regenerate even if the ID exists.
+  // Otherwise: skip (character, style, variant) triples already at current PROMPT_VERSION.
   const upToDateIds = new Set(
     existing.items
       .filter((i) => (i.promptVersion ?? 1) >= PROMPT_VERSION)
       .map((i) => i.id),
   );
-  const pairs = pickPairs(COUNT);
+  const triples = pickTriples(COUNT);
   const todo = FORCE
-    ? pairs
-    : pairs.filter(([c, s]) => !upToDateIds.has(`${c.slug}-${s.slug}-1`));
+    ? triples
+    : triples.filter(([c, s, v]) => !upToDateIds.has(`${c.slug}-${s.slug}-${v}`));
   console.log(
-    `target ${pairs.length}, up-to-date at v${PROMPT_VERSION}: ${pairs.length - todo.length}, generating ${todo.length} ` +
+    `target ${triples.length} triples (${VARIANTS_PER_CELL} variants/cell), up-to-date at v${PROMPT_VERSION}: ${triples.length - todo.length}, generating ${todo.length} ` +
     `@ concurrency=${CONCURRENCY}, rate=${RATE_LIMIT_PER_MIN}/min${FORCE ? ' [FORCE]' : ''}`,
   );
   const startTs = Date.now();
@@ -355,14 +357,14 @@ async function main() {
     while (true) {
       const my = cursor++;
       if (my >= todo.length) return;
-      const [c, s] = todo[my];
+      const [c, s, v] = todo[my];
       try {
-        const item = await generate(c, s);
+        const item = await generate(c, s, v);
         items.push(item);
-        process.stdout.write(`✓ [${my + 1}/${todo.length}] ${c.character} × ${s.style} (${(item.bytes / 1024).toFixed(0)}KB)\n`);
+        process.stdout.write(`✓ [${my + 1}/${todo.length}] ${c.character} × ${s.style} v${v} (${(item.bytes / 1024).toFixed(0)}KB)\n`);
       } catch (e) {
-        errors.push({ char: c.slug, style: s.slug, error: String(e) });
-        process.stdout.write(`✗ [${my + 1}/${todo.length}] ${c.character} × ${s.style}: ${String(e).slice(0, 200)}\n`);
+        errors.push({ char: c.slug, style: s.slug, variant: v, error: String(e) });
+        process.stdout.write(`✗ [${my + 1}/${todo.length}] ${c.character} × ${s.style} v${v}: ${String(e).slice(0, 200)}\n`);
       }
     }
   }
