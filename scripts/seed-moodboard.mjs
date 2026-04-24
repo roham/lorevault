@@ -24,7 +24,9 @@ const args = Object.fromEntries(
   }),
 );
 const COUNT = parseInt(args.count ?? '50', 10);
-const CONCURRENCY = parseInt(args.concurrency ?? '10', 10);
+const CONCURRENCY = parseInt(args.concurrency ?? '5', 10);
+const RATE_LIMIT_PER_MIN = parseInt(args.rpm ?? '5', 10); // gpt-image-1 tier-1 = 5/min
+const MAX_RETRIES = parseInt(args.retries ?? '4', 10);
 
 const OUT_DIR = path.resolve(process.cwd(), 'public/moodboard-art');
 const MANIFEST = path.join(OUT_DIR, 'manifest.json');
@@ -111,27 +113,70 @@ function buildPrompt(c, s) {
   ].join(' ');
 }
 
+// Token-bucket rate limiter: max N starts per rolling window.
+class RateLimiter {
+  constructor(maxPerWindow, windowMs) {
+    this.max = maxPerWindow;
+    this.win = windowMs;
+    this.stamps = [];
+  }
+  async acquire() {
+    while (true) {
+      const now = Date.now();
+      this.stamps = this.stamps.filter((t) => now - t < this.win);
+      if (this.stamps.length < this.max) {
+        this.stamps.push(now);
+        return;
+      }
+      const wait = this.win - (now - this.stamps[0]) + 200;
+      await new Promise((r) => setTimeout(r, wait));
+    }
+  }
+}
+const limiter = new RateLimiter(RATE_LIMIT_PER_MIN, 60_000);
+
+function parseRetryAfterSeconds(text) {
+  const m = text.match(/try again in (\d+)s/i);
+  return m ? parseInt(m[1], 10) + 1 : 15;
+}
+
 async function generate(c, s) {
   const prompt = buildPrompt(c, s);
-  const res = await fetch('https://api.openai.com/v1/images/generations', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-image-1',
-      prompt,
-      size: '1024x1536',
-      quality: 'high',
-      n: 1,
-    }),
-  });
-  if (!res.ok) {
+  let lastErr = null;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    await limiter.acquire();
+    const res = await fetch('https://api.openai.com/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-image-1',
+        prompt,
+        size: '1024x1536',
+        quality: 'high',
+        n: 1,
+      }),
+    });
+    if (res.ok) { const j = await res.json(); return await processImage(c, s, prompt, j); }
     const body = await res.text();
+    if (res.status === 429) {
+      const wait = parseRetryAfterSeconds(body);
+      process.stdout.write(`  · 429 ${c.slug}×${s.slug}, waiting ${wait}s (attempt ${attempt + 1}/${MAX_RETRIES + 1})\n`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      lastErr = new Error(`429 after ${MAX_RETRIES} retries: ${body.slice(0, 200)}`);
+      continue;
+    }
+    if (res.status === 400 && /moderation_blocked/.test(body)) {
+      throw new Error(`moderation_blocked (permanent skip): ${body.slice(0, 200)}`);
+    }
     throw new Error(`${res.status} ${body.slice(0, 400)}`);
   }
-  const j = await res.json();
+  throw lastErr ?? new Error('max retries exceeded');
+}
+
+async function processImage(c, s, prompt, j) {
   const b64 = j.data?.[0]?.b64_json;
   if (!b64) throw new Error(`no b64_json in response: ${JSON.stringify(j).slice(0, 200)}`);
   const png = Buffer.from(b64, 'base64');
@@ -159,31 +204,36 @@ async function generate(c, s) {
 }
 
 async function main() {
+  await fs.mkdir(OUT_DIR, { recursive: true });
+  let existing = { version: 1, items: [] };
+  try { existing = JSON.parse(await fs.readFile(MANIFEST, 'utf8')); } catch {}
+  const existingIds = new Set(existing.items.map((i) => i.id));
   const pairs = pickPairs(COUNT);
-  console.log(`seeding ${pairs.length} images @ concurrency=${CONCURRENCY}`);
+  const todo = pairs.filter(([c, s]) => !existingIds.has(`${c.slug}-${s.slug}-1`));
+  console.log(
+    `target ${pairs.length}, already have ${pairs.length - todo.length}, generating ${todo.length} ` +
+    `@ concurrency=${CONCURRENCY}, rate=${RATE_LIMIT_PER_MIN}/min`,
+  );
   const startTs = Date.now();
   const items = [];
   const errors = [];
   let cursor = 0;
-  async function worker(id) {
+  async function worker(_id) {
     while (true) {
       const my = cursor++;
-      if (my >= pairs.length) return;
-      const [c, s] = pairs[my];
+      if (my >= todo.length) return;
+      const [c, s] = todo[my];
       try {
         const item = await generate(c, s);
         items.push(item);
-        process.stdout.write(`✓ [${my + 1}/${pairs.length}] ${c.character} × ${s.style} (${(item.bytes / 1024).toFixed(0)}KB)\n`);
+        process.stdout.write(`✓ [${my + 1}/${todo.length}] ${c.character} × ${s.style} (${(item.bytes / 1024).toFixed(0)}KB)\n`);
       } catch (e) {
         errors.push({ char: c.slug, style: s.slug, error: String(e) });
-        process.stdout.write(`✗ [${my + 1}/${pairs.length}] ${c.character} × ${s.style}: ${String(e).slice(0, 200)}\n`);
+        process.stdout.write(`✗ [${my + 1}/${todo.length}] ${c.character} × ${s.style}: ${String(e).slice(0, 200)}\n`);
       }
     }
   }
   await Promise.all(Array.from({ length: CONCURRENCY }, (_, i) => worker(i)));
-  await fs.mkdir(OUT_DIR, { recursive: true });
-  let existing = { version: 1, items: [] };
-  try { existing = JSON.parse(await fs.readFile(MANIFEST, 'utf8')); } catch {}
   const seen = new Set(existing.items.map((i) => i.id));
   const merged = [...existing.items, ...items.filter((i) => !seen.has(i.id))];
   const manifest = {
