@@ -28,7 +28,7 @@ const CONCURRENCY = parseInt(args.concurrency ?? '5', 10);
 const RATE_LIMIT_PER_MIN = parseInt(args.rpm ?? '5', 10); // gpt-image-1 tier-1 = 5/min
 const MAX_RETRIES = parseInt(args.retries ?? '4', 10);
 const FORCE = args.force === 'true' || args.force === '1';
-const PROMPT_VERSION = 4; // v4: MTG-floor + cinematic-ceiling, but tight prose + safety-neutral to clear moderation
+const PROMPT_VERSION = 5; // v5: density + ornate detail restored, safety-neutral language preserved
 
 const OUT_DIR = path.resolve(process.cwd(), 'public/moodboard-art');
 const MANIFEST = path.join(OUT_DIR, 'manifest.json');
@@ -185,35 +185,54 @@ function seededShuffle(arr, seed) {
   return out;
 }
 
+// Combos that have moderation-blocked across v2/v3/v4 runs. Permanently skip
+// to avoid wasting API calls. Hard-coded here so they don't pollute the pool.
+const KNOWN_BLOCKED = new Set([
+  'medusa::alex-ross-realism',
+  'dracula::struzan-poster',
+  'frankenstein-monster::amano-ethereal',
+  'frankenstein-monster::baroque-oil',
+  'evil-queen::frazetta-painterly',
+  'evil-queen::sumi-e',
+  'snow-white::risograph-duotone', // legacy, style removed
+  'snow-white::pulp-scifi',
+  'the-hound::frazetta-painterly',
+]);
+
 function pickPairs(count) {
   // First pass: at least one of every STYLE. Pair each style with a random character.
   const shuffledChars = seededShuffle(CHARACTERS, 7);
-  const firstPass = STYLES.map((s, i) => [shuffledChars[i % shuffledChars.length], s]);
+  const firstPass = STYLES.map((s, i) => [shuffledChars[i % shuffledChars.length], s])
+    .filter(([c, s]) => !KNOWN_BLOCKED.has(`${c.slug}::${s.slug}`));
   // Second pass: fill the rest by seeded-shuffling all remaining (char, style) pairs.
   const used = new Set(firstPass.map(([c, s]) => `${c.slug}::${s.slug}`));
   const all = [];
   for (const c of CHARACTERS) for (const s of STYLES) {
-    if (!used.has(`${c.slug}::${s.slug}`)) all.push([c, s]);
+    const key = `${c.slug}::${s.slug}`;
+    if (!used.has(key) && !KNOWN_BLOCKED.has(key)) all.push([c, s]);
   }
   const fill = seededShuffle(all, 42).slice(0, Math.max(0, count - firstPass.length));
   return [...firstPass, ...fill].slice(0, count);
 }
 
-// v4 prompt — tight, safety-neutral, 100-150 words. Carries cinematic direction
-// (iconography, composition, moment-freezing) without the dense dark-adjective
-// layering that tripped gpt-image-1's moderation in v3.
+// v5 prompt — leads with explicit craft/density/ornament vocabulary. Safe language
+// (no violence words) but prose is longer and every clause insists on painterly
+// richness: oil painting finish, extreme detail density at every edge, multi-source
+// lighting, ornate surface work, jewel-tone saturation.
 function buildPrompt(c, s) {
   return [
-    `Premium collectible trading card illustration, museum-quality painted artwork in the tradition of Magic: The Gathering mythic-rare elevated toward theatrical movie-poster grandeur.`,
+    `Masterwork oil painting for a premium collectible trading card — museum-grade painterly finish with extreme detail density at every edge of the composition, in the tradition of Magic: The Gathering mythic-rare elevated toward the cinematic grandeur of Drew Struzan theatrical posters and the painterly depth of Frank Frazetta and Alex Ross.`,
     `${c.character}, ${c.moment}.`,
-    `Setting: ${c.scene}.`,
-    `Hero detail: ${c.iconography}.`,
-    `Composition: ${c.composition}.`,
-    `Lighting: single dramatic directional light source, rich volumetric atmosphere, painterly rim light defining the silhouette.`,
-    `Mood: contemplative, dignified, iconic — stillness carries the drama, not action.`,
-    `Style: ${s.desc}.`,
-    `Portrait orientation, extreme environmental detail, rich color depth.`,
-    `No text, no letters, no watermark, no frame, no border.`,
+    `Setting, richly layered across four depth planes: ${c.scene}. Foreground objects rendered in razor-sharp detail with visible brushwork; midground staged with atmospheric depth; background dissolving into painterly haze and luminous distance; ornamental filigree or environmental motifs echoing at every edge of the frame.`,
+    `Hero anchor: ${c.iconography} — painted with jewel-like precision and treated as the compositional symbol.`,
+    `Composition: ${c.composition}. Strong cinematic framing with purposeful negative space; the figure feels monumental yet embedded in a textured world.`,
+    `Lighting: multi-source chiaroscuro — a dominant directional key light carving the figure, a cool fill from a secondary source (moonlight, lantern, firelight, stained-glass window), and a rim light defining silhouette against the background. Volumetric atmosphere with visible particulates — dust, mist, falling embers, candle smoke.`,
+    `Color: jewel-tone saturation with deep velvet shadows and a limited but luxurious palette; luminous focal highlights catching gilt, glass, flame, or water.`,
+    `Surface: impasto oil-paint texture with gilt-illumination detail, museum-quality rendering, film-still cinematic quality, rich painterly brushwork throughout — every fabric fold, every texture, every surface articulated.`,
+    `Mood: contemplative, dignified, mythic — stillness carries the drama, not action.`,
+    `Style register: ${s.desc}.`,
+    `Portrait orientation, 2:3 trading-card aspect ratio composition.`,
+    `No text, no letters, no words, no watermark, no card frame, no border.`,
     `Public-domain character from ${c.origin}.`,
   ].join(' ');
 }
