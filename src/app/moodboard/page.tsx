@@ -27,6 +27,7 @@ type LocalVote = { vote: 'yes' | 'no' | 'other'; comment?: string; at: number };
 
 const LS_KEY = 'lorevault_moodboard_votes_v1';
 const LS_VOTER = 'lorevault_moodboard_voter_v1';
+const LS_TOKEN = 'lorevault_moodboard_token_v1';
 
 function readLocalVotes(): Record<string, LocalVote> {
   try {
@@ -59,7 +60,8 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
 
 function MoodboardBody() {
   const params = useSearchParams();
-  const token = params?.get('k') ?? '';
+  const urlToken = params?.get('k') ?? '';
+  const [token, setToken] = useState<string>('');
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -68,16 +70,24 @@ function MoodboardBody() {
   const [comment, setComment] = useState('');
   const voterHashRef = useRef<string>('');
 
-  // Init voter hash + restore local votes
+  // Init voter hash + restore local votes + resolve token (URL → localStorage fallback)
   useEffect(() => {
     voterHashRef.current = getVoterHash();
     const v = readLocalVotes();
     setVotes(v);
-  }, []);
+    if (urlToken) {
+      localStorage.setItem(LS_TOKEN, urlToken);
+      setToken(urlToken);
+    } else {
+      const stored = localStorage.getItem(LS_TOKEN);
+      if (stored) setToken(stored);
+    }
+  }, [urlToken]);
 
-  // Load manifest
+  // Load manifest (once token is resolved — either from URL or localStorage)
   useEffect(() => {
-    const url = `/api/moodboard/items${token ? `?k=${encodeURIComponent(token)}` : ''}`;
+    if (!token) return; // wait for token resolution
+    const url = `/api/moodboard/items?k=${encodeURIComponent(token)}`;
     fetch(url, { cache: 'no-store' })
       .then((r) => {
         if (!r.ok) throw new Error(`items ${r.status}`);
@@ -167,8 +177,34 @@ function MoodboardBody() {
     return () => window.removeEventListener('keydown', onKey);
   }, [commentMode, onYes, onNo, onOther, onUndo, shuffled.length]);
 
+  if (!token) {
+    return (
+      <Shell>
+        <div className="text-center max-w-md">
+          <div className="text-5xl mb-6">🔒</div>
+          <h1 className="text-2xl font-semibold mb-3">Access link required</h1>
+          <p className="text-white/60 leading-relaxed">
+            Open this page using the full invite URL that includes{' '}
+            <code className="text-white/80">?k=…</code>. The token is stored in this browser
+            after the first visit, so future visits work without it.
+          </p>
+        </div>
+      </Shell>
+    );
+  }
   if (loadError) {
-    return <Shell>Couldn&apos;t load manifest: {loadError}</Shell>;
+    return (
+      <Shell>
+        <div className="text-center max-w-md">
+          <div className="text-5xl mb-6">⚠️</div>
+          <h1 className="text-2xl font-semibold mb-3">Couldn&apos;t load manifest</h1>
+          <p className="text-white/60 text-sm">{loadError}</p>
+          <p className="text-white/40 text-xs mt-4">
+            If this says <code>items 403</code>, open the full invite URL with <code>?k=…</code> once.
+          </p>
+        </div>
+      </Shell>
+    );
   }
   if (!manifest) {
     return <Shell>Loading…</Shell>;
