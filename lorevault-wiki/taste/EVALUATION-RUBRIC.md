@@ -1,21 +1,21 @@
 # Evaluation Rubric — LoreVault Taste Daemon
 
-_Last scored: 2026-04-24T08:13:07Z (cycle 1, Art-Seed)_
+_Last scored: 2026-04-24T14:30:00Z (cycle 3, Audit-Hot)_
 
 Target by cycle 200: every dimension ≥ 7.
 
 | # | Dimension | Score | Notes | Last Updated |
 |---|---|---|---|---|
-| 1 | Art system quality | 0/10 | No real art on card surfaces yet; all emoji+gradient | cycle-1 |
-| 2 | Taste-model approval | N/A | No votes yet | cycle-1 |
-| 3 | Coverage | 1/10 | 57 items in manifest (need ≥ 400; ~14% of target) | cycle-1 |
-| 4 | Build health | 9/10 | Green build, lint pending | cycle-1 |
-| 5 | Lighthouse mobile | ? | Pending audit | cycle-1 |
-| 6 | Route coverage | ? | Pending Playwright walk | cycle-1 |
-| 7 | Best-practice hygiene | ? | Pending grep/lint | cycle-1 |
-| 8 | IA clarity | ? | Pending manual audit | cycle-1 |
-| 9 | Design coherence | ? | Pending DESIGN-DIRECTION.md review | cycle-1 |
-| 10 | Cycle efficiency | 8/10 | Cycle 1: green build, 11 new images; 6 moderation blocks noted (Snow White + Evil Queen pixel styles) | cycle-1 |
+| 1 | Art system quality | 4/10 | Real art visible in /collection for several characters; no imageUrl in cards.ts yet | cycle-3 |
+| 2 | Taste-model approval | N/A | 54 votes in KV; taste model update pending (< 20 new votes threshold) | cycle-3 |
+| 3 | Coverage | 2/10 | 88 items in manifest (need ≥ 400; ~22% of target) | cycle-3 |
+| 4 | Build health | 9/10 | Green build; lint pending full run | cycle-3 |
+| 5 | Lighthouse mobile | ? | Pending Lighthouse run | cycle-3 |
+| 6 | Route coverage | 8/10 | /, /moodboard, /collection all 200 + zero console errors; Marketplace/Games not yet walked | cycle-3 |
+| 7 | Best-practice hygiene | ? | Pending grep/lint | cycle-3 |
+| 8 | IA clarity | 6/10 | All key routes reachable; home is pre-auth landing (no nav by design); Marketplace visible in app | cycle-3 |
+| 9 | Design coherence | ? | Pending DESIGN-DIRECTION.md review | cycle-3 |
+| 10 | Cycle efficiency | 8/10 | 3 cycles, all green builds; trademark label fixed; audit established | cycle-3 |
 
 ## Dimension Definitions
 

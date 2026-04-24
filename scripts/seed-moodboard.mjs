@@ -99,16 +99,16 @@ const CHARACTERS = [
     origin: 'Hesiod c.700 BCE' },
 ];
 
-// Style descriptions are aimed at peak collectible-card art — Magic: The Gathering
-// mythic-rare, Pokemon holographic, NBA Top Shot cinematic. Each description forces
-// density of detail, dramatic lighting, and a hero-shot composition.
+// Style descriptions are aimed at peak collectible-card art — premium mythic-rare TCG,
+// holographic, cinematic. Each description forces density of detail, dramatic lighting,
+// and a hero-shot composition.
 const STYLES = [
   // Powerhouse painterly — the Frazetta/Struzan/Amano lineage
   { slug: 'frazetta-painterly', style: 'Frazetta painterly fantasy', desc: 'Frank Frazetta oil-on-board fantasy painting — heroic anatomy, volumetric amber-and-crimson lighting, dynamic diagonal composition, impasto brushwork, epic mood, museum fantasy masterwork' },
   { slug: 'struzan-poster', style: 'Drew Struzan theatrical', desc: 'Drew Struzan theatrical movie poster — cinematic hero-shot, airbrush-meets-pencil realism, golden rim light and deep negative space, supporting scene elements orbiting the subject, 1980s blockbuster grandeur' },
   { slug: 'alex-ross-realism', style: 'Alex Ross hyper-realist', desc: 'Alex Ross gouache hyper-realism — photoreal figure study, dramatic low-angle hero framing, sculptural lighting, saturated color against muted sky, iconic comic-cover gravitas' },
   { slug: 'amano-ethereal', style: 'Yoshitaka Amano ethereal', desc: 'Yoshitaka Amano ethereal watercolor — translucent washes, elongated figures, metallic gold leaf accents, negative space bloom, dreamlike fantasy royalty, Final Fantasy concept-art splendor' },
-  { slug: 'mtg-mythic', style: 'Magic: The Gathering mythic', desc: 'Magic: The Gathering mythic-rare card art — lush painterly fantasy, dramatic action in a detailed environment, cinematic rim light, chromatic saturation, mana-infused atmospheric effects, premium TCG composition' },
+  { slug: 'mtg-mythic', style: 'Premium mythic card art', desc: 'Premium mythic-rare TCG art — lush painterly fantasy, dramatic action in a detailed environment, cinematic rim light, chromatic saturation, atmospheric effects, premium collectible-card composition' },
   { slug: 'beksinski-surreal', style: 'Beksiński dark surrealism', desc: 'Zdzisław Beksiński dark surrealism — otherworldly decay, ochre and blood palette, architectural dread, painterly textures, unsettling sublime' },
   { slug: 'ghibli-painted', style: 'Studio Ghibli painted', desc: 'Studio Ghibli painted background — Kazuo Oga-style atmospheric perspective, soft gouache, luminous natural light, hand-painted environmental richness, humane awe' },
   { slug: 'mucha-maximal', style: 'Mucha maximal Art Nouveau', desc: 'Alphonse Mucha maximalist Art Nouveau — ornamental gilded frame integrated into the composition, flowing hair as decorative border, halo of botanical filigree, jewel-tone flat color against gold leaf, stained-glass pattern backdrop' },
