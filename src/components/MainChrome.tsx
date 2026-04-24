@@ -6,7 +6,6 @@ import UnlockCelebration from '@/components/UnlockCelebration';
 import LivePulse from '@/components/LivePulse';
 import PrestigeCelebration from '@/components/PrestigeCelebration';
 import PWAInstall from '@/components/PWAInstall';
-import WelcomeBack from '@/components/WelcomeBack';
 
 export default function MainChrome() {
   const pathname = usePathname();
@@ -20,7 +19,6 @@ export default function MainChrome() {
       <PrestigeCelebration />
       <LivePulse />
       <PWAInstall />
-      <WelcomeBack />
       <Navigation />
     </>
   );
