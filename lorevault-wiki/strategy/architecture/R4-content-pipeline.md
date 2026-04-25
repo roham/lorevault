@@ -9,14 +9,17 @@
 
 ## 1. Canon Council — Operational Structure
 
-Per Decision 10 and R6 §1's TPC-not-WotC lesson, the Council is the *smallest* body that can defend the bible against AI-scale production. Three people with override authority over the founder, from drop one.
+Per Decision 10 and R6 §1's TPC-not-WotC lesson, the Council is the *smallest* body that can defend the bible against AI-scale production. Four voting seats with override authority over the founder, from drop one. The four-seat structure is necessary because the Voice Lead role splits at drop one between the four-Universe register editor (agent-assisted) and the Footnoter (hand-written, Topsy-only) — one human cannot do both at the volumes the property requires (see §7).
 
-**Seats (3 + 1 floating).**
+**Seats (4 voting + 1 floating).**
 
 - **Seat 1 — Chief Worldbuilder (Canon Lead).** Owns the Spine ledger, the 8-shell taxonomy, the Iceberg Doctrine 1:2:4 ratio, the cross-Set tether map. Veto on any card that violates the 4-layer Lampblack stack or a figure's Shell × Character matrix entry. Single-person kill switch on Set locks. 1.0 FTE.
-- **Seat 2 — Voice Lead (Editor-in-Chief of flavor text + lore).** Owns `FLAVOR-TEXT-DOCTRINE.md`, the five-universe register bible, and the Topsy Footnoter voice. Per Decision 14 of the flavor doctrine: *rewrite authority on any flavor text up to 24h before Set lock; founder has none*. 1.0 FTE. Simultaneously the sole Footnoter writer for all Topsy Sets (see §7).
+- **Seat 2a — Voice Lead (Editor-in-Chief of flavor text + lore for the four non-Topsy registers).** Owns `FLAVOR-TEXT-DOCTRINE.md` for Baker Street, Enchanted Kingdom, Wonderland, Gothic Horror, and Greek Myth. Owns the four-Universe register bible and the per-Set narrator-voice contracts. Per Decision 14: *rewrite authority on any flavor text up to 24h before Set lock; founder has none*. Agent-assisted — agents draft, Voice Lead edits to bible. 1.0 FTE.
+- **Seat 2b — Footnoter (sole hand-writer of all Topsy prose).** Owns the Topsy Footnoter voice end-to-end — every Footnoter flavor text, every Footnoter lore note, the weekly Footnoter Marginalia, the Mirror-Wednesday installments. Hand-written; no agent draft ever ships. The Pratchett-grade register cannot survive writer-rotation, so this seat is the single non-AI-multiplied role on the team (see §7). 1.0 FTE.
 - **Seat 3 — Art Director (FLUX Director).** Owns the visual DNA per Universe (Paget / Tenniel / Nielsen / Coppola / Waterhouse → v4 successor register), the taste-model corpus, the moodboard-survey feed, and every FLUX prompt in the `seed-exemplars-flux.mjs` expanded catalog. Veto on any render that fails the taste-loop pre-test or diverges from the five exemplar north-star cards. 1.0 FTE.
-- **Seat 4 — CEO (floating, non-voting-by-default).** Present at weekly ritual. Overridable by Seats 1–3 unanimous. Per Decision 10, the founder *cannot* be the canon authority. CEO votes only on Iceberg ratio breaches and Topsy admission (Decision 16: the 15–25% Topsy band).
+- **Seat 4 — CEO (floating, non-voting-by-default).** Present at weekly ritual. Overridable by Seats 1, 2a, 2b, and 3 unanimous. Per Decision 10, the founder *cannot* be the canon authority. CEO votes only on Iceberg ratio breaches and Topsy admission (Decision 16: the 15–25% Topsy band).
+
+**Why four seats, not three.** A three-seat Council with a single Voice Lead committed to ~86,000 words of hand-written Footnoter prose over 36 months *while simultaneously editing the other four Universe registers* is structural magic, not an operational plan — the Voice Lead burns out and the Pratchett-cosplay anti-pattern (NORTH-STAR §11 anti-pattern 2) re-enters as agent draft ships under the seat's name. Splitting into 2a + 2b at drop one preserves the doctrinally-locked 20% Topsy ratio (Decision 16) without overloading one human. Cost: one additional FTE. ROI: the moat actually surviving 36 months.
 
 **Cadence (locked weekly ritual; quarterly deep review).**
 
@@ -60,7 +63,7 @@ Worked example: *"We want a card of Sherlock at Reichenbach."* Nine steps. Each 
 
 **Step 9 — Council Set-Lock review + ship.** At the Wednesday 14:00 Set-Lock Review, Council walks the Set. Voice Lead exercises rewrite authority up to 24h pre-lock. Art Director signs the render. Canon Lead signs Lampblack. On unanimous (or 2-of-3 with founder abstention), metadata commits to production catalog (server-backed per G1 §3.5), assets promote to CDN, card enters draw pool. ~10 min human/card at Set-Lock; ~4 min agent/card overall.
 
-**Total per card: ~15–20 min human attention, ~4 min agent work, ~$0.30 FLUX spend.** A 20-Moment Set costs ~6 human-hours across the three seats and ~$6 in generation.
+**Total per card: ~15–20 min human attention, ~4 min agent work, ~$0.30 FLUX spend.** A 20-Moment Set costs ~6 human-hours across Seats 1, 2a, and 3 (Seat 2b's hours fall on Topsy Sets only) and ~$6 in generation.
 
 ---
 
@@ -190,7 +193,7 @@ The credible monthly output, given a 3-person Council + 2 writers + 1 art direct
 | **Marvel Phase 5–6** | N/A (films) | N/A | Studio parliament 5–8 + production teams | N/A |
 | **LoreVault Year 1** | ~500 Moments + ~1,200 Parallels = ~1,700 renders | ~180K lore-words | 7 FTE | **~240 renders/FTE/year, ~25K words/FTE/year** |
 
-**Where we sit:** Per-FTE production is ~10× Pokémon's card density and ~5× MTG's word density — the AI multiplier. *Total* output is ~70% of one MTG expansion-year on a team 1/7 WotC's Creative Studio. The binding constraint is not generation; it is **Council review bandwidth**. Steady state caps at ~60 Moments/month because that is what three seats can defend at Set-Lock without skipping Mosaic. Scaling past requires a Seat 4 — planned for Series 2 mid-point.
+**Where we sit:** Per-FTE production is ~10× Pokémon's card density and ~5× MTG's word density — the AI multiplier. *Total* output is ~70% of one MTG expansion-year on a team 1/7 WotC's Creative Studio. The binding constraint is not generation; it is **Council review bandwidth**. Steady state caps at ~60 Moments/month because that is what the four voting seats (1, 2a, 2b, 3) can defend at Set-Lock without skipping Mosaic — Seat 2b's bandwidth concentrates on Topsy Sets, where its hand-written prose is non-fungible. Scaling past requires an additional voting seat — planned for Series 2 mid-point.
 
 **AI-augmented, not AI-only.** Every card has human judgment at four points (Steps 1, 6, 7, 9); every Set has it at the weekly ritual, Iceberg audit, and Mosaic panel. Agents *produce volume*; humans *enforce the bible*.
 
@@ -200,18 +203,18 @@ The credible monthly output, given a 3-person Council + 2 writers + 1 art direct
 
 Topsy Sets do not go through the standard card-creation pipeline at Step 7 (flavor-text composer). Per TOPSY-REGISTER Decision 17 and the CEO's *"did you make this up?"* test (A5 §4), the Footnoter's voice is the moat — and the moat requires **a single human voice-writer** for every Footnoter line across the entire 36-month catalog. No agent-drafted Footnoter prose ships.
 
-**The rule.** The Voice Lead (Seat 2) is the *sole* writer of every Footnoter flavor text and every Footnoter lore note, for every Topsy Set, for the life of the property. If the Voice Lead rotates out, the incoming seat does a 90-day apprenticeship on sample-Set Footnoter writing, reviewed by the outgoing Voice Lead, before any live Set ships in the new hand. This is the Pratchett lesson — the Footnoter's dry-omniscient-intermittently-sentimental register cannot survive writer-rotation, because the voice is the joke and the sincerity is the reveal.
+**The rule.** **Seat 2b (the Footnoter)** is the *sole* writer of every Footnoter flavor text and every Footnoter lore note, for every Topsy Set, for the life of the property. The role exists as its own Council seat precisely because the volume — ~14,400 words of Footnoter flavor + lore over 36 months on Topsy Sets, plus ~72,000 words of Footnoter Marginalia — cannot survive being a side gig to the four-Universe Voice Lead role (Seat 2a). Splitting Seat 2 into 2a (Voice Lead, agent-assisted, four registers) and 2b (Footnoter, hand-written, Topsy-only) is what makes the 20% Topsy band (Decision 16) sustainable for 36 months without burnout. If Seat 2b rotates out, the incoming seat does a 90-day apprenticeship on sample-Set Footnoter writing, reviewed by the outgoing Footnoter, before any live Set ships in the new hand. This is the Pratchett lesson — the Footnoter's dry-omniscient-intermittently-sentimental register cannot survive writer-rotation, because the voice is the joke and the sincerity is the reveal.
 
 **How the pipeline adapts for Topsy.**
 
 - **Step 1 (Brief):** the brief includes the Topsy axis-flip (per TOPSY-REGISTER table — e.g., *"Sherlock's deductive uniqueness becomes deductive ubiquity"*) and the one-sincere-sentence-target per Decision 19.
 - **Step 2 (Validator):** additionally checks Decision 18 (no PRIME), Decision 16 (within the 15–25% band), and Decision 20 (Set name telegraphs joke without explaining).
 - **Steps 3–6 (Art):** proceed normally. Topsy art uses the +ARCANA-as-bureaucratic-mandala or WITNESS-for-satire registers per doctrine.
-- **Step 7 (Flavor text):** **agent drafts nothing.** The Voice Lead writes every Footnoter line by hand. The agent's job is to *fact-check against the bible* (Lampblack layers intact, one-sincere-sentence present, no internet-meme cadence, no "lol" energy) and *surface violations*. Never to draft.
-- **Step 8 (Mosaic Scorer):** replaced with the **Topsy Voice Test** — a blind LLM panel is asked "Is this in the Footnoter's voice, or is it a generic attempt at Pratchett?" Pass bar: 3 of 3 panelists vote Footnoter. If any panelist fails, Voice Lead rewrites.
-- **Step 9 (Council):** Council unanimous required (no 2-of-3 with abstention). The CEO's *"did you make this up?"* test is the final human gate.
+- **Step 7 (Flavor text):** **agent drafts nothing.** Seat 2b (the Footnoter) writes every Footnoter line by hand. The agent's job is to *fact-check against the bible* (Lampblack layers intact, one-sincere-sentence present, no internet-meme cadence, no "lol" energy) and *surface violations*. Never to draft.
+- **Step 8 (Mosaic Scorer):** replaced with the **Topsy Voice Test** — a blind LLM panel is asked "Is this in the Footnoter's voice, or is it a generic attempt at Pratchett?" Pass bar: 3 of 3 panelists vote Footnoter. If any panelist fails, Seat 2b rewrites.
+- **Step 9 (Council):** all four voting seats unanimous required (no abstention substitutes for a vote). The CEO's *"did you make this up?"* test is the final human gate.
 
-**Cost trade-off.** Topsy Sets take ~2–3× the Voice Lead hours of a standard Set. At ~20% of Sets (12 of 60 per SET-ROADMAP), the Voice Lead spends ~35% of their time on Topsy. This is why the role is full-time from drop one and is the single non-scalable seat on the team. Every other seat AI-multiplies; the Footnoter does not. The moat costs one human salary; the ROI is Magic-level volume with a register Magic's bible forbids.
+**Cost trade-off.** Topsy production at scale — ~14,400 words of flavor + lore over 36 months across 12 Topsy Sets, plus ~72,000 words of weekly Footnoter Marginalia — is roughly a novel-and-a-half of Pratchett-grade prose by one hand. That is full-time work; it is not a 35%-time side gig to running four Universe registers. Seat 2b absorbs that load; Seat 2a (Voice Lead) absorbs the four non-Topsy register editing across the same 36 months without burnout risk. Every other seat AI-multiplies; Seat 2b does not — that is the moat. The moat costs one additional human salary versus a three-seat Council; the ROI is Magic-level volume with a register Magic's bible forbids, sustained for the life of the property.
 
 ---
 

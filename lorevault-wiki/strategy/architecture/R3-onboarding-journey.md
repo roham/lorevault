@@ -111,6 +111,14 @@ This is the iceberg as *time* — the promise that something will happen in a we
 
 **Where the iceberg does NOT live.** Not in a "Lore" tab. Not in a `/codex` glossary. Not in a pop-up tutorial. Not in a help-centre article. The moment the iceberg becomes a navigable top-level surface, it stops being an iceberg and becomes a wiki — which is the Pottermore failure mode (per Cosmology Doctrine §4 / R6 §5). The iceberg must *find the visitor*, never the other way around.
 
+**Day-1 conversion target — stepped ramp, not static aspiration.** The Day-1 funnel is email subscription to *Jonathan's Journal* (or the equivalent Footnoter correspondence) at the moment of magic-link signup. The target is a moving floor that ramps as the cohort matures and word-of-mouth compounds:
+
+- **Series 1 launch month:** 15% of cold visitors take the Journal subscription on Day 1.
+- **Series 1 month 6:** 25% — by this point the Day-3 letter sequence has documented evidence in the wild (BookTok screenshots, Tumblr quote-reblogs) and visitors arrive less hostile.
+- **Series 2 launch onward:** 35% — cohort is now seeded with returning Series-1 readers, and the social proof of 240K-subscriber-class numbers has compounded.
+
+15% Day-1 subscription is best-in-class for cold-acquired BookTok email; 25% is the cohort-mature target; 35% is the ceiling we are willing to model. 40% is reserved as the long-run aspiration once the property has a 200K+ subscriber base behind it. The daemon scores Yardstick 6 against this moving floor, not against 40% as a static aspiration.
+
 ---
 
 ## 6. Day 1–3 Nurture — The Footnoter's First Three Letters
