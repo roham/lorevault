@@ -1,0 +1,94 @@
+[
+  {
+    "route": "/",
+    "name": "home-v1-mobile",
+    "status": 200,
+    "loadMs": 1222,
+    "consoleErrors": [],
+    "h1": "Every legend begins with a single card.",
+    "navLinks": 0,
+    "images": 0,
+    "verdict": 5
+  },
+  {
+    "route": "/prototype/exemplars",
+    "name": "prototype-exemplars-mobile",
+    "status": 200,
+    "loadMs": 1716,
+    "consoleErrors": [],
+    "h1": "Five cards. Five Universes. Five lenses.",
+    "navLinks": 1,
+    "images": 5,
+    "verdict": 5
+  },
+  {
+    "route": "/prototype",
+    "name": "prototype-root-mobile",
+    "status": 200,
+    "loadMs": 1566,
+    "consoleErrors": [],
+    "h1": "Three Visions",
+    "navLinks": 0,
+    "images": 0,
+    "verdict": 5
+  },
+  {
+    "route": "/v2",
+    "name": "v2-root-mobile",
+    "status": 404,
+    "loadMs": 765,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 ()"
+    ],
+    "h1": "404",
+    "navLinks": 0,
+    "images": 0,
+    "verdict": 1
+  },
+  {
+    "route": "/",
+    "name": "home-v1-desktop",
+    "status": 200,
+    "loadMs": 1229,
+    "consoleErrors": [],
+    "h1": "Every legend begins with a single card.",
+    "navLinks": 0,
+    "images": 0,
+    "verdict": 5
+  },
+  {
+    "route": "/prototype/exemplars",
+    "name": "prototype-exemplars-desktop",
+    "status": 200,
+    "loadMs": 1591,
+    "consoleErrors": [],
+    "h1": "Five cards. Five Universes. Five lenses.",
+    "navLinks": 1,
+    "images": 5,
+    "verdict": 5
+  },
+  {
+    "route": "/prototype",
+    "name": "prototype-root-desktop",
+    "status": 200,
+    "loadMs": 1715,
+    "consoleErrors": [],
+    "h1": "Three Visions",
+    "navLinks": 0,
+    "images": 0,
+    "verdict": 5
+  },
+  {
+    "route": "/v2",
+    "name": "v2-root-desktop",
+    "status": 404,
+    "loadMs": 947,
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 ()"
+    ],
+    "h1": "404",
+    "navLinks": 0,
+    "images": 0,
+    "verdict": 1
+  }
+]
