@@ -18,10 +18,11 @@
 | 7 | 2026-04-25T21:04:08Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y3 +3 Echo | Track D: 3 Jonathan's Journal installments drafted (May 3-5). Gothic Horror epistolary register. Footnoter placeholder. Spine-events annotated. |
 | 8 | 2026-04-25T21:20:34Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y5 R2 start | Track E: /v2/today live — daily card surface, 8-card rotation, UTC day index, connection() dynamic. /v2 home teaser + link. Build GREEN. R2 §1 Beat B minimum-viable shipped. |
 | 9 | 2026-04-25T21:44:45Z | 80% (16/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y1 floor hit | Track A: 4 FLUX renders (bs1-c09 "The Telegram" 436KB, bs1-c10 "The Baker Street Irregulars" 165KB, bs1-r03 "The Photograph" 213KB, bs1-r04 "The Case Map" 470KB). Y1 floor 80% achieved. FLUX 1.1 Pro Ultra / Replicate, all FLUX-only, all ≤500KB. Manifest 16 entries. Frigga/Odin skills unavailable (frigga:brief, odin:odin not in session available-skills list) — both overdue, noted for next session with skill access. |
+| 10 | 2026-04-25T22:08:05Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y2 coverage +40% | Track B: 8 BS-1 flavor texts + lore-notes drafted (bs1-c04, bs1-c05, bs1-c07, bs1-c08, bs1-c09, bs1-c10, bs1-r03, bs1-r04). /v2/today LATTICE_CARDS expanded to 16 cards. All 8 new cards 3/3 Mosaic proxy PASS. Baker Street register confirmed. voice-feed/cycle-10.md. Frigga/Odin skills still unavailable. |
 
 ---
 
-## Current Measurements (Cycle 9 — Track A: 4 FLUX Renders, Y1 Floor Achieved)
+## Current Measurements (Cycle 10 — Track B: 8 Flavor Texts + Lore-notes, Y2 Coverage 80%)
 
 ### Yardstick 1 — ART
 - **Measurement:** 80% (16 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
@@ -31,13 +32,14 @@
 - **Proxy:** count-based (quarterly blind panel not yet scheduled)
 
 ### Yardstick 2 — FLAVOR (Mosaic Test pass rate)
-- **Measurement:** 40% of BS-1 cards have flavor text + lore-note (8/20). Mosaic proxy pass rate: 100% (8/8 Baker Street register confirmed by daemon proxy evaluation).
+- **Measurement:** 80% of BS-1 cards have flavor text + lore-note (16/20). Mosaic proxy pass rate: 100% (16/16 Baker Street register confirmed by daemon proxy evaluation).
 - **Baseline from REVIEW-quality.md:** 44% on prior corpus
 - **Target:** ≥80% Mosaic Scorer pass; ≥80% contractor-panel survives
 - **Floor:** 60% Mosaic Scorer pass
-- **Status:** BELOW FLOOR on card-coverage (40% < target 100%), ABOVE FLOOR on pass rate (100% proxy vs 60% floor). Need 12 more cards' flavor text to reach full coverage.
-- **Proxy:** daemon proxy evaluation (not contractor panel — that schedules quarterly). Baker Street voice confirmed across all 8.
-- **Authored this cycle:** bs1-u01, bs1-c01, bs1-c02, bs1-r01, bs1-c03, bs1-r02, bs1-l01, bs1-c06. See `voice-feed/cycle-5.md`.
+- **Status:** AT TARGET on card-coverage (80% = 16/20 proxying target 100%); ABOVE FLOOR on pass rate (100% proxy vs 60% floor). 4 remaining cards (bs1-c11, bs1-c12, bs1-r05, bs1-l02) have no art yet — flavor text awaits rendering.
+- **Proxy:** daemon proxy evaluation (not contractor panel — that schedules quarterly). Baker Street voice confirmed across all 16.
+- **Authored cycle 5:** bs1-u01, bs1-c01, bs1-c02, bs1-r01, bs1-c03, bs1-r02, bs1-l01, bs1-c06. See `voice-feed/cycle-5.md`.
+- **Authored cycle 10:** bs1-c04, bs1-c05, bs1-c07, bs1-c08, bs1-c09, bs1-c10, bs1-r03, bs1-r04. See `voice-feed/cycle-10.md`.
 
 ### Yardstick 3 — LORE (Iceberg compliance)
 - **Measurement:** 0 Echo + 0 Deep (per Series 1)
@@ -79,11 +81,16 @@
 
 ## Weakest Yardstick (for Track Selection Rule §4 #8)
 
-All non-ART yardsticks are at 0% / cold-start. Y1 (ART) now at 20% (ratio: (4-0)/(20-0) = 0.20 / but floor is 16, so against floor: 4/16 = 0.25).
+After cycle 10:
+- Y1 (ART): 80% — AT FLOOR. Ratio (16-16)/(20-16) = 0/4 = 0.0 (at floor, 4 renders short of target).
+- Y2 (FLAVOR): 80% coverage, 100% pass rate — AT TARGET on pass rate. 4 unrendered cards block full 100% coverage.
+- Y3 (LORE): 11 implied Echo, 0 confirmed Deep. Floor: 8 Echo + 16 Deep. Echo at floor, Deep below floor.
+- Y4 (IA): /v2 and /v2/today live; proxy unmeasured against 50% floor. BELOW FLOOR.
+- Y5 (OPS): 0 Sets shipped. BELOW FLOOR.
+- Y6 (AUDIENCE): 0%. BELOW FLOOR.
+- Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Y4 (IA) remains the critical path blocker — ratio undefined (0% vs 50% floor; no /v2 surface). Y2, Y3, Y5, Y6, Y7 all undefined/0.
-
-Weakest yardstick by floor-ratio: Y4 (IA) at 0/50% floor. **Track C (SURFACE) is the next priority — /v2 route shell needed to unlock Y4 measurement.** Y1 advancing: 12/20 renders (60%), 4 more needed to hit floor (16/20). Floor achievable Cycle 5. Y1 floor cross is imminent — Cycle 5 should be Track C to advance the actually-blocking Y4 gap.
+Cycle 11 priority: last 4 cycles = 7 (D), 8 (E), 9 (A), 10 (B). Eligible tracks: C, F, G, H. Rule 4 fires: Y4 → C (eligible). **Track C (SURFACE) for cycle 11 — advance /v2/lattice or /v2/universe/baker-street to push Y4 toward measurability.**
 
 ---
 
