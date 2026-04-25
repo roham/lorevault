@@ -1,0 +1,81 @@
+{
+  "generatedAt": "2026-04-25T21:08:07.457Z",
+  "pairs": [
+    {
+      "id": "1-watson-deduction",
+      "label": "Watson at 221B",
+      "prompt": "Watson and Holmes at 221B Baker Street, 1881, oil painting in the manner of John Singer Sargent. Foreground Dr. Watson in a leather wing-chair, mid-thirties, tweed waistcoat, gold pocket-watch, hand resting on his Afghanistan-wounded thigh. Mid-ground Sherlock Holmes in profile at the mantelpiece, briar pipe at rest beside a service revolver, fingertips at his temple in the canonical thinking pose. Deerstalker on the hat-stand casting a lamp-shadow on oxblood wallpaper. Single warm gas-lamp source from camera-left, deep stage-right shadow. Tobacco-amber and oxblood palette. Painterly with photographic grounding. Late-Victorian domestic interior, fog at the window, books in oxblood. The split-second before a deduction lands. No modern objects.",
+      "flux": {
+        "path": "/prototype-art/headtohead/1-watson-deduction-flux.webp",
+        "bytes": 231220,
+        "provider": "replicate-flux-1.1-pro-ultra"
+      },
+      "openai": {
+        "path": "/prototype-art/headtohead/1-watson-deduction-openai.webp",
+        "bytes": 239188,
+        "provider": "openai-gpt-image-1"
+      }
+    },
+    {
+      "id": "2-snow-black-neon",
+      "label": "Snow Black, NEON",
+      "prompt": "Editorial portrait, ebony-skinned young man with cropped snow-white hair and blood-red lips, mid-twenties, accepting a half-bitten apple from a gloved hand entering frame from camera-left. Photoreal apple with a precise bite-edge. Near-future apothecary setting: chrome surfaces, cyan and magenta lighting, an open vitrine reading as a hospital cryotube. A queen's crown reflected on a chrome counter, slightly crooked. Synthwave palette — magenta key from camera-right, cyan rim from camera-left, deep black core shadows. The apple's red is the only warm tone. 2050s urban Grimm aesthetic, painterly under the synth-palette. Cinematic, three-quarter portrait, the apple on the diagonal. Light scan-lines barely visible. Not retro 80s.",
+      "flux": {
+        "path": "/prototype-art/headtohead/2-snow-black-neon-flux.webp",
+        "bytes": 241840,
+        "provider": "replicate-flux-1.1-pro-ultra"
+      },
+      "openai": {
+        "path": "/prototype-art/headtohead/2-snow-black-neon-openai.webp",
+        "bytes": 252458,
+        "provider": "openai-gpt-image-1"
+      }
+    },
+    {
+      "id": "3-cheshire-arcana",
+      "label": "Cheshire, ARCANA",
+      "prompt": "The Cheshire Cat dissolving into watercolor pigment, half-erased half-present. The grin sharp violet-pink, fully rendered; the body fading at the periphery. Yellow half-lidded eyes. A violet-pink-magenta stripe runs the visible flank. The tail loops around a hovering teacup at lower-right. Behind the cat's head a sacred-geometry mandala in gold-leaf filigree — twelve-fold rosette built of vertical cat-pupil shapes, two faint Latin sigils at cardinal points. Centered portrait, mandala filling upper two-thirds, body dispersing in lower third. Backlight from the mandala (gold), key fill from front (violet-tinted), self-illuminating cat at low intensity. Violet, magenta, gold-leaf, ivory. Painterly-ornate, the grin reading as the last thing left in the room.",
+      "flux": {
+        "path": "/prototype-art/headtohead/3-cheshire-arcana-flux.webp",
+        "bytes": 891196,
+        "provider": "replicate-flux-1.1-pro-ultra"
+      },
+      "openai": {
+        "path": "/prototype-art/headtohead/3-cheshire-arcana-openai.webp",
+        "bytes": 384030,
+        "provider": "openai-gpt-image-1"
+      }
+    },
+    {
+      "id": "4-dracula-witness",
+      "label": "Dracula, WITNESS",
+      "prompt": "Photoreal documentary-cinema, Roger Deakins lighting at dusk. Count Dracula at the foot of a half-collapsed clocktower in a ruined post-electricity London. Tall, evening-dressed, suit two decades worn, dust-grey at the cuffs. Adding a vertical scratch with the back of a long fingernail to a tally crossed several thousand times across broken plaster. The collar at his throat catches the day's last warm light — the only warm tone. His shadow falls behind him along the rubble and does not match his posture; the shadow turned slightly to look at the camera, the man not. London skyline gone dark, no lit windows, fog and ash, broken dome of St Paul's on the southern horizon. Three-quarter long shot, Dracula in lower-left third, clocktower diagonal cuts the frame. Natural ambient dusk, no key light, photoreal grain, anamorphic lens flares only at the collar. Ash-grey, slate, dust-cream. Documentary register, not theatrical.",
+      "flux": {
+        "path": "/prototype-art/headtohead/4-dracula-witness-flux.webp",
+        "bytes": 355802,
+        "provider": "replicate-flux-1.1-pro-ultra"
+      },
+      "openai": {
+        "path": "/prototype-art/headtohead/4-dracula-witness-openai.webp",
+        "bytes": 263894,
+        "provider": "openai-gpt-image-1"
+      }
+    },
+    {
+      "id": "5-persephone-saint-aether",
+      "label": "Persephone, SAINT × AETHER",
+      "prompt": "Persephone as a Byzantine icon at cosmic scale, frontal hieratic posture. Vertical division at the sternum: left half winter — ash-pale skin, dark robe, frost-rim at the hem, breath visible — right half spring — sun-warm skin, ochre robe, wheat-stalks woven in the hair, no breath. In her left palm six pomegranate seeds, three eaten visible at the lips, three offered toward the viewer. Standing on a polished threshold-stone catching the viewer's reflection. Halo of cosmic dust — aurora curtains, nebulae, divine particulate spiraling. Two faint silhouette-symbols flank the halo in dark smoke-pigment on gold: upper-left a descending Persephone with pomegranate, upper-right a winter-eternalised Persephone alone in ash. Vertical icon composition, mandorla of nebulae. God-rays, aurora-key lighting. The seeds the only literal warm-red. Ash-white, ochre-gold, pomegranate-red, deep-space violet, gold-dust particulate. Byzantine grammar reskinned to cosmic scale.",
+      "flux": {
+        "path": "/prototype-art/headtohead/5-persephone-saint-aether-flux.webp",
+        "bytes": 1100714,
+        "provider": "replicate-flux-1.1-pro-ultra"
+      },
+      "openai": {
+        "path": "/prototype-art/headtohead/5-persephone-saint-aether-openai.webp",
+        "bytes": 551840,
+        "provider": "openai-gpt-image-1"
+      }
+    }
+  ],
+  "failures": []
+}
