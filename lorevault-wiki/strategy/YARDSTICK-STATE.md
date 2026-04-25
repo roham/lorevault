@@ -10,16 +10,18 @@
 | Cycle | Timestamp | Y1 Art | Y2 Flavor | Y3 Lore | Y4 IA | Y5 Ops | Y6 Audience | Y7 Thrilled | Delta | Notes |
 |-------|-----------|--------|-----------|---------|-------|--------|-------------|-------------|-------|-------|
 | 1 | 2026-04-25T04:04:21Z | 0% | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | INIT | Cold-start baseline. All below floor. |
+| 2 | 2026-04-25T19:44:04Z | 20% (4/20) | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y1+0.20 | Track A: 4 BS-1 FLUX renders shipped (bs1-c01, bs1-c02, bs1-r01, bs1-u01). FLUX 1.1 Pro Ultra / Replicate. All ≤500KB. Manifest initialized. |
 
 ---
 
-## Current Measurements (Cycle 1 — Cold Start)
+## Current Measurements (Cycle 2 — Track A: BS-1 Art Generation)
 
 ### Yardstick 1 — ART
-- **Measurement:** 0% (0 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
+- **Measurement:** 20% (4 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
 - **Target:** 100% of in-flight-Set Moments rendered
 - **Floor:** 80% (16 of 20) by 7 days before drop
-- **Status:** BELOW FLOOR — cold start, no renders yet
+- **Status:** BELOW FLOOR — 4/20 rendered; 16 needed for floor; 20 for target
+- **Rendered:** bs1-c01 (Watson's Arrival, 148KB), bs1-c02 (The Thinking Pose, 115KB), bs1-r01 (V.R. in the Plaster, 236KB), bs1-u01 (You Have Been in Afghanistan, 333KB)
 - **Proxy:** count-based (quarterly blind panel not yet scheduled)
 
 ### Yardstick 2 — FLAVOR (Mosaic Test pass rate)
@@ -69,17 +71,20 @@
 
 ## Weakest Yardstick (for Track Selection Rule §4 #8)
 
-All yardsticks are at 0% / cold-start. Ratio `(current - floor) / (target - floor)` is undefined for all.
-Per 30-cycle guide, daemon advances Y4 (IA) as the critical path unlock — every other yardstick is blocked until `/v2` surfaces exist. **Track C (SURFACE) is the default advancement track for the next cycle once Track F baseline is complete.**
+All non-ART yardsticks are at 0% / cold-start. Y1 (ART) now at 20% (ratio: (4-0)/(20-0) = 0.20 / but floor is 16, so against floor: 4/16 = 0.25).
+
+Y4 (IA) remains the critical path blocker — ratio undefined (0% vs 50% floor; no /v2 surface). Y2, Y3, Y5, Y6, Y7 all undefined/0.
+
+Weakest yardstick by floor-ratio: Y4 (IA) at 0/50% floor. **Track C (SURFACE) is the next priority — /v2 route shell needed to unlock Y4 measurement.**
 
 ---
 
 ## Remediation Plans
 
-**All yardsticks below floor — cold-start state.** The remediation is the 30-cycle ramp:
-- Y4 (IA): Cycle 5 ships `/v2` route shell → Cycles 6–12 build R1 surfaces → Y4 becomes measurable
-- Y1 (ART): Cycles 16–25 generate 20 FLUX renders for BS-1 → Y1 rises from 0% to 100%
-- Y2 (FLAVOR): Cycles 26–28 draft 20 flavor texts + lore-notes → Y2 measured via Mosaic Scorer
-- Y3 (LORE): Cycle 29+ drafts iceberg elements per card → Y3 rises
-- Y5 (OPERATIONAL): Set BS-1 Council-lock at cycle 30 → Y5 measurable
-- Y6/Y7 (AUDIENCE/THRILLED): Post-launch with paid pack opens; Jonathan's Journal starts May 3
+**All yardsticks below floor — ramp in progress.** Updated remediation:
+- Y1 (ART): 4/20 rendered (Cycle 2). Continue Track A each cycle until 20 renders complete. Floor (16/20) achievable by Cycle 6.
+- Y4 (IA): Cycle 5 ships `/v2` route shell → Cycles 6–12 build R1 surfaces → Y4 becomes measurable. **Blocking all other yardstick measurements.**
+- Y2 (FLAVOR): After Track A art coverage ≥50%, begin Track B flavor texts. Mosaic Scorer test unlocks.
+- Y3 (LORE): Cycle 29+ drafts iceberg elements per card → Y3 rises.
+- Y5 (OPERATIONAL): Set BS-1 Council-lock at cycle 30 → Y5 measurable.
+- Y6/Y7 (AUDIENCE/THRILLED): Post-launch with paid pack opens; Jonathan's Journal starts May 3 2026.
