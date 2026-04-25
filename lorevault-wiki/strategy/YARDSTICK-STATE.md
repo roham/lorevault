@@ -17,16 +17,17 @@
 | 6 | 2026-04-25T20:49:06Z | 60% (12/20) | 40% (8/20) | 8 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y4 unlock | Track C: /v2 route shell shipped. src/app/v2/page.tsx live. Watson's Arrival image, "The glass catches light" voice, one door. v1 chrome excluded for /v2. Build GREEN, /v2 in build output. |
 | 7 | 2026-04-25T21:04:08Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y3 +3 Echo | Track D: 3 Jonathan's Journal installments drafted (May 3-5). Gothic Horror epistolary register. Footnoter placeholder. Spine-events annotated. |
 | 8 | 2026-04-25T21:20:34Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y5 R2 start | Track E: /v2/today live — daily card surface, 8-card rotation, UTC day index, connection() dynamic. /v2 home teaser + link. Build GREEN. R2 §1 Beat B minimum-viable shipped. |
+| 9 | 2026-04-25T21:44:45Z | 80% (16/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y1 floor hit | Track A: 4 FLUX renders (bs1-c09 "The Telegram" 436KB, bs1-c10 "The Baker Street Irregulars" 165KB, bs1-r03 "The Photograph" 213KB, bs1-r04 "The Case Map" 470KB). Y1 floor 80% achieved. FLUX 1.1 Pro Ultra / Replicate, all FLUX-only, all ≤500KB. Manifest 16 entries. Frigga/Odin skills unavailable (frigga:brief, odin:odin not in session available-skills list) — both overdue, noted for next session with skill access. |
 
 ---
 
-## Current Measurements (Cycle 8 — Track E: Today on the Lattice)
+## Current Measurements (Cycle 9 — Track A: 4 FLUX Renders, Y1 Floor Achieved)
 
 ### Yardstick 1 — ART
-- **Measurement:** 60% (12 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
+- **Measurement:** 80% (16 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
 - **Target:** 100% of in-flight-Set Moments rendered
 - **Floor:** 80% (16 of 20) by 7 days before drop
-- **Status:** BELOW FLOOR — 12/20 rendered; 4 more needed for floor. Held at 60% — no Track A this cycle.
+- **Status:** AT FLOOR — 16/20 rendered. 4 remaining: c11, c12, r05, l02.
 - **Proxy:** count-based (quarterly blind panel not yet scheduled)
 
 ### Yardstick 2 — FLAVOR (Mosaic Test pass rate)
