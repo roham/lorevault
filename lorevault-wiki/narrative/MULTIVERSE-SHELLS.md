@@ -78,33 +78,144 @@ The matrix is the operating constraint. Set leads who want to ship a "No" cell w
 
 ## 3. The Lampblack Mechanics — Per-Character Cross-Shell Continuity
 
-Per Law Two (Lampblack) and Decision 1 (Lampblack is the Lattice's only physics), the figure's recognizable residue must survive every shell translation. The Spine is the *content* preserved; the Lampblack is the *visible mark* that signals preservation. A single Lampblack residue must be expressible in at least two media (silhouette/prop, line/voice, scar/symbol).
+Per Law Two (Lampblack) and Decision 1 (Lampblack is the Lattice's only physics), the figure's recognizable residue must survive every shell translation. The Spine is the *content* preserved; the Lampblack is the *visible-and-felt mark* that signals preservation across Panes.
 
-Below is the locked Lampblack list for the 20 starter figures. These are binding on art briefs and voice work for Series 1–6.
+**Lampblack is a 4-layer stack, not a single token.** Earlier drafts treated Lampblack as a single residue (Alice's blue ribbon, Sherlock's pipe). That underweights recognition rigor: an octopus with a blue ribbon is not Alice; a hat-rack with a deerstalker is not Sherlock. Per the Spider-Verse / Pokémon-regional-variant / MTG-Planeswalker tradition, identity across panes is *layered*. We adopt the same standard. Every figure carries all four layers. Drop any one layer in a proposed shell-translation and the card fails Canon Council review.
 
-- **Sherlock Holmes.** The deerstalker silhouette (cap, visor, hood, halo of brimmed shadow — whatever century it is). The pipe (briar, inhaler, vape, smoke-ring artifact). The phrase *"You have been in—"* opening any deduction. The fingertips touched at the temple.
-- **Watson.** The Afghanistan limp (left leg, weight shifted; in CYBER it's a servo hitch; in SAINT it's a stigmata). The notebook (paper, glass, datalog — always being written *in*). His voice opening every story in third-person about Holmes.
-- **Moriarty.** The chessboard (in CYBER it's a strategy lattice; in MODERN it's a market terminal). The phrase *"We are bound, you and I."* The asymmetric oscillation of the head — a tic from the source.
-- **Irene Adler.** The photograph (the one she will not surrender; in CYBER it's an encrypted file; in SAINT it's a relic). The masculine garment worn over feminine (a frock-coat, a tactical jacket, a bishop's stole). Her name spoken once and remembered forever.
-- **The Hound (Baskerville).** Phosphorescent jaw (gas, paint, bioluminescence, halo). The howl as *off-frame sound* — Lampblack lives in audio cues for this figure. The single paw-print larger than expected.
-- **Snow White.** The apple (red, half-bitten, geometric, glowing — never absent). Skin-blood-ebony tricolor (the skin white as snow, lips red as blood, hair black as ebony — color triad survives every shell). The glass coffin or its analog (vitrine, cryotube, reliquary).
-- **Evil Queen.** The mirror (any reflective surface that talks back — handheld, room-scale, screen). The crown, slightly crooked. The phrase *"who is the fairest"* in any register.
-- **Red Riding Hood.** The red garment (cloak, hoodie, signal flare — red on red on red). The basket (or its load-bearing analog: a bag, a payload, a delivery). The grandmother's house as destination.
-- **Rumpelstiltskin.** The wheel (spinning wheel, gear, centrifuge, hard-drive platter). The unspoken name as the Lampblack itself — every shell foregrounds *he has a name no one says*. The straw-to-gold transmutation gesture.
-- **Alice.** The blue ribbon (hair, wrist, neck, data-cable — always blue, always tied). The size-discordance moment (a too-big door, a too-small chair). The pinafore silhouette (apron, lab coat, surgical gown — the white over the blue).
-- **Cheshire Cat.** The grin that arrives before the body and stays after. The stripe (purple-pink, neon, scar-tissue). The tail as punctuation in the composition.
-- **Mad Hatter.** The hat with the price-tag still on it (10/6, $10.60, a barcode). Tea (cup, vial, IV bag) at improbable angle. The clock stuck at six.
-- **Queen of Hearts.** The heart (suit-card, organ, pulse trace, neon sign). The phrase *"Off with—"* always cut off mid-line. The painted rose (red-over-white, blood-over-snow).
-- **Dracula.** The count of nights (a tally — wall-scratches, calendar marks, journal entries; in CYBER it's a counter at the corner of the frame). The shadow that doesn't follow the body's geometry. The collar-line at the throat.
-- **Frankenstein's Monster.** The seam (forehead, neck, wrist — at least one stitch visible in every shell). The asymmetric eye-line (one eye older than the other). The hands disproportionately large.
-- **Jekyll / Hyde.** The cabinet (medicine cabinet, locker, server cage — where the second self is kept). The gloved hand vs ungloved hand split-frame. The mirror that shows the other.
-- **Phantom of the Opera.** The mask (half-face — left side covered, right side visible, every shell). The chandelier (or its analog: a hanging weight that will fall). Music-staff fragments in the negative space.
-- **Prometheus.** The chain (iron, neural, contractual). The fire (literal, electrical, informational — the gift in his hand). The liver-eagle silhouette in the background or on the body.
-- **Medusa.** The serpents (hair, cables, tendrils, fiber). The petrified figure in the foreground or at her feet (a witness turned to stone; in CYBER it's a frozen avatar). The shield-as-mirror.
-- **Zeus.** The thunderbolt silhouette (held, holstered, scar-shaped). The eagle off-frame. The beard that storms.
-- **Athena.** The owl (perched, in flight, holographic). The aegis (shield, badge, security clearance). Helmet at the temple — never on the head, always set down.
+**The four layers, in order of recognition load:**
 
-These 20 Lampblack signatures are the cross-shell continuity contract. A card that drops one without Council approval fails the Mosaic Test.
+1. **SILHOUETTE.** The bodyplan / outline. Hard constraint. *Alice = small, young, human-femme proportion. Sherlock = tall, gaunt, hawkish profile.* A figure recognizable in pure black-fill at thumbnail size. The silhouette is what the eye solves first. Substituting a non-human bodyplan (octopus, drone, swarm) breaks Lampblack regardless of how many props are loaded onto it. Exception: DREAM and SAINT shells permit silhouette *abstraction* (halo, dream-blur), never silhouette *substitution*.
+2. **PROPS.** One or two persistent objects, garments, or marks. *Alice = blue ribbon + the falling-objects / size-discordance phenomenon. Sherlock = pipe + magnifying-tool.* Props are what the previous spec called "the Lampblack residue." They remain load-bearing — but they are layer two, not the whole stack. Props translate across centuries (pipe → vape → smoke-ring artifact); they do not translate across bodyplans.
+3. **GESTURE.** A signature pose / movement / micro-action the figure performs in the composition. *Alice = head-tilted curiosity, the drink-me / eat-me decision pose, the hand reaching toward the too-large or too-small object. Sherlock = forward-lean of mid-deduction, fingertips touched at the temple.* Gesture is what survives when silhouette is partly occluded and props are repurposed; it is the figure's *kinesthetic signature*. A figure rendered in standard heroic-stance, no decision-pose, no signature movement, fails this layer even if silhouette and props are correct.
+4. **SPINE.** The canonical events that must hold across shells. *Alice = encounters liminal beings who deliver hard truths in playful form; the journey is downward and the lesson is that adult logic is contingent. Sherlock = solves the unsolvable case via observation; falls and returns; is more accurate than the institutions around him.* Spine is the *narrative* layer of Lampblack — the events the card alludes to or stages. Per Decision 2, every figure has a Spine; here we make explicit that the Spine is one of the four Lampblack layers, not a separate doctrine.
+
+**A complete Lampblack reads in all four layers simultaneously.** A Sherlock-CYBER card must show a tall-gaunt-hawkish silhouette (1) holding visor-and-inhaler (2) in a forward-lean of mid-deduction (3) inside a frame that stages a moment of impossible-cognition-made-visible (4). Drop any one and the card stops being Sherlock; it becomes a man with props, or a pipe with no figure, or a deduction without a deducer.
+
+Below is the locked Lampblack stack for the 20 starter figures. These are binding on art briefs and voice work for Series 1–6.
+
+- **Sherlock Holmes.**
+  - *SILHOUETTE:* tall, gaunt, hawkish profile; cap-or-visor halo at the crown; angular shoulder line.
+  - *PROPS:* pipe (briar, inhaler, vape, smoke-ring artifact) + magnifying tool (lens, spectral overlay, scan-aperture).
+  - *GESTURE:* forward-lean of mid-deduction; fingertips touched at the temple; head turned a quarter-degree toward the unseen detail.
+  - *SPINE:* solves the unsolvable case via observation; is more accurate than the institutions around him; falls (Reichenbach or its analog) and returns.
+- **Watson.**
+  - *SILHOUETTE:* squared, mil-bearing frame; the Afghanistan limp visible in stance (left leg, weight shifted).
+  - *PROPS:* the notebook (paper, glass, datalog — always being written *in*) + the service revolver or its analog.
+  - *GESTURE:* the chronicler's half-step-behind-and-to-the-right; pen-up-to-page mid-observation; the steadying hand on Holmes's elbow.
+  - *SPINE:* the witness who outlives the genius; the friend whose presence is what makes the genius bearable; the voice that opens every story in third person about another.
+- **Moriarty.**
+  - *SILHOUETTE:* upright, predatory-thin, slightly stooped at the shoulder; head set forward of the body.
+  - *PROPS:* the chessboard (CYBER: strategy lattice; MODERN: market terminal) + the unsigned letter / unsourced order.
+  - *GESTURE:* the asymmetric oscillation of the head — a tic from the source; hands clasped behind the back; the half-smile that arrives before the threat.
+  - *SPINE:* the equal-and-opposite of the protagonist; the antagonist whose existence proves the protagonist's necessity; bound to Sherlock as Sherlock is bound to him.
+- **Irene Adler.**
+  - *SILHOUETTE:* upright-femme, masculine-cut overgarment; the silhouette is intentionally ambiguous in low light.
+  - *PROPS:* the photograph she will not surrender (CYBER: encrypted file; SAINT: relic) + the masculine garment worn over feminine (frock-coat, tactical jacket, bishop's stole).
+  - *GESTURE:* the half-turn at the door, looking back over the shoulder; the deliberate non-flinch under scrutiny; the smile that registers the trap and steps through anyway.
+  - *SPINE:* the only one who has out-thought Sherlock; the figure whose name is spoken once and remembered forever; refuses to be possessed in any register.
+- **The Hound (Baskerville).**
+  - *SILHOUETTE:* low, four-legged, oversized at the shoulder; the head heavier than the body should support.
+  - *PROPS:* phosphorescent jaw (gas, paint, bioluminescence, halo) + the single paw-print larger than expected.
+  - *GESTURE:* the hackles-up-mid-stride freeze; the howl thrown off-frame; the slow turn-of-the-head toward an unseen witness.
+  - *SPINE:* the engineered terror; the dog that is also a story about the dog; the apparition that is mundane underneath and terrifying above.
+- **Snow White.**
+  - *SILHOUETTE:* young-femme, upright, the tricolor stack visible in pure black-fill (skin-mass, hair-mass, lip-mass).
+  - *PROPS:* the apple (red, half-bitten, geometric, glowing — never absent) + the glass coffin or its analog (vitrine, cryotube, reliquary).
+  - *GESTURE:* the apple held at lip-height, decision unmade; the still-and-displayed pose of the coffin scene; the wake-and-rise.
+  - *SPINE:* the innocent who is poisoned by the surrogate-mother; the figure preserved in glass; the one who returns from death because someone else's love wakes her — and outlives the queen.
+- **Evil Queen.**
+  - *SILHOUETTE:* tall-femme, crowned, vertical drape; the crown angle slightly crooked in every shell.
+  - *PROPS:* the mirror (handheld, room-scale, screen — any reflective surface that talks back) + the apple, offered in disguise.
+  - *GESTURE:* the slow turn from mirror toward viewer; the offered hand with the apple in the open palm; the regal not-quite-smile.
+  - *SPINE:* the woman whose power is conditional on being-the-fairest; who consults a system that will eventually betray her; who chooses the stepdaughter's death over her own irrelevance.
+- **Red Riding Hood.**
+  - *SILHOUETTE:* small, hooded, the cloak's vertical drape doubling the figure's height in shadow.
+  - *PROPS:* the red garment (cloak, hoodie, signal flare — red on red on red) + the basket / load-bearing analog (bag, payload, delivery).
+  - *GESTURE:* the looking-back-over-the-shoulder mid-path; the basket held at hip; the pause-at-the-door of grandmother's house.
+  - *SPINE:* the journey through danger to deliver care; the encounter with the predator wearing the loved-one's skin; the survival-by-recognition (or by the woodsman) of what should have been disguise-proof.
+- **Rumpelstiltskin.**
+  - *SILHOUETTE:* small, angular, hunched; disproportionate hands; the body shorter than the shadow it casts.
+  - *PROPS:* the wheel (spinning wheel, gear, centrifuge, hard-drive platter) + the contract (parchment, smart-contract glyph, finger-pricked seal).
+  - *GESTURE:* the bargain-offered pose, palm up; the spin-and-snap as the wheel turns straw to gold; the foot-stamp of the unsaid name.
+  - *SPINE:* the figure who trades the impossible for what you cannot afford to lose; whose power collapses when his name is spoken; who is foregrounded in every shell as *the one with a name no one says*.
+- **Alice.**
+  - *SILHOUETTE:* small, young, human-femme; pinafore-and-hair silhouette readable at thumbnail size.
+  - *PROPS:* the blue ribbon (hair, wrist, neck, data-cable — always blue, always tied) + the falling-objects / size-discordance phenomenon (a too-big door, a too-small chair, a falling key).
+  - *GESTURE:* head-tilted curiosity; the drink-me / eat-me decision pose with the object held at lip-height; the hand reaching toward the impossible.
+  - *SPINE:* encounters liminal beings who deliver hard truths in playful form; journeys downward; learns that adult logic is contingent and returns changed.
+- **Cheshire Cat.**
+  - *SILHOUETTE:* feline, low-slung, but readable as *partial* — the silhouette is allowed to be incomplete, with the grin or the tail floating free.
+  - *PROPS:* the stripe (purple-pink, neon, scar-tissue) + the impossible perch (branch, wire, edge of nothing).
+  - *GESTURE:* the grin that arrives before the body and stays after; the slow blink; the tail as punctuation in the composition.
+  - *SPINE:* the guide who answers without answering; the figure who is neither protector nor antagonist; whose presence reveals which question the protagonist actually asked.
+- **Mad Hatter.**
+  - *SILHOUETTE:* upright-male, top-hat-extended profile; angular at elbows and knees; the hat doubles the figure's height.
+  - *PROPS:* the hat with the price-tag still on it (10/6, $10.60, a barcode) + tea (cup, vial, IV bag) held at improbable angle.
+  - *GESTURE:* the lean-across-the-table at impossible torque; the toast-with-empty-cup; the clock-pulled-from-pocket-then-shaken.
+  - *SPINE:* the figure stuck in a single moment (the clock at six) whose social ritual has metastasized; whose nonsense is the only honest grammar available in his pane.
+- **Queen of Hearts.**
+  - *SILHOUETTE:* wide, regal, vertically inflated by collar and crown; the silhouette is broader than tall.
+  - *PROPS:* the heart (suit-card, organ, pulse trace, neon sign) + the painted rose (red-over-white, blood-over-snow).
+  - *GESTURE:* the thrown-arm verdict; the finger-pointed-at-accused; the half-turn-away mid-sentence.
+  - *SPINE:* the sovereign whose verdicts arrive before the trial; the figure whose anger is the system; the queen who is feared and not-actually-obeyed.
+- **Dracula.**
+  - *SILHOUETTE:* tall, vertical, caped; the shadow taller than the body.
+  - *PROPS:* the count of nights (tally on wall, calendar marks, frame-corner counter) + the collar-line at the throat (the cape's high collar, the wound's location, the shirt-line).
+  - *GESTURE:* the cape-spread of arrival; the slow descent of the head toward the throat; the non-reflection at the mirror.
+  - *SPINE:* the aristocrat who feeds on the present from outside time; whose shadow does not follow Euclidean geometry; who counts what no one else can count and outlives every witness.
+- **Frankenstein's Monster.**
+  - *SILHOUETTE:* tall, broad-shouldered, asymmetric; the head set heavily on the neck; hands disproportionately large.
+  - *PROPS:* the seam (forehead, neck, wrist — at least one stitch visible) + the asymmetric eye-line (one eye older than the other).
+  - *GESTURE:* the reaching hand of unintended tenderness; the recoil-from-flame; the slow turn toward the maker.
+  - *SPINE:* the made-thing that asks the maker for an account; the abandoned creation; the figure whose suffering is the indictment of the act of creation itself.
+- **Jekyll / Hyde.**
+  - *SILHOUETTE:* the same body in two postures — Jekyll upright-narrow, Hyde stooped-broad; the silhouette must legibly carry both readings simultaneously, often via shadow or split-frame.
+  - *PROPS:* the cabinet (medicine cabinet, locker, server cage — where the second self is kept) + the gloved hand vs ungloved hand split.
+  - *GESTURE:* the hand-to-throat of transition; the mirror that shows the other; the buttoning / unbuttoning of the coat.
+  - *SPINE:* the chemical / contractual self-alteration; the second self who is the first self's appetite; the recognition that the cabinet was always full of the same person.
+- **Phantom of the Opera.**
+  - *SILHOUETTE:* tall, caped, the half-mask creating a vertical asymmetry on the head; the silhouette is half-human half-architecture.
+  - *PROPS:* the mask (half-face — left side covered, right side visible, every shell) + the chandelier or its analog (a hanging weight that will fall).
+  - *GESTURE:* the cloak-sweep across the lower face; the music-conducted-in-empty-air; the descent through the trapdoor.
+  - *SPINE:* the disfigured genius beneath the institution; the lover who cannot be loved in daylight; the figure whose music is the only register in which his face is not a problem.
+- **Prometheus.**
+  - *SILHOUETTE:* tall, chained-stance, arms extended or bound; the eagle's silhouette legible at his liver or in the background sky.
+  - *PROPS:* the chain (iron, neural, contractual) + the fire (literal, electrical, informational — the gift in his hand).
+  - *GESTURE:* the fire offered downward toward humans; the head turned upward toward the eagle; the bound-but-unbroken stance.
+  - *SPINE:* the gift that cannot be reverted; the punishment that recurs at the same hour; the bringer of capability who pays in perpetuity for what he gave away.
+- **Medusa.**
+  - *SILHOUETTE:* upright-femme, the hair-mass writhing — the silhouette must read as *hair-that-is-not-hair* at thumbnail size.
+  - *PROPS:* the serpents (hair, cables, tendrils, fiber) + the petrified witness in the foreground or at her feet (a figure turned to stone) and / or the shield-as-mirror.
+  - *GESTURE:* the head turned toward the viewer; the gaze-met-and-returned; the slow lift of the chin.
+  - *SPINE:* the survivor punished for her own violation; the figure whose look returns what was done to her; the cursed protector whose only weapon is the gaze others wanted to take.
+- **Zeus.**
+  - *SILHOUETTE:* tall, broad, beard-extended; the thunderbolt silhouette in the hand or at the hip; storm-mass overhead.
+  - *PROPS:* the thunderbolt (held, holstered, scar-shaped) + the eagle off-frame.
+  - *GESTURE:* the arm raised mid-throw; the seated-on-throne pose with one knee forward; the beard-that-storms.
+  - *SPINE:* the patriarch of the order; the king whose authority is weather; the figure whose punishments and gifts are indistinguishable to the recipient.
+- **Athena.**
+  - *SILHOUETTE:* upright-femme, helmeted-or-helmet-set-down, aegis at the chest or arm.
+  - *PROPS:* the owl (perched, in flight, holographic) + the aegis (shield, badge, security clearance) + helmet at the temple, set down rather than worn.
+  - *GESTURE:* the helmet-being-set-down or being-just-lifted; the strategic pause; the open-palm of the counsel-giver.
+  - *SPINE:* the strategist born from the head; the goddess whose wisdom is operational rather than oracular; the patron whose city is what she protects against her own father's weather.
+
+These 20 four-layer Lampblack stacks are the cross-shell continuity contract. A card that drops one layer without Council approval fails the Mosaic Test.
+
+### 3a. Canon Council Rejection Examples — How the 4-Layer Test Fails
+
+The 4-layer test is most legible as rejection. Below are five illustrative cases where a proposed shell-translation would be returned by the Canon Council, with the layer that fails named.
+
+1. **Octopus-Alice (CYBER, "data-kraken Alice").** *Proposal:* an octopus-bodied figure in a flooded server room, blue ribbon tied around one tentacle, holding a too-large key. *Rejection:* fails **SILHOUETTE.** Alice's silhouette is small-young-human-femme. An octopus body, however many props are loaded onto it, is not Alice — it is a creature wearing a blue ribbon. Props (layer 2) and a size-discordance gesture (layer 3) cannot rescue a silhouette substitution. Resubmit with human-femme silhouette; the data-kraken can be its own original figure in HOLLOW, but it is not Alice.
+2. **Bodyless-AI-Sherlock (CYBER, "Sherlock-as-LLM").** *Proposal:* a glowing data-cloud at a crime scene, deerstalker-shaped voxel array hovering above it, deduction-text streaming in space. *Rejection:* fails **SILHOUETTE** *unless* re-shelled to DREAM. Sherlock's silhouette layer requires a tall-gaunt-hawkish *body*. A bodyless figure is silhouette-substitution and breaks the stack in CYBER, MODERN, MIRROR, SAINT, AETHER, HOLLOW, PRIME. Only DREAM permits silhouette *abstraction* of this magnitude — and only at Legendary+ with the Dream Hand-Off mechanic from §4.
+3. **Apple-only Snow White (PRIME, "the apple painting").** *Proposal:* a still-life of a half-bitten red apple on a glass plinth, no figure present. Lampblack is "carried by the apple alone." *Rejection:* fails **SILHOUETTE, GESTURE, and SPINE simultaneously.** A prop is layer 2 of 4. The apple without the tricolor figure, without the apple-at-lip-height decision pose, without the staging of the poisoning-and-return Spine, is decoration, not a Snow White Moment. Resubmit with figure present, decision-gesture staged, coffin or analog visible in the composition.
+4. **Hattered-Watson (MIRROR, "Watson-takes-Holmes-role").** *Proposal:* Watson wearing the deerstalker, holding the pipe, in the forward-lean of mid-deduction, replacing Sherlock in a Reichenbach-analog scene. *Rejection:* fails **SPINE.** Watson's Spine is the witness who outlives the genius — the chronicler, the half-step-behind-and-to-the-right. Loading Sherlock's silhouette / props / gesture onto Watson does not produce a MIRROR Watson; it produces Sherlock-cosplay. A legitimate MIRROR Watson is Watson-the-genius-with-Sherlock-as-witness, with Watson's own silhouette (squared, mil-bearing, limp), his own props (notebook, revolver), his own gesture (chronicler's stance now turned outward to the case), and his own Spine (the witness made central) — not Sherlock with Watson's face.
+5. **Casual-Forward-Stance Holmes (CYBER × WITNESS, "Sherlock standing around").** *Proposal:* CYBER Sherlock at a crime scene — correct silhouette, visor and inhaler present, photoreal lighting — standing at parade rest, facing forward, neutral expression, no deduction in motion. *Rejection:* fails **GESTURE.** Sherlock's gesture layer is the forward-lean of mid-deduction, fingertips touched at the temple, head turned a quarter-degree toward the unseen detail. A heroic-stance Sherlock is silhouette + props + Spine without gesture — three of four layers — and three of four is a Lampblack failure. Resubmit with the deduction-in-progress staged; a Sherlock who is not currently noticing something is not Sherlock.
+
+The pattern across all five: any single layer dropped collapses the figure into either a prop-still-life, a cosplay, or a creature-with-marks. The 4-layer test is conjunctive, never disjunctive.
+
+### 3b. The "Lampblack Thickens" Phrasing Rule, Restated
+
+Per Decision 15 and §4 below, the audience-facing flavor-text phrase for shell-contact remains *"the Lampblack thickens."* The phrase now explicitly references **all four layers visibly aligning across the contact**, not just a single mark coinciding. Flavor text and art briefs invoking the phrase must be readable as: silhouette, props, gesture, and Spine of the figure-in-shell-A becoming legible inside the figure-in-shell-B during the moment of contact. The phrase is reserved for compositions where this multi-layer alignment is visually present; it is not a generic Easter-egg label for any shell-flavored detail.
 
 ---
 
