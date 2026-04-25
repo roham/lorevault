@@ -22,16 +22,17 @@
 | 11 | 2026-04-25T22:36:42Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y4 surface advance | Track C: /v2/lattice shipped. 5 Panes named, 8 Shells named, Lampblack gesture, visible-residue placeholder. /v2 home "Enter the Lattice" link now routes to /v2/lattice. Static prerender. Build GREEN. Y4 IA surface coverage improved: 3 /v2 routes live (/v2, /v2/lattice, /v2/today). Frigga/Odin skills unavailable. |
 | 12 | 2026-04-25T22:53:52Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y3 Echo AT TARGET | Track D: iceberg-registry/series-1.md created with 16 BS-1 Echo elements formally named. 5 Jonathan's Journal installments drafted (May 6–10). 3 GH-1 Echo seed elements (May 6–8 lore details). 3 cross-card Deep threads identified (Adler–Chemistry, Withheld Record, Unclosed Cases). Frigga/Odin skills still unavailable. Build GREEN. No deploy (wiki-only changes). |
 | 13 | 2026-04-25T23:20:38Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y6 funnel surface | Track E: /v2/journal shipped. Jonathan's Journal subscription landing page with KV email capture, May 3 first-entry preview, Lampblack detail, Lattice link. /v2 home now links to /v2/journal. 4 /v2 routes live. R2 §1 Beat A pre-launch surface. Build GREEN, deployed. |
+| 14 | 2026-04-25T23:43:20Z | 100% (20/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y1 AT TARGET | Track A: 4 remaining BS-1 Moments rendered via FLUX 1.1 Pro Ultra (Replicate). bs1-c11 "The Coded Message" 442KB, bs1-c12 "The Gaslight Vigil" 301KB, bs1-r05 "The Moriarty Letter" 212KB, bs1-l02 "The Seven-Per-Cent" 295KB. All ≤500KB. Manifest: 20 entries, 0 non-FLUX. Y1 advances from AT FLOOR (80%) to AT TARGET (100%). $0.16 spend. |
 
 ---
 
-## Current Measurements (Cycle 13 — Track E: /v2/journal subscription surface)
+## Current Measurements (Cycle 14 — Track A: 4 remaining BS-1 FLUX renders)
 
 ### Yardstick 1 — ART
-- **Measurement:** 80% (16 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
+- **Measurement:** 100% (20 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
 - **Target:** 100% of in-flight-Set Moments rendered
 - **Floor:** 80% (16 of 20) by 7 days before drop
-- **Status:** AT FLOOR — 16/20 rendered. 4 remaining: c11, c12, r05, l02.
+- **Status:** AT TARGET — 20/20 rendered. Manifest: 20 entries, all FLUX 1.1 Pro Ultra / Replicate. Sizes: all ≤500KB. Cards rendered across 14 cycles (c01–c12, r01–r05, l01–l02, u01).
 - **Proxy:** count-based (quarterly blind panel not yet scheduled)
 
 ### Yardstick 2 — FLAVOR (Mosaic Test pass rate)
@@ -94,8 +95,8 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 13 shipped Track E. Last 4 cycles = 10 (B), 11 (C), 12 (D), 13 (E). Eligible next: A, F, G, H.
-Rule 4 fires: Y1 AT FLOOR (4 renders remain; 14-day drop window approaching), Y5/Y6/Y7 BELOW FLOOR. **Cycle 14 → Track A: render the 4 remaining BS-1 Moments (c11, c12, r05, l02) to reach 100% Y1 target and unblock full Y2 flavor coverage.**
+Cycle 14 shipped Track A. Last 4 cycles = 11 (C), 12 (D), 13 (E), 14 (A). Eligible next: B, F, G, H.
+Rule 4 fires: Y2 at 80% coverage — 4 new cards (c11, c12, r05, l02) have art but no flavor text. **Cycle 15 → Track B: draft flavor text + lore-note for the 4 remaining BS-1 cards, advancing Y2 to 100% coverage and enabling BS-1 Council Set-Lock review pipeline.**
 
 ---
 
