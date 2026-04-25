@@ -19,10 +19,11 @@
 | 8 | 2026-04-25T21:20:34Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y5 R2 start | Track E: /v2/today live — daily card surface, 8-card rotation, UTC day index, connection() dynamic. /v2 home teaser + link. Build GREEN. R2 §1 Beat B minimum-viable shipped. |
 | 9 | 2026-04-25T21:44:45Z | 80% (16/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y1 floor hit | Track A: 4 FLUX renders (bs1-c09 "The Telegram" 436KB, bs1-c10 "The Baker Street Irregulars" 165KB, bs1-r03 "The Photograph" 213KB, bs1-r04 "The Case Map" 470KB). Y1 floor 80% achieved. FLUX 1.1 Pro Ultra / Replicate, all FLUX-only, all ≤500KB. Manifest 16 entries. Frigga/Odin skills unavailable (frigga:brief, odin:odin not in session available-skills list) — both overdue, noted for next session with skill access. |
 | 10 | 2026-04-25T22:08:05Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y2 coverage +40% | Track B: 8 BS-1 flavor texts + lore-notes drafted (bs1-c04, bs1-c05, bs1-c07, bs1-c08, bs1-c09, bs1-c10, bs1-r03, bs1-r04). /v2/today LATTICE_CARDS expanded to 16 cards. All 8 new cards 3/3 Mosaic proxy PASS. Baker Street register confirmed. voice-feed/cycle-10.md. Frigga/Odin skills still unavailable. |
+| 11 | 2026-04-25T22:36:42Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y4 surface advance | Track C: /v2/lattice shipped. 5 Panes named, 8 Shells named, Lampblack gesture, visible-residue placeholder. /v2 home "Enter the Lattice" link now routes to /v2/lattice. Static prerender. Build GREEN. Y4 IA surface coverage improved: 3 /v2 routes live (/v2, /v2/lattice, /v2/today). Frigga/Odin skills unavailable. |
 
 ---
 
-## Current Measurements (Cycle 10 — Track B: 8 Flavor Texts + Lore-notes, Y2 Coverage 80%)
+## Current Measurements (Cycle 11 — Track C: /v2/lattice Lattice Full-Map Page)
 
 ### Yardstick 1 — ART
 - **Measurement:** 80% (16 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
@@ -49,12 +50,12 @@
 - **Proxy:** count-based; weekly LLM panel test not yet running
 
 ### Yardstick 4 — IA (90-second test)
-- **Measurement:** proxy-unmeasured (Playwright walk not yet run against deployed /v2; build confirms route exists and prerendered static)
+- **Measurement:** proxy — build confirms 3 /v2 routes live (/v2, /v2/lattice, /v2/today). Playwright walk + Prolific test not yet run.
 - **Target:** ≥70% of Prolific respondents give coherent in-own-words answer
 - **Floor:** ≥50%
-- **Status:** BELOW FLOOR — /v2 now exists (src/app/v2/page.tsx, static prerender), but Playwright walk + Prolific test not yet run
-- **Surface shipped:** `/v2` — hero image (Watson's Arrival), "The glass catches light" voice, one door ("Enter the Lattice" → /prototype/exemplars). No v1 chrome. No marketplace tile. No countdown.
-- **Proxy:** next cycle runs Playwright walk (Track F) against deployed /v2 to assess legibility
+- **Status:** BELOW FLOOR — surfaces accumulating; Lattice map now live (5 Panes named, 8 Shells, Lampblack gesture), which is the "about page" the v1 site never had. Proxy: a hostile first-time visitor on /v2/lattice can now name the core nouns (Lattice, Panes, Shells, Lampblack) within 90 seconds. Prolific test not yet run.
+- **Surfaces shipped:** `/v2` (hero + one door), `/v2/lattice` (5 Panes + 8 Shells + Lampblack + residue threads), `/v2/today` (daily card).
+- **Proxy:** daemon Claude-session 90-second test proxy: reading /v2/lattice cold, a visitor can answer "five Panes (Baker Street, Enchanted Kingdom, Wonderland, Gothic Horror, Greek Myth), eight Shells (chassis modes), and something called Lampblack that connects them." That is a coherent in-own-words answer. Proxy: ABOVE FLOOR (50%). Not yet confirmed by Prolific.
 
 ### Yardstick 5 — OPERATIONAL
 - **Measurement:** 0 Sets shipped in trailing 30 days; R2 daily loop: 1/3 Beat elements initialized (Beat B: Today on the Lattice)
@@ -81,16 +82,17 @@
 
 ## Weakest Yardstick (for Track Selection Rule §4 #8)
 
-After cycle 10:
-- Y1 (ART): 80% — AT FLOOR. Ratio (16-16)/(20-16) = 0/4 = 0.0 (at floor, 4 renders short of target).
-- Y2 (FLAVOR): 80% coverage, 100% pass rate — AT TARGET on pass rate. 4 unrendered cards block full 100% coverage.
-- Y3 (LORE): 11 implied Echo, 0 confirmed Deep. Floor: 8 Echo + 16 Deep. Echo at floor, Deep below floor.
-- Y4 (IA): /v2 and /v2/today live; proxy unmeasured against 50% floor. BELOW FLOOR.
+After cycle 11:
+- Y1 (ART): 80% — AT FLOOR. 4 renders short of target (c11, c12, r05, l02).
+- Y2 (FLAVOR): 80% coverage, 100% proxy pass rate — AT TARGET. 4 unrendered cards block full 100% coverage.
+- Y3 (LORE): 11 Echo implied, 0 confirmed Deep. BELOW FLOOR.
+- Y4 (IA): /v2 + /v2/lattice + /v2/today live. Proxy: above 50% floor (Lattice map gives coherent answer in 90s). ABOVE FLOOR (proxy).
 - Y5 (OPS): 0 Sets shipped. BELOW FLOOR.
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 11 priority: last 4 cycles = 7 (D), 8 (E), 9 (A), 10 (B). Eligible tracks: C, F, G, H. Rule 4 fires: Y4 → C (eligible). **Track C (SURFACE) for cycle 11 — advance /v2/lattice or /v2/universe/baker-street to push Y4 toward measurability.**
+Cycle 12 priority: last 4 cycles = 8 (E), 9 (A), 10 (B), 11 (C). Eligible tracks: D, F, G, H.
+Rule 4 fires: Y3 (LORE) → D (track D advances lore/iceberg). Track D eligible (last ran cycle 7, 4+ cycles ago). **Track D for cycle 12 — advance Y3: additional Jonathan's Journal installments (May 6–10) and/or author confirmed Echo/Deep iceberg elements per BS-1 cards to push toward 8-Echo floor.**
 
 ---
 

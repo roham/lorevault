@@ -63,7 +63,7 @@ export default function V2Home() {
         {/* The door — one link */}
         <div className="mt-10 mx-auto">
           <Link
-            href="/prototype/exemplars"
+            href="/v2/lattice"
             className="inline-block border border-[#4a3e30] px-6 py-3 text-xs tracking-[0.2em] uppercase text-[#b0a090] font-mono hover:border-[#8a7e6e] hover:text-[#e8e0d0] transition-colors"
           >
             Enter the Lattice
