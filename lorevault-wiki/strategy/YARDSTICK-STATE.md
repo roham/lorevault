@@ -14,10 +14,11 @@
 | 3 | 2026-04-25T20:03:36Z | 40% (8/20) | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y1+0.20 | Track A: 4 more BS-1 renders (bs1-c03, bs1-c04, bs1-c05, bs1-l01). Odin skill unavailable — logged, deferred to next session. 8/20 BS-1 Moments rendered. |
 | 4 | 2026-04-25T20:19:16Z | 60% (12/20) | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y1+0.20 | Track A: 4 more renders (bs1-c06, bs1-c07, bs1-c08, bs1-r02). Frigga skill also unavailable — logged. 12/20 BS-1 Moments rendered. |
 | 5 | 2026-04-25T20:34:06Z | 60% (12/20) | 40% (8/20, 100% Mosaic proxy) | 8 Echo implied | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y2+0.40 | Track B: 8 BS-1 flavor texts + lore-notes drafted. Baker Street voice. All 8 cards 3/3 Mosaic proxy pass. 8 Echo elements authored. voice-feed/cycle-5.md. |
+| 6 | 2026-04-25T20:49:06Z | 60% (12/20) | 40% (8/20) | 8 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y4 unlock | Track C: /v2 route shell shipped. src/app/v2/page.tsx live. Watson's Arrival image, "The glass catches light" voice, one door. v1 chrome excluded for /v2. Build GREEN, /v2 in build output. |
 
 ---
 
-## Current Measurements (Cycle 5 — Track B: BS-1 Flavor Text)
+## Current Measurements (Cycle 6 — Track C: /v2 Route Shell)
 
 ### Yardstick 1 — ART
 - **Measurement:** 60% (12 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
@@ -43,11 +44,12 @@
 - **Proxy:** count-based; weekly LLM panel test not yet running
 
 ### Yardstick 4 — IA (90-second test)
-- **Measurement:** 0% (no /v2 surface exists; /v2 returns 404)
+- **Measurement:** proxy-unmeasured (Playwright walk not yet run against deployed /v2; build confirms route exists and prerendered static)
 - **Target:** ≥70% of Prolific respondents give coherent in-own-words answer
 - **Floor:** ≥50%
-- **Status:** BELOW FLOOR — /v2 not yet routed
-- **Proxy:** Playwright walk proxy (Claude session evaluation of surface state)
+- **Status:** BELOW FLOOR — /v2 now exists (src/app/v2/page.tsx, static prerender), but Playwright walk + Prolific test not yet run
+- **Surface shipped:** `/v2` — hero image (Watson's Arrival), "The glass catches light" voice, one door ("Enter the Lattice" → /prototype/exemplars). No v1 chrome. No marketplace tile. No countdown.
+- **Proxy:** next cycle runs Playwright walk (Track F) against deployed /v2 to assess legibility
 
 ### Yardstick 5 — OPERATIONAL
 - **Measurement:** 0 Sets shipped in trailing 30 days

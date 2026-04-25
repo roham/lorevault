@@ -10,9 +10,10 @@ import PWAInstall from '@/components/PWAInstall';
 export default function MainChrome() {
   const pathname = usePathname();
 
-  // Prototype + moodboard routes use their own minimal shell — no main chrome
+  // Prototype + moodboard + v2 routes use their own minimal shell — no main chrome
   if (pathname.startsWith('/prototype')) return null;
   if (pathname.startsWith('/moodboard')) return null;
+  if (pathname.startsWith('/v2')) return null;
 
   return (
     <>

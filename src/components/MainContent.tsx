@@ -6,10 +6,11 @@ export default function MainContent({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const isPrototype = pathname.startsWith('/prototype');
   const isMoodboard = pathname.startsWith('/moodboard');
+  const isV2 = pathname.startsWith('/v2');
 
-  // Prototype + moodboard routes manage their own padding
+  // Prototype + moodboard + v2 routes manage their own padding
   return (
-    <main className={isPrototype || isMoodboard ? '' : 'pt-12 pb-[112px]'}>
+    <main className={isPrototype || isMoodboard || isV2 ? '' : 'pt-12 pb-[112px]'}>
       {children}
     </main>
   );
