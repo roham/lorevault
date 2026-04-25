@@ -16,10 +16,11 @@
 | 5 | 2026-04-25T20:34:06Z | 60% (12/20) | 40% (8/20, 100% Mosaic proxy) | 8 Echo implied | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y2+0.40 | Track B: 8 BS-1 flavor texts + lore-notes drafted. Baker Street voice. All 8 cards 3/3 Mosaic proxy pass. 8 Echo elements authored. voice-feed/cycle-5.md. |
 | 6 | 2026-04-25T20:49:06Z | 60% (12/20) | 40% (8/20) | 8 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y4 unlock | Track C: /v2 route shell shipped. src/app/v2/page.tsx live. Watson's Arrival image, "The glass catches light" voice, one door. v1 chrome excluded for /v2. Build GREEN, /v2 in build output. |
 | 7 | 2026-04-25T21:04:08Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y3 +3 Echo | Track D: 3 Jonathan's Journal installments drafted (May 3-5). Gothic Horror epistolary register. Footnoter placeholder. Spine-events annotated. |
+| 8 | 2026-04-25T21:20:34Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y5 R2 start | Track E: /v2/today live — daily card surface, 8-card rotation, UTC day index, connection() dynamic. /v2 home teaser + link. Build GREEN. R2 §1 Beat B minimum-viable shipped. |
 
 ---
 
-## Current Measurements (Cycle 7 — Track D: Jonathan's Journal)
+## Current Measurements (Cycle 8 — Track E: Today on the Lattice)
 
 ### Yardstick 1 — ART
 - **Measurement:** 60% (12 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
@@ -53,11 +54,11 @@
 - **Proxy:** next cycle runs Playwright walk (Track F) against deployed /v2 to assess legibility
 
 ### Yardstick 5 — OPERATIONAL
-- **Measurement:** 0 Sets shipped in trailing 30 days
+- **Measurement:** 0 Sets shipped in trailing 30 days; R2 daily loop: 1/3 Beat elements initialized (Beat B: Today on the Lattice)
 - **Target:** 1 Set per month sustained; 2 per month steady state
 - **Floor:** 1 Set per month for 3 consecutive months
-- **Status:** BELOW FLOOR — Series 1 M1 not yet shipped
-- **Note:** Pipeline not yet initialized; Council review not yet run
+- **Status:** BELOW FLOOR — Series 1 M1 not yet shipped; R2 loop initializing
+- **Note:** Beat B (Today on the Lattice) shipped cycle 8 — /v2/today live, 8-card daily rotation. Beat A (Jonathan's Journal) launches May 3. Beat C (Sample tickets) not yet built.
 
 ### Yardstick 6 — AUDIENCE
 - **Measurement:** 0% Week-4 return; 0 paid pack opens; Day-1 Journal sub rate: 0%
