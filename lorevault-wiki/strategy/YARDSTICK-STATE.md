@@ -12,18 +12,21 @@
 | 1 | 2026-04-25T04:04:21Z | 0% | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | INIT | Cold-start baseline. All below floor. |
 | 2 | 2026-04-25T19:44:04Z | 20% (4/20) | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y1+0.20 | Track A: 4 BS-1 FLUX renders shipped (bs1-c01, bs1-c02, bs1-r01, bs1-u01). FLUX 1.1 Pro Ultra / Replicate. All ≤500KB. Manifest initialized. |
 | 3 | 2026-04-25T20:03:36Z | 40% (8/20) | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y1+0.20 | Track A: 4 more BS-1 renders (bs1-c03, bs1-c04, bs1-c05, bs1-l01). Odin skill unavailable — logged, deferred to next session. 8/20 BS-1 Moments rendered. |
+| 4 | 2026-04-25T20:19:16Z | 60% (12/20) | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y1+0.20 | Track A: 4 more renders (bs1-c06, bs1-c07, bs1-c08, bs1-r02). Frigga skill also unavailable — logged. 12/20 BS-1 Moments rendered. |
 
 ---
 
-## Current Measurements (Cycle 3 — Track A: BS-1 Art Generation continues)
+## Current Measurements (Cycle 4 — Track A: BS-1 Art Generation continues)
 
 ### Yardstick 1 — ART
-- **Measurement:** 40% (8 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
+- **Measurement:** 60% (12 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
 - **Target:** 100% of in-flight-Set Moments rendered
 - **Floor:** 80% (16 of 20) by 7 days before drop
-- **Status:** BELOW FLOOR — 8/20 rendered; 8 more needed for floor
-- **Rendered (Cycle 2):** bs1-c01 (Watson's Arrival, 148KB), bs1-c02 (The Thinking Pose, 115KB), bs1-r01 (V.R. in the Plaster, 236KB), bs1-u01 (You Have Been in Afghanistan, 333KB)
-- **Rendered (Cycle 3):** bs1-c03 (Watson's Notebook, 226KB), bs1-c04 (Mrs Hudson on the Stairs, 159KB), bs1-c05 (The Chemistry Bench, 257KB), bs1-l01 (The Violin at Midnight, 134KB)
+- **Status:** BELOW FLOOR — 12/20 rendered; 4 more needed for floor
+- **Rendered (Cycle 2):** bs1-c01, bs1-c02, bs1-r01, bs1-u01
+- **Rendered (Cycle 3):** bs1-c03, bs1-c04, bs1-c05, bs1-l01
+- **Rendered (Cycle 4):** bs1-c06 (The Persian Slipper, 264KB), bs1-c07 (The First Client, 111KB), bs1-c08 (The Disguise Wardrobe, 131KB), bs1-r02 (The Street Deduction, 187KB)
+- **Remaining:** 8 cards (bs1-c09–bs1-c12, bs1-r03–bs1-r05, bs1-l02)
 - **Proxy:** count-based (quarterly blind panel not yet scheduled)
 
 ### Yardstick 2 — FLAVOR (Mosaic Test pass rate)
@@ -77,7 +80,7 @@ All non-ART yardsticks are at 0% / cold-start. Y1 (ART) now at 20% (ratio: (4-0)
 
 Y4 (IA) remains the critical path blocker — ratio undefined (0% vs 50% floor; no /v2 surface). Y2, Y3, Y5, Y6, Y7 all undefined/0.
 
-Weakest yardstick by floor-ratio: Y4 (IA) at 0/50% floor. **Track C (SURFACE) is the next priority — /v2 route shell needed to unlock Y4 measurement.** Y1 advancing: 8/20 renders, 8 more needed to hit floor (16/20). Floor achievable by Cycle 5 if Track A continues.
+Weakest yardstick by floor-ratio: Y4 (IA) at 0/50% floor. **Track C (SURFACE) is the next priority — /v2 route shell needed to unlock Y4 measurement.** Y1 advancing: 12/20 renders (60%), 4 more needed to hit floor (16/20). Floor achievable Cycle 5. Y1 floor cross is imminent — Cycle 5 should be Track C to advance the actually-blocking Y4 gap.
 
 ---
 
