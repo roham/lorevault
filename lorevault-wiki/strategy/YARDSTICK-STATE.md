@@ -21,10 +21,11 @@
 | 10 | 2026-04-25T22:08:05Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y2 coverage +40% | Track B: 8 BS-1 flavor texts + lore-notes drafted (bs1-c04, bs1-c05, bs1-c07, bs1-c08, bs1-c09, bs1-c10, bs1-r03, bs1-r04). /v2/today LATTICE_CARDS expanded to 16 cards. All 8 new cards 3/3 Mosaic proxy PASS. Baker Street register confirmed. voice-feed/cycle-10.md. Frigga/Odin skills still unavailable. |
 | 11 | 2026-04-25T22:36:42Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y4 surface advance | Track C: /v2/lattice shipped. 5 Panes named, 8 Shells named, Lampblack gesture, visible-residue placeholder. /v2 home "Enter the Lattice" link now routes to /v2/lattice. Static prerender. Build GREEN. Y4 IA surface coverage improved: 3 /v2 routes live (/v2, /v2/lattice, /v2/today). Frigga/Odin skills unavailable. |
 | 12 | 2026-04-25T22:53:52Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y3 Echo AT TARGET | Track D: iceberg-registry/series-1.md created with 16 BS-1 Echo elements formally named. 5 Jonathan's Journal installments drafted (May 6–10). 3 GH-1 Echo seed elements (May 6–8 lore details). 3 cross-card Deep threads identified (Adler–Chemistry, Withheld Record, Unclosed Cases). Frigga/Odin skills still unavailable. Build GREEN. No deploy (wiki-only changes). |
+| 13 | 2026-04-25T23:20:38Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y6 funnel surface | Track E: /v2/journal shipped. Jonathan's Journal subscription landing page with KV email capture, May 3 first-entry preview, Lampblack detail, Lattice link. /v2 home now links to /v2/journal. 4 /v2 routes live. R2 §1 Beat A pre-launch surface. Build GREEN, deployed. |
 
 ---
 
-## Current Measurements (Cycle 12 — Track D: Iceberg Registry + Jonathan's Journal May 6–10)
+## Current Measurements (Cycle 13 — Track E: /v2/journal subscription surface)
 
 ### Yardstick 1 — ART
 - **Measurement:** 80% (16 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
@@ -52,12 +53,12 @@
 - **Registry:** `lorevault-wiki/strategy/iceberg-registry/series-1.md` — 16 BS-1 Echo elements named E-BS1-001 through E-BS1-016; 3 Deep threads D-BS1-001 through D-BS1-003
 
 ### Yardstick 4 — IA (90-second test)
-- **Measurement:** proxy — build confirms 3 /v2 routes live (/v2, /v2/lattice, /v2/today). Playwright walk + Prolific test not yet run.
+- **Measurement:** proxy — build confirms 4 /v2 routes live (/v2, /v2/lattice, /v2/today, /v2/journal). Playwright walk + Prolific test not yet run.
 - **Target:** ≥70% of Prolific respondents give coherent in-own-words answer
 - **Floor:** ≥50%
-- **Status:** BELOW FLOOR — surfaces accumulating; Lattice map now live (5 Panes named, 8 Shells, Lampblack gesture), which is the "about page" the v1 site never had. Proxy: a hostile first-time visitor on /v2/lattice can now name the core nouns (Lattice, Panes, Shells, Lampblack) within 90 seconds. Prolific test not yet run.
-- **Surfaces shipped:** `/v2` (hero + one door), `/v2/lattice` (5 Panes + 8 Shells + Lampblack + residue threads), `/v2/today` (daily card).
-- **Proxy:** daemon Claude-session 90-second test proxy: reading /v2/lattice cold, a visitor can answer "five Panes (Baker Street, Enchanted Kingdom, Wonderland, Gothic Horror, Greek Myth), eight Shells (chassis modes), and something called Lampblack that connects them." That is a coherent in-own-words answer. Proxy: ABOVE FLOOR (50%). Not yet confirmed by Prolific.
+- **Status:** ABOVE FLOOR (proxy) — /v2/lattice gives the cosmology; /v2/journal gives the serialised entry point. Prolific test not yet run.
+- **Surfaces shipped:** `/v2` (hero + doors), `/v2/lattice` (5 Panes + 8 Shells + Lampblack), `/v2/today` (daily card), `/v2/journal` (subscription + preview).
+- **Proxy:** daemon Claude-session 90-second test proxy: reading /v2/lattice cold, a visitor can answer "five Panes (Baker Street, Enchanted Kingdom, Wonderland, Gothic Horror, Greek Myth), eight Shells (chassis modes), and something called Lampblack that connects them." Proxy: ABOVE FLOOR (50%). Not yet confirmed by Prolific.
 
 ### Yardstick 5 — OPERATIONAL
 - **Measurement:** 0 Sets shipped in trailing 30 days; R2 daily loop: 1/3 Beat elements initialized (Beat B: Today on the Lattice)
@@ -93,8 +94,8 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 13 priority: last 4 cycles = 9 (A), 10 (B), 11 (C), 12 (D). Eligible tracks: E, F, G, H.
-Rule 4 fires: multiple yardsticks below floor. Y5 (OPS) + Y3 Deep both below floor. Y5 → Track C + E mix. E is eligible (last ran cycle 8, 4+ cycles ago). **Cycle 13 → Track E (ENGAGEMENT): R2 loop element (Today on the Lattice streak mechanic, or Sunday Tally scaffold) to advance Y5 operational substrate. Alternatively Track A if 4 remaining BS-1 renders must be completed before 14-day drop window.**
+Cycle 13 shipped Track E. Last 4 cycles = 10 (B), 11 (C), 12 (D), 13 (E). Eligible next: A, F, G, H.
+Rule 4 fires: Y1 AT FLOOR (4 renders remain; 14-day drop window approaching), Y5/Y6/Y7 BELOW FLOOR. **Cycle 14 → Track A: render the 4 remaining BS-1 Moments (c11, c12, r05, l02) to reach 100% Y1 target and unblock full Y2 flavor coverage.**
 
 ---
 
