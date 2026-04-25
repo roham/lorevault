@@ -20,10 +20,11 @@
 | 9 | 2026-04-25T21:44:45Z | 80% (16/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y1 floor hit | Track A: 4 FLUX renders (bs1-c09 "The Telegram" 436KB, bs1-c10 "The Baker Street Irregulars" 165KB, bs1-r03 "The Photograph" 213KB, bs1-r04 "The Case Map" 470KB). Y1 floor 80% achieved. FLUX 1.1 Pro Ultra / Replicate, all FLUX-only, all ≤500KB. Manifest 16 entries. Frigga/Odin skills unavailable (frigga:brief, odin:odin not in session available-skills list) — both overdue, noted for next session with skill access. |
 | 10 | 2026-04-25T22:08:05Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y2 coverage +40% | Track B: 8 BS-1 flavor texts + lore-notes drafted (bs1-c04, bs1-c05, bs1-c07, bs1-c08, bs1-c09, bs1-c10, bs1-r03, bs1-r04). /v2/today LATTICE_CARDS expanded to 16 cards. All 8 new cards 3/3 Mosaic proxy PASS. Baker Street register confirmed. voice-feed/cycle-10.md. Frigga/Odin skills still unavailable. |
 | 11 | 2026-04-25T22:36:42Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 11 Echo implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y4 surface advance | Track C: /v2/lattice shipped. 5 Panes named, 8 Shells named, Lampblack gesture, visible-residue placeholder. /v2 home "Enter the Lattice" link now routes to /v2/lattice. Static prerender. Build GREEN. Y4 IA surface coverage improved: 3 /v2 routes live (/v2, /v2/lattice, /v2/today). Frigga/Odin skills unavailable. |
+| 12 | 2026-04-25T22:53:52Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y3 Echo AT TARGET | Track D: iceberg-registry/series-1.md created with 16 BS-1 Echo elements formally named. 5 Jonathan's Journal installments drafted (May 6–10). 3 GH-1 Echo seed elements (May 6–8 lore details). 3 cross-card Deep threads identified (Adler–Chemistry, Withheld Record, Unclosed Cases). Frigga/Odin skills still unavailable. Build GREEN. No deploy (wiki-only changes). |
 
 ---
 
-## Current Measurements (Cycle 11 — Track C: /v2/lattice Lattice Full-Map Page)
+## Current Measurements (Cycle 12 — Track D: Iceberg Registry + Jonathan's Journal May 6–10)
 
 ### Yardstick 1 — ART
 - **Measurement:** 80% (16 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
@@ -43,11 +44,12 @@
 - **Authored cycle 10:** bs1-c04, bs1-c05, bs1-c07, bs1-c08, bs1-c09, bs1-c10, bs1-r03, bs1-r04. See `voice-feed/cycle-10.md`.
 
 ### Yardstick 3 — LORE (Iceberg compliance)
-- **Measurement:** 0 Echo + 0 Deep (per Series 1)
+- **Measurement:** 16 Echo confirmed (BS-1, formally registered in iceberg-registry/series-1.md) + 3 GH-1 Echo seed + 3 Deep cross-card threads implied
 - **Target:** 12 Echo + 24 Deep per Series
 - **Floor:** 8 Echo + 16 Deep by Month 6 of Series
-- **Status:** BELOW FLOOR — no iceberg elements authored yet
-- **Proxy:** count-based; weekly LLM panel test not yet running
+- **Status:** Echo AT TARGET (16 confirmed vs 12 target). Deep BELOW FLOOR (3 implied vs 16 floor — Deep threads require cross-card reading; accumulate as Sets ship).
+- **Proxy:** count-based; daemon proxy evaluation (weekly LLM panel not yet running)
+- **Registry:** `lorevault-wiki/strategy/iceberg-registry/series-1.md` — 16 BS-1 Echo elements named E-BS1-001 through E-BS1-016; 3 Deep threads D-BS1-001 through D-BS1-003
 
 ### Yardstick 4 — IA (90-second test)
 - **Measurement:** proxy — build confirms 3 /v2 routes live (/v2, /v2/lattice, /v2/today). Playwright walk + Prolific test not yet run.
@@ -82,17 +84,17 @@
 
 ## Weakest Yardstick (for Track Selection Rule §4 #8)
 
-After cycle 11:
+After cycle 12:
 - Y1 (ART): 80% — AT FLOOR. 4 renders short of target (c11, c12, r05, l02).
 - Y2 (FLAVOR): 80% coverage, 100% proxy pass rate — AT TARGET. 4 unrendered cards block full 100% coverage.
-- Y3 (LORE): 11 Echo implied, 0 confirmed Deep. BELOW FLOOR.
-- Y4 (IA): /v2 + /v2/lattice + /v2/today live. Proxy: above 50% floor (Lattice map gives coherent answer in 90s). ABOVE FLOOR (proxy).
+- Y3 (LORE): 16 Echo confirmed, 3 Deep implied — Echo AT TARGET; Deep BELOW FLOOR (3 vs 16 floor).
+- Y4 (IA): /v2 + /v2/lattice + /v2/today live. Proxy ABOVE FLOOR.
 - Y5 (OPS): 0 Sets shipped. BELOW FLOOR.
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 12 priority: last 4 cycles = 8 (E), 9 (A), 10 (B), 11 (C). Eligible tracks: D, F, G, H.
-Rule 4 fires: Y3 (LORE) → D (track D advances lore/iceberg). Track D eligible (last ran cycle 7, 4+ cycles ago). **Track D for cycle 12 — advance Y3: additional Jonathan's Journal installments (May 6–10) and/or author confirmed Echo/Deep iceberg elements per BS-1 cards to push toward 8-Echo floor.**
+Cycle 13 priority: last 4 cycles = 9 (A), 10 (B), 11 (C), 12 (D). Eligible tracks: E, F, G, H.
+Rule 4 fires: multiple yardsticks below floor. Y5 (OPS) + Y3 Deep both below floor. Y5 → Track C + E mix. E is eligible (last ran cycle 8, 4+ cycles ago). **Cycle 13 → Track E (ENGAGEMENT): R2 loop element (Today on the Lattice streak mechanic, or Sunday Tally scaffold) to advance Y5 operational substrate. Alternatively Track A if 4 remaining BS-1 renders must be completed before 14-day drop window.**
 
 ---
 
