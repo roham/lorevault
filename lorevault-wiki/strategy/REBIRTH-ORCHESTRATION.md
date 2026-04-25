@@ -23,6 +23,23 @@ The output of THIS orchestration is two artifacts:
 
 ---
 
+## 0.5. Image Generation Standard — BINDING
+
+**ALL art generation in the rebirth uses FLUX 1.1 Pro Ultra via Replicate. Never OpenAI gpt-image-1.**
+
+- Provider: `replicate` (CEO-selected; full account configured)
+- Model: `black-forest-labs/flux-1.1-pro-ultra`
+- Env: `REPLICATE_API_TOKEN` (already on kaaos-daemon at `/opt/taste-daemon/env`; will be inherited into `/opt/rebirth-daemon/env`), `FLUX_PROVIDER=replicate`
+- Reference implementation: `scripts/seed-exemplars-flux.mjs` (already in repo). Quality verified — 5 exemplars rendered at 1.2MB peak in 29.7s; significantly higher fidelity than the gpt-image-1 baseline.
+- Aspect ratio: `2:3` (collectible-card portrait)
+- Cost: ~$0.04 per image at FLUX 1.1 Pro Ultra; budget headroom for high-volume daemon cycles.
+
+The daemon's Track A (ART) MUST use this path. The legacy `scripts/seed-moodboard.mjs` (gpt-image-1) and `scripts/seed-exemplars.mjs` (gpt-image-1) are deprecated for new generation. They remain in the repo for archive only.
+
+L1 (daemon prompt designer) MUST encode this standard in REBIRTH-DAEMON-PROMPT.md.
+
+---
+
 ## 1. Pattern Selection
 
 **Hybrid: Fan-Out (audit) → Pipeline (synthesis → architecture → North Star → daemon prompt) → Two-Stage Review → Deploy**
@@ -565,7 +582,7 @@ l. SLEEP — 900s default.
 
 ## 3. The Tracks (the daemon's action menu)
 Define 6-8 tracks the daemon can pick from each cycle:
-- Track A: ART — generate FLUX exemplar moments for the next Set in production
+- Track A: ART — generate FLUX 1.1 Pro Ultra moments via Replicate (NEVER OpenAI gpt-image-1) using scripts/seed-exemplars-flux.mjs as the reference. Env: REPLICATE_API_TOKEN, FLUX_PROVIDER=replicate. Aspect 2:3.
 - Track B: COPY — draft flavor texts + lore notes for the in-flight Set
 - Track C: SURFACE — implement one of R1's planned surfaces (a Universe page, the Lattice map, etc.)
 - Track D: CONTENT — long-form lore deep-dive for the iceberg
