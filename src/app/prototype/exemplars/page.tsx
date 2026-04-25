@@ -296,28 +296,126 @@ function CardView({ card }: { card: Card }) {
   );
 }
 
+function CollectorCardView({ card }: { card: Card }) {
+  return (
+    <article
+      className="relative w-full max-w-[460px] mx-auto rounded-3xl overflow-hidden border bg-[#0d0e16]"
+      style={{
+        borderColor: `${card.accent.replace('rgb', 'rgba').replace(')', ',0.4)')}`,
+        boxShadow: `0 30px 80px -30px ${card.accent.replace('rgb', 'rgba').replace(')', ',0.35)')}`,
+      }}
+    >
+      <div
+        className="absolute top-0 left-0 right-0 h-1.5"
+        style={{ background: card.parallelGlow }}
+      />
+      <div className="relative bg-black" style={{ aspectRatio: '2 / 3' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={card.art} alt={`${card.moment} — ${card.universe}`} className="absolute inset-0 w-full h-full object-cover" />
+        {card.parallel !== 'base' && (
+          <div className="absolute inset-0 pointer-events-none mix-blend-overlay" style={{ background: card.parallelGlow }} />
+        )}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+          <span
+            className="px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] rounded-full bg-black/60 backdrop-blur border"
+            style={{ borderColor: TIER_RING[card.tier], color: TIER_RING[card.tier] }}
+          >
+            {card.tier}
+          </span>
+          {card.parallel !== 'base' && (
+            <span className="px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] rounded-full bg-black/70 backdrop-blur border border-white/15 text-white/85">
+              {card.parallel}
+            </span>
+          )}
+        </div>
+        <div className="absolute top-3 right-3">
+          <div
+            className="text-[10px] uppercase tracking-[0.18em] rounded-full px-2.5 py-1 bg-black/60 backdrop-blur border border-white/10 tabular-nums"
+            style={{ color: TIER_RING[card.tier] }}
+          >
+            ◊ #{Math.ceil(card.mint / 7).toLocaleString()}/{card.mint.toLocaleString()}
+          </div>
+        </div>
+        <div className="absolute bottom-3 right-3">
+          <div className="text-[9px] uppercase tracking-[0.22em] rounded-full px-2 py-1 bg-black/55 backdrop-blur border border-white/10 text-white/60">
+            ◇ {card.elemental}
+          </div>
+        </div>
+      </div>
+      <div className="p-5 flex flex-col gap-4">
+        <header>
+          <div
+            className="text-[9px] uppercase tracking-[0.28em] font-medium mb-1"
+            style={{ color: card.accent }}
+          >
+            {card.universe} · {card.set.replace(/^[A-Z]+-\d+\s+/, '')}
+          </div>
+          <h2 className="text-xl md:text-[22px] font-semibold leading-tight text-white">
+            {card.moment}
+          </h2>
+        </header>
+        <blockquote className="relative pl-4 border-l-2" style={{ borderColor: card.accent }}>
+          <p className="text-white/90 italic text-[15px] leading-[1.5]" style={{ fontFamily: 'Georgia, serif' }}>
+            &ldquo;{card.flavor}&rdquo;
+          </p>
+          {card.attribution && (
+            <cite className="not-italic block mt-1.5 text-[10px] uppercase tracking-[0.18em] text-white/40">
+              — {card.attribution}
+            </cite>
+          )}
+        </blockquote>
+        <p className="text-[12px] text-white/50 leading-relaxed">{card.lore.split('.')[0]}.</p>
+      </div>
+    </article>
+  );
+}
+
 export default function ExemplarsPage() {
   const [mounted, setMounted] = useState(false);
+  const [view, setView] = useState<'collector' | 'canon'>('collector');
   useEffect(() => { setMounted(true); }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0b14] text-white">
       <header className="max-w-[1100px] mx-auto px-6 pt-12 pb-8">
         <div className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-2">
-          LoreVault · Canon Council · Exemplar Cards v1.0
+          LoreVault · Exemplar Cards v1.0
         </div>
         <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
           Five cards. Five Universes. Five lenses.
         </h1>
         <p className="mt-4 text-white/60 max-w-2xl text-[15px] leading-relaxed">
-          The system end-to-end. Tier · shell · parallel · elemental · 4-layer Lampblack · cross-set tether.
-          Each card carries a quote sized to its tier and a lore note that hints at the iceberg under it.
+          The system end-to-end. Toggle below to switch between what the collector sees on the
+          card surface and the full Canon-Council audit view (shell, elemental, 4-layer Lampblack stack, tether, archetype).
         </p>
+        <div className="mt-6 inline-flex p-1 rounded-full bg-white/5 border border-white/10">
+          <button
+            onClick={() => setView('collector')}
+            className={`px-5 py-2 text-[11px] uppercase tracking-[0.22em] rounded-full transition ${
+              view === 'collector' ? 'bg-white text-black' : 'text-white/60 hover:text-white'
+            }`}
+          >
+            Collector View
+          </button>
+          <button
+            onClick={() => setView('canon')}
+            className={`px-5 py-2 text-[11px] uppercase tracking-[0.22em] rounded-full transition ${
+              view === 'canon' ? 'bg-white text-black' : 'text-white/60 hover:text-white'
+            }`}
+          >
+            Canon Council View
+          </button>
+        </div>
+        <div className="mt-3 text-[11px] text-white/40">
+          {view === 'collector'
+            ? 'What the customer sees: art, name, tier, parallel, mint serial, elemental, the quote, one line of public lore.'
+            : 'What the writing room and Council see: full system metadata including the 4-layer Lampblack recognition stack and cross-set tethers.'}
+        </div>
       </header>
 
-      <main className="px-4 pb-24 space-y-8">
-        {mounted && CARDS.map((c) => <CardView key={c.n} card={c} />)}
-        {!mounted && <div className="text-white/40 text-center py-20">Loading…</div>}
+      <main className={`px-4 pb-24 ${view === 'collector' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1500px] mx-auto' : 'space-y-8'}`}>
+        {mounted && CARDS.map((c) => view === 'collector' ? <CollectorCardView key={c.n} card={c} /> : <CardView key={c.n} card={c} />)}
+        {!mounted && <div className="text-white/40 text-center py-20 col-span-full">Loading…</div>}
       </main>
 
       <footer className="text-center text-[10px] uppercase tracking-[0.22em] text-white/25 pb-12">
