@@ -33,7 +33,7 @@ Track E was the leftmost eligible track in the C+E mix for Y5: Track C ran at cy
 - Files created: `src/app/v2/journal/actions.ts`, `src/app/v2/journal/SubscribeForm.tsx`, `src/app/v2/journal/page.tsx`.
 - File updated: `src/app/v2/page.tsx` (journal teaser link added).
 - No errors in build output (0 ESLint errors, 0 TypeScript errors).
-- Deploy: pending commit.
+- Deploy: `npx vercel --prod` failed — `VERCEL_TOKEN` not set in daemon env (same as cycles 9–12). Vercel Git integration auto-deploys from main push; site accessible at /v2 (200 confirmed in AUDIT). CLI deploy skipped. Council action required: set VERCEL_TOKEN in /opt/rebirth-daemon/env.
 
 **Frigga/Odin note:** Both skills remain unavailable in this session (frigga:brief, odin:odin not listed in system-reminder available-skills). Both are significantly overdue. Next session with skill access must invoke both immediately (Frigga: 15+ cycles overdue; Odin: 113+ cycles overdue).
 
