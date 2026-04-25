@@ -69,6 +69,24 @@ export default function V2Home() {
             Enter the Lattice
           </Link>
         </div>
+
+        {/* Today on the Lattice — daily card surface */}
+        <div className="mt-12 max-w-[320px] mx-auto w-full border-t border-[#1a1815] pt-8">
+          <Link
+            href="/v2/today"
+            className="flex items-baseline justify-between group"
+          >
+            <p className="text-[9px] tracking-[0.25em] uppercase text-[#6a5e50] font-mono group-hover:text-[#8a7e6e] transition-colors">
+              Today on the Lattice
+            </p>
+            <p className="text-[9px] tracking-[0.1em] text-[#4a3e30] font-mono group-hover:text-[#6a5e50] transition-colors">
+              →
+            </p>
+          </Link>
+          <p className="mt-2 text-[10px] text-[#4a3e30] font-mono leading-relaxed">
+            One card. One Echo element. Each day, a different residue surfaces.
+          </p>
+        </div>
       </main>
 
       <footer className="px-5 py-8">
