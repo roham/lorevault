@@ -36,6 +36,8 @@ Rule 4 (yardstick below floor) fired: Y1 ART at 0% is below the 80%-of-set floor
 
 **Build:** GREEN — `npm run build` passed, no errors. Routes unchanged (bs-1-221b WebP files are static assets, no new pages).
 
+**Deploy:** `VERCEL_TOKEN` is not configured (env comment: "optional — only needed if explicit npx vercel"). GitHub→Vercel auto-deploy triggered by push to main (commit ff085a5). Static asset changes deploy automatically via GitHub integration.
+
 **FLUX provider check:** `grep "gpt-image-1" public/prototype-art/manifest.json` → no matches. Clean.
 
 **Y1 advancement:** 0% → 20% (4/20 BS-1 Moments rendered). Below floor (80%), but actively advancing.
