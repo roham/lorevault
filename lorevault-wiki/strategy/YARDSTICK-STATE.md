@@ -15,10 +15,11 @@
 | 4 | 2026-04-25T20:19:16Z | 60% (12/20) | 0% | 0/0 Echo+Deep | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y1+0.20 | Track A: 4 more renders (bs1-c06, bs1-c07, bs1-c08, bs1-r02). Frigga skill also unavailable — logged. 12/20 BS-1 Moments rendered. |
 | 5 | 2026-04-25T20:34:06Z | 60% (12/20) | 40% (8/20, 100% Mosaic proxy) | 8 Echo implied | 0% | 0 Sets/mo | 0% / 0 opens | 0% | Y2+0.40 | Track B: 8 BS-1 flavor texts + lore-notes drafted. Baker Street voice. All 8 cards 3/3 Mosaic proxy pass. 8 Echo elements authored. voice-feed/cycle-5.md. |
 | 6 | 2026-04-25T20:49:06Z | 60% (12/20) | 40% (8/20) | 8 Echo implied | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y4 unlock | Track C: /v2 route shell shipped. src/app/v2/page.tsx live. Watson's Arrival image, "The glass catches light" voice, one door. v1 chrome excluded for /v2. Build GREEN, /v2 in build output. |
+| 7 | 2026-04-25T21:04:08Z | 60% (12/20) | 40% (8/20) | 3 Echo authored | proxy (build) | 0 Sets/mo | 0% / 0 opens | 0% | Y3 +3 Echo | Track D: 3 Jonathan's Journal installments drafted (May 3-5). Gothic Horror epistolary register. Footnoter placeholder. Spine-events annotated. |
 
 ---
 
-## Current Measurements (Cycle 6 — Track C: /v2 Route Shell)
+## Current Measurements (Cycle 7 — Track D: Jonathan's Journal)
 
 ### Yardstick 1 — ART
 - **Measurement:** 60% (12 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
