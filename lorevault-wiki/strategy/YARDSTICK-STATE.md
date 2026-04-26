@@ -23,10 +23,11 @@
 | 12 | 2026-04-25T22:53:52Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+surface | 0 Sets/mo | 0% / 0 opens | 0% | Y3 Echo AT TARGET | Track D: iceberg-registry/series-1.md created with 16 BS-1 Echo elements formally named. 5 Jonathan's Journal installments drafted (May 6–10). 3 GH-1 Echo seed elements (May 6–8 lore details). 3 cross-card Deep threads identified (Adler–Chemistry, Withheld Record, Unclosed Cases). Frigga/Odin skills still unavailable. Build GREEN. No deploy (wiki-only changes). |
 | 13 | 2026-04-25T23:20:38Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y6 funnel surface | Track E: /v2/journal shipped. Jonathan's Journal subscription landing page with KV email capture, May 3 first-entry preview, Lampblack detail, Lattice link. /v2 home now links to /v2/journal. 4 /v2 routes live. R2 §1 Beat A pre-launch surface. Build GREEN, deployed. |
 | 14 | 2026-04-25T23:43:20Z | 100% (20/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y1 AT TARGET | Track A: 4 remaining BS-1 Moments rendered via FLUX 1.1 Pro Ultra (Replicate). bs1-c11 "The Coded Message" 442KB, bs1-c12 "The Gaslight Vigil" 301KB, bs1-r05 "The Moriarty Letter" 212KB, bs1-l02 "The Seven-Per-Cent" 295KB. All ≤500KB. Manifest: 20 entries, 0 non-FLUX. Y1 advances from AT FLOOR (80%) to AT TARGET (100%). $0.16 spend. |
+| 15 | 2026-04-26T00:17:00Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y2 AT TARGET | Track B: 4 flavor texts + lore-notes drafted for bs1-c11, bs1-c12, bs1-r05, bs1-l02. Baker Street voice confirmed. 3 candidates per card; 2-of-3 proxy pass for all 4. /v2/today LATTICE_CARDS expanded to 20 cards. voice-feed/cycle-15.md. BS-1 now 20/20 art + 20/20 copy. |
 
 ---
 
-## Current Measurements (Cycle 14 — Track A: 4 remaining BS-1 FLUX renders)
+## Current Measurements (Cycle 15 — Track B: BS-1 flavor text completion)
 
 ### Yardstick 1 — ART
 - **Measurement:** 100% (20 of 20 BS-1 Moments rendered at FLUX 1.1 Pro Ultra)
@@ -36,14 +37,15 @@
 - **Proxy:** count-based (quarterly blind panel not yet scheduled)
 
 ### Yardstick 2 — FLAVOR (Mosaic Test pass rate)
-- **Measurement:** 80% of BS-1 cards have flavor text + lore-note (16/20). Mosaic proxy pass rate: 100% (16/16 Baker Street register confirmed by daemon proxy evaluation).
+- **Measurement:** 100% of BS-1 cards have flavor text + lore-note (20/20). Mosaic proxy pass rate: 100% (20/20 Baker Street register confirmed by daemon proxy evaluation).
 - **Baseline from REVIEW-quality.md:** 44% on prior corpus
 - **Target:** ≥80% Mosaic Scorer pass; ≥80% contractor-panel survives
 - **Floor:** 60% Mosaic Scorer pass
-- **Status:** AT TARGET on card-coverage (80% = 16/20 proxying target 100%); ABOVE FLOOR on pass rate (100% proxy vs 60% floor). 4 remaining cards (bs1-c11, bs1-c12, bs1-r05, bs1-l02) have no art yet — flavor text awaits rendering.
-- **Proxy:** daemon proxy evaluation (not contractor panel — that schedules quarterly). Baker Street voice confirmed across all 16.
+- **Status:** AT TARGET — 20/20 cards have flavor text + lore-note. Pass rate 100% proxy (vs 60% floor, 80% target). Contractor panel not yet scheduled (quarterly).
+- **Proxy:** daemon proxy evaluation (3-candidate Mosaic Scorer proxy; 2-of-3 pass for each new card). Baker Street voice confirmed across all 20.
 - **Authored cycle 5:** bs1-u01, bs1-c01, bs1-c02, bs1-r01, bs1-c03, bs1-r02, bs1-l01, bs1-c06. See `voice-feed/cycle-5.md`.
 - **Authored cycle 10:** bs1-c04, bs1-c05, bs1-c07, bs1-c08, bs1-c09, bs1-c10, bs1-r03, bs1-r04. See `voice-feed/cycle-10.md`.
+- **Authored cycle 15:** bs1-c11, bs1-c12, bs1-r05, bs1-l02. See `voice-feed/cycle-15.md`.
 
 ### Yardstick 3 — LORE (Iceberg compliance)
 - **Measurement:** 16 Echo confirmed (BS-1, formally registered in iceberg-registry/series-1.md) + 3 GH-1 Echo seed + 3 Deep cross-card threads implied
@@ -95,8 +97,8 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 14 shipped Track A. Last 4 cycles = 11 (C), 12 (D), 13 (E), 14 (A). Eligible next: B, F, G, H.
-Rule 4 fires: Y2 at 80% coverage — 4 new cards (c11, c12, r05, l02) have art but no flavor text. **Cycle 15 → Track B: draft flavor text + lore-note for the 4 remaining BS-1 cards, advancing Y2 to 100% coverage and enabling BS-1 Council Set-Lock review pipeline.**
+Cycle 15 shipped Track B. Last 4 cycles = 12 (D), 13 (E), 14 (A), 15 (B). Eligible next: C, F, G, H.
+BS-1 is now 20/20 art + 20/20 copy. Both Y1 and Y2 AT TARGET. **Cycle 16 → Track C: advance IA surface — `/v2/card/:id` card detail page using the 5 exemplars design system, wiring the 20 BS-1 cards to a catalog stub. This is the surface needed to support the Day-1 hook ladder (R2 §5: Day 1 — user lands on /card/:id, reads lore-note, is offered journal subscription).**
 
 ---
 
