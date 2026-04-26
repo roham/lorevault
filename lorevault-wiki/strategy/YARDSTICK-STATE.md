@@ -41,6 +41,7 @@
 | 30 | 2026-04-26T08:40:00Z | 52/20+32 parallel | 100% + 4 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy start | Track B: 4 Ultimate parallel flavor texts authored (bs1-u01 ARCANA/AETHER/WITNESS/NEON). All 4/4 Mosaic proxy PASS. Parallel register layered over base voice: excavation/cosmic-retrospective/sense-literal/echo-translate. $0. voice-feed/cycle-30.md. |
 | 31 | 2026-04-26T09:35:00Z | 52/20+32 parallel | 100% + 8 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy 8/32 | Track B: 4 Legendary parallel flavor texts (bs1-l01 ARCANA/AETHER/WITNESS/NEON). All 4/4 Mosaic PASS. ARCANA=composition-resolution, AETHER=larger-mind, WITNESS=Mrs Hudson house diary, NEON=BPM diagnostic log. $0. voice-feed/cycle-31.md. |
 | 32 | 2026-04-26T10:30:00Z | 52/20+32 parallel | 100% + 12 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy 12/32 | Track B: 4 Legendary parallel flavor texts (bs1-l02 ARCANA/AETHER/WITNESS/NEON). All 4/4 Mosaic PASS. ARCANA=social-geometry, AETHER=structural-condition, WITNESS=tea-at-four, NEON=exact-base-echo. Legendary parallel copy COMPLETE (12/32). $0. voice-feed/cycle-32.md. |
+| 33 | 2026-04-26T11:15:00Z | 52/20+32 parallel | 100% + 16 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy 16/32 | Track B: bs1-r01 "V.R. in the Plaster" Rare parallels × 4. All 4/4 Mosaic PASS. Mrs Hudson dominates (base + ARCANA + AETHER). ARCANA=geometric-wallpaper pre-embedded, AETHER=cold-room house-diary, WITNESS=Watson-forensic-measurement, NEON=building-system-log-echo. Rare copy: 4/20. $0. voice-feed/cycle-33.md. |
 
 ---
 
@@ -114,9 +115,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 32 shipped Track B. Ultimate (4) + Legendary (8) parallel copy complete = 12/32.
+Cycle 33 shipped Track B. Ultimate (4) + Legendary (8) + Rare 4 = 16/32 parallel texts done.
 
-Y2 parallel copy: 12/32. **Cycle 33 → Track B: Rare parallel copy begins. 5 Rare cards × 4 parallels = 20 texts over 5 cycles (4/cycle). Start with bs1-r01 "V.R. in the Plaster" × 4. Track D still overdue — Journal buffer ends May 25; June content needed by cycle ~37. Cycle 33 is Track B; Track D needed by cycle 35 at latest.**
+Y2 parallel copy: 16/32. **Cycle 34 → Track B: bs1-r02 "The Street Deduction" Rare parallels × 4. Track D CRITICAL — Journal buffer ends May 25; June content needed. Cycle 35 MUST be Track D (latest acceptable slot). Cycle 34 = Track B; cycle 35 = Track D.**
 
 ---
 
