@@ -24,6 +24,7 @@
 | 13 | 2026-04-25T23:20:38Z | 80% (16/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y6 funnel surface | Track E: /v2/journal shipped. Jonathan's Journal subscription landing page with KV email capture, May 3 first-entry preview, Lampblack detail, Lattice link. /v2 home now links to /v2/journal. 4 /v2 routes live. R2 §1 Beat A pre-launch surface. Build GREEN, deployed. |
 | 14 | 2026-04-25T23:43:20Z | 100% (20/20) | 80% (16/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y1 AT TARGET | Track A: 4 remaining BS-1 Moments rendered via FLUX 1.1 Pro Ultra (Replicate). bs1-c11 "The Coded Message" 442KB, bs1-c12 "The Gaslight Vigil" 301KB, bs1-r05 "The Moriarty Letter" 212KB, bs1-l02 "The Seven-Per-Cent" 295KB. All ≤500KB. Manifest: 20 entries, 0 non-FLUX. Y1 advances from AT FLOOR (80%) to AT TARGET (100%). $0.16 spend. |
 | 15 | 2026-04-26T00:17:00Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y2 AT TARGET | Track B: 4 flavor texts + lore-notes drafted for bs1-c11, bs1-c12, bs1-r05, bs1-l02. Baker Street voice confirmed. 3 candidates per card; 2-of-3 proxy pass for all 4. /v2/today LATTICE_CARDS expanded to 20 cards. voice-feed/cycle-15.md. BS-1 now 20/20 art + 20/20 copy. |
+| 16 | 2026-04-26T00:37:25Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Track G: Art Direction Doctrine | Track G (CEO directive): Art Direction & Commissioning Doctrine written. `taste/ART-DIRECTION-COMMISSIONING-DOCTRINE.md` locked. Per-tier density rubric (Common=PLAIN/Rare=MODERATE/Legendary=RICH/Ultimate=MAXIMALIST). ARCANA reserved to ARCANA-parallel Rare+ only. Pre-commission checklist (8-point gate). BS-1 commissioning manifest: 20/20 base COMPLETE, 32 parallels pending, 3 ONE-OFFs council-blocked. Track A gated by doctrine from this cycle forward. No yardstick deltas — wiki-only cycle. |
 
 ---
 
@@ -97,8 +98,8 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 15 shipped Track B. Last 4 cycles = 12 (D), 13 (E), 14 (A), 15 (B). Eligible next: C, F, G, H.
-BS-1 is now 20/20 art + 20/20 copy. Both Y1 and Y2 AT TARGET. **Cycle 16 → Track C: advance IA surface — `/v2/card/:id` card detail page using the 5 exemplars design system, wiring the 20 BS-1 cards to a catalog stub. This is the surface needed to support the Day-1 hook ladder (R2 §5: Day 1 — user lands on /card/:id, reads lore-note, is offered journal subscription).**
+Cycle 16 shipped Track G (CEO directive). Last 4 cycles = 13 (E), 14 (A), 15 (B), 16 (G). Eligible next: C, D, F, H.
+Art Direction & Commissioning Doctrine locked. Track A gated from cycle 16 forward. BS-1 has 32 parallel pieces pending + 3 ONE-OFFs council-blocked. **Cycle 17 → Track C: `/v2/card/:id` card detail page is the next critical Y4 surface (R2 §5 Day-1 funnel hook). Per cycle-15 NEXT note: lore-note read + journal subscription CTA on card detail is the only Day-1 conversion target.**
 
 ---
 
