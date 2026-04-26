@@ -429,10 +429,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | bs1-l01 | The Violin at Midnight | WITNESS | ✅ complete | Cycle 22. Deakins register, practical embers/lamp only, no Alvinized light. 338KB. |
 | bs1-l01 | The Violin at Midnight | NEON | ✅ complete | Cycle 22. 2040s neon tower, live-looper, city-neon uplight, Watson's mug on smart-surface chair. 351KB. |
 | bs1-l01 | The Violin at Midnight | ONE-OFF | 🚫 council | Requires Art Director manual iteration. Council review before commissioning. |
-| bs1-l02 | The Seven-Per-Cent | ARCANA | ⬜ pending | The Morocco case mandala: the needle becomes an alchemical instrument; sigils in the case-lining; the direct gaze intensified |
-| bs1-l02 | The Seven-Per-Cent | AETHER | ⬜ pending | The sitting room vanishes; Holmes in cosmic space, the Morocco case floating in divine particulate |
-| bs1-l02 | The Seven-Per-Cent | WITNESS | ⬜ pending | Photoreal: the tight Sargent portrait, documentary intimacy, direct gaze unchanged |
-| bs1-l02 | The Seven-Per-Cent | NEON | ⬜ pending | 2040s: the Morocco case is a biometric injector; Holmes in a near-future setting, synthwave palette, direct gaze unchanged |
+| bs1-l02 | The Seven-Per-Cent | ARCANA | ✅ complete | Cycle 23. Case-lining sigils, Legendary mandala (upper half), gaslight-gold aurora. 360KB. |
+| bs1-l02 | The Seven-Per-Cent | AETHER | ✅ complete | Cycle 23. Walls fall away, gold-amber nebula, divine particulate around case. 379KB (q70). |
+| bs1-l02 | The Seven-Per-Cent | WITNESS | ✅ complete | Cycle 23. Deakins register, practical afternoon light, no Alvinized light. 194KB. |
+| bs1-l02 | The Seven-Per-Cent | NEON | ✅ complete | Cycle 23. 2040s, bio-injector case, city neon uplight, direct gaze unchanged. 256KB. |
 | bs1-l02 | The Seven-Per-Cent | ONE-OFF | 🚫 council | Requires Art Director manual iteration. Council review before commissioning. |
 
 ### Parallel Art — Ultimate tier (1 Moment × 5 Parallels = 5 pieces)
@@ -451,7 +451,7 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 |---|---|---|
 | Base art | 20 | ✅ All complete |
 | Rare parallels | 20 | ⬜ All pending |
-| Legendary parallels (non-ONE-OFF) | 8 | 🔄 4/8 complete (bs1-l01 done cycle 22; bs1-l02 pending) |
+| Legendary parallels (non-ONE-OFF) | 8 | ✅ All complete (bs1-l01 cycle 22, bs1-l02 cycle 23) |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
 | Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
