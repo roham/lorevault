@@ -124,8 +124,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-074 | 1897-07-20.md | The preparation — Jonathan assembles the record for departure: coat (three letters), journal cover (second brief + Count's letter), journal. Recognises the coat and journal together constitute a complete record, kept for 79 days without knowing this was the purpose. | cycle 50 |
 | E-GH1-075 | 1897-07-21.md | The last entry before departure — Jonathan writes the conditional close: "If this is the last entry — the journal is the record." Explicit reader named for the first time. Journal folded into coat. Waiting for dark. | cycle 50 |
 | E-GH1-076 | 1897-07-22.md | The departure — Jonathan descends the east wall, finds the gate ajar (three hypotheses, equally weighted), writes the exit entry from the mountain road. Closes: "He had been noting things he could not resolve since May 3. The ledger would continue." | cycle 50 |
+| E-GH1-077 | 1897-07-23.md | The light outside — first sensory recalibration after 81 days; direct light too strong, Jonathan limits exposure. Names as essential: the coat and the journal. Not his hands or feet. The body carrying them is assumed. | cycle 51 |
+| E-GH1-078 | 1897-07-24.md | The first exchange — "Good day / Good day" with a farmer on the road; the first complete social transaction since the Castle. Jonathan notes it with precision: subject, verb, response, exchange complete. He had not been certain he retained the capacity. | cycle 51 |
+| E-GH1-079 | 1897-07-25.md | The journal held — Jonathan stops exhausted on the road, takes out the journal, and holds it without writing. The journal as physical object independent of documentary function; needed for its weight. Shortest entry since June 18's blank. | cycle 51 |
+| E-GH1-080 | 1897-07-26.md | The engagement funds — Jonathan pays for first meal and shelter with the professional engagement money kept separate (unused) through 83 Castle days. The accounting habit, retained without knowing it would be needed, funds the escape. | cycle 51 |
+| E-GH1-081 | 1897-07-27.md | Coat under pillow — fever entry; Jonathan puts the coat under his pillow without deciding to; the document-protection reflex below conscious intent. Entry reduced to essentials: ill, feverish, coat location, journal present. | cycle 51 |
+| E-GH1-082 | 1897-07-28.md | The Golden Krone — second stay — Jonathan returns to the same hotel where he stayed May 4. The building is unchanged; he is not. The brief is in the coat; the documents are unsubmitted. The arc closed in space but not in the register. | cycle 51 |
+| E-GH1-083 | 1897-07-29.md | The nun — first woman in the journal who brought something without having come for something. Jonathan lists the women in his ledger (Mina, the May 4 proprietress, the three women) and finds the nun does not fit the categories. Water brought; she stayed with her sewing. | cycle 51 |
 
-**GH-1 Echo total: 76 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46, 47, 48, 49, 50; covering May 3–July 22; Castle arc COMPLETE — Jonathan has left the Castle)**
+**GH-1 Echo total: 83 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–51; covering May 3–July 29; Bistritz recovery arc begun)**
 
 ---
 
