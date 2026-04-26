@@ -166,8 +166,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-116 | 1897-08-31.md | The first ordinary month — August reviewed: the first full calendar month since April without an extraordinary entry. Jonathan notes this is slightly extraordinary to note, recognizes the pattern from August 12, and lets it stand. | cycle 56 |
 | E-GH1-117 | 1897-09-01.md | Forty-one days out — Jonathan calculates: July 22 to September 1 is 41 days since leaving the Castle. He counts twice; the arithmetic holds. The count now functions differently: counting from a departure, not toward one. | cycle 56 |
 | E-GH1-118 | 1897-09-02.md | Lucy is not well — Mina's letter: Lucy sleeping badly, pale, Dr. Seward attending; nothing specifically wrong; the sea air must help. Jonathan notes the facts and adds nothing further. He has never met Lucy. Mina will write more when there is more to write. | cycle 56 |
+| E-GH1-119 | 1897-09-03.md | The sleepwalking — Mina's second letter: pallor worsened, Lucy walked in her sleep, Van Helsing sent for from Amsterdam. Jonathan notes sleepwalking as a new category — not in the previous reports — and that he does not know what it means in this context. | cycle 57 |
+| E-GH1-120 | 1897-09-04.md | Not his call — Jonathan considers writing to Mina to suggest she come home; decides against it. Her decision to make. He notes briefly that he has experience of what it costs when that decision is removed. He does not write this in the letter. | cycle 57 |
+| E-GH1-121 | 1897-09-05.md | The symptom ledger — Jonathan reviews the accumulated Lucy entries; finds he has been tracking her condition as he tracked things in the Castle. He writes: "I notice I am tracking this." He does not know what he is tracking toward. | cycle 57 |
+| E-GH1-122 | 1897-09-06.md | The unsent paragraph — Jonathan removes a paragraph from his letter to Mina: "I have been tracking Lucy's condition the way I tracked things in the Castle." He writes the paragraph in full in his journal instead — the journal is the correct place for it. | cycle 57 |
+| E-GH1-123 | 1897-09-07.md | The long entry — Jonathan's longest journal entry since returning: three pages, nothing happened. He notes: "I had more to write." The journal expanding as the person expands; not from urgency but from ordinary accumulation. | cycle 57 |
+| E-GH1-124 | 1897-09-08.md | Professional days settling — Jonathan reads a new brief once; notes complete on first review. Better than the first week. The interval between receiving a matter and settled performance is shortening. He finds he is glad. He does not think it is a small thing. | cycle 57 |
+| E-GH1-125 | 1897-09-09.md | Van Helsing arrived — Mina's letter: Van Helsing came from Amsterdam; Lucy has more color today. Jonathan maps the arc across four entries: well → unwell → worse → better (provisional). He adds "provisional" because accuracy requires marking the uncertainty. | cycle 57 |
 
-**GH-1 Echo total: 118 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–56; covering May 3–September 2; Jonathan alone in Exeter; first word that Lucy is unwell)**
+**GH-1 Echo total: 125 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–57; covering May 3–September 9; Lucy's illness arc; Van Helsing arrives)**
 
 ---
 
