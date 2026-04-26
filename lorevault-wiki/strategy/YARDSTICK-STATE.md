@@ -39,6 +39,7 @@
 | 28 | 2026-04-26T06:55:00Z | 48/20+28 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare 16/20 | Track A: bs1-r04 "The Case Map" Rare parallels × 4 (all q70: ARCANA 394KB, AETHER 359KB, WITNESS 348KB, NEON 396KB). Top-down paper-array = high entropy on all parallels. Manifest: 48 entries. Rare tier: 16/20 done. $0.16. |
 | 29 | 2026-04-26T07:50:00Z | 52/20+32 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | ★ RARE COMPLETE / ALL NON-ONE-OFF PARALLELS COMPLETE | Track A: bs1-r05 "The Moriarty Letter" Rare parallels × 4 (ARCANA 235KB, AETHER 281KB cold-cosmos, WITNESS 182KB, NEON 225KB cold-palette). 0 failures. Rare tier: 20/20 COMPLETE. All non-ONE-OFF BS-1 parallels: 32/32 COMPLETE. Manifest: 52 entries. $0.16. |
 | 30 | 2026-04-26T08:40:00Z | 52/20+32 parallel | 100% + 4 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy start | Track B: 4 Ultimate parallel flavor texts authored (bs1-u01 ARCANA/AETHER/WITNESS/NEON). All 4/4 Mosaic proxy PASS. Parallel register layered over base voice: excavation/cosmic-retrospective/sense-literal/echo-translate. $0. voice-feed/cycle-30.md. |
+| 31 | 2026-04-26T09:35:00Z | 52/20+32 parallel | 100% + 8 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy 8/32 | Track B: 4 Legendary parallel flavor texts (bs1-l01 ARCANA/AETHER/WITNESS/NEON). All 4/4 Mosaic PASS. ARCANA=composition-resolution, AETHER=larger-mind, WITNESS=Mrs Hudson house diary, NEON=BPM diagnostic log. $0. voice-feed/cycle-31.md. |
 
 ---
 
@@ -112,9 +113,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 30 shipped Track B. Parallel flavor texts begun. 4/32 parallel copy done (bs1-u01 × 4).
+Cycle 31 shipped Track B. 8/32 parallel copy done (bs1-u01 + bs1-l01 × 4 each).
 
-Y1: 52 manifest entries (20 BASE + 32 parallels) — COMPLETE. Y2 parallel copy: 4/32 (proxy pass). Y3 AT TARGET. **Cycle 31 → Track B: bs1-l01 Legendary parallels × 4 (ARCANA/AETHER/WITNESS/NEON). Then bs1-l02. After Legendary (8 parallel texts), move to Rare tier parallel texts (20 parallel texts across 5 cards).**
+Y2 parallel copy: 8/32 (proxy pass). **Cycle 32 → Track B: bs1-l02 "The Seven-Per-Cent" Legendary parallels × 4. After Legendary (12 parallel texts), move to Rare tier (20 texts, 5 cycles). Key lore item from cycle 31: Watson's Final Memoir was completed but not published — Watson died before Holmes; "not for publication while H. lives" note on manuscript. Holmes died 1930, Watson 1929 — the order is a problem. This is a new Echo/Deep candidate for the iceberg registry.**
 
 ---
 
