@@ -52,6 +52,7 @@
 | 41 | 2026-04-26T18:30:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | ★ Y3 Echo 57 — buffer COMPLETE | Track D: 7 Jonathan's Journal installments (June 10–16). Silence changed (June 10), letters taken from coat pockets (June 11), second brief kept (June 12), Mina's presence lost in writing (June 13), unmapped arrival north library (June 14), duration not timed / timing practice broken (June 15), morning uncertain / threshold sentence (June 16). Echo +7 (E-GH1-035..041, total 57). Buffer 46+1 COMPLETE through June 17 canonical. $0. |
 | 42 | 2026-04-26T20:10:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+7 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5 remediation: Set page live | Track C: /v2/set/[id] shipped. BS-1 "The Argument Pane" set landing page — 20-card grid by tier, rarity distribution, pack pricing table (5 tiers per Phase 9 spec), Sample pack live-linked to /v2/open. Home page updated with First Drop CTA (2 May 2026). Build GREEN. 7 /v2 routes live. $0. |
 | 43 | 2026-04-26T20:55:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5 remediation: reveal funnel complete | Track C: /v2/pack/reveal shipped. CSS 3D card flip (back→front, 800ms delay, 0.75s rotateY). Day-seeded BS-1 Common reveal. TicketProgress pack-ready button activated (Link → /v2/pack/reveal). Day-1 funnel navigable end-to-end: /v2 → /v2/open → /v2/pack/reveal → /v2/card/[id] → /v2/set/bs1. Build GREEN. 8 /v2 routes. $0. |
+| 44 | 2026-04-26T21:35:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5: 404 bug fixed — 25 card paths | Track C (critical fix): bs1-adapter.ts created. /v2/card/[id] now generates 25 SSG paths (5 V2Cards + 20 BS-1 base cards). All set-page and today-page card links functional. Build GREEN. $0. |
 
 ---
 
@@ -125,9 +126,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 43 shipped Track C. Day-1 funnel now navigable end-to-end. 8 /v2 routes live.
+Cycle 44 fixed critical bug: all 20 BS-1 base cards now have working card detail pages (25 SSG paths total). Day-1 funnel fully functional.
 
-Y4 IA: 8 routes live (proxy ABOVE FLOOR). Y5 (OPS): still below floor — BS-1 not yet officially shipped; launch is 2 May 2026. **Cycle 44 → Y5 remediation or frigga:brief if skill available.**
+Y4 IA: 8 routes + 25 card paths live (proxy ABOVE FLOOR). Y5 (OPS): below floor; BS-1 launch 2 May 2026. **Cycle 45 → frigga:brief if available; else Track G BS-1 Council-lock brief.**
 
 ---
 
