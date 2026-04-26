@@ -415,10 +415,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | bs1-r04 | The Case Map | AETHER | ✅ complete | Cycle 28. Floor falls away, papers float as star-charts in gold-amber cosmos, god-rays converge on Holmes. 359KB q70. |
 | bs1-r04 | The Case Map | WITNESS | ✅ complete | Cycle 28. Deakins top-down documentary, floor material texture, paper stock variety, lamp cone physics. 348KB q70. |
 | bs1-r04 | The Case Map | NEON | ✅ complete | Cycle 28. Holographic data projections in neon circle, magnifying glass on holo = Spine, visor deployed (apex analysis). 396KB q70. |
-| bs1-r05 | The Moriarty Letter | ARCANA | ⬜ pending | The letter glows with alchemical sigils visible only at the ARCANA tier; mandala behind Holmes's head |
-| bs1-r05 | The Moriarty Letter | AETHER | ⬜ pending | Holmes in cosmic space reading the letter; the letter's author implies a force of cosmic scale |
-| bs1-r05 | The Moriarty Letter | WITNESS | ⬜ pending | Photoreal: Holmes holding the letter at a window, documentary cold daylight |
-| bs1-r05 | The Moriarty Letter | NEON | ⬜ pending | 2040s: Holmes reading an encrypted holo-message, Moriarty's cyber fingerprint visible as a geometric overlay |
+| bs1-r05 | The Moriarty Letter | ARCANA | ✅ complete | Cycle 29. Mandala behind Holmes, letter's abstract marks revealed as alchemical sigil script, cold/gold tension. 235KB. |
+| bs1-r05 | The Moriarty Letter | AETHER | ✅ complete | Cycle 29. Cold-register cosmos (silver-grey nebula, not warm amber), divine silver-gold particulate from letter. 281KB. |
+| bs1-r05 | The Moriarty Letter | WITNESS | ✅ complete | Cycle 29. Flat cold midday grey light at photographic accuracy, notepaper texture, controlled-containment face. 182KB. |
+| bs1-r05 | The Moriarty Letter | NEON | ✅ complete | Cycle 29. Cold NEON (ice-blue/cyan, no warm pink), encrypted holo-message, Moriarty cyber fingerprint, visor at rest. 225KB. |
 
 ### Parallel Art — Legendary tier (2 Moments × 5 Parallels = 10 pieces)
 
@@ -450,12 +450,12 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | Category | Count | Status |
 |---|---|---|
 | Base art | 20 | ✅ All complete |
-| Rare parallels | 20 | 🔄 16/20 complete (bs1-r01–r04 cycles 25–28); 4/20 pending |
+| Rare parallels | 20 | ✅ All complete (bs1-r01–r05, cycles 25–29) |
 | Legendary parallels (non-ONE-OFF) | 8 | ✅ All complete (bs1-l01 cycle 22, bs1-l02 cycle 23) |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
 | Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
-| **Total remaining** | **19** | **16 pending / 3 council-blocked** |
+| **Total remaining** | **3** | **0 pending / 3 council-blocked (ONE-OFFs)** |
 
 ---
 

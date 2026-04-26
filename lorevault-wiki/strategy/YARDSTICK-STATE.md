@@ -37,6 +37,7 @@
 | 26 | 2026-04-26T05:10:00Z | 40/20+20 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare 8/20 | Track A: bs1-r02 "The Street Deduction" Rare parallels × 4 (ARCANA 109KB, AETHER 126KB, WITNESS 243KB, NEON 263KB). 0 failures. No NSFW issues (no firearms in base). AR visor deployed on NEON (active deduction vs at-rest on r01). Manifest: 40 entries. Rare tier: 8/20 done. $0.16. |
 | 27 | 2026-04-26T06:00:00Z | 44/20+24 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare 12/20 | Track A: bs1-r03 "The Photograph" Rare parallels × 4 (ARCANA 239KB, AETHER 138KB, WITNESS 223KB, NEON 228KB). 0 failures. Magnifying-glass-before-holo-display = anachronism Spine for NEON. Manifest: 44 entries. Rare tier: 12/20 done. $0.16. |
 | 28 | 2026-04-26T06:55:00Z | 48/20+28 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare 16/20 | Track A: bs1-r04 "The Case Map" Rare parallels × 4 (all q70: ARCANA 394KB, AETHER 359KB, WITNESS 348KB, NEON 396KB). Top-down paper-array = high entropy on all parallels. Manifest: 48 entries. Rare tier: 16/20 done. $0.16. |
+| 29 | 2026-04-26T07:50:00Z | 52/20+32 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | ★ RARE COMPLETE / ALL NON-ONE-OFF PARALLELS COMPLETE | Track A: bs1-r05 "The Moriarty Letter" Rare parallels × 4 (ARCANA 235KB, AETHER 281KB cold-cosmos, WITNESS 182KB, NEON 225KB cold-palette). 0 failures. Rare tier: 20/20 COMPLETE. All non-ONE-OFF BS-1 parallels: 32/32 COMPLETE. Manifest: 52 entries. $0.16. |
 
 ---
 
@@ -110,9 +111,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 28 shipped Track A. Last 4 cycles = 25 (A), 26 (A), 27 (A), 28 (A). 4 consecutive Track A cycles — final Rare card is bs1-r05 (4 parallels remaining to complete the tier).
+Cycle 29 shipped Track A. **All non-ONE-OFF BS-1 parallel art is now complete: 32/32 (Ultimate 4, Legendary 8, Rare 20).** Y1 parallel coverage milestone.
 
-Y3 AT TARGET (Echo 34, Deep 24). Y1 parallel coverage: 28/32 complete; 4 Rare parallels pending (bs1-r05 × 4 = final cycle to complete Rare tier). **Cycle 29 → Track A (bs1-r05 "The Moriarty Letter" × 4 parallels — completes Rare tier 20/20).**
+Y1: 52 manifest entries (20 BASE + 32 parallels). Y3 AT TARGET. Y2 AT TARGET. **Cycle 30 track selection: Track A is exhausted (all commissionable art done; 3 ONE-OFFs are council-blocked). Rotate to highest-priority non-A track. Track F (Council directive / strategy) or Track D (Journal buffer extending past May 25) or Track B (parallel flavor texts now possible since parallels exist). Recommend Cycle 30 → Track B (flavor texts for the 32 parallels, starting with highest-impact: Ultimate and Legendary tiers first).**
 
 ---
 
