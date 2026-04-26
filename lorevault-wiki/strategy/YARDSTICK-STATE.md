@@ -57,6 +57,7 @@
 | 46 | 2026-04-26T23:00:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 64 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 64 — Journal June 18–24 | Track D: 7 Jonathan's Journal installments (June 18–24, 1897). First written absence (June 18), arrangement without terminus (June 19), window arithmetic (June 20), letters written in advance (June 21), seventeen crates (June 22), lizard descent (June 23), named terminus (June 24). Echo +7 (E-GH1-042..048, total 64). Journal buffer extended through June 24 (53 total installments). frigga:brief unavailable (skill not registered). $0. |
 | 47 | 2026-04-26T23:20:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 71 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 71 — Journal June 25–July 1 | Track D: 7 Jonathan's Journal installments (June 25–July 1, 1897). Descent attempted (June 25), chapel inventory / fifty crates (June 26), figure in the box (June 27), brief reviewed (June 28), wolves at the gate (June 29), last accurate document (June 30), first entry of July (July 1). Echo +7 (E-GH1-049..055, total 71). Journal buffer extended through July 1 (60 total installments). frigga:brief unavailable. $0. |
 | 48 | 2026-04-26T23:45:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 78 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 78 — Journal July 2–8 | Track D: 7 Jonathan's Journal installments (July 2–8, 1897). Removal in progress (July 2), gate examined (July 3), "as far as is practicable" (July 4), precise nothing (July 5), Count's letter (July 6), letter inside the journal — Mina addressed directly (July 7), acoustic emptying (July 8). Echo +7 (E-GH1-056..062, total 78). Journal buffer extended through July 8 (67 total installments). frigga:brief unavailable. $0. |
+| 49 | 2026-04-27T00:10:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 85 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 85 — Journal July 9–15 | Track D: 7 Jonathan's Journal installments (July 9–15, 1897). Third letter in coat (July 9), worker who would not (July 10), mountain route mapped (July 11), empty chapel / 52 floor impressions (July 12), record without its memory (July 13), "not long" phrase collected (July 14), unobserved departure (July 15). Echo +7 (E-GH1-063..069, total 85). Journal buffer extended through July 15 (74 total installments). frigga:brief unavailable. $0. |
 
 ---
 
@@ -132,7 +133,7 @@ After cycle 12:
 
 Cycle 46 shipped Track D. Journal buffer extended through June 24 (E-GH1-042..048). Y3 Echo 64 / Deep 26 — ABOVE TARGET.
 
-**Y5 unlock condition:** Odin skill available → submit bs1-brief.md → Council approves → BS-1 ships 2 May 2026 → Y5 floor cleared. **Cycle 49 → frigga:brief if skill available; else Track D (Journal July 9+) or Track C (Lampblacker's Spine / HANDOVER §9 Rewrite 2).**
+**Y5 unlock condition:** Odin skill available → submit bs1-brief.md → Council approves → BS-1 ships 2 May 2026 → Y5 floor cleared. **Cycle 50 → frigga:brief if skill available; else Track D (Journal July 16+) or Track C (Lampblacker's Spine / HANDOVER §9 Rewrite 2).**
 
 ---
 
