@@ -43,6 +43,7 @@
 | 32 | 2026-04-26T10:30:00Z | 52/20+32 parallel | 100% + 12 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy 12/32 | Track B: 4 Legendary parallel flavor texts (bs1-l02 ARCANA/AETHER/WITNESS/NEON). All 4/4 Mosaic PASS. ARCANA=social-geometry, AETHER=structural-condition, WITNESS=tea-at-four, NEON=exact-base-echo. Legendary parallel copy COMPLETE (12/32). $0. voice-feed/cycle-32.md. |
 | 33 | 2026-04-26T11:15:00Z | 52/20+32 parallel | 100% + 16 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy 16/32 | Track B: bs1-r01 "V.R. in the Plaster" Rare parallels × 4. All 4/4 Mosaic PASS. Mrs Hudson dominates (base + ARCANA + AETHER). ARCANA=geometric-wallpaper pre-embedded, AETHER=cold-room house-diary, WITNESS=Watson-forensic-measurement, NEON=building-system-log-echo. Rare copy: 4/20. $0. voice-feed/cycle-33.md. |
 | 34 | 2026-04-26T12:05:00Z | 52/20+32 parallel | 100% + 20 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy 20/32 | Track B: bs1-r02 "The Street Deduction" Rare parallels × 4. All 4/4 Mosaic PASS. ARCANA=Holmes survey note 1881 (window-as-instrument, pre-Watson mapping), AETHER=unattributed narrator (carrying everything Holmes had not yet named), WITNESS=Watson forensic case notes (Error: one.), NEON=exact Watson-2041 echo (11 data-points, eleventh kept looking at). Rare copy: 8/20. $0. voice-feed/cycle-34.md. |
+| 35 | 2026-04-26T13:15:00Z | 52/20+32 parallel | 100% + 20 parallel texts (Mosaic proxy) | 40 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 ABOVE TARGET | Track D: 6 Jonathan's Journal installments (May 26–30 + June 17 canonical). Chapel discovery (May 28), blank May 29, torn pages May 30, three-women canonical June 17 (Legendary card: "This Man Belongs to Me"). Echo 40 (+6), Deep 26 (+2: D-GH1-004 predecessor chain, D-CROSS-007 ownership cross-Pane). Buffer: 29 installments + canonical anchor. $0. |
 
 ---
 
@@ -118,7 +119,7 @@ After cycle 12:
 
 Cycle 33 shipped Track B. Ultimate (4) + Legendary (8) + Rare 4 = 16/32 parallel texts done.
 
-Y2 parallel copy: 20/32. **Cycle 35 → Track D: MANDATORY. Journal buffer ends May 25; June content (May 26–June 16 gap + June 17 canonical) required. Track B resumes at cycle 36 with bs1-r03 "The Photograph" Rare parallels × 4.**
+Y3: Echo 40, Deep 26 — ABOVE TARGET. **Cycle 36 → Track B: bs1-r03 "The Photograph" Rare parallels × 4. Y2 parallel copy: 20/32. Track D gap remaining: May 31–June 16 (17 installments); schedule Track D at cycle 37 or 38.**
 
 ---
 
