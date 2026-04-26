@@ -53,6 +53,7 @@
 | 42 | 2026-04-26T20:10:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+7 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5 remediation: Set page live | Track C: /v2/set/[id] shipped. BS-1 "The Argument Pane" set landing page — 20-card grid by tier, rarity distribution, pack pricing table (5 tiers per Phase 9 spec), Sample pack live-linked to /v2/open. Home page updated with First Drop CTA (2 May 2026). Build GREEN. 7 /v2 routes live. $0. |
 | 43 | 2026-04-26T20:55:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5 remediation: reveal funnel complete | Track C: /v2/pack/reveal shipped. CSS 3D card flip (back→front, 800ms delay, 0.75s rotateY). Day-seeded BS-1 Common reveal. TicketProgress pack-ready button activated (Link → /v2/pack/reveal). Day-1 funnel navigable end-to-end: /v2 → /v2/open → /v2/pack/reveal → /v2/card/[id] → /v2/set/bs1. Build GREEN. 8 /v2 routes. $0. |
 | 44 | 2026-04-26T21:35:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5: 404 bug fixed — 25 card paths | Track C (critical fix): bs1-adapter.ts created. /v2/card/[id] now generates 25 SSG paths (5 V2Cards + 20 BS-1 base cards). All set-page and today-page card links functional. Build GREEN. $0. |
+| 45 | 2026-04-26T22:20:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5: Council-lock brief ready | Track G: BS-1 Council-lock brief written (lorevault-wiki/strategy/council-lock/bs1-brief.md). Full 7-yardstick readiness report, set inventory, outstanding Phase 2 items, 5 Council Decision Points, daemon recommendation: SHIP 2 May 2026. Awaiting Odin approval to clear Y5. $0. |
 
 ---
 
@@ -126,9 +127,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 44 fixed critical bug: all 20 BS-1 base cards now have working card detail pages (25 SSG paths total). Day-1 funnel fully functional.
+Cycle 45 shipped Track G. BS-1 Council-lock brief complete. Awaiting Odin approval to clear Y5 floor.
 
-Y4 IA: 8 routes + 25 card paths live (proxy ABOVE FLOOR). Y5 (OPS): below floor; BS-1 launch 2 May 2026. **Cycle 45 → frigga:brief if available; else Track G BS-1 Council-lock brief.**
+**Y5 unlock condition:** Odin skill available → submit bs1-brief.md → Council approves → BS-1 ships 2 May 2026 → Y5 floor cleared. **Cycle 46 → frigga:brief if skill available; else Track D (Jonathan's Journal post-June-17) or Track C (email infra prep).**
 
 ---
 
