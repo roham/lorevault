@@ -173,8 +173,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-123 | 1897-09-07.md | The long entry — Jonathan's longest journal entry since returning: three pages, nothing happened. He notes: "I had more to write." The journal expanding as the person expands; not from urgency but from ordinary accumulation. | cycle 57 |
 | E-GH1-124 | 1897-09-08.md | Professional days settling — Jonathan reads a new brief once; notes complete on first review. Better than the first week. The interval between receiving a matter and settled performance is shortening. He finds he is glad. He does not think it is a small thing. | cycle 57 |
 | E-GH1-125 | 1897-09-09.md | Van Helsing arrived — Mina's letter: Van Helsing came from Amsterdam; Lucy has more color today. Jonathan maps the arc across four entries: well → unwell → worse → better (provisional). He adds "provisional" because accuracy requires marking the uncertainty. | cycle 57 |
+| E-GH1-126 | 1897-09-10.md | Provisional failed — Mina's brief note: Lucy worse again; Van Helsing summoned back. Jonathan returns to the September 9 entry and writes: "The provisional is now the operative notation." The uncertainty was correctly marked; he goes to the office. | cycle 58 |
+| E-GH1-127 | 1897-09-11.md | The accuracy of provisional — Jonathan reflects on the word "provisional": the uncertainty was right; the improvement did not hold; the notation was accurate. He writes: "This is a documentation practice I would like to keep." The Castle taught him the cost of unmarked uncertainty. | cycle 58 |
+| E-GH1-128 | 1897-09-12.md | Not reviewing twice — Jonathan completes the Hawkins leasehold analysis and reads it once before trusting it. He has been reviewing his own documents twice from the Castle habit. Nothing is ever different on the second reading in Exeter. He has begun to trust this. | cycle 58 |
+| E-GH1-129 | 1897-09-13.md | They seem worried — Mina's letter uses uncertain phrasing: "seem worried," "everything that can be done," "more peaceful today." Jonathan notes the uncertainty in each phrase. "The letter does not know what is wrong." He tells Mina to stay. | cycle 58 |
+| E-GH1-130 | 1897-09-14.md | The third week — professional tally: four completed, two new instructions, correspondence current. Plateau at normal rate. He writes: "I am not worried about the plateau" — and notes this is the first tally where he has stated the absence of worry, which implies it had recently been present. | cycle 58 |
+| E-GH1-131 | 1897-09-15.md | The notebook held — Jonathan picks up the first Castle journal; holds it for approximately three minutes; does not open it. He notes the time and that this is a step beyond looking at the spine. "I am tracking this too." He finds he does not mind. | cycle 58 |
+| E-GH1-132 | 1897-09-16.md | Mina is coming home — Mina will return on the seventeenth; Lucy in Seward's care. Jonathan writes: "I will not time the interval." He notes that he means it; he is glad to note he means it. | cycle 58 |
 
-**GH-1 Echo total: 125 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–57; covering May 3–September 9; Lucy's illness arc; Van Helsing arrives)**
+**GH-1 Echo total: 132 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–58; covering May 3–September 16; Mina returning; the notebook held)**
 
 ---
 

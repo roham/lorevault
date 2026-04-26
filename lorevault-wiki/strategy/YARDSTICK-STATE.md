@@ -66,6 +66,7 @@
 | 55 | 2026-04-27T03:05:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 127 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 127 — Journal Aug 20–26 Whitby preparation arc | Track D: 7 Jonathan's Journal installments (Aug 20–26, 1897). Closed file reviewed (Aug 20), abbey on the cliff / Whitby (Aug 21), Devon abstract / clean title (Aug 22), matter summary filed (Aug 23), Mina plans Whitby journey (Aug 24), current caseload (Aug 25), three notebooks counted (Aug 26). Echo +7 (E-GH1-105..111, total 127). Journal buffer extended through Aug 26 (116 total installments). frigga:brief unavailable. $0. |
 | 56 | 2026-04-27T03:55:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 134 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 134 — Journal Aug 27–Sep 2: Jonathan alone; Lucy unwell | Track D: 7 Jonathan's Journal installments (Aug 27–Sep 2, 1897). Station departure (Aug 27), different silence (Aug 28), postcard arrived safely (Aug 29), fourteen days / counting (Aug 30), first ordinary month (Aug 31), forty-one days out (Sep 1), Lucy is not well (Sep 2). Echo +7 (E-GH1-112..118, total 134). Journal buffer extended through Sep 2 (123 total installments). frigga:brief unavailable. $0. |
 | 57 | 2026-04-27T04:45:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 141 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 141 — Journal Sep 3–9: Lucy's illness arc; Van Helsing | Track D: 7 Jonathan's Journal installments (Sep 3–9, 1897). Sleepwalking / new category (Sep 3), not his call (Sep 4), symptom ledger (Sep 5), unsent paragraph (Sep 6), long entry (Sep 7), professional days settling (Sep 8), Van Helsing arrived / provisional (Sep 9). Echo +7 (E-GH1-119..125, total 141). Journal buffer extended through Sep 9 (130 total installments). frigga:brief unavailable. $0. |
+| 58 | 2026-04-27T05:35:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 148 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 148 — Journal Sep 10–16: provisional fails; Mina returns | Track D: 7 Jonathan's Journal installments (Sep 10–16, 1897). Provisional operative (Sep 10), accuracy of provisional (Sep 11), not reviewing twice (Sep 12), letter does not know (Sep 13), third week tally (Sep 14), notebook held 3 min (Sep 15), Mina coming home (Sep 16). Echo +7 (E-GH1-126..132, total 148). Journal buffer extended through Sep 16 (137 total installments). frigga:brief unavailable. $0. |
 
 ---
 
@@ -139,9 +140,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 57 shipped Track D. Journal buffer extended through Sep 9 (E-GH1-119..125). Y3 Echo 141 / Deep 26 — ABOVE TARGET.
+Cycle 58 shipped Track D. Journal buffer extended through Sep 16 (E-GH1-126..132). Y3 Echo 148 / Deep 26 — ABOVE TARGET.
 
-**Y5 unlock condition:** Odin skill available → submit bs1-brief.md → Council approves → BS-1 ships 2 May 2026 → Y5 floor cleared. **Cycle 58 → frigga:brief if skill available; else Track D (Journal Sep 10+ — Van Helsing's second visit; Lucy's relapse; Mina returns to Exeter; Jonathan receives news second-hand) or Track C (HANDOVER §9 Rewrite 2). Y3 Echo 141.**
+**Y5 unlock condition:** Odin skill available → submit bs1-brief.md → Council approves → BS-1 ships 2 May 2026 → Y5 floor cleared. **Cycle 59 → frigga:brief if skill available; else Track D (Journal Sep 17+ — Mina returns to Exeter; Lucy dies Sep 20; Jonathan receives news second-hand through October 3) or Track C (HANDOVER §9 Rewrite 2). Y3 Echo 148. ~17 installments to October drop coverage.**
 
 ---
 
