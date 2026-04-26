@@ -5,7 +5,7 @@
 **Doctrine:** 1:2:4 Iceberg Doctrine (Surface : Echo : Deep = 1:2:4 by word-count density implied per card)
 **Target:** 12 Echo + 24 Deep per Series
 **Floor:** 8 Echo + 16 Deep by Month 6 of Series
-**Current status:** 34 Echo named (16 BS-1 + 18 GH-1 from May 3–25 serial drafts), 24 Deep cross-card threads identified (see §3)
+**Current status:** 57 Echo named (16 BS-1 + 41 GH-1 from May 3–June 16 serial drafts + June 17 canonical), 26 Deep cross-card threads identified (see §3)
 
 ---
 
@@ -82,7 +82,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-033 | 1897-06-08.md | The dissolving relationship — Jonathan cannot locate the last professional meeting with the Count. The journal shows May 17. Twenty-two days. The relationship ended not with a decision but with an absence. He can date the last meeting but not the moment of ending. | cycle 40 |
 | E-GH1-034 | 1897-06-09.md | The soft interval — Jonathan's sleep intervals are no longer fully retrievable: present but soft, like a memory seen through water. Not blank, not empty — soft. The first entry in which Jonathan identifies a change in his own experience rather than in the documents or instruments available to him. | cycle 40 |
 
-**GH-1 Echo total: 34 (cycles 12, 18, 21, 24, 35, 39, 40; covering May 3–June 9 + June 17; June 10–16 gap still pending)**
+| E-GH1-035 | 1897-06-10.md | The silence changed — ambient resonance gone from the eastern rooms; Jonathan catalogues its absence by negative space. First attempt to document a negative: noting that something is not present which had been. | cycle 41 |
+| E-GH1-036 | 1897-06-11.md | The emptied pockets — two Mina letters (May 13, May 20) gone from Jonathan's coat. Taken during a soft interval. Someone entered the room; there is no journal entry covering that interval. | cycle 41 |
+| E-GH1-037 | 1897-06-12.md | The second brief, kept — the inversion of June 1. Jonathan writes the summary again (May 3–June 11) and does not burn it. He no longer believes destroying the document changes what it describes. Brief folded into the back cover of the journal — the only document he controls. | cycle 41 |
+| E-GH1-038 | 1897-06-13.md | The crossed-out name — Jonathan writes "Mina" and crosses it out: not wrong, but insufficient. A name without its content is a gesture. The movement toward the journal began the fading of what he was trying to record. | cycle 41 |
+| E-GH1-039 | 1897-06-14.md | The unmapped arrival — Jonathan finds himself in the north library without knowing he walked there. The journal came with him without a decision to bring it. He writes his entry from a location he did not choose, with an instrument he did not consciously take. | cycle 41 |
+| E-GH1-040 | 1897-06-15.md | Duration not timed — Jonathan sees a shape cross the courtyard and reaches for his watch. He puts it away without opening it. The Arithmetic of the Castle timing practice breaks: the shape was not something the practice could hold. | cycle 41 |
+| E-GH1-041 | 1897-06-16.md | The threshold sentence — Jonathan writes: "tomorrow I will write the date and see what follows." He does not know what he means. The most uncharacteristic sentence in the journal: prospective, passive, about the journal itself. | cycle 41 |
+
+**GH-1 Echo total: 41 (cycles 12, 18, 21, 24, 35, 39, 40, 41; covering May 3–June 16 + June 17 canonical; buffer COMPLETE through June 17)**
 
 ---
 

@@ -49,6 +49,7 @@
 | 38 | 2026-04-26T15:50:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 40 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | ★ Y2 PARALLEL COPY AT TARGET (32/32) | Track B: bs1-r05 "The Moriarty Letter" Rare parallels × 4. All 4/4 Mosaic PASS. ARCANA=Holmes margin note (Moriarty wrote it before Holmes decided), AETHER=narrator (last received before December; some records are their own explanation), WITNESS=Watson case notes (Second reading: longer. Holmes made no remark.), NEON=near-exact base echo (opened message twice; did not reply). WITNESS 5-card series complete. BS-1 parallel copy 32/32 COMPLETE. $0. |
 | 39 | 2026-04-26T16:40:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 45 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 45 | Track D: 5 Jonathan's Journal installments (May 31–June 4). Performance of function (May 31), legible brief burned (June 1), sensory inventory (June 2), Count in daylight 7 min (June 3), consulate letter salutation only (June 4). Echo +5 (E-GH1-025..029). Buffer: 34+1. Remaining gap: June 5–16 (12 installments). $0. |
 | 40 | 2026-04-26T17:30:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 50 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 50 | Track D: 5 Jonathan's Journal installments (June 5–9). Untouched coin (June 5), unwritten letter (June 6), south window not applicable (June 7), dissolving relationship 22 days (June 8), intervals soft (June 9). Echo +5 (E-GH1-030..034). Buffer: 39+1. Remaining gap: June 10–16 (7 installments). $0. |
+| 41 | 2026-04-26T18:30:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | ★ Y3 Echo 57 — buffer COMPLETE | Track D: 7 Jonathan's Journal installments (June 10–16). Silence changed (June 10), letters taken from coat pockets (June 11), second brief kept (June 12), Mina's presence lost in writing (June 13), unmapped arrival north library (June 14), duration not timed / timing practice broken (June 15), morning uncertain / threshold sentence (June 16). Echo +7 (E-GH1-035..041, total 57). Buffer 46+1 COMPLETE through June 17 canonical. $0. |
 
 ---
 
@@ -122,9 +123,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 33 shipped Track B. Ultimate (4) + Legendary (8) + Rare 4 = 16/32 parallel texts done.
+Cycle 41 shipped Track D. Journal buffer COMPLETE: 46 gap installments (May 3–June 16) + June 17 canonical anchor = 47 installments.
 
-Y3 Echo: 50 total, ABOVE TARGET. **Cycle 41 → Track D: June 10–16 (7 installments — final gap cycle). Completes the journal buffer through June 17 canonical.**
+Y3 Echo: 57 total, ABOVE TARGET. Deep: 26, ABOVE TARGET. **Cycle 42 → track selection open. frigga:brief consult overdue (41+ cycles). Track C/E/G all available. Track B available when new art ships.**
 
 ---
 
