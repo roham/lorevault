@@ -32,6 +32,7 @@
 | 21 | 2026-04-26T02:45:00Z | 24/20+4 parallel | 100% (20/20, 100% Mosaic proxy) | 29 Echo / 17 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Deep AT FLOOR | Track D: 5 Journal installments (May 16–20, 1897). 5 new GH-1 Echo elements (E-GH1-009..013). 8 new Deep threads (D-BS1-008..012, D-GH1-002, D-CROSS-002..003). Deep: 9→17 implied — AT FLOOR (floor=16). Journal now covers May 3–20 (18 installments). voice-feed/cycle-21.md. Wiki-only, no build. |
 | 22 | 2026-04-26T03:05:00Z | 28/20+8 parallel | 100% (20/20, 100% Mosaic proxy) | 29 Echo / 17 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Legendary parallels | Track A: 4 bs1-l01 Legendary parallel variants (ARCANA 238KB, AETHER 64KB, WITNESS 338KB, NEON 351KB). All ≤500KB. Pre-commission gate §5: all 8 checks PASS. Manifest: 28 total entries. $0.16. Doctrine updated: bs1-l01 parallels 4/4 complete; Legendary 4/8. |
 | 23 | 2026-04-26T03:25:00Z | 32/20+12 parallel | 100% (20/20, 100% Mosaic proxy) | 29 Echo / 17 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Legendary COMPLETE | Track A: 4 bs1-l02 Legendary parallel variants (ARCANA 360KB, AETHER 379KB q70, WITNESS 194KB, NEON 256KB). All ≤500KB. Legendary tier 8/8 non-ONE-OFF complete. Manifest: 32 total entries. $0.16. Next: Rare parallels (20 pieces). |
+| 24 | 2026-04-26T03:55:00Z | 32/20+12 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 AT TARGET | Track D: 5 Journal installments (May 21–25, 1897). 5 GH-1 Echo (E-GH1-014..018). 7 Deep threads (D-BS1-013..015, D-GH1-003, D-CROSS-004..006). Deep: 17→24 — AT TARGET (target=24). Echo: 29→34. Journal buffer: 23 installments (May 3–25). Wiki-only, $0. |
 
 ---
 
@@ -105,9 +106,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 23 shipped Track A. Last 4 cycles = 20 (A), 21 (D), 22 (A), 23 (A). Eligible next: B, C, D, E, F, H.
+Cycle 24 shipped Track D. Last 4 cycles = 21 (D), 22 (A), 23 (A), 24 (D). Eligible next: A, B, C, E, F, H.
 
-Y1 parallel coverage: 12/32 non-blocked parallels complete (4 Ultimate + 8 Legendary). 20 Rare parallels remaining (5 cards × 4 parallels). **Cycle 24 → Track D or Track E. Last Track D: cycle 21 (3 cycles ago) — eligible. Y3 Deep AT FLOOR (17 vs 16 floor; target 24) — not urgent but accumulation is healthy. Y5/Y6 still below floor. Journal launches May 3 (7 days from original date). Recommend Track D: extend Journal buffer (currently May 3–20) through May 25+ to prepare for the Dracula arc's pivotal late-May canonical entries (June 17 women scene approaches). Alternatively Track A continues on Rare parallels — 4 Rare cards this cycle. Rule 3 favors Track D (hasn't run since cycle 21; 3 cycles ago).**
+Y3 AT TARGET (Echo 34, Deep 24 — both at target). Y1 parallel coverage: 12/32 complete; 20 Rare parallels pending. **Cycle 25 → Track A (Rare parallels, 4/cycle, starting with bs1-r01 through bs1-r04 ARCANA/AETHER/WITNESS/NEON; or 4 cards from a single Rare). Journal launches May 3 (7 days); buffer extends to May 25 (22 days post-launch). Y3 now AT TARGET — no longer urgent. Y1 and Y5/Y6 remain below floor/target. Track A cycle 25.**
 
 ---
 
