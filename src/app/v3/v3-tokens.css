@@ -1,0 +1,61 @@
+/* src/app/v3/v3-tokens.css
+ * Tailwind v4 CSS-first token definitions for LoreVault v3.
+ * Import this file in src/app/v3/layout.tsx.
+ */
+
+@layer base {
+  :root {
+    /* Surface */
+    --color-surface-void: #0a0907;
+    --color-surface-card: #12110F;
+    --color-surface-elevated: #1A1814;
+
+    /* Text */
+    --color-text-primary: #F4EFE3;
+    --color-text-muted: #9C9388;
+
+    /* Tiers */
+    --color-tier-common: #9C7B3A;
+    --color-tier-rare: #6B8FA8;
+    --color-tier-legendary: #C9A26B;
+    --color-tier-ultimate: #8B1A1A;
+
+    /* Baker Street */
+    --color-bs-sepia: #C9A26B;
+    --color-bs-amber: #B5651D;
+    --color-bs-fog: #6B8FA8;
+
+    /* Enchanted Kingdom */
+    --color-ek-green: #2C3A23;
+    --color-ek-foxglove: #553A6B;
+
+    /* Wonderland */
+    --color-wl-blue: #1F3A6B;
+    --color-wl-rose: #B8252A;
+    --color-wl-cheshire: #D77A8E;
+
+    /* Gothic Horror */
+    --color-gh-tar: #0A0908;
+    --color-gh-ivory: #E8DEC8;
+
+    /* Greek Myth */
+    --color-gm-gold: #C8922A;
+    --color-gm-wine: #3B1F4B;
+    --color-gm-pomegranate: #9B2335;
+
+    /* Universe accent (set by data-universe attribute) */
+    --color-universe-accent: var(--color-bs-sepia); /* default Baker Street */
+
+    /* Motion */
+    --duration-snap: 150ms;
+    --duration-ritual: 2000ms;
+    --ease-ritual: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Universe accent overrides per data-universe */
+  [data-universe="baker-street"] { --color-universe-accent: var(--color-bs-sepia); }
+  [data-universe="enchanted-kingdom"] { --color-universe-accent: var(--color-ek-green); }
+  [data-universe="wonderland"] { --color-universe-accent: var(--color-wl-blue); }
+  [data-universe="gothic-horror"] { --color-universe-accent: var(--color-gh-ivory); }
+  [data-universe="greek-myth"] { --color-universe-accent: var(--color-gm-gold); }
+}

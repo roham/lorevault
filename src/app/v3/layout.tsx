@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { ALL_FONT_VARS } from '@/lib/v2/fonts';
 import '@/components/v2/v2-tokens.css';
+import './v3-tokens.css';
 
 export const metadata: Metadata = {
   title: 'LoreVault v3 — Game Design Document',
