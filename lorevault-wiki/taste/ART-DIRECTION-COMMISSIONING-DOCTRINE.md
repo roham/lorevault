@@ -403,10 +403,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | bs1-r01 | V.R. in the Plaster | AETHER | ✅ complete | Cycle 25. Wall opens to cosmos via bullet-holes, V.R. letters hang against gold-amber nebula. 304KB (q70). |
 | bs1-r01 | V.R. in the Plaster | WITNESS | ✅ complete | Cycle 25. Forensic photorealism, plaster damage as physical evidence, Deakins register. 241KB. |
 | bs1-r01 | V.R. in the Plaster | NEON | ✅ complete | Cycle 25. 2040s standalone prompt (Victorian base triggers NSFW filter; recontextualized). Smart-glass V.R., precision tool, synthwave. 322KB. |
-| bs1-r02 | The Street Deduction | ARCANA | ⬜ pending | Mandala floats behind Holmes at the window; the street figure below has a matching geometric outline |
-| bs1-r02 | The Street Deduction | AETHER | ⬜ pending | London fog transforms to cosmic nebula; Holmes as a figure at the edge of the cosmos looking in |
-| bs1-r02 | The Street Deduction | WITNESS | ⬜ pending | Photoreal: Holmes at the window, documentary, practical window-light only |
-| bs1-r02 | The Street Deduction | NEON | ⬜ pending | 2040s: Holmes at a tinted smart-glass tower window, neon city below, AR visor focused on a target |
+| bs1-r02 | The Street Deduction | ARCANA | ✅ complete | Cycle 26. Modest mandala behind Holmes, geometric outline on street figure below, sigils in window frame. 109KB. |
+| bs1-r02 | The Street Deduction | AETHER | ✅ complete | Cycle 26. London fog→gold-amber cosmos, figure below tiny against nebula, divine particulate through window. 126KB. |
+| bs1-r02 | The Street Deduction | WITNESS | ✅ complete | Cycle 26. Deakins register, fog physics, Victorian glass distortion, practical lamp only. 243KB. |
+| bs1-r02 | The Street Deduction | NEON | ✅ complete | Cycle 26. 2040s tower window, AR visor deployed (active deduction), cyan target overlay on subject, neon uplight. 263KB. |
 | bs1-r03 | The Photograph | ARCANA | ⬜ pending | The photograph of Irene Adler transforms — sacred-geometry mandala surrounds her face in the cabinet photo |
 | bs1-r03 | The Photograph | AETHER | ⬜ pending | The mantelpiece and room fall away; the photograph hovers in cosmic space, divine particulate surrounding Irene's image |
 | bs1-r03 | The Photograph | WITNESS | ⬜ pending | Photoreal still-life: the photograph, the magnifying glass, practical lamp, documentary close-up |
@@ -450,12 +450,12 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | Category | Count | Status |
 |---|---|---|
 | Base art | 20 | ✅ All complete |
-| Rare parallels | 20 | 🔄 4/20 complete (bs1-r01 cycle 25); 16/20 pending |
+| Rare parallels | 20 | 🔄 8/20 complete (bs1-r01 cycle 25, bs1-r02 cycle 26); 12/20 pending |
 | Legendary parallels (non-ONE-OFF) | 8 | ✅ All complete (bs1-l01 cycle 22, bs1-l02 cycle 23) |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
 | Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
-| **Total remaining** | **31** | **28 pending / 3 council-blocked** |
+| **Total remaining** | **27** | **24 pending / 3 council-blocked** |
 
 ---
 

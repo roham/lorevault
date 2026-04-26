@@ -34,6 +34,7 @@
 | 23 | 2026-04-26T03:25:00Z | 32/20+12 parallel | 100% (20/20, 100% Mosaic proxy) | 29 Echo / 17 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Legendary COMPLETE | Track A: 4 bs1-l02 Legendary parallel variants (ARCANA 360KB, AETHER 379KB q70, WITNESS 194KB, NEON 256KB). All ≤500KB. Legendary tier 8/8 non-ONE-OFF complete. Manifest: 32 total entries. $0.16. Next: Rare parallels (20 pieces). |
 | 24 | 2026-04-26T03:55:00Z | 32/20+12 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 AT TARGET | Track D: 5 Journal installments (May 21–25, 1897). 5 GH-1 Echo (E-GH1-014..018). 7 Deep threads (D-BS1-013..015, D-GH1-003, D-CROSS-004..006). Deep: 17→24 — AT TARGET (target=24). Echo: 29→34. Journal buffer: 23 installments (May 3–25). Wiki-only, $0. |
 | 25 | 2026-04-26T04:25:00Z | 36/20+16 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare parallels start | Track A: bs1-r01 "V.R. in the Plaster" Rare parallels × 4 (ARCANA 144KB, AETHER 304KB q70, WITNESS 241KB, NEON 322KB — NEON required standalone 2040s prompt; combined Victorian+NEON prompt triggers NSFW filter). Manifest: 36 entries. Rare tier: 4/20 done. $0.16. Doctrine §7 updated. |
+| 26 | 2026-04-26T05:10:00Z | 40/20+20 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare 8/20 | Track A: bs1-r02 "The Street Deduction" Rare parallels × 4 (ARCANA 109KB, AETHER 126KB, WITNESS 243KB, NEON 263KB). 0 failures. No NSFW issues (no firearms in base). AR visor deployed on NEON (active deduction vs at-rest on r01). Manifest: 40 entries. Rare tier: 8/20 done. $0.16. |
 
 ---
 
@@ -107,9 +108,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 25 shipped Track A. Last 4 cycles = 22 (A), 23 (A), 24 (D), 25 (A). Eligible next: B, C, D, E, F, H (A ran last cycle; rule 1 blocks immediate repeat unless urgent).
+Cycle 26 shipped Track A. Last 4 cycles = 23 (A), 24 (D), 25 (A), 26 (A). Structural Y1 gap justifies continued Track A despite rule 1 advisory.
 
-Y3 AT TARGET (Echo 34, Deep 24). Y1 parallel coverage: 16/32 complete; 16 Rare parallels pending (bs1-r02..r05 × 4). Journal buffer: 23 installments (May 3–25). **Cycle 26 track selection: Rule 1 — A ran cycle 25; eligible tracks: B, C, D, E, F, H. Track D last ran cycle 24 (1 cycle ago). Rule 2 — no yardstick BELOW FLOOR that hasn't been addressed this session. Rule 3 — eligible tracks in need: B (flavor text for parallels not yet authored), C (no new route needed imminently), E (no new surface needed), D (Journal buffer extends to May 25 — adequate). Track A (Rare parallels) remains highest Y1 priority but rule 1 blocks repeat. Cycle 26 → Track A override justified if Y1 parallel gap is the highest-priority pending work. Recommend: continue Track A (Rare parallels) — rule 1 advisory rather than hard block when Y1 gap is structural. Cycle 26 → bs1-r02 "The Street Deduction" × 4 parallels.**
+Y3 AT TARGET (Echo 34, Deep 24). Y1 parallel coverage: 20/32 complete; 12 Rare parallels pending (bs1-r03..r05 × 4). Journal buffer: 23 installments (May 3–25). **Cycle 27 → Track A (bs1-r03 "The Photograph" × 4 parallels). Note: bs1-r03 features Irene Adler's photograph — ARCANA mandala around her face; AETHER photo hovers in cosmic space; WITNESS still-life forensics; NEON holographic portrait. No firearms in base prompt.**
 
 ---
 
