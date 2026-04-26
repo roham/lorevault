@@ -180,8 +180,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-130 | 1897-09-14.md | The third week — professional tally: four completed, two new instructions, correspondence current. Plateau at normal rate. He writes: "I am not worried about the plateau" — and notes this is the first tally where he has stated the absence of worry, which implies it had recently been present. | cycle 58 |
 | E-GH1-131 | 1897-09-15.md | The notebook held — Jonathan picks up the first Castle journal; holds it for approximately three minutes; does not open it. He notes the time and that this is a step beyond looking at the spine. "I am tracking this too." He finds he does not mind. | cycle 58 |
 | E-GH1-132 | 1897-09-16.md | Mina is coming home — Mina will return on the seventeenth; Lucy in Seward's care. Jonathan writes: "I will not time the interval." He notes that he means it; he is glad to note he means it. | cycle 58 |
+| E-GH1-133 | 1897-09-17.md | Did not time it — Jonathan meets Mina at the station and does not time the interval on the platform. He notes this twice: once embedded, once as standalone confirmation. Worth saying twice; it had not been the case on every platform since May. | cycle 59 |
+| E-GH1-134 | 1897-09-18.md | What Mina saw — Mina tells Jonathan about Whitby; he listens and does not write everything. "Not everything belongs to the journal. Some of it is hers to keep." Van Helsing described as knowing more than he said. | cycle 59 |
+| E-GH1-135 | 1897-09-19.md | Not yet — Jonathan holds the Castle journal longer than three minutes; opens to the flyleaf; does not turn past the date inscription. He writes "not yet" rather than "not ready" and notes the distinction: not ready = state insufficient; not yet = time not arrived. | cycle 59 |
+| E-GH1-136 | 1897-09-20.md | Not without hope — Seward's letter: "not without hope." Jonathan notes the double negative: the positive form has become unavailable. He reads the letter as a document and notes what the phrasing reveals. He does not say this to Mina. | cycle 59 |
+| E-GH1-137 | 1897-09-21.md | Lucy died on 20 September — Seward's letter: Lucy died in the night of the 20th. Jonathan writes the full date of death in his journal — because a date of death should be written completely — and adds: "I have noted this." The case record closed. | cycle 59 |
+| E-GH1-138 | 1897-09-22.md | Not mine to document — Jonathan does not write about Mina's grief. Her grief belongs to her account, not his. He notes the tea, the parlor, the dinner. He adds one line: "Mina is here." It is accurate and complete. | cycle 59 |
+| E-GH1-139 | 1897-09-23.md | The condolence letter — Jonathan's letter to Seward: three paragraphs, condolence and thanks. He wants to ask what was wrong with Lucy; does not ask. Writes in his journal: "This was not the letter for that question. There may not be a letter for that question." | cycle 59 |
 
-**GH-1 Echo total: 132 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–58; covering May 3–September 16; Mina returning; the notebook held)**
+**GH-1 Echo total: 139 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–59; covering May 3–September 23; Lucy died; the question with no letter)**
 
 ---
 
