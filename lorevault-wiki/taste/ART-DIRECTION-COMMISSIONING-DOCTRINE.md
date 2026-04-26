@@ -439,10 +439,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 
 | ID | Name | Parallel | Status | Prompt Template Notes |
 |---|---|---|---|---|
-| bs1-u01 | You Have Been in Afghanistan, I Perceive | ARCANA | ⬜ pending | The non-diegetic gold light on the handshake becomes FULL sacred-geometry mandala; Ultimate scale: mandala fills the sky; sigils in the laboratory floor; full-field ARCANA geometry |
-| bs1-u01 | You Have Been in Afghanistan, I Perceive | AETHER | ⬜ pending | The laboratory walls fall away; Holmes and Watson meet at the edge of the cosmos; the handshake emits divine particulate; Stamford vanishes |
-| bs1-u01 | You Have Been in Afghanistan, I Perceive | WITNESS | ⬜ pending | Photoreal: the St Bart's laboratory, 1881, practical window-light only, maximum documentary realism |
-| bs1-u01 | You Have Been in Afghanistan, I Perceive | NEON | ⬜ pending | 2040s: Holmes and Watson meet in a near-future lab/hospital environment; the deduction registers as a biometric readout; synthwave palette; the handshake unchanged |
+| bs1-u01 | You Have Been in Afghanistan, I Perceive | ARCANA | ✅ complete | Cycle 20. Mandala IS the sky, sigils in lab floor, gaslight-gold aurora. 130KB. |
+| bs1-u01 | You Have Been in Afghanistan, I Perceive | AETHER | ✅ complete | Cycle 20. Lab walls fall away, cosmic nebula, gold divine particulate, scale expansion. 231KB. |
+| bs1-u01 | You Have Been in Afghanistan, I Perceive | WITNESS | ✅ complete | Cycle 20. Deakins register, practical window-light only, no Alvinized light. 321KB. |
+| bs1-u01 | You Have Been in Afghanistan, I Perceive | NEON | ✅ complete | Cycle 20. 2040s St Bart's, synthwave palette, AR visor/atomizer, biometric deduction. 277KB. |
 | bs1-u01 | You Have Been in Afghanistan, I Perceive | ONE-OFF | 🚫 council | Requires Art Director manual iteration. Council review before commissioning. |
 
 ### BS-1 Commissioning Summary
@@ -453,7 +453,7 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | Rare parallels | 20 | ⬜ All pending |
 | Legendary parallels (non-ONE-OFF) | 8 | ⬜ All pending |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
-| Ultimate parallels (non-ONE-OFF) | 4 | ⬜ All pending |
+| Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
 | **Total remaining** | **35** | **32 pending / 3 council-blocked** |
 
