@@ -194,8 +194,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-144 | 1897-09-28.md | Lord Godalming wrote — Arthur Holmwood's letter: precise, correct grief-form. Jonathan recognizes the precise phrasing as the form when grief is not yet available for ordinary expression. He has used it. He does not write this in the journal. | cycle 60 |
 | E-GH1-145 | 1897-09-29.md | Proportionate — Jonathan reads the Hawkins recommendation twice: not from anxiety but from professional care. He distinguishes compulsive from proportionate review. "This is the right calibration." The checking habit restored rather than suppressed. | cycle 60 |
 | E-GH1-146 | 1897-09-30.md | Eleven matters — September tally: eleven completed matters. Jonathan writes: "Lucy Westenra died in September 1897. I completed eleven professional matters in September 1897." Both true. The ledger has no field connecting them. "The ledger continues. September is in it." | cycle 60 |
+| E-GH1-147 | 1897-10-01.md | October — the new month named; professional timetable set; projections not committed to the record ("projections are not evidence"); the ledger turned to a new page. | cycle 61 |
+| E-GH1-148 | 1897-10-02.md | April preparation — Jonathan reads his April entries: history research, language study, file organization. "The man who wrote April knew exactly what he was preparing for professionally. He did not know anything else." | cycle 61 |
+| E-GH1-149 | 1897-10-03.md | October 3 — an ordinary Sunday in Exeter; office two hours; Jonathan notes he will read more of the old journal this evening; he is now in the middle of the old journal rather than approaching it. | cycle 61 |
+| E-GH1-150 | 1897-10-04.md | May 1 — Jonathan reads through April and reaches May 1: "Leave tomorrow for Munich. Looking forward to the commission." Easy, large handwriting — no reason to write small. He closes the journal before May 3. | cycle 61 |
+| E-GH1-151 | 1897-10-05.md | The man about to take the train — Jonathan thinks about May 1 during the working day: the man who wrote it was ready for the commission he was going on. He notes this precisely. The sentence names what the man was ready for and stops there. | cycle 61 |
+| E-GH1-152 | 1897-10-06.md | May 1 in full — Jonathan reads May 1 a second time and finds: "Unusual but not difficult. This kind of commission is what good preparation is for." He writes it from memory, checks it, confirms the match. "The sentence was correct about what the commission would be professionally." | cycle 61 |
+| E-GH1-153 | 1897-10-07.md | May 3 is next — Jonathan places the journal back; March, April, May 1 read. He writes: "Not yet has become soon." Soon: a different quality of not-yet — not a timeline, not a commitment. May 3 is next. | cycle 61 |
 
-**GH-1 Echo total: 146 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–60; covering May 3–September 30; September closed; the ledger continues)**
+**GH-1 Echo total: 153 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–61; covering May 3–October 7; ★ GH-1 OCTOBER DROP COVERAGE COMPLETE — buffer extends through Oct 7, target Oct 3)**
 
 ---
 
