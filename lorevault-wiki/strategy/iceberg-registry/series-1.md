@@ -131,8 +131,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-081 | 1897-07-27.md | Coat under pillow — fever entry; Jonathan puts the coat under his pillow without deciding to; the document-protection reflex below conscious intent. Entry reduced to essentials: ill, feverish, coat location, journal present. | cycle 51 |
 | E-GH1-082 | 1897-07-28.md | The Golden Krone — second stay — Jonathan returns to the same hotel where he stayed May 4. The building is unchanged; he is not. The brief is in the coat; the documents are unsubmitted. The arc closed in space but not in the register. | cycle 51 |
 | E-GH1-083 | 1897-07-29.md | The nun — first woman in the journal who brought something without having come for something. Jonathan lists the women in his ledger (Mina, the May 4 proprietress, the three women) and finds the nun does not fit the categories. Water brought; she stayed with her sewing. | cycle 51 |
+| E-GH1-084 | 1897-07-30.md | The sound of reading — Sister Agatha reads aloud in Romanian; Jonathan cannot follow the words. For 87 days he has been the sole source of text in his life. New text received as sound rather than content; needed without knowing it. | cycle 52 |
+| E-GH1-085 | 1897-07-31.md | Not ready — Jonathan opens the journal to May 3 and closes it. Writes "not ready" at the back rather than the front, so the front remains in sequence. The least analytic phrase in the journal: one condition, no sub-clauses. | cycle 52 |
+| E-GH1-086 | 1897-08-01.md | The first letter sent — Jonathan writes to Mina in the social voice and posts it: first honest outgoing correspondence since the Castle. Says "I will explain everything" and immediately doubts it in the journal. | cycle 52 |
+| E-GH1-087 | 1897-08-02.md | The memory without an entry — Jonathan has a memory of a Castle morning (the light angle, the shadow, staying still) that is not in the journal. Inverse of E-GH1-067 (record without memory). The journal is accurate within its scope; the scope is not complete. | cycle 52 |
+| E-GH1-088 | 1897-08-03.md | The journal's disposition — Jonathan considers three options (destroy, keep closed, give to Mina) and decides: keep closed, give to Mina on arrival, do not read it first. Second declaration of intent. Mina named as the journal's intended reader. | cycle 52 |
+| E-GH1-089 | 1897-08-04.md | The solicitor who noticed — Mr. Hawkins's reply: he received both the June 21 advance letter and Jonathan's Bistritz letter; perceived the discrepancy; did not name it. A solicitor's principal knows when to note without naming. | cycle 52 |
+| E-GH1-090 | 1897-08-05.md | "Do not be afraid" — Mina's telegram replies to what Jonathan did not write: he had not said he was afraid; she understood it from the letter and replied to it. The limit of the journal acknowledged by the person who will read it. | cycle 52 |
 
-**GH-1 Echo total: 83 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–51; covering May 3–July 29; Bistritz recovery arc begun)**
+**GH-1 Echo total: 90 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–52; covering May 3–August 5; Bistritz convalescence arc)**
 
 ---
 
