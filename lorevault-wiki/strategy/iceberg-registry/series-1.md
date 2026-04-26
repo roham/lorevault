@@ -187,8 +187,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-137 | 1897-09-21.md | Lucy died on 20 September — Seward's letter: Lucy died in the night of the 20th. Jonathan writes the full date of death in his journal — because a date of death should be written completely — and adds: "I have noted this." The case record closed. | cycle 59 |
 | E-GH1-138 | 1897-09-22.md | Not mine to document — Jonathan does not write about Mina's grief. Her grief belongs to her account, not his. He notes the tea, the parlor, the dinner. He adds one line: "Mina is here." It is accurate and complete. | cycle 59 |
 | E-GH1-139 | 1897-09-23.md | The condolence letter — Jonathan's letter to Seward: three paragraphs, condolence and thanks. He wants to ask what was wrong with Lucy; does not ask. Writes in his journal: "This was not the letter for that question. There may not be a letter for that question." | cycle 59 |
+| E-GH1-140 | 1897-09-24.md | The ordinary return — full professional day; checking habit not activated; the professional entry written cleanly because the other entries had done their work. The journal properly functioning. | cycle 60 |
+| E-GH1-141 | 1897-09-25.md | March 1897 — Jonathan opens the Castle journal past the flyleaf; reads March 3: a client matter, the weather, the Transylvania commission noted as a "potential future instruction." He writes: "I did not know, when I wrote that, what it would be." One page read. | cycle 60 |
+| E-GH1-142 | 1897-09-26.md | The walk — Jonathan and Mina walk to the cathedral close and back: one hour. He considers adding more and decides two lines are enough. After everything: two lines are the right scope. | cycle 60 |
+| E-GH1-143 | 1897-09-27.md | Back to the office — Jonathan goes to the office Sunday without urgency; the office as the place where the shape of things is clear; papers where they are supposed to be; the outcome legible and checkable. Plans belong in plans, not journals. | cycle 60 |
+| E-GH1-144 | 1897-09-28.md | Lord Godalming wrote — Arthur Holmwood's letter: precise, correct grief-form. Jonathan recognizes the precise phrasing as the form when grief is not yet available for ordinary expression. He has used it. He does not write this in the journal. | cycle 60 |
+| E-GH1-145 | 1897-09-29.md | Proportionate — Jonathan reads the Hawkins recommendation twice: not from anxiety but from professional care. He distinguishes compulsive from proportionate review. "This is the right calibration." The checking habit restored rather than suppressed. | cycle 60 |
+| E-GH1-146 | 1897-09-30.md | Eleven matters — September tally: eleven completed matters. Jonathan writes: "Lucy Westenra died in September 1897. I completed eleven professional matters in September 1897." Both true. The ledger has no field connecting them. "The ledger continues. September is in it." | cycle 60 |
 
-**GH-1 Echo total: 139 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–59; covering May 3–September 23; Lucy died; the question with no letter)**
+**GH-1 Echo total: 146 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–60; covering May 3–September 30; September closed; the ledger continues)**
 
 ---
 
