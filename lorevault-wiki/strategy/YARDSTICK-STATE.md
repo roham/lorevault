@@ -26,6 +26,7 @@
 | 15 | 2026-04-26T00:17:00Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y2 AT TARGET | Track B: 4 flavor texts + lore-notes drafted for bs1-c11, bs1-c12, bs1-r05, bs1-l02. Baker Street voice confirmed. 3 candidates per card; 2-of-3 proxy pass for all 4. /v2/today LATTICE_CARDS expanded to 20 cards. voice-feed/cycle-15.md. BS-1 now 20/20 art + 20/20 copy. |
 | 16 | 2026-04-26T00:37:25Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+4 routes | 0 Sets/mo | 0% / 0 opens | 0% | Track G: Art Direction Doctrine | Track G (CEO directive): Art Direction & Commissioning Doctrine written. `taste/ART-DIRECTION-COMMISSIONING-DOCTRINE.md` locked. Per-tier density rubric (Common=PLAIN/Rare=MODERATE/Legendary=RICH/Ultimate=MAXIMALIST). ARCANA reserved to ARCANA-parallel Rare+ only. Pre-commission checklist (8-point gate). BS-1 commissioning manifest: 20/20 base COMPLETE, 32 parallels pending, 3 ONE-OFFs council-blocked. Track A gated by doctrine from this cycle forward. No yardstick deltas — wiki-only cycle. |
 | 17 | 2026-04-26T00:52:25Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 16 Echo confirmed / 3 Deep implied | proxy+5 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y4 surface advance | Track C: `/v2/card/[id]` card detail page live. 20 SSG pages prerendered (all BS-1). Echo element highlighted, journal subscription CTA, trust contract line. Day-1 funnel: /v2 hero → /v2/card/bs1-c01; /v2/today → /v2/card/[id]. lib/lattice-cards.ts shared module. Build GREEN, deployed. Y4 advances: 5 /v2 routes live. |
+| 18 | 2026-04-26T01:22:00Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 24 Echo / 8 Deep implied | proxy+5 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y3 Deep advancing | Track D: 5 Jonathan's Journal installments (May 11-15, 1897). 5 new GH-1 Echo elements (E-GH1-004..008). 5 new Deep threads (D-BS1-004..007 + D-GH1-001) + 1 cross-Pane thread (D-CROSS-001). Deep: 3→8 implied (floor: 16). voice-feed/cycle-18.md. Wiki-only, no build needed. |
 
 ---
 
@@ -99,8 +100,8 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 17 shipped Track C. Last 4 cycles = 14 (A), 15 (B), 16 (G), 17 (C). Eligible next: D, E, F, H.
-`/v2/card/[id]` live — Day-1 funnel hook complete. 5 /v2 routes now live (/v2, /v2/today, /v2/lattice, /v2/journal, /v2/card/[id]). Y4 advances to proxy ABOVE FLOOR. **Cycle 18 → Track D or E. Y3 Deep below floor (3 implied vs 16 floor) — Track D advances Deep. Jonathan's Journal launches May 3 (7 days); R2 Beat A complete already. Track E next eligible only if a Beat element overdue. Weakest addressable yardstick: Y3 Deep — Track D.**
+Cycle 18 shipped Track D. Last 4 cycles = 15 (B), 16 (G), 17 (C), 18 (D). Eligible next: A, E, F, H.
+Journal extended through May 15. Deep: 3→8 implied. Echo: 19→24 total. **Cycle 19 → Track E or Track A. Track E: R2 Beat C (earned Sample pack counter) not yet built — advancing Y5 and Y6. Track A: BS-1 parallel art (32 pieces pending per commissioning doctrine). Rule 4: Y3 Deep still below floor but just ran Track D; Y5 also below floor and Track E eligible. Track E recommended for cycle 19 to advance Beat C.**
 
 ---
 

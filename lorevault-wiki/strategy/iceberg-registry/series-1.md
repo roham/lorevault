@@ -1,11 +1,11 @@
 # Iceberg Registry — Series 1
 
-**Updated by:** rebirth-daemon (cycle 12, Track D)
+**Updated by:** rebirth-daemon (cycle 18, Track D)
 **Source:** NORTH-STAR.md §3 Yardstick 3 — Lore (Iceberg compliance)
 **Doctrine:** 1:2:4 Iceberg Doctrine (Surface : Echo : Deep = 1:2:4 by word-count density implied per card)
 **Target:** 12 Echo + 24 Deep per Series
 **Floor:** 8 Echo + 16 Deep by Month 6 of Series
-**Current status:** 19 Echo named (16 BS-1 + 3 GH-1 implied by cycle-12 serial drafts), 3 Deep cross-card threads identified (see §3)
+**Current status:** 24 Echo named (16 BS-1 + 8 GH-1 from May 3–15 serial drafts), 8 Deep cross-card threads identified (5 BS-1 + 1 cross-BS1-GH1 + 2 GH-1-internal; see §3)
 
 ---
 
@@ -46,7 +46,13 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-002 | 1897-05-07.md | The unlocked door (east corridor, fourth on left) — at climbable height; Jonathan did not use it; not recorded in the journal. | cycle 12 |
 | E-GH1-003 | 1897-05-08.md | The portrait in the corridor — a woman in an undated dress, looking at the door behind Jonathan; unnamed; Jonathan stops turning around. | cycle 12 |
 
-**GH-1 Echo total: 3 (cycle-12 seed; full GH-1 set pending)**
+| E-GH1-004 | 1897-05-11.md | The unwritten nights — Jonathan has nine nights' memory but only four breakfast entries; the content of the other nights is softer "as if seen through gauze." He counts correctly; the nights are not blank, just inaccessible. | cycle 18 |
+| E-GH1-005 | 1897-05-12.md | The watch in both hands — Jonathan times the wall descent for seven minutes and holds the watch afterward without looking at it. The precision of the timing against the absence of a category for what he measured. | cycle 18 |
+| E-GH1-006 | 1897-05-13.md | The letter in the pocket — Jonathan shows the Count the professional letters while the Mina letter is in his coat pocket; he has not posted it; he is not sure he wants to know where the post box is. The letter is present but not deliverable. | cycle 18 |
+| E-GH1-007 | 1897-05-14.md | The eleven doors — Jonathan tries one door per day and does not mention in the journal that there are eleven more. The map he is drawing is incomplete; the incompleteness is deliberate. | cycle 18 |
+| E-GH1-008 | 1897-05-15.md | The specific kind of lie — Jonathan names the category: "the right thing at the wrong time, which is the same result by a different method." He has moved from observing to analysing. The naming is the moment of no return. | cycle 18 |
+
+**GH-1 Echo total: 8 (cycles 12 + 18; covering May 3–15; full GH-1 set pending through Nov 7)**
 
 ---
 
@@ -59,8 +65,14 @@ Deep elements are not visible from any single card; they require a collector to 
 | D-BS1-001 | bs1-c05, bs1-r03 | **The Adler–Chemistry Thread** — Holmes's Experiment 7 label appears in the Adler case file; Adler's photograph was taken at a Prague studio in an unrecognized language. A reader holding both cards can ask: what was Holmes testing, and when did the experiment begin? Neither card names the connection. | IMPLIED — not yet confirmed by Council |
 | D-BS1-002 | bs1-r01, bs1-c03, bs1-c10 | **The Withheld Record Pattern** — the third V.R. incident (sealed, not discussed), the page-91 notation (sealed per his request), and the unnumbered casebook volume (things not to be printed) form a pattern: Holmes has a record of actively suppressing evidence of something. The three cards' lore-notes do not reference each other; the connection is visible only to a reader who holds all three. | IMPLIED — not yet confirmed by Council |
 | D-BS1-003 | bs1-r02, bs1-l01, bs1-c07 | **The Pattern of Unclosed Cases** — the brown coat man (case never identified), the other-kind-of-music (unnamed case behind the 2am playing), and the refused client (expression linked to Moriarty margins) form a set of cases Holmes will not close. A collector who notices all three lore-notes is seeing a character layer not named on any individual card. | IMPLIED — not yet confirmed by Council |
+| D-BS1-004 | bs1-c12, bs1-l02 | **The Threshold at Night** — "The Gaslight Vigil" (Holmes at the window at 3AM, greatcoat still on, not yet having crossed the threshold of action) and "The Seven-Per-Cent" (Morocco case open, needle present, Watson watching and saying nothing). Both Moments: a threshold the figure has arrived at but not crossed; both feature Watson present and silent. Holding both cards: Watson's silence at the vigil and Watson's silence at the Morocco case are the same silence. Neither card mentions the other. | IMPLIED — not yet confirmed by Council |
+| D-BS1-005 | bs1-u01, bs1-c11 | **The Deduction Before Speech** — "You Have Been in Afghanistan, I Perceive" (the deduction that opens the partnership, delivered before the handshake has cooled) and "The Coded Message" (pen raised at the moment before certainty becomes ink). Both Moments: Holmes knowing before speaking. The partnership-opening deduction and the cipher-closing deduction are the same structure — certainty held for a fraction of a second before it is spoken or written. Neither card references the other. | IMPLIED — not yet confirmed by Council |
+| D-BS1-006 | bs1-r05, bs1-r03 | **The Objects They Return To** — "The Moriarty Letter" (Holmes reads it twice; the second reading was slower, which meant the first was correct) and "The Photograph" (the magnifying glass placed before the cabinet photograph; the pipe still warm; the examination ongoing after the case is officially closed). Both Rare cards: Holmes studying an object from a figure he did not definitively defeat — Moriarty, Adler. Neither card names this pattern. | IMPLIED — not yet confirmed by Council |
+| D-BS1-007 | bs1-l01, bs1-l02 | **The Shared Silence** — the two Legendary cards. "The Violin at Midnight": Watson writes 2.15 AM, distinguishes this music from boredom-music, and explicitly says "I will not ask which case." "The Seven-Per-Cent": Watson writes "I pretended not to see it. He noticed that I pretended, and was grateful." Both Legendaries: Watson choosing silence as a deliberate act of care, and Holmes perceiving the choice. The parallel is only visible to a collector who holds both Legendary cards. | IMPLIED — not yet confirmed by Council |
+| D-GH1-001 | 1897-05-07.md, 1897-05-15.md | **The Geography of Permission** — the unlocked door at the east corridor (climbable height, never used, never recorded; May 7) and the locked main door with no key (May 15). A reader holding both installments sees the full architecture: the unlocked door was never locked because it was never needed to be locked. The Castle's freedom of movement was always designed, not accidental. The geography of permission was precise. | IMPLIED — not yet confirmed by Council |
+| D-CROSS-001 | bs1-u01, 1897-05-15.md | **The Figure Who Counts** (cross-Pane thread) — Holmes times Watson's deduction in the first meeting (a deduction completed in four seconds, per the flavor text); Jonathan times the Count's wall descent (seven minutes, watch in both hands). Both figures arrive at a category through measurement — Holmes names Afghanistan; Jonathan names *prisoner*. The parallel is invisible unless a reader holds the Ultimate BS-1 card and has read the May 15 journal entry. A cross-Pane Deep thread: the faculty of naming-through-measurement is a Lattice-level Spine trait. | IMPLIED — not yet confirmed by Council |
 
-**Deep total: 3 implied / 24 target / 16 floor** — Below floor. Deep elements are harder to generate than Echo; they require multiple cards' lore-notes to resonate. Full GH-1 Set + cross-Pane connections will advance D toward floor by Month 4–5 of Series 1 if Track D cadence holds.
+**Deep total: 8 implied / 24 target / 16 floor** — Advancing. 5 more BS-1 threads + cross-Pane connection + GH-1-internal thread. Floor (16 Deep) achievable by Month 4 of Series 1 if BS-1 + GH-1 lore-notes continue to accumulate at this cadence.
 
 ---
 
@@ -72,9 +84,10 @@ Deep elements are not visible from any single card; they require a collector to 
 | Cycle 5 | 0 (authored, not yet registered) | 8 | 0 | BELOW FLOOR |
 | Cycle 10 | 0 (authored, not yet registered) | 16 | 0 | BELOW FLOOR |
 | **Cycle 12** | **16 (formally registered)** | **+3 GH-1 seed** | **3 (implied)** | **Echo AT TARGET; Deep BELOW FLOOR** |
+| **Cycle 18** | **16 BS-1 confirmed** | **+5 GH-1 (E-GH1-004..008)** | **8 (implied; +5 new threads)** | **Echo 24 total; Deep advancing** |
 
-**Y3 remediation plan:** Deep elements require cross-card reading. Advance by: (a) ensuring lore-notes resonate across cards as sets are authored; (b) Track D series installments that explicitly name-but-do-not-explain objects appearing on multiple cards. Projected floor (16 Deep) achievable by Month 5 of Series 1 if BS-1 + GH-1 + one more Set's lore-notes are all formally registered here.
+**Y3 remediation plan:** Deep elements require cross-card reading. Advance by: (a) ensuring lore-notes resonate across cards as sets are authored; (b) Track D series installments that explicitly name-but-do-not-explain objects appearing on multiple cards; (c) cross-Pane threads visible only to readers who hold cards from multiple Universes. Projected floor (16 Deep) achievable by Month 4 of Series 1 at current cadence if Track D runs every 3–4 cycles.
 
 ---
 
-*Updated: cycle 12 Track D. Next update: cycle 13 (after additional Track B/D work).*
+*Updated: cycle 18 Track D. Next update: after additional Track D work (GH-1 through June; cross-Pane threads from EK-1 and WL-1 lore-notes).*
