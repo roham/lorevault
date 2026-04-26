@@ -424,10 +424,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 
 | ID | Name | Parallel | Status | Prompt Template Notes |
 |---|---|---|---|---|
-| bs1-l01 | The Violin at Midnight | ARCANA | ⬜ pending | The gas-lamp halo behind Holmes explicitly becomes an ARCANA mandala; sigils on the violin body; Legendary-scale (half-frame mandala) |
-| bs1-l01 | The Violin at Midnight | AETHER | ⬜ pending | The sitting room walls fall away; Holmes plays against a cosmic nebula; golden divine particulate follows the bow |
-| bs1-l01 | The Violin at Midnight | WITNESS | ⬜ pending | Photoreal: Holmes playing at 2AM, practical embers and lamp only, no mythologizing |
-| bs1-l01 | The Violin at Midnight | NEON | ⬜ pending | 2040s: Holmes plays a live-looper against a neon London night-view; synthwave ambient |
+| bs1-l01 | The Violin at Midnight | ARCANA | ✅ complete | Cycle 22. Gas-lamp halo → mandala fills upper half; violin sigils; gaslight-gold aurora. 238KB. |
+| bs1-l01 | The Violin at Midnight | AETHER | ✅ complete | Cycle 22. Walls fall away, gold-amber cosmic nebula, divine particulate from bow. 64KB. |
+| bs1-l01 | The Violin at Midnight | WITNESS | ✅ complete | Cycle 22. Deakins register, practical embers/lamp only, no Alvinized light. 338KB. |
+| bs1-l01 | The Violin at Midnight | NEON | ✅ complete | Cycle 22. 2040s neon tower, live-looper, city-neon uplight, Watson's mug on smart-surface chair. 351KB. |
 | bs1-l01 | The Violin at Midnight | ONE-OFF | 🚫 council | Requires Art Director manual iteration. Council review before commissioning. |
 | bs1-l02 | The Seven-Per-Cent | ARCANA | ⬜ pending | The Morocco case mandala: the needle becomes an alchemical instrument; sigils in the case-lining; the direct gaze intensified |
 | bs1-l02 | The Seven-Per-Cent | AETHER | ⬜ pending | The sitting room vanishes; Holmes in cosmic space, the Morocco case floating in divine particulate |
@@ -451,7 +451,7 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 |---|---|---|
 | Base art | 20 | ✅ All complete |
 | Rare parallels | 20 | ⬜ All pending |
-| Legendary parallels (non-ONE-OFF) | 8 | ⬜ All pending |
+| Legendary parallels (non-ONE-OFF) | 8 | 🔄 4/8 complete (bs1-l01 done cycle 22; bs1-l02 pending) |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
 | Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
