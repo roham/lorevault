@@ -63,6 +63,7 @@
 | 52 | 2026-04-27T01:25:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 106 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 106 — Journal July 30–Aug 5 | Track D: 7 Jonathan's Journal installments (July 30–August 5, 1897). Sound of reading (July 30), not ready / journal closed (July 31), first letter sent to Mina (Aug 1), memory without entry (Aug 2), journal's disposition decided — give to Mina (Aug 3), Mr Hawkins noticed the discrepancy (Aug 4), "do not be afraid" telegram (Aug 5). Echo +7 (E-GH1-084..090, total 106). Journal buffer extended through August 5 (95 total installments). frigga:brief unavailable. $0. |
 | 53 | 2026-04-27T01:50:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 113 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 113 — Journal Aug 6–12 Budapest arc | Track D: 7 Jonathan's Journal installments (Aug 6–12, 1897). First voluntary steps (Aug 6), 97-day count (Aug 7), Mina arrives (Aug 8), journal given and returned (Aug 9), westward from Bistritz (Aug 10), marriage / same table (Aug 11), first ordinary entry (Aug 12). Echo +7 (E-GH1-091..097, total 113). Journal buffer extended through Aug 12 (102 total installments). frigga:brief unavailable. $0. |
 | 54 | 2026-04-27T02:20:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 120 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 120 — Journal Aug 13–19 Exeter return arc | Track D: 7 Jonathan's Journal installments (Aug 13–19, 1897). Westward train / departure (Aug 13), reversed names / Austria (Aug 14), two journals in transit (Aug 15), the channel (Aug 16), Exeter arrival (Aug 17), pre-Castle hand (Aug 18), Carfax papers / Whitby first named (Aug 19). Echo +7 (E-GH1-098..104, total 120). Journal buffer extended through Aug 19 (109 total installments). frigga:brief unavailable. $0. |
+| 55 | 2026-04-27T03:05:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 127 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 127 — Journal Aug 20–26 Whitby preparation arc | Track D: 7 Jonathan's Journal installments (Aug 20–26, 1897). Closed file reviewed (Aug 20), abbey on the cliff / Whitby (Aug 21), Devon abstract / clean title (Aug 22), matter summary filed (Aug 23), Mina plans Whitby journey (Aug 24), current caseload (Aug 25), three notebooks counted (Aug 26). Echo +7 (E-GH1-105..111, total 127). Journal buffer extended through Aug 26 (116 total installments). frigga:brief unavailable. $0. |
 
 ---
 
@@ -136,9 +137,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 54 shipped Track D. Journal buffer extended through Aug 19 (E-GH1-098..104). Y3 Echo 120 / Deep 26 — ABOVE TARGET.
+Cycle 55 shipped Track D. Journal buffer extended through Aug 26 (E-GH1-105..111). Y3 Echo 127 / Deep 26 — ABOVE TARGET.
 
-**Y5 unlock condition:** Odin skill available → submit bs1-brief.md → Council approves → BS-1 ships 2 May 2026 → Y5 floor cleared. **Cycle 55 → frigga:brief if skill available; else Track D (Journal Aug 20+ — Whitby preparation, Lucy Westenra arc begins) or Track C (HANDOVER §9 Rewrite 2). Y3 Echo 120.**
+**Y5 unlock condition:** Odin skill available → submit bs1-brief.md → Council approves → BS-1 ships 2 May 2026 → Y5 floor cleared. **Cycle 56 → frigga:brief if skill available; else Track D (Journal Aug 27+ — Mina departs for Whitby; Jonathan alone in Exeter; Lucy's arc approaching) or Track C (HANDOVER §9 Rewrite 2). Y3 Echo 127.**
 
 ---
 

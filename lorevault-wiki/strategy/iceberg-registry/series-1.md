@@ -152,8 +152,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-102 | 1897-08-17.md | The familiar street — Jonathan returns to Exeter. The city unchanged; himself changed. Mrs Hawkins notes he is thin. He sits in his own chair and notes its specifications — then notes that he has done this. | cycle 54 |
 | E-GH1-103 | 1897-08-18.md | The pre-Castle hand — Jonathan finds his own notes from before May 3: clean, orderly, written by a man who knew where he was going and had no information about what would happen there. His own notes from before he knew. Not quite his now. | cycle 54 |
 | E-GH1-104 | 1897-08-19.md | The Carfax papers — Jonathan finds the property file he prepared: complete, correct, his own work that transferred Carfax to Count Dracula. Nothing incorrectly done. Alongside this notation: Mina has had a letter from Miss Westenra at Whitby — Whitby named for the first time. | cycle 54 |
+| E-GH1-105 | 1897-08-20.md | The closed file — Jonathan reviews the Carfax file a second time; reads his own summary ("Transaction complete. File closed."); returns it to its drawer. Accurate within professional scope. Nothing further required of the solicitor. | cycle 55 |
+| E-GH1-106 | 1897-08-21.md | The abbey on the cliff — Mina reads aloud from Lucy's letter: Whitby harbor, the old abbey, the clifftop churchyard. Jonathan notes the town's coordinates in his journal; he has no professional document concerning Whitby; he notes the abbey anyway. | cycle 55 |
+| E-GH1-107 | 1897-08-22.md | The Devon abstract — a clean Tiverton title; no encumbrances; the gap between what a property is supposed to be and what it actually is, correctly established as absent. The work before May 3 and the work now are the same work; the interval appears in no professional document. | cycle 55 |
+| E-GH1-108 | 1897-08-23.md | The matter summary — Jonathan drafts the professional summary of the Hawkins/Dracula engagement: client, property, outcome, dates, health note. Accurate within professional scope. The Castle is not part of a matter summary. The professional record is now complete. | cycle 55 |
+| E-GH1-109 | 1897-08-24.md | The Whitby journey — Mina plans to visit Lucy at Whitby before the summer ends. Jonathan notes the rail distance before the friend; catches this; adds "she should go." The logistics reflex named and accepted. Mina will go to Whitby. | cycle 55 |
+| E-GH1-110 | 1897-08-25.md | The current caseload — Jonathan tallies completed and in-progress matters; within his usual rate; the firm absorbed his absence without loss. He writes: "I am current" — as a separate sentence, as though it required establishing as fact. | cycle 55 |
+| E-GH1-111 | 1897-08-26.md | The three notebooks — Jonathan counts three journals on his shelf: two covering May 3–August 11, one covering August 12 to present. 176 days. He does not open the old ones. He will know when he is ready. | cycle 55 |
 
-**GH-1 Echo total: 104 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–54; covering May 3–August 19; Exeter return arc; Whitby first named)**
+**GH-1 Echo total: 111 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–55; covering May 3–August 26; Whitby preparation arc; Carfax file closed)**
 
 ---
 
