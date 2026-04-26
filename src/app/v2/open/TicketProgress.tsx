@@ -81,14 +81,14 @@ export function TicketProgress() {
               Seven reading days. The pack contains one Common Moment from
               Baker Street · BS-1 · 221B.
             </p>
-            <button
-              disabled
-              className="text-[10px] tracking-[0.15em] uppercase font-mono border border-[#4a3e30] px-4 py-2 text-[#b0a090] opacity-60 cursor-not-allowed"
+            <Link
+              href="/v2/pack/reveal"
+              className="inline-block text-[10px] tracking-[0.15em] uppercase font-mono border border-[#6a5e50] px-4 py-2 text-[#b0a090] hover:border-[#b0a090] hover:text-[#e8e0d0] transition-colors"
             >
-              Reveal (wallet required)
-            </button>
+              Reveal your card →
+            </Link>
             <p className="mt-2 text-[9px] text-[#3a3028] font-mono">
-              Pack mechanics launch with Series 1 Drop 1.
+              Binder and ownership live 2 May 2026.
             </p>
           </div>
         </div>

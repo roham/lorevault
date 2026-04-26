@@ -51,6 +51,7 @@
 | 40 | 2026-04-26T17:30:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 50 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Echo 50 | Track D: 5 Jonathan's Journal installments (June 5–9). Untouched coin (June 5), unwritten letter (June 6), south window not applicable (June 7), dissolving relationship 22 days (June 8), intervals soft (June 9). Echo +5 (E-GH1-030..034). Buffer: 39+1. Remaining gap: June 10–16 (7 installments). $0. |
 | 41 | 2026-04-26T18:30:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | ★ Y3 Echo 57 — buffer COMPLETE | Track D: 7 Jonathan's Journal installments (June 10–16). Silence changed (June 10), letters taken from coat pockets (June 11), second brief kept (June 12), Mina's presence lost in writing (June 13), unmapped arrival north library (June 14), duration not timed / timing practice broken (June 15), morning uncertain / threshold sentence (June 16). Echo +7 (E-GH1-035..041, total 57). Buffer 46+1 COMPLETE through June 17 canonical. $0. |
 | 42 | 2026-04-26T20:10:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+7 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5 remediation: Set page live | Track C: /v2/set/[id] shipped. BS-1 "The Argument Pane" set landing page — 20-card grid by tier, rarity distribution, pack pricing table (5 tiers per Phase 9 spec), Sample pack live-linked to /v2/open. Home page updated with First Drop CTA (2 May 2026). Build GREEN. 7 /v2 routes live. $0. |
+| 43 | 2026-04-26T20:55:00Z | 52/20+32 parallel | 100% + 32 parallel texts (Mosaic proxy) | 57 Echo / 26 Deep ABOVE TARGET | proxy+8 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5 remediation: reveal funnel complete | Track C: /v2/pack/reveal shipped. CSS 3D card flip (back→front, 800ms delay, 0.75s rotateY). Day-seeded BS-1 Common reveal. TicketProgress pack-ready button activated (Link → /v2/pack/reveal). Day-1 funnel navigable end-to-end: /v2 → /v2/open → /v2/pack/reveal → /v2/card/[id] → /v2/set/bs1. Build GREEN. 8 /v2 routes. $0. |
 
 ---
 
@@ -124,9 +125,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 42 shipped Track C. Y5 (OPS) still below floor but approaching: /v2/set/bs1 live (May 2 launch surface), 7 /v2 routes total.
+Cycle 43 shipped Track C. Day-1 funnel now navigable end-to-end. 8 /v2 routes live.
 
-Y3 Echo: 57, ABOVE TARGET. Deep: 26, ABOVE TARGET. Y4 IA: 7 routes live (proxy ABOVE FLOOR). **Cycle 43 → Y5 remediation continues. frigga:brief consult overdue (42+ cycles). Pack reveal page (/v2/pack) is next Track C priority.**
+Y4 IA: 8 routes live (proxy ABOVE FLOOR). Y5 (OPS): still below floor — BS-1 not yet officially shipped; launch is 2 May 2026. **Cycle 44 → Y5 remediation or frigga:brief if skill available.**
 
 ---
 
