@@ -138,8 +138,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-088 | 1897-08-03.md | The journal's disposition — Jonathan considers three options (destroy, keep closed, give to Mina) and decides: keep closed, give to Mina on arrival, do not read it first. Second declaration of intent. Mina named as the journal's intended reader. | cycle 52 |
 | E-GH1-089 | 1897-08-04.md | The solicitor who noticed — Mr. Hawkins's reply: he received both the June 21 advance letter and Jonathan's Bistritz letter; perceived the discrepancy; did not name it. A solicitor's principal knows when to note without naming. | cycle 52 |
 | E-GH1-090 | 1897-08-05.md | "Do not be afraid" — Mina's telegram replies to what Jonathan did not write: he had not said he was afraid; she understood it from the letter and replied to it. The limit of the journal acknowledged by the person who will read it. | cycle 52 |
+| E-GH1-091 | 1897-08-06.md | The corner and back — Jonathan goes outside voluntarily for the first time; walks to the corner and returns. Distinguishes necessary movement (July 22 descent, mountain road) from chosen movement. The inhabited street's sound noted. | cycle 53 |
+| E-GH1-092 | 1897-08-07.md | Ninety-seven days — Jonathan counts: 97 days since May 3, 78 days in the Castle, 16 days since leaving. Acknowledges the counting habit as the survival instrument; will not abandon it because the need is less obvious. | cycle 53 |
+| E-GH1-093 | 1897-08-08.md | Mina arrives — four-fact entry: arrived, said his name, he said hers, they sat. The journal has been accumulating toward this moment since May 3. The ledger has no field for it. | cycle 53 |
+| E-GH1-094 | 1897-08-09.md | The journal given and returned — Jonathan gives Mina the journal; she offers to read it together when he is ready; returns it. The terminus he sets himself, contrasted with the Count's vocabulary of unspecified durations. | cycle 53 |
+| E-GH1-095 | 1897-08-10.md | Westward — Jonathan and Mina leave Bistritz by carriage; Sister Agatha's cross accepted without hesitation (contra the uncertain May 4 acceptance). The journal's unread portion shaping action through the absence of re-reading. | cycle 53 |
+| E-GH1-096 | 1897-08-11.md | The same table — Jonathan and Mina write their respective journals at the same table on their wedding day. First time the journal is written alongside another journal. "The journal would be different from here." | cycle 53 |
+| E-GH1-097 | 1897-08-12.md | The first ordinary entry — Jonathan writes an entry requiring none of the Castle's documentation practices; cannot write it without noting it is ordinary. The ledger continues; its content has changed. | cycle 53 |
 
-**GH-1 Echo total: 90 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–52; covering May 3–August 5; Bistritz convalescence arc)**
+**GH-1 Echo total: 97 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–53; covering May 3–August 12; Budapest marriage arc complete)**
 
 ---
 
