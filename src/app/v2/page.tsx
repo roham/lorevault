@@ -128,6 +128,24 @@ export default function V2Home() {
           ))}
         </nav>
 
+        {/* First Drop CTA */}
+        <div className="mt-6 max-w-[420px] mx-auto">
+          <Link
+            href="/v2/set/bs1"
+            className="group flex items-center justify-between px-4 py-3 border border-[var(--color-v2-rule)] hover:border-[var(--color-tier-ultimate)] bg-[var(--color-v2-ink)] transition-colors"
+          >
+            <div>
+              <p className="text-[9px] tracking-[0.2em] uppercase text-[var(--color-v2-text-muted)] [font-family:var(--font-v2-mono)]">
+                First Drop · 2 May 2026
+              </p>
+              <p className="text-[13px] text-[var(--color-v2-text)] [font-family:var(--font-v2-ui)] mt-0.5">
+                Baker Street · BS-1 · The Argument Pane
+              </p>
+            </div>
+            <span className="text-[var(--color-tier-ultimate)] group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
+        </div>
+
         {/* Sample-card index — the 5 marquee 1/1 ONE-OFFs */}
         <section className="mt-12 max-w-[420px] mx-auto border-t border-[var(--color-v2-rule)] pt-8">
           <h2 className="text-[12px] uppercase tracking-[0.2em] text-[var(--color-v2-text-dim)] [font-family:var(--font-v2-ui)]">
