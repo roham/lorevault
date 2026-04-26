@@ -70,7 +70,13 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-023 | 1897-05-30.md | The torn pages — Jonathan writes two pages seeking the legal category and tears them out. Only the conclusion survives: "no applicable category." The two pages of reasoning, the intermediate work of the solicitor's analysis, are absent from the record. The law's mortality assumption is the wall; what Jonathan saw in the chapel is not administrable under either of its two states. | cycle 35 |
 | E-GH1-024 | 1897-06-17.md | The phrase — "This man belongs to me." The most precise legal formulation Jonathan has received at the Castle: a claim of ownership, not tenancy or use or license. Jonathan has no counter-instrument. He notes this carefully. He also notes, in one sentence, that he did not think of Mina at the time — and does not expand on this. | cycle 35 |
 
-**GH-1 Echo total: 24 (cycles 12, 18, 21, 24, 35; covering May 3–30 + June 17; May 31–June 16 gap pending)**
+| E-GH1-025 | 1897-05-31.md | The performance of function — Jonathan reviews the Carfax papers and writes professional shorthand notes, aware that he is performing the function of a solicitor rather than being one. The distinction is new; he had not previously understood there was a distinction. The gap between method and experience is now visible to him. | cycle 39 |
+| E-GH1-026 | 1897-06-01.md | The legible brief — Jonathan writes a professional summary of events May 3–30 and burns it — not because it is wrong but because it is right. A legible document of his situation is a document that could be found. The first active suppression of his own record; the first time he destroys documentation rather than withholds or omits it. | cycle 39 |
+| E-GH1-027 | 1897-06-02.md | The bread was still bread — Jonathan writes a long description of dinner as a sensory-inventory exercise, checking that ordinary experience still produces ordinary responses. "The bread was still bread" closes the entry. He writes it because he is afraid of the moment when it won't be. | cycle 39 |
+| E-GH1-028 | 1897-06-03.md | The Count in daylight — Jonathan sees the Count in the courtyard at noon, reading, seven minutes. He had assumed the Count did not appear in daylight; he had no evidence for this. He notes the assumption was wrong. The fourth timed observation (7/11/3/7 minutes) extends the Arithmetic series without naming it. | cycle 39 |
+| E-GH1-029 | 1897-06-04.md | The consulate letter, salutation only — Jonathan reaches for consular-assistance provisions (a real instrument he knows) and discovers that the delivery mechanism is controlled by the Count. The instrument is available in principle and inaccessible in practice. Every legal instrument he has is accessible only through the person he needs protection from. | cycle 39 |
+
+**GH-1 Echo total: 29 (cycles 12, 18, 21, 24, 35, 39; covering May 3–June 4 + June 17; June 5–16 gap still pending)**
 
 ---
 
@@ -126,8 +132,9 @@ Deep elements are not visible from any single card; they require a collector to 
 | **Cycle 24** | **16 BS-1 confirmed** | **+5 GH-1 (E-GH1-014..018)** | **24 (implied; +7 new threads: D-BS1-013..015, D-GH1-003, D-CROSS-004..006)** | **Echo 34 total; Deep AT TARGET** |
 
 | **Cycle 35** | **16 BS-1 confirmed** | **+6 GH-1 (E-GH1-019..024)** | **26 (implied; +2 new threads: D-GH1-004, D-CROSS-007)** | **Echo 40 total; Deep ABOVE TARGET** |
+| **Cycle 39** | **16 BS-1 confirmed** | **+5 GH-1 (E-GH1-025..029)** | **26 (unchanged; no new threads this cycle)** | **Echo 45 total; Deep ABOVE TARGET** |
 
-**Y3 status:** Echo 40 total (ABOVE TARGET; target=12; cleared). Deep 26 implied (ABOVE TARGET; target=24, floor=16). Both Echo and Deep ABOVE TARGET as of cycle 35. GH-1 May 31–June 16 gap (17 installments) pending future Track D cycles.
+**Y3 status:** Echo 45 total (ABOVE TARGET; target=12; cleared). Deep 26 implied (ABOVE TARGET; target=24, floor=16). Both ABOVE TARGET as of cycle 39. GH-1 June 5–16 gap (12 installments) still pending future Track D cycles.
 
 **Y3 remediation plan:** Deep floor achieved. Target (24 Deep) requires 8 more threads. Sources: (a) EK-1 and WL-1 lore-notes as those Sets are developed; (b) parallel-art cross-register threads (Base vs ARCANA vs WITNESS reading of the same Moment); (c) GH-1 continued through June 1897 Stoker arc. The parallel-art threads are a new category: holding the bs1-u01-BASE and bs1-u01-ARCANA cards side-by-side and reading them against each other is itself a Deep thread not yet formally registered.
 
