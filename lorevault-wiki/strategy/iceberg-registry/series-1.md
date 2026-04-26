@@ -76,7 +76,13 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-028 | 1897-06-03.md | The Count in daylight — Jonathan sees the Count in the courtyard at noon, reading, seven minutes. He had assumed the Count did not appear in daylight; he had no evidence for this. He notes the assumption was wrong. The fourth timed observation (7/11/3/7 minutes) extends the Arithmetic series without naming it. | cycle 39 |
 | E-GH1-029 | 1897-06-04.md | The consulate letter, salutation only — Jonathan reaches for consular-assistance provisions (a real instrument he knows) and discovers that the delivery mechanism is controlled by the Count. The instrument is available in principle and inaccessible in practice. Every legal instrument he has is accessible only through the person he needs protection from. | cycle 39 |
 
-**GH-1 Echo total: 29 (cycles 12, 18, 21, 24, 35, 39; covering May 3–June 4 + June 17; June 5–16 gap still pending)**
+| E-GH1-030 | 1897-06-05.md | The untouched coin — four pounds, eleven shillings, eight pence: unchanged after thirty-three days. Money assumes a system that can receive it. The castle is not that system. "I have not spent a single thing that was mine" — reads as relief, then as a different kind of record. | cycle 40 |
+| E-GH1-031 | 1897-06-06.md | The third Mina letter — composed in Jonathan's head only (not on paper, which becomes evidence). The series: official letter through the Count; two coat-pocket letters (unsent, physical, retrievable); the June 6 letter (composed, not written, no longer fully accessible). Three forms of a letter: sent but not real, real but not sent, neither. | cycle 40 |
+| E-GH1-032 | 1897-06-07.md | "Not applicable" — Jonathan opens the south window onto a sheer drop, calculates the gorge geometry, notes the far wall is uninhabited. Closes the window. Writes "not applicable" — the professional category for "the instrument does not apply here." He does not write what he considered. | cycle 40 |
+| E-GH1-033 | 1897-06-08.md | The dissolving relationship — Jonathan cannot locate the last professional meeting with the Count. The journal shows May 17. Twenty-two days. The relationship ended not with a decision but with an absence. He can date the last meeting but not the moment of ending. | cycle 40 |
+| E-GH1-034 | 1897-06-09.md | The soft interval — Jonathan's sleep intervals are no longer fully retrievable: present but soft, like a memory seen through water. Not blank, not empty — soft. The first entry in which Jonathan identifies a change in his own experience rather than in the documents or instruments available to him. | cycle 40 |
+
+**GH-1 Echo total: 34 (cycles 12, 18, 21, 24, 35, 39, 40; covering May 3–June 9 + June 17; June 10–16 gap still pending)**
 
 ---
 
@@ -133,8 +139,9 @@ Deep elements are not visible from any single card; they require a collector to 
 
 | **Cycle 35** | **16 BS-1 confirmed** | **+6 GH-1 (E-GH1-019..024)** | **26 (implied; +2 new threads: D-GH1-004, D-CROSS-007)** | **Echo 40 total; Deep ABOVE TARGET** |
 | **Cycle 39** | **16 BS-1 confirmed** | **+5 GH-1 (E-GH1-025..029)** | **26 (unchanged; no new threads this cycle)** | **Echo 45 total; Deep ABOVE TARGET** |
+| **Cycle 40** | **16 BS-1 confirmed** | **+5 GH-1 (E-GH1-030..034)** | **26 (unchanged; no new threads this cycle)** | **Echo 50 total; Deep ABOVE TARGET** |
 
-**Y3 status:** Echo 45 total (ABOVE TARGET; target=12; cleared). Deep 26 implied (ABOVE TARGET; target=24, floor=16). Both ABOVE TARGET as of cycle 39. GH-1 June 5–16 gap (12 installments) still pending future Track D cycles.
+**Y3 status:** Echo 50 total (ABOVE TARGET; target=12; cleared). Deep 26 implied (ABOVE TARGET; target=24, floor=16). Both ABOVE TARGET as of cycle 40. GH-1 June 10–16 gap (7 installments) still pending.
 
 **Y3 remediation plan:** Deep floor achieved. Target (24 Deep) requires 8 more threads. Sources: (a) EK-1 and WL-1 lore-notes as those Sets are developed; (b) parallel-art cross-register threads (Base vs ARCANA vs WITNESS reading of the same Moment); (c) GH-1 continued through June 1897 Stoker arc. The parallel-art threads are a new category: holding the bs1-u01-BASE and bs1-u01-ARCANA cards side-by-side and reading them against each other is itself a Deep thread not yet formally registered.
 
