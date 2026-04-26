@@ -19,7 +19,10 @@ export default function V2Home() {
 
       <main className="flex-1 flex flex-col px-5">
         {/* Hero Moment — Watson's Arrival, BS-1 */}
-        <div className="relative w-full max-w-[340px] mx-auto mt-4">
+        <Link
+          href="/v2/card/bs1-c01"
+          className="relative w-full max-w-[340px] mx-auto mt-4 group block"
+        >
           <div className="relative aspect-[2/3] overflow-hidden rounded-sm shadow-2xl">
             <Image
               src="/prototype-art/bs-1-221b/bs1-c01/v1.webp"
@@ -38,15 +41,15 @@ export default function V2Home() {
             <p className="text-[10px] tracking-[0.15em] uppercase text-[#8a7e6e] font-mono">
               Baker Street · BS-1 · Common · PRIME
             </p>
-            <p className="mt-1 text-[11px] text-[#b0a090] font-mono leading-snug italic">
+            <p className="mt-1 text-[11px] text-[#b0a090] font-mono leading-snug italic group-hover:text-[#c8b8a8] transition-colors">
               &ldquo;Name: Watson, J.H. Condition: serviceable. Time: 11.23.
               Comment: looked at the deerstalker first.&rdquo;
             </p>
-            <p className="mt-1 text-[9px] text-[#6a5e50] font-mono">
-              Mrs H.&rsquo;s visitor book, 1881
+            <p className="mt-1 text-[9px] text-[#4a3e30] font-mono group-hover:text-[#6a5e50] transition-colors">
+              Read the iceberg →
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* The one line of voice */}
         <div className="mt-10 max-w-[320px] mx-auto text-center">

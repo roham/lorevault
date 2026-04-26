@@ -1,18 +1,8 @@
-import { connection } from 'next/server';
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'LoreVault — Today on the Lattice',
-  description: 'One card. One Echo element. Each day a different residue surfaces.',
-};
-
-type LatticeCard = {
+export type LatticeCard = {
   id: string;
   name: string;
   set: string;
-  tier: string;
+  tier: 'Common' | 'Rare' | 'Legendary' | 'Ultimate';
   shell: string;
   imagePath: string;
   imageAlt: string;
@@ -21,7 +11,7 @@ type LatticeCard = {
   echo: string;
 };
 
-const LATTICE_CARDS: LatticeCard[] = [
+export const LATTICE_CARDS: LatticeCard[] = [
   {
     id: 'bs1-c01',
     name: "Watson's Arrival",
@@ -278,92 +268,6 @@ const LATTICE_CARDS: LatticeCard[] = [
   },
 ];
 
-const UTC_MS_PER_DAY = 86_400_000;
-
-export default async function TodayOnTheLattice() {
-  await connection();
-
-  const dayIndex = Math.floor(Date.now() / UTC_MS_PER_DAY);
-  const card = LATTICE_CARDS[dayIndex % LATTICE_CARDS.length];
-
-  const dateLabel = new Date().toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  });
-
-  return (
-    <div className="min-h-dvh bg-[#0d0c0a] text-[#e8e0d0] flex flex-col">
-      <header className="px-5 pt-8 pb-4 flex items-center justify-between">
-        <Link
-          href="/v2"
-          className="text-xs tracking-[0.2em] uppercase text-[#8a7e6e] font-mono hover:text-[#e8e0d0] transition-colors"
-        >
-          ← LoreVault
-        </Link>
-        <p className="text-[10px] tracking-[0.1em] text-[#4a3e30] font-mono">{dateLabel}</p>
-      </header>
-
-      <main className="flex-1 flex flex-col px-5 pb-12">
-        <div className="max-w-[340px] mx-auto w-full mt-2">
-          <p className="text-[9px] tracking-[0.25em] uppercase text-[#6a5e50] font-mono mb-5">
-            Today on the Lattice
-          </p>
-
-          <div className="relative w-full max-w-[260px] mx-auto">
-            <div className="relative aspect-[2/3] overflow-hidden rounded-sm shadow-2xl">
-              <Image
-                src={card.imagePath}
-                alt={card.imageAlt}
-                fill
-                className="object-cover"
-                priority
-                sizes="260px"
-              />
-              <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-black/60 to-transparent" />
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <p className="text-[10px] tracking-[0.15em] uppercase text-[#8a7e6e] font-mono">
-              {card.set} · {card.tier} · {card.shell}
-            </p>
-            <p className="mt-1 text-base font-serif text-[#e8e0d0]">{card.name}</p>
-          </div>
-
-          <div className="mt-6 border-l border-[#2a2420] pl-4">
-            <p className="text-[12px] text-[#b0a090] font-mono leading-relaxed italic">
-              &ldquo;{card.flavor}&rdquo;
-            </p>
-            {card.flavorAttrib && (
-              <p className="mt-1 text-[10px] text-[#6a5e50] font-mono">— {card.flavorAttrib}</p>
-            )}
-          </div>
-
-          <div className="mt-8">
-            <p className="text-[9px] tracking-[0.2em] uppercase text-[#4a3e30] font-mono mb-2">
-              Lampblack Detail
-            </p>
-            <p className="text-[11px] text-[#6a5e50] font-mono leading-relaxed">{card.echo}</p>
-          </div>
-
-          <div className="mt-8">
-            <Link
-              href={`/v2/card/${card.id}`}
-              className="inline-block text-[10px] tracking-[0.15em] uppercase font-mono text-[#6a5e50] border border-[#2a2420] px-4 py-2 hover:border-[#4a3e30] hover:text-[#b0a090] transition-colors"
-            >
-              Read the full iceberg →
-            </Link>
-          </div>
-        </div>
-      </main>
-
-      <footer className="px-5 py-6">
-        <p className="text-[9px] tracking-[0.15em] uppercase text-[#4a3e30] font-mono text-center">
-          Series 1 · The Glass Catches Light · v2
-        </p>
-      </footer>
-    </div>
-  );
+export function getCardById(id: string): LatticeCard | undefined {
+  return LATTICE_CARDS.find((c) => c.id === id);
 }
