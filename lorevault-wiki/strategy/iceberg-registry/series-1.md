@@ -145,8 +145,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-095 | 1897-08-10.md | Westward — Jonathan and Mina leave Bistritz by carriage; Sister Agatha's cross accepted without hesitation (contra the uncertain May 4 acceptance). The journal's unread portion shaping action through the absence of re-reading. | cycle 53 |
 | E-GH1-096 | 1897-08-11.md | The same table — Jonathan and Mina write their respective journals at the same table on their wedding day. First time the journal is written alongside another journal. "The journal would be different from here." | cycle 53 |
 | E-GH1-097 | 1897-08-12.md | The first ordinary entry — Jonathan writes an entry requiring none of the Castle's documentation practices; cannot write it without noting it is ordinary. The ledger continues; its content has changed. | cycle 53 |
+| E-GH1-098 | 1897-08-13.md | The westward train — Jonathan departs Budapest; notes the departure time from habit, then recognizes the notation was unnecessary. The first such recognition in motion. Budapest recedes; east no longer the direction of travel. | cycle 54 |
+| E-GH1-099 | 1897-08-14.md | The reversed names — Jonathan finds his May notebook; reads the place names in reverse order as the train passes back through Austria. His pre-Castle record was accurate. The route is the same route, now read backward. | cycle 54 |
+| E-GH1-100 | 1897-08-15.md | Two journals in transit — Jonathan discovers Mina has kept her own journal through the summer. Two accounts of the same period written toward each other across distance. Neither is complete without the other. | cycle 54 |
+| E-GH1-101 | 1897-08-16.md | The channel — Jonathan stands at the rail waiting for England to appear. The channel unchanged; the water the same water. He finds this useful: a thing that remains itself is evidence there is a place to return to. England appears. | cycle 54 |
+| E-GH1-102 | 1897-08-17.md | The familiar street — Jonathan returns to Exeter. The city unchanged; himself changed. Mrs Hawkins notes he is thin. He sits in his own chair and notes its specifications — then notes that he has done this. | cycle 54 |
+| E-GH1-103 | 1897-08-18.md | The pre-Castle hand — Jonathan finds his own notes from before May 3: clean, orderly, written by a man who knew where he was going and had no information about what would happen there. His own notes from before he knew. Not quite his now. | cycle 54 |
+| E-GH1-104 | 1897-08-19.md | The Carfax papers — Jonathan finds the property file he prepared: complete, correct, his own work that transferred Carfax to Count Dracula. Nothing incorrectly done. Alongside this notation: Mina has had a letter from Miss Westenra at Whitby — Whitby named for the first time. | cycle 54 |
 
-**GH-1 Echo total: 97 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–53; covering May 3–August 12; Budapest marriage arc complete)**
+**GH-1 Echo total: 104 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–54; covering May 3–August 19; Exeter return arc; Whitby first named)**
 
 ---
 
