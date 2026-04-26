@@ -38,6 +38,7 @@
 | 27 | 2026-04-26T06:00:00Z | 44/20+24 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare 12/20 | Track A: bs1-r03 "The Photograph" Rare parallels × 4 (ARCANA 239KB, AETHER 138KB, WITNESS 223KB, NEON 228KB). 0 failures. Magnifying-glass-before-holo-display = anachronism Spine for NEON. Manifest: 44 entries. Rare tier: 12/20 done. $0.16. |
 | 28 | 2026-04-26T06:55:00Z | 48/20+28 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare 16/20 | Track A: bs1-r04 "The Case Map" Rare parallels × 4 (all q70: ARCANA 394KB, AETHER 359KB, WITNESS 348KB, NEON 396KB). Top-down paper-array = high entropy on all parallels. Manifest: 48 entries. Rare tier: 16/20 done. $0.16. |
 | 29 | 2026-04-26T07:50:00Z | 52/20+32 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | ★ RARE COMPLETE / ALL NON-ONE-OFF PARALLELS COMPLETE | Track A: bs1-r05 "The Moriarty Letter" Rare parallels × 4 (ARCANA 235KB, AETHER 281KB cold-cosmos, WITNESS 182KB, NEON 225KB cold-palette). 0 failures. Rare tier: 20/20 COMPLETE. All non-ONE-OFF BS-1 parallels: 32/32 COMPLETE. Manifest: 52 entries. $0.16. |
+| 30 | 2026-04-26T08:40:00Z | 52/20+32 parallel | 100% + 4 parallel texts (Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y2 parallel copy start | Track B: 4 Ultimate parallel flavor texts authored (bs1-u01 ARCANA/AETHER/WITNESS/NEON). All 4/4 Mosaic proxy PASS. Parallel register layered over base voice: excavation/cosmic-retrospective/sense-literal/echo-translate. $0. voice-feed/cycle-30.md. |
 
 ---
 
@@ -111,9 +112,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 29 shipped Track A. **All non-ONE-OFF BS-1 parallel art is now complete: 32/32 (Ultimate 4, Legendary 8, Rare 20).** Y1 parallel coverage milestone.
+Cycle 30 shipped Track B. Parallel flavor texts begun. 4/32 parallel copy done (bs1-u01 × 4).
 
-Y1: 52 manifest entries (20 BASE + 32 parallels). Y3 AT TARGET. Y2 AT TARGET. **Cycle 30 track selection: Track A is exhausted (all commissionable art done; 3 ONE-OFFs are council-blocked). Rotate to highest-priority non-A track. Track F (Council directive / strategy) or Track D (Journal buffer extending past May 25) or Track B (parallel flavor texts now possible since parallels exist). Recommend Cycle 30 → Track B (flavor texts for the 32 parallels, starting with highest-impact: Ultimate and Legendary tiers first).**
+Y1: 52 manifest entries (20 BASE + 32 parallels) — COMPLETE. Y2 parallel copy: 4/32 (proxy pass). Y3 AT TARGET. **Cycle 31 → Track B: bs1-l01 Legendary parallels × 4 (ARCANA/AETHER/WITNESS/NEON). Then bs1-l02. After Legendary (8 parallel texts), move to Rare tier parallel texts (20 parallel texts across 5 cards).**
 
 ---
 
