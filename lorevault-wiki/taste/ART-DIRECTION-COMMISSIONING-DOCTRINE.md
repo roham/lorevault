@@ -399,10 +399,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 
 | ID | Name | Parallel | Status | Prompt Template Notes |
 |---|---|---|---|---|
-| bs1-r01 | V.R. in the Plaster | ARCANA | ⬜ pending | Audit base art first; mandala behind Holmes looking at VR; Alchemical geometry in the bullet-hole pattern |
-| bs1-r01 | V.R. in the Plaster | AETHER | ⬜ pending | Cosmic scale: the 221B sitting room miniaturized against a vast amber cosmos |
-| bs1-r01 | V.R. in the Plaster | WITNESS | ⬜ pending | Photoreal: the post-gunshot moment, practical lamp only, documentary stillness |
-| bs1-r01 | V.R. in the Plaster | NEON | ⬜ pending | 2040s: the VR inscribed in laser-burn on a smart-glass panel; deerstalker → AR visor |
+| bs1-r01 | V.R. in the Plaster | ARCANA | ✅ complete | Cycle 25. Modest mandala (Rare scale), sigils made explicit in wallpaper, gaslight-gold aurora. 144KB. |
+| bs1-r01 | V.R. in the Plaster | AETHER | ✅ complete | Cycle 25. Wall opens to cosmos via bullet-holes, V.R. letters hang against gold-amber nebula. 304KB (q70). |
+| bs1-r01 | V.R. in the Plaster | WITNESS | ✅ complete | Cycle 25. Forensic photorealism, plaster damage as physical evidence, Deakins register. 241KB. |
+| bs1-r01 | V.R. in the Plaster | NEON | ✅ complete | Cycle 25. 2040s standalone prompt (Victorian base triggers NSFW filter; recontextualized). Smart-glass V.R., precision tool, synthwave. 322KB. |
 | bs1-r02 | The Street Deduction | ARCANA | ⬜ pending | Mandala floats behind Holmes at the window; the street figure below has a matching geometric outline |
 | bs1-r02 | The Street Deduction | AETHER | ⬜ pending | London fog transforms to cosmic nebula; Holmes as a figure at the edge of the cosmos looking in |
 | bs1-r02 | The Street Deduction | WITNESS | ⬜ pending | Photoreal: Holmes at the window, documentary, practical window-light only |
@@ -450,12 +450,12 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | Category | Count | Status |
 |---|---|---|
 | Base art | 20 | ✅ All complete |
-| Rare parallels | 20 | ⬜ All pending |
+| Rare parallels | 20 | 🔄 4/20 complete (bs1-r01 cycle 25); 16/20 pending |
 | Legendary parallels (non-ONE-OFF) | 8 | ✅ All complete (bs1-l01 cycle 22, bs1-l02 cycle 23) |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
 | Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
-| **Total remaining** | **35** | **32 pending / 3 council-blocked** |
+| **Total remaining** | **31** | **28 pending / 3 council-blocked** |
 
 ---
 

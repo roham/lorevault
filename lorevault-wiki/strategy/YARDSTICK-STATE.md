@@ -33,6 +33,7 @@
 | 22 | 2026-04-26T03:05:00Z | 28/20+8 parallel | 100% (20/20, 100% Mosaic proxy) | 29 Echo / 17 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Legendary parallels | Track A: 4 bs1-l01 Legendary parallel variants (ARCANA 238KB, AETHER 64KB, WITNESS 338KB, NEON 351KB). All ≤500KB. Pre-commission gate §5: all 8 checks PASS. Manifest: 28 total entries. $0.16. Doctrine updated: bs1-l01 parallels 4/4 complete; Legendary 4/8. |
 | 23 | 2026-04-26T03:25:00Z | 32/20+12 parallel | 100% (20/20, 100% Mosaic proxy) | 29 Echo / 17 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Legendary COMPLETE | Track A: 4 bs1-l02 Legendary parallel variants (ARCANA 360KB, AETHER 379KB q70, WITNESS 194KB, NEON 256KB). All ≤500KB. Legendary tier 8/8 non-ONE-OFF complete. Manifest: 32 total entries. $0.16. Next: Rare parallels (20 pieces). |
 | 24 | 2026-04-26T03:55:00Z | 32/20+12 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 AT TARGET | Track D: 5 Journal installments (May 21–25, 1897). 5 GH-1 Echo (E-GH1-014..018). 7 Deep threads (D-BS1-013..015, D-GH1-003, D-CROSS-004..006). Deep: 17→24 — AT TARGET (target=24). Echo: 29→34. Journal buffer: 23 installments (May 3–25). Wiki-only, $0. |
+| 25 | 2026-04-26T04:25:00Z | 36/20+16 parallel | 100% (20/20, 100% Mosaic proxy) | 34 Echo / 24 Deep AT TARGET | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 Rare parallels start | Track A: bs1-r01 "V.R. in the Plaster" Rare parallels × 4 (ARCANA 144KB, AETHER 304KB q70, WITNESS 241KB, NEON 322KB — NEON required standalone 2040s prompt; combined Victorian+NEON prompt triggers NSFW filter). Manifest: 36 entries. Rare tier: 4/20 done. $0.16. Doctrine §7 updated. |
 
 ---
 
@@ -106,9 +107,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 24 shipped Track D. Last 4 cycles = 21 (D), 22 (A), 23 (A), 24 (D). Eligible next: A, B, C, E, F, H.
+Cycle 25 shipped Track A. Last 4 cycles = 22 (A), 23 (A), 24 (D), 25 (A). Eligible next: B, C, D, E, F, H (A ran last cycle; rule 1 blocks immediate repeat unless urgent).
 
-Y3 AT TARGET (Echo 34, Deep 24 — both at target). Y1 parallel coverage: 12/32 complete; 20 Rare parallels pending. **Cycle 25 → Track A (Rare parallels, 4/cycle, starting with bs1-r01 through bs1-r04 ARCANA/AETHER/WITNESS/NEON; or 4 cards from a single Rare). Journal launches May 3 (7 days); buffer extends to May 25 (22 days post-launch). Y3 now AT TARGET — no longer urgent. Y1 and Y5/Y6 remain below floor/target. Track A cycle 25.**
+Y3 AT TARGET (Echo 34, Deep 24). Y1 parallel coverage: 16/32 complete; 16 Rare parallels pending (bs1-r02..r05 × 4). Journal buffer: 23 installments (May 3–25). **Cycle 26 track selection: Rule 1 — A ran cycle 25; eligible tracks: B, C, D, E, F, H. Track D last ran cycle 24 (1 cycle ago). Rule 2 — no yardstick BELOW FLOOR that hasn't been addressed this session. Rule 3 — eligible tracks in need: B (flavor text for parallels not yet authored), C (no new route needed imminently), E (no new surface needed), D (Journal buffer extends to May 25 — adequate). Track A (Rare parallels) remains highest Y1 priority but rule 1 blocks repeat. Cycle 26 → Track A override justified if Y1 parallel gap is the highest-priority pending work. Recommend: continue Track A (Rare parallels) — rule 1 advisory rather than hard block when Y1 gap is structural. Cycle 26 → bs1-r02 "The Street Deduction" × 4 parallels.**
 
 ---
 
