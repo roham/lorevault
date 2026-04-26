@@ -159,8 +159,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-109 | 1897-08-24.md | The Whitby journey — Mina plans to visit Lucy at Whitby before the summer ends. Jonathan notes the rail distance before the friend; catches this; adds "she should go." The logistics reflex named and accepted. Mina will go to Whitby. | cycle 55 |
 | E-GH1-110 | 1897-08-25.md | The current caseload — Jonathan tallies completed and in-progress matters; within his usual rate; the firm absorbed his absence without loss. He writes: "I am current" — as a separate sentence, as though it required establishing as fact. | cycle 55 |
 | E-GH1-111 | 1897-08-26.md | The three notebooks — Jonathan counts three journals on his shelf: two covering May 3–August 11, one covering August 12 to present. 176 days. He does not open the old ones. He will know when he is ready. | cycle 55 |
+| E-GH1-112 | 1897-08-27.md | The station departure — Jonathan walks Mina to the station; watches the train leave; stands on the platform. He catches himself measuring the interval between arrival and departure — thinks: there is nothing to measure here. The timing habit caught and named. | cycle 56 |
+| E-GH1-113 | 1897-08-28.md | The different silence — the Exeter parlor quiet in the evening; Jonathan names the distinction: chosen solitude versus the Castle's constrained solitude. He writes: "I can name the difference. This is something." The skill of distinguishing kinds of quiet. | cycle 56 |
+| E-GH1-114 | 1897-08-29.md | Arrived safely — Mina's postcard from Whitby: arrived safely, Lucy met her, Lucy looked well. Jonathan notes the delivery time, considers whether he needed to, leaves it. Information has a time of delivery. He sets the postcard where he can see it. | cycle 56 |
+| E-GH1-115 | 1897-08-30.md | Fourteen days — Jonathan counts 14 days since returning to England, recognizes the counting habit operating in a context that doesn't require it. He keeps the count and adds: "I am still counting. This is worth knowing." | cycle 56 |
+| E-GH1-116 | 1897-08-31.md | The first ordinary month — August reviewed: the first full calendar month since April without an extraordinary entry. Jonathan notes this is slightly extraordinary to note, recognizes the pattern from August 12, and lets it stand. | cycle 56 |
+| E-GH1-117 | 1897-09-01.md | Forty-one days out — Jonathan calculates: July 22 to September 1 is 41 days since leaving the Castle. He counts twice; the arithmetic holds. The count now functions differently: counting from a departure, not toward one. | cycle 56 |
+| E-GH1-118 | 1897-09-02.md | Lucy is not well — Mina's letter: Lucy sleeping badly, pale, Dr. Seward attending; nothing specifically wrong; the sea air must help. Jonathan notes the facts and adds nothing further. He has never met Lucy. Mina will write more when there is more to write. | cycle 56 |
 
-**GH-1 Echo total: 111 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–55; covering May 3–August 26; Whitby preparation arc; Carfax file closed)**
+**GH-1 Echo total: 118 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46–56; covering May 3–September 2; Jonathan alone in Exeter; first word that Lucy is unwell)**
 
 ---
 
