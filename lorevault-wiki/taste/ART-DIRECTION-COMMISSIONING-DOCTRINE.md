@@ -411,10 +411,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | bs1-r03 | The Photograph | AETHER | ✅ complete | Cycle 27. Room falls away, photograph hovers in gold-amber cosmos, divine particulate from photo surface, magnifying glass floats. 138KB. |
 | bs1-r03 | The Photograph | WITNESS | ✅ complete | Cycle 27. Silver-gelatin print texture, foxing, lens scratches, lamp-physics only, forensic documentation. 223KB. |
 | bs1-r03 | The Photograph | NEON | ✅ complete | Cycle 27. Holographic portrait (cyan/magenta), 1880s magnifying glass before holo-display = anachronism Spine. 228KB. |
-| bs1-r04 | The Case Map | ARCANA | ⬜ pending | The case papers are replaced by — or overlaid with — alchemical sigil sheets; the overhead geometry becomes a mandala |
-| bs1-r04 | The Case Map | AETHER | ⬜ pending | The overhead view expands to cosmic scale: the papers become star-charts, Holmes a figure at the center of a galaxy |
-| bs1-r04 | The Case Map | WITNESS | ⬜ pending | Photoreal overhead: documentary aerial of Holmes on the floor, practical lamp, sharp material detail |
-| bs1-r04 | The Case Map | NEON | ⬜ pending | 2040s: Holmes at the center of holographic London map projections, synthwave color, AR case overlays |
+| bs1-r04 | The Case Map | ARCANA | ✅ complete | Cycle 28. Paper circle IS the mandala (gold radial geometry traces gaps); sigils at document margins; three light sources (lamp/mandala/aurora). 394KB q70. |
+| bs1-r04 | The Case Map | AETHER | ✅ complete | Cycle 28. Floor falls away, papers float as star-charts in gold-amber cosmos, god-rays converge on Holmes. 359KB q70. |
+| bs1-r04 | The Case Map | WITNESS | ✅ complete | Cycle 28. Deakins top-down documentary, floor material texture, paper stock variety, lamp cone physics. 348KB q70. |
+| bs1-r04 | The Case Map | NEON | ✅ complete | Cycle 28. Holographic data projections in neon circle, magnifying glass on holo = Spine, visor deployed (apex analysis). 396KB q70. |
 | bs1-r05 | The Moriarty Letter | ARCANA | ⬜ pending | The letter glows with alchemical sigils visible only at the ARCANA tier; mandala behind Holmes's head |
 | bs1-r05 | The Moriarty Letter | AETHER | ⬜ pending | Holmes in cosmic space reading the letter; the letter's author implies a force of cosmic scale |
 | bs1-r05 | The Moriarty Letter | WITNESS | ⬜ pending | Photoreal: Holmes holding the letter at a window, documentary cold daylight |
@@ -450,12 +450,12 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | Category | Count | Status |
 |---|---|---|
 | Base art | 20 | ✅ All complete |
-| Rare parallels | 20 | 🔄 12/20 complete (bs1-r01–r03 cycles 25–27); 8/20 pending |
+| Rare parallels | 20 | 🔄 16/20 complete (bs1-r01–r04 cycles 25–28); 4/20 pending |
 | Legendary parallels (non-ONE-OFF) | 8 | ✅ All complete (bs1-l01 cycle 22, bs1-l02 cycle 23) |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
 | Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
-| **Total remaining** | **23** | **20 pending / 3 council-blocked** |
+| **Total remaining** | **19** | **16 pending / 3 council-blocked** |
 
 ---
 
