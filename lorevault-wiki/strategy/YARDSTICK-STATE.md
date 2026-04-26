@@ -29,6 +29,7 @@
 | 18 | 2026-04-26T01:22:00Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 24 Echo / 8 Deep implied | proxy+5 routes | 0 Sets/mo | 0% / 0 opens | 0% | Y3 Deep advancing | Track D: 5 Jonathan's Journal installments (May 11-15, 1897). 5 new GH-1 Echo elements (E-GH1-004..008). 5 new Deep threads (D-BS1-004..007 + D-GH1-001) + 1 cross-Pane thread (D-CROSS-001). Deep: 3→8 implied (floor: 16). voice-feed/cycle-18.md. Wiki-only, no build needed. |
 | 19 | 2026-04-26T01:55:00Z | 100% (20/20) | 100% (20/20, 100% Mosaic proxy) | 24 Echo / 8 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y5 R2 loop complete | Track E: /v2/open Sample Pack ticker live. TicketProgress client component (localStorage, 7-slot UTC-day counter, collecting/pack-ready states). /v2/open static page with how-it-works steps. /v2 home now links Sample Pack section. R2 §1 Beat loop: Beat A (Journal, May 3 launch) + Beat B (Today) + Beat C (Sample Pack) all initialized. Build GREEN. Y4: 6 /v2 routes live. |
 | 20 | 2026-04-26T02:15:00Z | 24/20+4 parallel | 100% (20/20, 100% Mosaic proxy) | 24 Echo / 8 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y1 parallel start | Track A: 4 bs1-u01 Ultimate parallel variants generated (ARCANA 130KB, AETHER 231KB, WITNESS 321KB, NEON 277KB). All ≤500KB. Pre-commission gate §5: all 8 checks PASS. Manifest parallel field corrected: all 20 base entries fixed to `"parallel": "BASE"`. Manifest: 24 total entries (20 BASE + 4 parallels). $0.16 spend. Commissioning doctrine §7 updated: Ultimate parallels 4/4 complete. |
+| 21 | 2026-04-26T02:45:00Z | 24/20+4 parallel | 100% (20/20, 100% Mosaic proxy) | 29 Echo / 16 Deep implied | proxy+6 routes | R2 Beat C live | 0% / 0 opens | 0% | Y3 Deep AT FLOOR | Track D: 5 Journal installments (May 16–20, 1897). 5 new GH-1 Echo elements (E-GH1-009..013). 7 new Deep threads (D-BS1-008..012, D-GH1-002, D-CROSS-002..003). Deep: 9→16 implied — AT FLOOR (floor=16, target=24). Journal now covers May 3–20 (18 installments). voice-feed/cycle-21.md. Wiki-only, no build. |
 
 ---
 
@@ -102,9 +103,9 @@ After cycle 12:
 - Y6 (AUDIENCE): 0%. BELOW FLOOR.
 - Y7 (THRILLED): 0%. BELOW FLOOR.
 
-Cycle 20 shipped Track A. Last 4 cycles = 17 (C), 18 (D), 19 (E), 20 (A). Eligible next: B, C, D, E, F, H.
+Cycle 21 shipped Track D. Last 4 cycles = 18 (D), 19 (E), 20 (A), 21 (D). Eligible next: A, B, C, E, F, H.
 
-Y1 parallel coverage: 4/32 non-blocked parallels complete (4 Ultimate done; 28 remaining: 20 Rare + 8 Legendary). Y3 Deep still BELOW FLOOR (8 vs 16 floor). **Cycle 21 → Track D (Y3 Deep below floor) or Track B (flavor texts for the new parallel cards). Rule 4 check: Track D ran cycle 18 (3 cycles ago) — eligible; Track B last ran cycle 15 (5 cycles ago) — also eligible. Parallel flavor texts are not needed until more parallels ship. Track D (Y3 Deep: 8 vs 16 floor) recommended for cycle 21.**
+Y3 Deep AT FLOOR (16 implied). Y1 parallel coverage: 4/32 non-blocked parallels complete (4 Ultimate done; 28 remaining: 20 Rare + 8 Legendary). **Cycle 22 → Track A (BS-1 Legendary parallels next per §8 priority). Last Track A: cycle 20 (2 cycles ago) — eligible. Last Track B: cycle 15 (6 cycles ago) — also eligible but parallel flavor texts not needed until more parallels ship. Track A recommended: 8 Legendary parallels pending (non-ONE-OFF), and bs1-l01 + bs1-l02 are the two Legendary cards, 4 parallels each.**
 
 ---
 
