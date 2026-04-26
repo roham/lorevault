@@ -407,10 +407,10 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | bs1-r02 | The Street Deduction | AETHER | ✅ complete | Cycle 26. London fog→gold-amber cosmos, figure below tiny against nebula, divine particulate through window. 126KB. |
 | bs1-r02 | The Street Deduction | WITNESS | ✅ complete | Cycle 26. Deakins register, fog physics, Victorian glass distortion, practical lamp only. 243KB. |
 | bs1-r02 | The Street Deduction | NEON | ✅ complete | Cycle 26. 2040s tower window, AR visor deployed (active deduction), cyan target overlay on subject, neon uplight. 263KB. |
-| bs1-r03 | The Photograph | ARCANA | ⬜ pending | The photograph of Irene Adler transforms — sacred-geometry mandala surrounds her face in the cabinet photo |
-| bs1-r03 | The Photograph | AETHER | ⬜ pending | The mantelpiece and room fall away; the photograph hovers in cosmic space, divine particulate surrounding Irene's image |
-| bs1-r03 | The Photograph | WITNESS | ⬜ pending | Photoreal still-life: the photograph, the magnifying glass, practical lamp, documentary close-up |
-| bs1-r03 | The Photograph | NEON | ⬜ pending | 2040s: a holographic portrait in place of the cabinet photograph, Irene's face in cyan light |
+| bs1-r03 | The Photograph | ARCANA | ✅ complete | Cycle 27. Mandala in photograph emulsion, magnifying glass reveals geometry, sigils in wallpaper, gold luminance from photo. 239KB. |
+| bs1-r03 | The Photograph | AETHER | ✅ complete | Cycle 27. Room falls away, photograph hovers in gold-amber cosmos, divine particulate from photo surface, magnifying glass floats. 138KB. |
+| bs1-r03 | The Photograph | WITNESS | ✅ complete | Cycle 27. Silver-gelatin print texture, foxing, lens scratches, lamp-physics only, forensic documentation. 223KB. |
+| bs1-r03 | The Photograph | NEON | ✅ complete | Cycle 27. Holographic portrait (cyan/magenta), 1880s magnifying glass before holo-display = anachronism Spine. 228KB. |
 | bs1-r04 | The Case Map | ARCANA | ⬜ pending | The case papers are replaced by — or overlaid with — alchemical sigil sheets; the overhead geometry becomes a mandala |
 | bs1-r04 | The Case Map | AETHER | ⬜ pending | The overhead view expands to cosmic scale: the papers become star-charts, Holmes a figure at the center of a galaxy |
 | bs1-r04 | The Case Map | WITNESS | ⬜ pending | Photoreal overhead: documentary aerial of Holmes on the floor, practical lamp, sharp material detail |
@@ -450,12 +450,12 @@ This table is the SINGLE SOURCE OF TRUTH for BS-1 art commissioning. The daemon 
 | Category | Count | Status |
 |---|---|---|
 | Base art | 20 | ✅ All complete |
-| Rare parallels | 20 | 🔄 8/20 complete (bs1-r01 cycle 25, bs1-r02 cycle 26); 12/20 pending |
+| Rare parallels | 20 | 🔄 12/20 complete (bs1-r01–r03 cycles 25–27); 8/20 pending |
 | Legendary parallels (non-ONE-OFF) | 8 | ✅ All complete (bs1-l01 cycle 22, bs1-l02 cycle 23) |
 | Legendary ONE-OFFs | 2 | 🚫 Council review required |
 | Ultimate parallels (non-ONE-OFF) | 4 | ✅ All complete (cycle 20) |
 | Ultimate ONE-OFF | 1 | 🚫 Council review required |
-| **Total remaining** | **27** | **24 pending / 3 council-blocked** |
+| **Total remaining** | **23** | **20 pending / 3 council-blocked** |
 
 ---
 
