@@ -117,8 +117,15 @@ Three Echo elements implied in the Jonathan's Journal installments authored this
 | E-GH1-067 | 1897-07-13.md | The record without its memory — Jonathan reads back the May 28 entry and cannot verify it from memory; the facts are present but the interior experience is not retrievable. First gap between what the journal says and what Jonathan can confirm from the inside. | cycle 49 |
 | E-GH1-068 | 1897-07-14.md | "Not long" — the Count announces his imminent departure and says Jonathan will remain until transportation is arranged: "not long." Jonathan notes this joins his involuntary collection of bounded-but-unspecified duration phrases from the Count. | cycle 49 |
 | E-GH1-069 | 1897-07-15.md | The unobserved departure — Jonathan watches from the window and does not see the Count leave; finds the rooms empty afterward. The Count left in an interval Jonathan cannot specify. Entry closes: "The journal is open." | cycle 49 |
+| E-GH1-070 | 1897-07-16.md | The full circuit — Jonathan walks the entire Castle on the first day of sole occupancy; finds three previously undocumented features after 75 days. He had only documented what captivity forced him to see. | cycle 50 |
+| E-GH1-071 | 1897-07-17.md | The second approach — the three women come to the corridor one month after June 17; the door holds; Jonathan's entry is the most compressed in the journal (four facts, no analysis). He notes: exactly one month. | cycle 50 |
+| E-GH1-072 | 1897-07-18.md | Condition assessed — Jonathan conducts a professional self-inventory (physically well, tired, reasoning intact, recording intact) and adds one note outside the register: "I believe the door held because I needed it to. I am not certain this is a sufficient explanation." | cycle 50 |
+| E-GH1-073 | 1897-07-19.md | The actionable brief — Jonathan reads the journal as a brief for action (not for the arc, not for Mina) and extracts actionable items. Closes with the first declaration of intent in 78 days of documentation: "I am going to use the window." | cycle 50 |
+| E-GH1-074 | 1897-07-20.md | The preparation — Jonathan assembles the record for departure: coat (three letters), journal cover (second brief + Count's letter), journal. Recognises the coat and journal together constitute a complete record, kept for 79 days without knowing this was the purpose. | cycle 50 |
+| E-GH1-075 | 1897-07-21.md | The last entry before departure — Jonathan writes the conditional close: "If this is the last entry — the journal is the record." Explicit reader named for the first time. Journal folded into coat. Waiting for dark. | cycle 50 |
+| E-GH1-076 | 1897-07-22.md | The departure — Jonathan descends the east wall, finds the gate ajar (three hypotheses, equally weighted), writes the exit entry from the mountain road. Closes: "He had been noting things he could not resolve since May 3. The ledger would continue." | cycle 50 |
 
-**GH-1 Echo total: 69 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46, 47, 48, 49; covering May 3–July 15; buffer extended through July 15)**
+**GH-1 Echo total: 76 (cycles 12, 18, 21, 24, 35, 39, 40, 41, 46, 47, 48, 49, 50; covering May 3–July 22; Castle arc COMPLETE — Jonathan has left the Castle)**
 
 ---
 
