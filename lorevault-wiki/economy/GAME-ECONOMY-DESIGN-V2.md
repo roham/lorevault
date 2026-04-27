@@ -17,7 +17,7 @@ Card = (Series, Set, Pane, Moment, Tier, Parallel, Serial)
 ```
 
 - **Series** — time-bounded drop cycle (Series 1, Series 2, …). Series 1 runs ~12 months.
-- **Set** — a narrative arc or themed collection (e.g., "The Long Night", "Beltane Rising"). A Set has fixed composition and goes out of print after its mint window. Sets are thematic, not IP-based.
+- **Set** — a narrative arc or themed collection (e.g., "The Long Night", "The Wild Hunt"). A Set has fixed composition and goes out of print after its mint window. Sets are thematic, not IP-based.
 - **Pane** — cosmological variant. Every figure that exists in LoreVault exists within one or more Panes. A Pane is a self-consistent mythological worldview — a cosmology in which certain figures reign, certain laws hold, and certain stories are told. See §2.
 - **Moment** — a specific figure × scene within a Pane (e.g., the Wild Hunt at full gallop in the Pane "Wild-Hunt-Eternal"). Tier is a property of the Moment.
 - **Tier** — Surface / Echo / Deep (see §3). Three rarity levels with internal grades.
@@ -40,11 +40,11 @@ A Pane is a complete cosmological worldview — a mythos with its own pantheon, 
 |---|---|---|---|
 | **Wild-Hunt-Eternal** | The Hunt never ends; the sky is always a battlefield; death is a rider, not a door | Elemental, relentless, storm-dark | Odin as hunt-master, Herne, the Morrigan, Cernunnos |
 | **Sinterklaas-Reigns** | Midwinter gift-law governs the world; the Bishop and his retinue are cosmic arbiters of merit | Ceremonial, ambivalent mercy, deep-winter | Sinterklaas, Zwarte Piet figures, the White Mare |
-| **Underworld-Accord** | The boundary between the living and dead is a negotiated treaty, perpetually renegotiated | Liminal, bureaucratic-dark, funerary-formal | Persephone, Anubis, the Ferryman, Hel |
-| **Summer-Court** | The bright half of the year is sovereign; the Court of Light holds dominion; sacrifice is festive | Exultant, sacrificial-bright, flower-crowned | The May King, Brigid, Lugh, the Green Man |
-| **Dreaming-Threshold** | The world runs on dream-logic; figures shift; no single form is final | Mercurial, oneiric, shape-unstable | Morpheus, Coyote, Loki, the Sandman-type |
+| **Old-Ones-Persist** | The boundary between the living and dead is a negotiated treaty, perpetually renegotiated | Liminal, bureaucratic-dark, funerary-formal | Persephone, Anubis, the Ferryman, Hel |
+| **Lattice-Standard** | The bright half of the year is sovereign; the Court of Light holds dominion; sacrifice is festive | Exultant, sacrificial-bright, flower-crowned | The May King, Brigid, Lugh, the Green Man |
+| **Titans-Held** | The world runs on dream-logic; figures shift; no single form is final | Mercurial, oneiric, shape-unstable | Morpheus, Coyote, Loki, the Sandman-type |
 
-Each Pane has a distinct **base-art register** applied to its Moments: Wild-Hunt-Eternal uses storm-grey and bone-white; Sinterklaas-Reigns uses deep crimson and candlelight gold; Underworld-Accord uses verdigris and funeral linen; Summer-Court uses saturated emerald and gilded daylight; Dreaming-Threshold uses iridescent ink-wash and shifting geometry.
+Each Pane has a distinct **base-art register** applied to its Moments: Wild-Hunt-Eternal uses storm-grey and bone-white; Sinterklaas-Reigns uses deep crimson and candlelight gold; Old-Ones-Persist uses verdigris and funeral linen; Lattice-Standard uses saturated emerald and gilded daylight; Titans-Held uses iridescent ink-wash and shifting geometry.
 
 **Pane count**: Series 1 launches with 5 Panes. New Panes may be added in future Series but never retired — a collector's Pane cards remain valid cross-Pane connectors indefinitely.
 
@@ -102,16 +102,16 @@ A Set is a narrative arc or themed collection. Unlike v1 Sets (which lived insid
 
 | Set ID | Name | Thematic arc | Panes represented | Deep II Moment (apex) |
 |---|---|---|---|---|
-| S1-01 | **The Long Night** | The darkest night of the year; figures of cold and threshold | Wild-Hunt-Eternal, Sinterklaas-Reigns, Underworld-Accord | The Hunt crosses the zenith |
-| S1-02 | **Beltane Rising** | The return of light; sacrifice and renewal | Summer-Court, Wild-Hunt-Eternal | The May King burns |
-| S1-03 | **Dreaming the Dead** | The dead speak; the living listen; boundaries dissolve | Underworld-Accord, Dreaming-Threshold | Persephone names the price |
-| S1-04 | **The Trickster Accord** | Shape-shifters negotiate the terms of reality | Dreaming-Threshold, Summer-Court, Sinterklaas-Reigns | Loki seals the bargain |
+| S1-01 | **The Long Night** | The darkest night of the year; figures of cold and threshold | Wild-Hunt-Eternal, Sinterklaas-Reigns, Old-Ones-Persist | The Hunt crosses the zenith |
+| S1-02 | **The Wild Hunt** | The return of light; sacrifice and renewal | Lattice-Standard, Wild-Hunt-Eternal | The May King burns |
+| S1-03 | **The Old Ones Persist** | The dead speak; the living listen; boundaries dissolve | Old-Ones-Persist, Titans-Held | Persephone names the price |
+| S1-04 | **The Trickster Roads** | Shape-shifters negotiate the terms of reality | Titans-Held, Lattice-Standard, Sinterklaas-Reigns | Loki seals the bargain |
 
 **Set structure**: 20 Moments per Set = 12 Surface + 4 Echo I + 1 Echo II + 2 Deep I + 1 Deep II. Same pattern across every Set for consistency.
 
 **Series 1 scope**: 4 Sets × 20 Moments = **80 Moments total** in Series 1 base.
 
-Cross-Set and cross-Pane distribution of Moments is intentional: a figure like Odin may appear in S1-01 (Wild-Hunt-Eternal lens) and again in S1-04 (Dreaming-Threshold lens as the god of cunning). These are different cards with different Moment IDs, different art, and different Tier assignments. They are linked by **Lampblack Residue** (§7).
+Cross-Set and cross-Pane distribution of Moments is intentional: a figure like Odin may appear in S1-01 (Wild-Hunt-Eternal lens) and again in S1-04 (Titans-Held lens as the god of cunning). These are different cards with different Moment IDs, different art, and different Tier assignments. They are linked by **Lampblack Residue** (§7).
 
 **With parallels (Echo+ only)**:
 - Echo I: 4/Set × 4 Sets = 16 Echo I Moments × 5 Parallels = 80 parallel instances
@@ -200,7 +200,7 @@ A pack that follows one **Lampblack Residue** across 3 or more Panes.
 **Example Thread Pack — "The Odin Thread" (S1):**
 - Card 1: Odin as Hunt-Master — Wild-Hunt-Eternal, Surface tier
 - Card 2: Sinterklaas (Odin-derived bishop figure) — Sinterklaas-Reigns, Echo I tier
-- Card 3: The Wanderer at the Threshold — Dreaming-Threshold, Surface tier
+- Card 3: The Wanderer at the Threshold — Titans-Held, Surface tier
 - Cards 4–6: proximity fill (associated figures: Huginn/Muninn, the gallows tree, the grey horse)
 
 ---
@@ -353,7 +353,7 @@ The six modes map to Parallels as before, but now also interact with Pane base-a
 | `mythic-cosmic` | **AETHER parallel** — aurora, nebulae, divine particulate, tinted with Pane palette. |
 | `witness-photoreal` | **WITNESS parallel** — photoreal time-travel realism, Pane setting informs historical/natural context. |
 | `modern-reimagined` | **NEON parallel** — cyber reimagining, Pane tone informs the future-city aesthetic (e.g., Wild-Hunt-Eternal NEON = storm-drone chase; Sinterklaas-Reigns NEON = surveillance-state gift logistics). |
-| `dream-psychedelic` | Reserved for Dreaming-Threshold Pane base-art register — not a cross-cutting parallel, but the Pane's native visual language. May be promoted to a 6th Parallel in a future Series. |
+| `dream-psychedelic` | Reserved for Titans-Held Pane base-art register — not a cross-cutting parallel, but the Pane's native visual language. May be promoted to a 6th Parallel in a future Series. |
 
 1/1 is not a mode — it is commissioned bespoke art, one at a time.
 
