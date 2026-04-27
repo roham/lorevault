@@ -1,0 +1,41 @@
+# READY-FOR-PAGAN-CANON.flag
+
+**Written by:** Token-Economy + Participation Architecture Orchestrator
+**Date:** 2026-04-27
+**Status:** Participation Architecture V3 complete — ready for pagan-canon orchestrator handoff
+
+## What is ready
+
+The LoreVault Participation Architecture (V3) is complete and ready for integration with the pagan-canon orchestrator's work.
+
+### Key files for the pagan-canon orchestrator
+
+- **Primary synthesis:** `lorevault-wiki/research/participation-2026-04-27/00-SYNTHESIS-V3.md` (8,400 words — the authoritative participation architecture)
+- **Implementation spec:** `lorevault-wiki/specs/PHASE-PARTICIPATION-ARCHITECTURE.md` (engineering handoff)
+- **All research dossiers:** `lorevault-wiki/research/participation-2026-04-27/CLUSTER-*.md` and `CRYPTO-*.md`
+
+## Decisions the pagan-canon orchestrator needs to know
+
+### 1. Pane contraband is the participation hook
+Every Pane has a "buried weight" — a contraband axiom. Fan participation = fans bringing their own contraband across the border. The submission UI is built around this metaphor (5-step "border crossing" flow). The pagan-canon orchestrator's Pane definitions should include an explicit `contraband` field that populates the submission flow's Step 2 ("Declare Your Contraband").
+
+### 2. Pane-Steward governance role
+Each active Pane has a Pane-Steward (Canon Council member or delegate) with 1.5x vote weight on Pane-specific canon proposals. The pagan-canon orchestrator should plan for Pane-Steward assignments in its Pane roster design.
+
+### 3. Shadow Pane archive
+Submissions for unactivated Panes go into the Shadow Pane archive — publicly readable, searchable, with Authorship NFTs. The "thousands of shadow Panes possible" doctrine is implemented via this archive. The pagan-canon orchestrator's Pane substrate design should account for shadow-Pane discoverability.
+
+### 4. Inter-Pane contraband-flow (highest-value contribution type)
+Submissions proposing contraband crossing *between* two existing Panes (not just within one) require both Pane-Stewards to co-approve and earn 2x LORE reward. The pagan-canon orchestrator should design Pane boundaries with this inter-Pane crossing mechanic in mind — pairs of Panes with adjacent cosmological axioms are the highest-value participation targets.
+
+### 5. Series 1 ships participation-disabled
+No contribution mechanics, no token distribution, no submission UI in Series 1. The pagan-canon orchestrator's Series 1 content plan should not depend on fan participation — it is a pure passive-collector experience. Participation enables from Series 2 onward.
+
+### 6. Token: LORE fungible token
+- 1B cap supply, 30% to ecosystem contribution rewards (vesting S3 launch)
+- Reference price: 1 LORE = $0.10 USD at S3 launch
+- Hub publication: 50 LORE (short fiction), 75 LORE (art), 150 LORE (axiom extension)
+- Canon Mark: 1,000 LORE; Pane elevation: 5,000 LORE; Cross-Pane: 2,000 LORE
+
+## Contact
+Read `FINAL-REPORT.md` in the project root for complete context and file paths.
