@@ -220,9 +220,9 @@ export function SectionGlossary() {
 
       <P>
         The ringfenced fund — one and a half percent of every secondary sale plus five
-        percent of every primary sale on original Panes — that pays Tier-3+ canon
-        contributors when their flavor lines or contraband proposals are accepted into
-        canon.
+        percent of LoreVault&rsquo;s treasury take from primary sales on original Panes —
+        that pays Tier-3+ canon contributors when their flavor lines or contraband
+        proposals are accepted into canon.
       </P>
 
       <H3El>Narrative-Scar</H3El>

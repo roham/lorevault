@@ -53,8 +53,9 @@ export function SectionCrossReference() {
       <P>
         <strong>§ 4 (Rarity & Supply)</strong> draws on diff-05 (the iceberg 2:1:8 ratio
         that scales with rarity — high-rarity cards carry more buried weight per surface
-        unit) and diff-03 (the Contraband-Rare tier as a doctrinal commitment, not just an
-        edition-size choice). The Pane archetype mix per Series (Tentpole, Adjacent, Foil,
+        unit) and diff-03 (the Contraband-Rare tier as a doctrinal commitment that
+        determines the edition-size choice). The Pane archetype mix per Series (Tentpole,
+        Adjacent, Foil,
         Wildcard) is from OPUS-THIRD-VOICE § 7.
       </P>
 

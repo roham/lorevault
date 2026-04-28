@@ -87,7 +87,7 @@ export function SectionMarketplace() {
         for Old-Ones-Persist. The badge is rendered in the same visual register as the
         rarity chip, so the buyer sees rarity and contraband-status at the same glance.
         Contraband cards command a structural premium beyond what their edition size would
-        suggest, because the secondary market price reflects narrative meaning, not just
+        suggest, because the secondary market price reflects narrative meaning alongside
         scarcity. A Common-edition contraband card may clear above a Rare-edition
         non-contraband card from the same Pane; the doctrine permits this, and the
         marketplace UI surfaces the two metrics separately so a collector can read the

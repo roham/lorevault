@@ -100,8 +100,8 @@ Return Visit
         browsing the marketplace for the second missing card in their starter set, they pass
         a card with a small fairy-fruit glyph in the corner — the contraband badge. They tap
         it. The card frame surfaces the contraband&rsquo;s structural meaning in two lines.
-        The visitor learns, without being lectured, that some cards in a Pane are not just
-        rare but <I>forbidden</I>.
+        The visitor learns, without being lectured, that some cards in a Pane are
+        <I> forbidden</I> as well as rare.
       </P>
 
       <H3El>First Contraband → First Trade → First Game → Return Visit</H3El>
