@@ -1,0 +1,195 @@
+{
+  "run_tag": "GDDV2",
+  "date": "2026-04-27",
+  "doctrine_source": "kaaos-knowledge/answers/lorevault-second-opinions/2026-04-27/OPUS-THIRD-VOICE.md",
+  "architectural_diffs": [
+    {
+      "id": "diff-01",
+      "v1_position": "5 Universes as filing-cabinet shelving",
+      "v2_position": "Infinite-substrate (Tier-A/B/C); 3-5 active per Series with Tentpole / Adjacent / Foil / Wildcard archetypes",
+      "literary_anchor": "Calvino, Invisible Cities — every city is a variant of one underlying city (Venice)",
+      "card_implication": "Cards carry Pane attribution, not Universe attribution; no card belongs to a named IP bucket"
+    },
+    {
+      "id": "diff-02",
+      "v1_position": "Universes ARE IP-buckets (Doyle = Baker Street, etc.)",
+      "v2_position": "Universes are cosmological-variant Panes; multi-pantheon coexistence within each",
+      "literary_anchor": "Borges, Tlön, Uqbar — idealism as cosmological axiom, derived to grammar and material objects",
+      "card_implication": "A Pane titled 'Old-Ones-Persist' contains multiple pantheons warped by that axiom; it is not a Cthulhu-licensed bucket"
+    },
+    {
+      "id": "diff-03",
+      "v1_position": "Cosmology = 'the Lattice and the Lampblack' framed top-down",
+      "v2_position": "Each Pane needs CONTRABAND (Mirrlees, Lud-in-the-Mist) — bottom-up world-leak primitive",
+      "literary_anchor": "Mirrlees, Lud-in-the-Mist — the cosmology leaks through civic life via forbidden fruit, a missing word, a banned color",
+      "card_implication": "Every Pane has one structural contraband: the thing the world's law forbids that is nevertheless eaten, said, pulled across the border; rare card economy rides on this"
+    },
+    {
+      "id": "diff-04",
+      "v1_position": "One verb / 'mechanical thesis' per Pane",
+      "v2_position": "3-5 element rule-grammar per Pane (Le Guin, Earthsea: true-names + balance + unmade)",
+      "literary_anchor": "Le Guin, Earthsea — three-element grammar (true names + balance + the unmade) holds across all books",
+      "card_implication": "Designers can recite the Pane's grammar from memory; every flavor line, card name, mechanic, and art brief is constrained by it"
+    },
+    {
+      "id": "diff-05",
+      "v1_position": "Iceberg 1:2:4 (Surface / Echo / Deep) per card",
+      "v2_position": "Iceberg 2:1:8 with ONE buried weight per Pane (Mirrlees-Lud-in-the-Mist model)",
+      "literary_anchor": "Mirrlees, Lud-in-the-Mist — almost all surface, almost no echo, one enormous unspoken weight (Faerie itself)",
+      "card_implication": "Surface over-weighted for 7-second first encounter; one buried weight per Pane tracked and defended; cards that add new mysteries without metabolizing existing weight get cut"
+    },
+    {
+      "id": "diff-06",
+      "v1_position": "Lampblack residue ordered prop-first",
+      "v2_position": "Hierarchy reordered: Gesture > Cosmological-relation > Wound > Forbidden-act > Role > Silhouette > Prop",
+      "literary_anchor": "Crowley, Little, Big — same gesture executed under different cosmological pressures; Borges, Pierre Menard — same words mean different things in different contexts",
+      "card_implication": "Cross-Pane variants lead with the gesture (Holmes's refusal-to-admit-ignorance), not the pipe; props used sparingly, at most every other variant"
+    },
+    {
+      "id": "diff-07",
+      "v1_position": "Multi-pantheon implied as jurisdictional",
+      "v2_position": "Incommensurable cohabitation — different gods bring different sentence rhythms; prose warps locally near each pantheon (Marlon James, Black Leopard Red Wolf)",
+      "literary_anchor": "Marlon James, Black Leopard Red Wolf — different mythic systems share ground on incompatible logics; Wecker, The Golem and the Jinni — per-card density over per-Pane variety",
+      "card_implication": "Translation cost is a flavor scar at cross-pantheon card interactions; art direction and card frame warp locally near different pantheon figures"
+    },
+    {
+      "id": "diff-08",
+      "v1_position": "Tweak rule: 4-test gate (Recognition / Necessity / Consequence / Voice-Inevitability)",
+      "v2_position": "Plus Footnote Test (Clarke) + Prose-Signature Test (Valente). 6 tests total.",
+      "literary_anchor": "Clarke, Jonathan Strange — footnote as worldbuilding artifact; Valente, Deathless — sentence rhythm carries cosmology",
+      "card_implication": "Each tweaked figure must imply an in-world commentary tradition; each flavor line must scan as belonging only to its Pane"
+    },
+    {
+      "id": "diff-09",
+      "v1_position": "No participation architecture",
+      "v2_position": "5-tier (Tier 0 day-1 passive → Tier 4 canon-promoted-contribution); Series 1 ships participation-disabled",
+      "literary_anchor": "SCP Foundation, Homestuck, RWBY — participatory cosmology; fans contribute, retcon, archive, re-perform the world",
+      "card_implication": "Will fans bring their own contraband across the border? Architecture answers yes eventually; Series 1 ships disabled but ladder is visible"
+    },
+    {
+      "id": "diff-10",
+      "v1_position": "Card creation as one-shot",
+      "v2_position": "Multi-wave pipeline (8 stages — stochasticity at 2/3/4/5, determinism at 1/6/7/8)",
+      "literary_anchor": "Production architecture enabling consistent Pane-grammar expression under live-ops pressure",
+      "card_implication": "Stochastic stages (2-5) allow controlled variation within grammar; deterministic stages (1,6,7,8) enforce grammar lock and quality gate"
+    }
+  ],
+  "new_sections": [
+    {
+      "id": "new-01",
+      "title": "The 95/5 Rule — Silhouette-Glance Architecture",
+      "axiom": "Architecture must deliver mythic-invariant satisfaction at 0.4-second silhouette-glance for 95% of collectors while rewarding the interpretive 5% with the buried weight.",
+      "failure_mode_v1_avoided": "Under-specifying the silhouette-glance layer — treating the median collector as a literary reader",
+      "mechanism": "Surface over-weighted in 2:1:8 iceberg; silhouette-glance promise defined per section in outline; vibe legible without reading"
+    },
+    {
+      "id": "new-02",
+      "title": "Pane Grammar as Machine-Readable Spec",
+      "axiom": "In 2027+ AI-ops production, the moat is the rule's consistency under live-ops pressure. The grammar IS the system prompt.",
+      "failure_mode_v1_avoided": "Editorial guide that drifts under live-ops pressure; grammar as slogan not constraint",
+      "mechanism": "Each Pane's rule-set expressed as JSON-shaped spec constrainable by renderer/writer agent; pane_grammar_schema defines required fields"
+    },
+    {
+      "id": "new-03",
+      "title": "Participation Architecture — The Five Tiers",
+      "axiom": "The actual competitor is fan-canon ecosystems. Will fans bring their own contraband across the border?",
+      "failure_mode_v1_avoided": "Authored object that decays vs substrate that compounds; walking past the participatory question entirely",
+      "mechanism": "Five-tier ladder (0-4) with concrete behaviors per tier; Series 1 ships participation-disabled but ladder visible and architected"
+    }
+  ],
+  "opus_reframings": [
+    {
+      "id": "reframe-01",
+      "quote": "Pane-as-pitch-deck is the failure mode, not Pane-inflation. Heresy without leak is theology. Every Pane needs a contraband.",
+      "application_to_gdd": "Open the CONTRABAND section with this reframing; use it to explain why top-down cosmology fails without bottom-up leak"
+    },
+    {
+      "id": "reframe-02",
+      "quote": "The rule is not 'make it different.' The rule is: make the difference reveal the world.",
+      "application_to_gdd": "Quote verbatim in the GDD V2 opening section — this is the load-bearing sentence"
+    },
+    {
+      "id": "reframe-03",
+      "quote": "A Pane needs a one-sentence heresy that REWRITES THE COSMOS. Tedium is the test. If your axiom doesn't tell the cards what time of day it is, what people fear in the third hour after midnight, what verbs are used for 'to die' — it's a logline, not a cosmology.",
+      "application_to_gdd": "Applied in the Pane-axiom framing section and the 6-test gate section"
+    },
+    {
+      "id": "reframe-04",
+      "quote": "Coexistence is INCOMMENSURABLE COHABITATION, not jurisdictional. Three pantheons rendered with theological seriousness, warped locally, with translation costs visible at card-interaction.",
+      "application_to_gdd": "Core of the incommensurable-cohabitation section; Pratchett + Marlon James as models; Riordan as counter-model"
+    },
+    {
+      "id": "reframe-05",
+      "quote": "Hire prose stylists, not lore writers. Pay them more than the artists.",
+      "application_to_gdd": "Stated in the voice section and in the 6-test gate section under Prose-Signature Test"
+    },
+    {
+      "id": "reframe-06",
+      "quote": "The Footnote Test (Clarke): can a competent worldbuilder write a plausible 80-word in-world scholarly footnote about this card? If not, the tweak is a typo wearing a moustache.",
+      "application_to_gdd": "One of the six tests in the tweak-gate section; illustrated with a concrete near-real example"
+    },
+    {
+      "id": "reframe-07",
+      "quote": "Lampblack is the darkening of the gesture under a new cosmology (Crowley, Little, Big; Borges, Pierre Menard). At high rarity, ship literally identical card text varying only by Pane attribution. This will horrify a normal CCG designer. It is correct.",
+      "application_to_gdd": "Stated in the Lampblack-hierarchy section and the Pierre-Menard-at-industrial-scale section"
+    },
+    {
+      "id": "reframe-08",
+      "quote": "The 95/5 rule: architecture must deliver mythic-invariant satisfaction at the silhouette-glance level for 95% while rewarding the 5% with the buried weight.",
+      "application_to_gdd": "Woven into at least 4 sections; receives its own first-class section"
+    }
+  ],
+  "pane_grammar_schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "PaneGrammar",
+    "description": "Machine-readable specification for a LoreVault Pane's rule-grammar. This is the system prompt for the live-ops generation pipeline.",
+    "type": "object",
+    "required": ["pane_id", "axiom", "heresy_sentence", "grammar_elements", "contraband", "sentence_rhythm", "verb_for_to_die", "third_hour_fear", "smallest_currency", "commonest_crime", "tedium_marker", "buried_weight"],
+    "properties": {
+      "pane_id": { "type": "string", "description": "Unique slug identifier for the Pane" },
+      "axiom": { "type": "string", "description": "One-sentence cosmological heresy that rewrites the cosmos" },
+      "heresy_sentence": { "type": "string", "description": "The axiom expressed as a daily weather condition, not an elevator pitch" },
+      "grammar_elements": {
+        "type": "array",
+        "minItems": 3,
+        "maxItems": 5,
+        "items": { "type": "string" },
+        "description": "3-5 element rule-grammar. Le Guin model: [true-names, balance, the-unmade]. Must be recitable from memory."
+      },
+      "contraband": {
+        "type": "object",
+        "required": ["what", "who_forbids", "who_eats", "card_economy_role"],
+        "properties": {
+          "what": { "type": "string", "description": "The specific forbidden thing — a fruit, a verb, a color, a name" },
+          "who_forbids": { "type": "string" },
+          "who_eats": { "type": "string" },
+          "card_economy_role": { "type": "string", "description": "How rare cards in this Pane use contraband as their premium signal" }
+        }
+      },
+      "sentence_rhythm": {
+        "type": "string",
+        "enum": ["Borgesian-formal", "Mirrlees-civic", "Marlon-James-warping", "Le-Guin-spare", "Clarke-footnoted", "Valente-paratactic"],
+        "description": "Dominant prose register for flavor text"
+      },
+      "verb_for_to_die": { "type": "string", "description": "The Pane-specific verb or phrase used when someone dies. Borges-grade specificity required." },
+      "third_hour_fear": { "type": "string", "description": "What people fear in the third hour after midnight in this Pane" },
+      "smallest_currency": { "type": "string", "description": "The smallest unit of exchange in this Pane's economy" },
+      "commonest_crime": { "type": "string", "description": "The most frequently committed transgression in this Pane" },
+      "tedium_marker": { "type": "string", "description": "The specific boredom only this cosmology produces — Borges's test" },
+      "buried_weight": { "type": "string", "description": "The one enormous unspoken weight under all cards in this Pane (Faerie in Lud, Idealism in Tlön)" },
+      "pantheons": {
+        "type": "array",
+        "maxItems": 5,
+        "items": {
+          "type": "object",
+          "required": ["name", "sentence_rhythm_override", "translation_cost_flavor"],
+          "properties": {
+            "name": { "type": "string" },
+            "sentence_rhythm_override": { "type": "string", "description": "How prose warps near this pantheon" },
+            "translation_cost_flavor": { "type": "string", "description": "The visible scar when this pantheon interacts with another" }
+          }
+        }
+      }
+    }
+  }
+}

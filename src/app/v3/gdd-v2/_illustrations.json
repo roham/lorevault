@@ -1,0 +1,121 @@
+{
+  "version": "1.0.0",
+  "run_tag": "GDDV2",
+  "date": "2026-04-27",
+  "render_pipeline_status": "PENDING_PIPELINE",
+  "notes": "Illustration briefs for GDD V2 sections requiring hero or schematic visuals. All currently rendered in-page as styled placeholders pending pipeline run. Aspect ratios are advisory; render layer may up-rez/crop to spec.",
+  "briefs": [
+    {
+      "id": "hero-05-contraband",
+      "section_id": "section-5",
+      "title": "Lud-of-the-Mist border post at dusk",
+      "style_direction": "Mirrlees-civic register rendered in oils — bourgeois town painting with one wrong color. Composition density medium-high. Palette dominated by accountancy browns and customs-house slate, with a single warm-rotten-honey accent on the contraband fruit at upper-right of the wagon.",
+      "composition": "Three-quarter ground perspective. A horse-cart at center-left, half-loaded with lidded wooden crates. Customs officer at center-right, bent over a ledger on a podium; wearing the stolid coat of a Lud functionary. Carter at far left, half-turned away from the officer, eyes on the hill in the middle distance. The hill has the wrong color — that is the only fantastical element in the frame.",
+      "mood": "Quiet civic discipline cracked by a single visible leak. The painting must feel like it could be in a town museum and is instead the evidence of a cosmological breach.",
+      "negative_prompts": [
+        "no fairies visible",
+        "no overt magic — no glow, no sparkle, no rune",
+        "no characters facing camera in heroic posture",
+        "no floating objects",
+        "no dramatic lighting beyond dusk"
+      ],
+      "aspect_ratio": "16 / 9",
+      "render_status": "PENDING_PIPELINE"
+    },
+    {
+      "id": "hero-07-iceberg",
+      "section_id": "section-7",
+      "title": "2:1:8 iceberg schematic",
+      "style_direction": "Architectural diagram. Minimal. Two thin gold rules above one thinner blue rule above an enormous unlit dark mass with no contour. The mass occupies roughly two-thirds of the frame and is a felt presence rather than a shape.",
+      "composition": "Vertical alignment. Top: a single thin gold line labeled 'surface (2)'. Below it: a thinner blue line labeled 'echo (1)'. Below it: a dark mass that fills the lower two-thirds of the frame, labeled small 'deep (8)' in a corner. Underneath, near the very bottom, a single italic phrase: 'one buried weight per Pane'.",
+      "mood": "Stilled. The diagram should feel like a load-bearing engineering drawing, not an infographic.",
+      "negative_prompts": [
+        "no actual iceberg illustration (no ice, no water)",
+        "no decorative flourishes",
+        "no color beyond palette (gold, blue, dark)",
+        "no chart-junk"
+      ],
+      "aspect_ratio": "3 / 2",
+      "render_status": "PENDING_PIPELINE"
+    },
+    {
+      "id": "hero-08-hierarchy",
+      "section_id": "section-8",
+      "title": "Lampblack hierarchy — vertical stack",
+      "style_direction": "Typographic diagram in the same restrained register. A vertical stack of seven terms, the top three rendered in gold at full strength, the bottom four progressively fading into the page. Hairline rules separate adjacent terms.",
+      "composition": "Single vertical column. Terms in italic serif: Gesture / Cosmological-relation / Wound / Forbidden-act / Role / Silhouette / Prop. Top to bottom. Top three terms at full opacity in gold; bottom four step down 20-30 percent each, ending at near-illegible at 'Prop'.",
+      "mood": "A hierarchy that reads as a moral one. The top is what carries the cosmology; the bottom is what survives only as residue.",
+      "negative_prompts": [
+        "no figure illustrations",
+        "no boxes around terms",
+        "no arrows",
+        "no color beyond gold/dim-paper"
+      ],
+      "aspect_ratio": "3 / 4",
+      "render_status": "PENDING_PIPELINE"
+    },
+    {
+      "id": "hero-09-cohabitation",
+      "section_id": "section-9",
+      "title": "Three pantheons, one table",
+      "style_direction": "Three card-frames at the same wooden table, each frame rendered in a different visual grammar. The first frame is bordered with formal scribe-line in flat slate. The second frame is wrapped in a curling vine of names that escape the margin into the surrounding wood. The third frame is a window with no glass — the framing line is incomplete on the right side as if the rule could not finish drawing it. The figures inside the frames are abstracted — only their gestures legible — and none of them is looking at the others.",
+      "composition": "Top-down view of a wooden table. Three card-shaped objects laid in a triangle. Each card&apos;s frame is in a different visual grammar. The lighting is even — no figure is foregrounded; the frames are the subject.",
+      "mood": "Three pantheons sharing ground without sharing a court. The viewer should feel that the three frames cannot speak to each other.",
+      "negative_prompts": [
+        "no pantheon symbols (no crosses, no thunderbolts, no ankh)",
+        "no figures rendered fully",
+        "no overlapping frames",
+        "no warm unifying light"
+      ],
+      "aspect_ratio": "16 / 9",
+      "render_status": "PENDING_PIPELINE"
+    },
+    {
+      "id": "hero-10-footnote",
+      "section_id": "section-10",
+      "title": "Six-test gate — abstract checkpoint",
+      "style_direction": "Optional. A spread page of an in-world scholarly journal showing six adjacent stamps in the margin, four of them faded (the V1 inheritance) and two of them fresh (the V2 additions: Footnote, Prose-Signature). The journal page itself is not legible — the worldbuilding artifact is the marginalia.",
+      "composition": "Page edge centered. Six rectangular stamp impressions vertically aligned in the margin. The top four are old, smudged, gold-faded. The bottom two are clean and recent, blue-ink crisp.",
+      "mood": "A scholarly artifact. The reader should feel that the gate is a real procedure conducted on real pages.",
+      "negative_prompts": [
+        "no readable text on the journal page",
+        "no checklist iconography",
+        "no modern-document feel"
+      ],
+      "aspect_ratio": "4 / 5",
+      "render_status": "PENDING_PIPELINE"
+    },
+    {
+      "id": "hero-12-pipeline",
+      "section_id": "section-12",
+      "title": "Eight-stage pipeline diagram",
+      "style_direction": "Horizontal procedural diagram. Eight nodes in a row. Stages 2-5 shown in blue (stochastic block); stages 1, 6, 7, 8 shown in gold (deterministic frame). Connecting lines between nodes are thin. Above stage 7 floats a small iceberg-2:1:8 marker echoing the section 7 schematic.",
+      "composition": "Eight nodes in a single horizontal sequence. Each node is a small numbered disc with a one-word label beneath: 1 grammar-lock / 2 figure / 3 axiom / 4 flavor / 5 art / 6 gate / 7 audit / 8 release. Stochastic block (2-5) shaded blue; deterministic block (1, 6, 7, 8) shaded gold. The 7-audit node has the iceberg marker hovering above it.",
+      "mood": "Engineering drawing for a literary production line. Functional. Quiet.",
+      "negative_prompts": [
+        "no conveyor-belt visual cliches",
+        "no factory imagery",
+        "no human figures",
+        "no excessive icon density"
+      ],
+      "aspect_ratio": "16 / 9",
+      "render_status": "PENDING_PIPELINE"
+    },
+    {
+      "id": "hero-13-ladder",
+      "section_id": "section-13",
+      "title": "Participation ladder — five rungs",
+      "style_direction": "A vertical wooden ladder seen against a dark interior. Five rungs. The bottom rung is in shadow (Tier 0). The fifth rung carries a small gold plaque labelled 'Pane Record' (Tier 4). Between the second and third rung, a thin chain marked 'editorial gate'. Between the third and fourth rung, a heavier chain marked 'council gate'. The chains do not block the rungs — they hang beside them as procedural markers, not barriers.",
+      "composition": "Single ladder centered, slightly to right of frame. Looking up the ladder from a low angle. The interior beyond the ladder is dim wood; no other figures.",
+      "mood": "Architectural. A real ladder for real climbing, with the gates as procedural markers rather than locked doors.",
+      "negative_prompts": [
+        "no human figures climbing",
+        "no glow on the top rung",
+        "no fantasy lighting",
+        "no symbolic objects on the rungs"
+      ],
+      "aspect_ratio": "3 / 4",
+      "render_status": "PENDING_PIPELINE"
+    }
+  ]
+}
