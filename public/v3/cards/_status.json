@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-04-28T03:22:50.072Z",
+  "manifest_source": "test-fallback",
+  "progress": {
+    "complete": 19,
+    "failed": 0,
+    "skipped": 2,
+    "dry": 0,
+    "no_brief": 0
+  },
+  "done": true
+}

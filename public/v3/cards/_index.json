@@ -1,0 +1,233 @@
+[
+  {
+    "card_id": "lud-border-001",
+    "pane": "lud-border",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "A civic building entrance at dusk, Art Nouveau gate, honey-amber light filtering through, warm gold tones, architectural silhouette, no people visible. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:08:10.939Z",
+    "file_path": "public/v3/cards/lud-border/lud-border-001/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1856339
+  },
+  {
+    "card_id": "lud-border-001",
+    "pane": "lud-border",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "A hand completing a form on parchment, close detail, warm amber light on paper, ink and pen tip, honey-gold tones, bureaucratic precision, no face. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:08:18.724Z",
+    "file_path": "public/v3/cards/lud-border/lud-border-001/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1451308
+  },
+  {
+    "card_id": "lud-border-001",
+    "pane": "lud-border",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "Inside a civic customs hall, warm amber light through high windows, Art Nouveau ironwork, a single figure in silhouette at a counter, warm honey-gold palette, no face visible. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:09:46.678Z",
+    "file_path": "public/v3/cards/lud-border/lud-border-001/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1712356
+  },
+  {
+    "card_id": "lud-border-002",
+    "pane": "lud-border",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "An Art Nouveau threshold, ornate ironwork casting amber shadows on tile, no figures, warm honey light from beyond. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:10:55.335Z",
+    "file_path": "public/v3/cards/lud-border/lud-border-002/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1717579
+  },
+  {
+    "card_id": "lud-border-002",
+    "pane": "lud-border",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A wide civic vestibule, Art Nouveau pillars, two seated figures in silhouette waiting, honey-amber light from a single tall window, faintly wrong proportions in one column. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:12:08.969Z",
+    "file_path": "public/v3/cards/lud-border/lud-border-002/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1354471
+  },
+  {
+    "card_id": "lud-border-002",
+    "pane": "lud-border",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "A close-up of an embossed brass civic seal being pressed onto a document, honey-gold light, fine engraved detail, warm tones. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:12:12.198Z",
+    "file_path": "public/v3/cards/lud-border/lud-border-002/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1296000
+  },
+  {
+    "card_id": "old-ones-persist-001",
+    "pane": "old-ones-persist",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "An infinite library hallway, cold institutional light, recursive shelving extending to horizon, Borges aesthetic, architectural horror in geometry, no figures. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:13:18.916Z",
+    "file_path": "public/v3/cards/old-ones-persist/old-ones-persist-001/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1394954
+  },
+  {
+    "card_id": "old-ones-persist-001",
+    "pane": "old-ones-persist",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "Looking down an infinite library corridor, cold fluorescent light, identical shelves, a distant figure cataloguing in silhouette, dread in the repetition. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:14:16.962Z",
+    "file_path": "public/v3/cards/old-ones-persist/old-ones-persist-001/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1685279
+  },
+  {
+    "card_id": "old-ones-persist-001",
+    "pane": "old-ones-persist",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "A hand placing a book in an infinite shelf, cold light, precise movement, infinite identical shelves behind extending into darkness. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:14:20.368Z",
+    "file_path": "public/v3/cards/old-ones-persist/old-ones-persist-001/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1433788
+  },
+  {
+    "card_id": "old-ones-persist-002",
+    "pane": "old-ones-persist",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "Endless ranks of identical desks under cold light, vanishing point geometry, no figures, paper stacks, Borgesian repetition. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:15:15.829Z",
+    "file_path": "public/v3/cards/old-ones-persist/old-ones-persist-002/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1486163
+  },
+  {
+    "card_id": "old-ones-persist-002",
+    "pane": "old-ones-persist",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A single bureaucrat in silhouette stamping a document, surrounded by identical empty desks vanishing into cold light, no face shown. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:16:24.913Z",
+    "file_path": "public/v3/cards/old-ones-persist/old-ones-persist-002/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1415586
+  },
+  {
+    "card_id": "old-ones-persist-002",
+    "pane": "old-ones-persist",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "A close-up of a rubber stamp pressing ink on a form, cold institutional fluorescent light, sharp shadow, paper grain visible. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:16:28.787Z",
+    "file_path": "public/v3/cards/old-ones-persist/old-ones-persist-002/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1304278
+  },
+  {
+    "card_id": "sinterklaas-reigns-001",
+    "pane": "sinterklaas-reigns",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "A winter civic chamber, cold paper-white light, a single open ledger on a tall desk, monochrome except one warm honey detail. Pane visual contract: cold paper light, winter civic space, monochromatic except one warm detail, ledger-witnessing stillness.",
+    "timestamp": "2026-04-28T03:17:38.530Z",
+    "file_path": "public/v3/cards/sinterklaas-reigns/sinterklaas-reigns-001/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1713790
+  },
+  {
+    "card_id": "sinterklaas-reigns-001",
+    "pane": "sinterklaas-reigns",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A winter hall, cold paper light from clerestory windows, an open ledger on a long oak table, snow-flakes on the sill, one warm candle as the lone color note. Pane visual contract: cold paper light, winter civic space, monochromatic except one warm detail, ledger-witnessing stillness.",
+    "timestamp": "2026-04-28T03:18:41.925Z",
+    "file_path": "public/v3/cards/sinterklaas-reigns/sinterklaas-reigns-001/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1865464
+  },
+  {
+    "card_id": "sinterklaas-reigns-001",
+    "pane": "sinterklaas-reigns",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "A hand turning a ledger page, ink and quill nearby, cold winter light, monochrome except one warm gold buckle, paper texture visible. Pane visual contract: cold paper light, winter civic space, monochromatic except one warm detail, ledger-witnessing stillness.",
+    "timestamp": "2026-04-28T03:18:48.261Z",
+    "file_path": "public/v3/cards/sinterklaas-reigns/sinterklaas-reigns-001/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1813243
+  },
+  {
+    "card_id": "true-names-persist-001",
+    "pane": "true-names-persist",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "A weathered standing stone at sea cliff edge, deep sea-green palette, oceanic depth, minimal composition, ancient precision. Pane visual contract: deep sea-green palette, earned ancient precision, negative space weighted, oceanic depth implied, minimal props, Le Guin aesthetic.",
+    "timestamp": "2026-04-28T03:19:40.304Z",
+    "file_path": "public/v3/cards/true-names-persist/true-names-persist-001/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1759097
+  },
+  {
+    "card_id": "true-names-persist-001",
+    "pane": "true-names-persist",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A figure in silhouette before a name-carved standing stone, deep sea-green light, weighted negative space, distant ocean, Le Guin aesthetic. Pane visual contract: deep sea-green palette, earned ancient precision, negative space weighted, oceanic depth implied, minimal props, Le Guin aesthetic.",
+    "timestamp": "2026-04-28T03:20:25.251Z",
+    "file_path": "public/v3/cards/true-names-persist/true-names-persist-001/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1319866
+  },
+  {
+    "card_id": "true-names-persist-001",
+    "pane": "true-names-persist",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "A hand tracing carved letters on weathered stone, sea-green tones, salt and lichen on stone surface, fine carved detail. Pane visual contract: deep sea-green palette, earned ancient precision, negative space weighted, oceanic depth implied, minimal props, Le Guin aesthetic.",
+    "timestamp": "2026-04-28T03:20:29.979Z",
+    "file_path": "public/v3/cards/true-names-persist/true-names-persist-001/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 2299982
+  },
+  {
+    "card_id": "holmes-canonical-london-001",
+    "pane": "holmes-canonical-london",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "A Victorian gaslit street at fog-dusk, gas lamps glowing amber-grey, wrought iron rail, no figures, confident precise line. Pane visual contract: Victorian gaslit interior, amber-grey palette, confident precise line, observation-implied, no dramatic poses, Doyle aesthetic.",
+    "timestamp": "2026-04-28T03:21:24.777Z",
+    "file_path": "public/v3/cards/holmes-canonical-london/holmes-canonical-london-001/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1753083
+  },
+  {
+    "card_id": "holmes-canonical-london-001",
+    "pane": "holmes-canonical-london",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A Victorian study interior, gas lamp on desk, amber-grey palette, a single figure in silhouette examining a document, no dramatic pose. Pane visual contract: Victorian gaslit interior, amber-grey palette, confident precise line, observation-implied, no dramatic poses, Doyle aesthetic.",
+    "timestamp": "2026-04-28T03:22:45.020Z",
+    "file_path": "public/v3/cards/holmes-canonical-london/holmes-canonical-london-001/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1411672
+  },
+  {
+    "card_id": "holmes-canonical-london-001",
+    "pane": "holmes-canonical-london",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "A hand holding a magnifying lens over a small object on a desk, gas-lit amber light, precise observation, fine detail. Pane visual contract: Victorian gaslit interior, amber-grey palette, confident precise line, observation-implied, no dramatic poses, Doyle aesthetic.",
+    "timestamp": "2026-04-28T03:22:50.066Z",
+    "file_path": "public/v3/cards/holmes-canonical-london/holmes-canonical-london-001/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1710191
+  }
+]
