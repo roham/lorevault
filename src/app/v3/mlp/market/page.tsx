@@ -25,8 +25,8 @@ type FilterKey = 'all' | 'owned' | 'need-for-set' | 'contraband' | 'pierre-menar
 
 function MarketInner() {
   const sp = useSearchParams();
-  const setFilter = sp?.get('set');
-  const cardFilter = sp?.get('card');
+  const setFilterParam = sp?.get('set') ?? null;
+  const cardFilter = sp?.get('card') ?? null;
 
   const [filter, setFilter] = useState<FilterKey>('all');
   const [paneFilter, setPaneFilter] = useState<PaneId | 'all'>('all');
@@ -39,9 +39,9 @@ function MarketInner() {
     if (filter === 'need-for-set') list = list.filter((l) => l.card.setId.endsWith('-starter'));
     if (filter === 'pierre-menard') list = list.filter((l) => l.card.setId === 'pm-cycle');
     if (cardFilter) list = list.filter((l) => l.card.id === cardFilter);
-    if (setFilter) list = list.filter((l) => l.card.setId === setFilter);
+    if (setFilterParam) list = list.filter((l) => l.card.setId === setFilterParam);
     return list;
-  }, [filter, paneFilter, setFilter, cardFilter]);
+  }, [filter, paneFilter, setFilterParam, cardFilter]);
 
   const contrabandFeatured = MOCK_LISTINGS.filter((l) => l.card.rarity === 'contraband');
 

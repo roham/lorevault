@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   PANE_LIST,
@@ -32,14 +32,19 @@ function OnboardingInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialPane = searchParams?.get('pane') as PaneId | null;
+  const validInitial = initialPane && PANES[initialPane] ? initialPane : null;
   // If a Pane was preselected from /mlp tile, jump straight to screen 2.
-  const [screen, setScreen] = useState<ScreenIndex>(initialPane ? 2 : 1);
-  const [chosenPane, setChosenPane] = useState<PaneId | null>(
-    initialPane && PANES[initialPane] ? initialPane : null,
-  );
+  const [screen, setScreen] = useState<ScreenIndex>(validInitial ? 2 : 1);
+  const [chosenPane, setChosenPane] = useState<PaneId | null>(validInitial);
 
   // Pack state for screens 2–3
   const [packState, setPackState] = useState<PackState>('sealed');
+
+  // If somehow we land on a pane-dependent screen without a chosen pane,
+  // bounce back to screen 1 via effect (state mutation in render is illegal).
+  useEffect(() => {
+    if (screen > 1 && !chosenPane) setScreen(1);
+  }, [screen, chosenPane]);
 
   // Determine the pulled cards for the chosen Pane (rigged: 2 commons + 1 rare+).
   const pulledCards: CardType[] = useMemo(() => {
@@ -210,8 +215,7 @@ function OnboardingInner() {
   // ─── Screen 2 — Sealed pack ──────────────────────────────────────────────
   if (screen === 2) {
     if (!chosenPane) {
-      // Defensive — should never reach here without a chosen pane
-      setScreen(1);
+      // Defensive — useEffect above will bounce us back to screen 1
       return null;
     }
     const pane = PANES[chosenPane];
@@ -253,7 +257,6 @@ function OnboardingInner() {
   // ─── Screen 3 — Pack opening + reveal ────────────────────────────────────
   if (screen === 3) {
     if (!chosenPane) {
-      setScreen(1);
       return null;
     }
     const pane = PANES[chosenPane];
@@ -293,7 +296,6 @@ function OnboardingInner() {
   // ─── Screen 4 — Card depth (iceberg) ─────────────────────────────────────
   if (screen === 4) {
     if (!rarestCard) {
-      setScreen(1);
       return null;
     }
     return (
@@ -330,7 +332,6 @@ function OnboardingInner() {
   // ─── Screen 5 — Set hook ─────────────────────────────────────────────────
   if (screen === 5) {
     if (!chosenPane) {
-      setScreen(1);
       return null;
     }
     const pane = PANES[chosenPane];

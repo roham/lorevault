@@ -13,7 +13,6 @@ import {
   PANES,
   PANE_COLORS,
   PANE_LIST,
-  RARITY,
   SURFACE,
   TEXT,
   TYPE,

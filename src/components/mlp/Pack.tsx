@@ -1,9 +1,8 @@
 'use client';
 
-import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import type { Card as CardType, Pane, Rarity } from './types';
-import { PANE_COLORS, RARITY, SURFACE, TEXT, TYPE, BUTTON_PRIMARY } from './tokens';
+import { PANE_COLORS, RARITY, TEXT, TYPE, BUTTON_PRIMARY } from './tokens';
 import { Card } from './Card';
 
 export type PackState = 'sealed' | 'opening' | 'revealed';

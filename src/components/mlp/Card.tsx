@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import type { Card as CardType } from './types';
-import { PANE_COLORS, RARITY, SURFACE, TEXT, TYPE, CARD_ASPECT } from './tokens';
+import { PANE_COLORS, RARITY, TEXT, TYPE, CARD_ASPECT } from './tokens';
 import { ContrabandBadge } from './ContrabandBadge';
 
 interface CardProps {
