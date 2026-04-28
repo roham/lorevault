@@ -15,6 +15,8 @@ export default function MainChrome() {
   if (pathname.startsWith('/moodboard')) return null;
   if (pathname.startsWith("/v2")) return null;
   if (pathname.startsWith("/v3/gdd")) return null;
+  if (pathname.startsWith("/v3/mlp")) return null;
+  if (pathname.startsWith("/v3/moodboard")) return null;
 
   return (
     <>
