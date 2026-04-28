@@ -68,6 +68,19 @@ export default async function CardPage({ params }: Props) {
           <span className="text-zinc-300">{card.name}</span>
         </nav>
 
+        {/* Hero image — the rendered visual */}
+        <div
+          className="bg-black border border-zinc-800 rounded overflow-hidden mb-8"
+          style={{ aspectRatio: '16 / 9' }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/v3/cards/${pane}/${cardId}/hero.png`}
+            alt={`Hero render of ${card.name}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
         {/* Card header */}
         <header className="mb-10">
           <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
@@ -163,7 +176,7 @@ export default async function CardPage({ params }: Props) {
           <h2 className="text-zinc-500 uppercase tracking-widest text-xs mb-5">
             Render briefs
           </h2>
-          <RenderBriefTabs briefs={card.render_briefs} />
+          <RenderBriefTabs briefs={card.render_briefs} pane={pane} cardId={cardId} />
         </section>
 
         {/* Prev / Next navigation */}

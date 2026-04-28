@@ -10,6 +10,8 @@ interface RenderBriefs {
 
 interface RenderBriefTabsProps {
   briefs: RenderBriefs;
+  pane?: string;
+  cardId?: string;
 }
 
 type Tab = 'silhouette' | 'hero' | 'gesture_detail';
@@ -20,8 +22,24 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'gesture_detail', label: 'Gesture Detail' },
 ];
 
-export function RenderBriefTabs({ briefs }: RenderBriefTabsProps) {
+const FILE_BY_TAB: Record<Tab, string> = {
+  silhouette: 'silhouette.png',
+  hero: 'hero.png',
+  gesture_detail: 'gesture.png',
+};
+
+export function RenderBriefTabs({ briefs, pane, cardId }: RenderBriefTabsProps) {
   const [active, setActive] = useState<Tab>('silhouette');
+  const [imgOk, setImgOk] = useState<Record<Tab, boolean>>({
+    silhouette: true,
+    hero: true,
+    gesture_detail: true,
+  });
+
+  const imgPath =
+    pane && cardId
+      ? `/v3/cards/${pane}/${cardId}/${FILE_BY_TAB[active]}`
+      : null;
 
   return (
     <div className="border border-zinc-800 rounded overflow-hidden">
@@ -46,11 +64,33 @@ export function RenderBriefTabs({ briefs }: RenderBriefTabsProps) {
         ))}
       </div>
 
+      {/* Image */}
+      {imgPath && imgOk[active] && (
+        <div
+          className="bg-black flex items-center justify-center"
+          style={{ aspectRatio: active === 'hero' ? '16 / 9' : '1 / 1' }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imgPath}
+            alt={`${active} render of ${cardId}`}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            onError={() => setImgOk((s) => ({ ...s, [active]: false }))}
+          />
+        </div>
+      )}
+
       {/* Tab content */}
       <div className="p-4 bg-zinc-900/40" role="tabpanel">
         <p className="text-zinc-300 text-sm leading-relaxed">
           {briefs[active]}
         </p>
+        {imgPath && !imgOk[active] && (
+          <p className="text-zinc-500 text-xs mt-3 italic">
+            Render queued — pipeline still rendering this variant.
+          </p>
+        )}
       </div>
     </div>
   );
