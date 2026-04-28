@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         destination: '/v2',
         permanent: false,
       },
+      {
+        source: '/v3/gdd',
+        destination: '/v3/gdd-v2',
+        permanent: true,
+      },
     ];
   },
 };
