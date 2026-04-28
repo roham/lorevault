@@ -16,8 +16,8 @@ import {
   BUTTON_PRIMARY,
   BUTTON_SECONDARY,
   type Pane,
-  type Card as CardType,
 } from '@/components/mlp';
+import type { Card as CardType } from '@/components/mlp/types';
 
 type StakeStep = 'choose-pane' | 'choose-card' | 'confirm' | 'staked';
 

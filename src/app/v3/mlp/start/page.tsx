@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   PANE_LIST,
@@ -21,8 +21,8 @@ import {
   ProgressIndicator,
   type PackState,
   type PaneId,
-  type Card as CardType,
 } from '@/components/mlp';
+import type { Card as CardType } from '@/components/mlp/types';
 
 type ScreenIndex = 1 | 2 | 3 | 4 | 5;
 

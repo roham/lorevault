@@ -13,8 +13,8 @@ import {
   TEXT,
   TYPE,
   PANEL,
-  type Card as CardType,
 } from '@/components/mlp';
+import type { Card as CardType } from '@/components/mlp/types';
 
 interface ProfilePageProps {
   params: Promise<{ handle: string }>;

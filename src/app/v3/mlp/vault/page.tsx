@@ -18,9 +18,9 @@ import {
   TYPE,
   PANEL,
   BUTTON_SECONDARY,
-  type Card as CardType,
   type PaneId,
 } from '@/components/mlp';
+import type { Card as CardType } from '@/components/mlp/types';
 
 type VaultView = 'pane' | 'set' | 'iceberg';
 
