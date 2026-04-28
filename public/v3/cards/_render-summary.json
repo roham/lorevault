@@ -1,0 +1,63 @@
+{
+  "track": "D",
+  "stage": "D.4 — manifest finalized",
+  "timestamp": "2026-04-28T03:32:00Z",
+  "manifest_source": "test-fallback (Track-B _manifest.json not delivered before Track-D execution)",
+  "totals": {
+    "renders_attempted": 30,
+    "renders_complete": 30,
+    "renders_failed": 0,
+    "renders_pending_pipeline": 0,
+    "cards": 10,
+    "variants_per_card": 3,
+    "total_size_mb": 45.8
+  },
+  "by_model": {
+    "gpt-image-2": 20,
+    "flux-1.1-pro": 10
+  },
+  "by_variant": {
+    "silhouette": 10,
+    "hero": 10,
+    "gesture": 10
+  },
+  "by_pane": {
+    "lud-border": 9,
+    "old-ones-persist": 9,
+    "sinterklaas-reigns": 6,
+    "true-names-persist": 3,
+    "holmes-canonical-london": 3
+  },
+  "wave_1_cards": [
+    "lud-border-001",
+    "lud-border-002",
+    "old-ones-persist-001",
+    "old-ones-persist-002",
+    "sinterklaas-reigns-001",
+    "true-names-persist-001",
+    "holmes-canonical-london-001"
+  ],
+  "wave_2_pierre_menard_triptych": [
+    "pm-threshold-lud",
+    "pm-threshold-old-ones",
+    "pm-threshold-sinterklaas"
+  ],
+  "pierre_menard_subject_unified": "A figure at a threshold, refusing to cross without understanding what they already know. Silhouette only, no visible face, architectural threshold prominent.",
+  "model_routing": "Default: silhouette+hero -> gpt-image-2 (composition), gesture -> flux-1.1-pro (fine detail). Cross-fallback enabled if either provider fails 3x.",
+  "pipeline_script": "scripts/render-lorevault.mjs (canonical) + scripts/render-lorevault.ts (shim)",
+  "npm_scripts": ["render", "render:dry"],
+  "pane_visual_contracts_locked": [
+    "lud-border (Mirrlees, Art Nouveau honey-amber)",
+    "old-ones-persist (Borges, infinite recursive cold)",
+    "sinterklaas-reigns (cold paper, monochrome+1 warm)",
+    "true-names-persist (Le Guin, deep sea-green)",
+    "holmes-canonical-london (Doyle, Victorian gaslit amber-grey)"
+  ],
+  "negative_prompt_universal": "no swords, no glowing weapons, no fantasy-default tropes, no stock mythic imagery, no anime, no logo overlays, no visible text, no lens flare, no dramatic fire, no generic fantasy art, no purple magical energy",
+  "notes": [
+    "Track-B manifest was not delivered before Track-D ran; pipeline used built-in test manifest covering all 5 panes + PM triptych.",
+    "All renders >1.2MB (none in solid-color error range <50KB).",
+    "Pipeline is idempotent: re-running skips existing PNGs unless --force.",
+    "When Track-B manifest lands, run `npm run render` to fill in the rest of the library — existing renders will be skipped automatically."
+  ]
+}
