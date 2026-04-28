@@ -13,7 +13,8 @@ export default function MainChrome() {
   // Prototype + moodboard + v2 routes use their own minimal shell — no main chrome
   if (pathname.startsWith('/prototype')) return null;
   if (pathname.startsWith('/moodboard')) return null;
-  if (pathname.startsWith('/v2')) return null;
+  if (pathname.startsWith("/v2")) return null;
+  if (pathname.startsWith("/v3/gdd")) return null;
 
   return (
     <>
