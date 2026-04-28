@@ -229,5 +229,104 @@
     "file_path": "public/v3/cards/holmes-canonical-london/holmes-canonical-london-001/gesture.png",
     "status": "complete",
     "file_size_bytes": 1710191
+  },
+  {
+    "card_id": "pm-threshold-lud",
+    "pane": "lud-border",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "A figure at a threshold, refusing to cross without understanding what they already know. The figure is a silhouette, no visible face. Architectural threshold prominent. Silhouette only, framed by an Art Nouveau honey-amber threshold.. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:24:18.459Z",
+    "file_path": "public/v3/cards/lud-border/pm-threshold-lud/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1780558
+  },
+  {
+    "card_id": "pm-threshold-lud",
+    "pane": "lud-border",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A figure at a threshold, refusing to cross without understanding what they already know. The figure is a silhouette, no visible face. Architectural threshold prominent. Pane lighting: warm Art Nouveau civic interior, honey-amber light, Mirrlees aesthetic.. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:25:24.015Z",
+    "file_path": "public/v3/cards/lud-border/pm-threshold-lud/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1789029
+  },
+  {
+    "card_id": "pm-threshold-lud",
+    "pane": "lud-border",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "Close-up of the same figure's hand resting on the threshold edge — honey-amber light, ornate Art Nouveau ironwork, no face.. Pane visual contract: warm Art Nouveau civic interior, honey-amber light, beautiful architecture with one element faintly wrong, no visible character faces, Mirrlees aesthetic.",
+    "timestamp": "2026-04-28T03:25:28.245Z",
+    "file_path": "public/v3/cards/lud-border/pm-threshold-lud/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1726306
+  },
+  {
+    "card_id": "pm-threshold-old-ones",
+    "pane": "old-ones-persist",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "A figure at a threshold, refusing to cross without understanding what they already know. The figure is a silhouette, no visible face. Architectural threshold prominent. Silhouette only, framed by an infinite recursive bureaucratic threshold.. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:26:35.886Z",
+    "file_path": "public/v3/cards/old-ones-persist/pm-threshold-old-ones/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1395573
+  },
+  {
+    "card_id": "pm-threshold-old-ones",
+    "pane": "old-ones-persist",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A figure at a threshold, refusing to cross without understanding what they already know. The figure is a silhouette, no visible face. Architectural threshold prominent. Pane lighting: cold infinite institutional hallway, recursive shelving, Borges aesthetic.. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:27:41.025Z",
+    "file_path": "public/v3/cards/old-ones-persist/pm-threshold-old-ones/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1402525
+  },
+  {
+    "card_id": "pm-threshold-old-ones",
+    "pane": "old-ones-persist",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "Close-up of the same figure's hand resting on the threshold edge — cold institutional fluorescent light, identical surfaces extending behind, no face.. Pane visual contract: infinite recursive institutional hallway, cold bureaucratic light, Borges-grade architectural repetition, dread implied through geometry not content.",
+    "timestamp": "2026-04-28T03:27:47.292Z",
+    "file_path": "public/v3/cards/old-ones-persist/pm-threshold-old-ones/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1271208
+  },
+  {
+    "card_id": "pm-threshold-sinterklaas",
+    "pane": "sinterklaas-reigns",
+    "variant": "silhouette",
+    "model": "gpt-image-2",
+    "prompt": "A figure at a threshold, refusing to cross without understanding what they already know. The figure is a silhouette, no visible face. Architectural threshold prominent. Silhouette only, framed by a cold winter civic threshold, paper-white light.. Pane visual contract: cold paper light, winter civic space, monochromatic except one warm detail, ledger-witnessing stillness.",
+    "timestamp": "2026-04-28T03:28:53.914Z",
+    "file_path": "public/v3/cards/sinterklaas-reigns/pm-threshold-sinterklaas/silhouette.png",
+    "status": "complete",
+    "file_size_bytes": 1535853
+  },
+  {
+    "card_id": "pm-threshold-sinterklaas",
+    "pane": "sinterklaas-reigns",
+    "variant": "hero",
+    "model": "gpt-image-2",
+    "prompt": "A figure at a threshold, refusing to cross without understanding what they already know. The figure is a silhouette, no visible face. Architectural threshold prominent. Pane lighting: cold paper light, winter civic space, monochrome except one warm detail.. Pane visual contract: cold paper light, winter civic space, monochromatic except one warm detail, ledger-witnessing stillness.",
+    "timestamp": "2026-04-28T03:29:55.211Z",
+    "file_path": "public/v3/cards/sinterklaas-reigns/pm-threshold-sinterklaas/hero.png",
+    "status": "complete",
+    "file_size_bytes": 1608499
+  },
+  {
+    "card_id": "pm-threshold-sinterklaas",
+    "pane": "sinterklaas-reigns",
+    "variant": "gesture",
+    "model": "flux-1.1-pro",
+    "prompt": "Close-up of the same figure's hand resting on the threshold edge — cold winter paper-white light, ledger and quill on a sill, one warm gold buckle, no face.. Pane visual contract: cold paper light, winter civic space, monochromatic except one warm detail, ledger-witnessing stillness.",
+    "timestamp": "2026-04-28T03:30:01.037Z",
+    "file_path": "public/v3/cards/sinterklaas-reigns/pm-threshold-sinterklaas/gesture.png",
+    "status": "complete",
+    "file_size_bytes": 1769329
   }
 ]
