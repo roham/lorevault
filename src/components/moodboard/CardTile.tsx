@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { ContrabandBadge } from './ContrabandBadge';
 
 type ContrabandRelation = 'carries' | 'refuses' | 'mediates' | 'exposes';
 
@@ -10,64 +9,65 @@ interface CardTileProps {
   paneSlug: string;
   cardSlug: string;
   name: string;
-  axiom: string;
-  flavorLine: string;
   contrabandRelation: ContrabandRelation;
   isPierreMenard: boolean;
 }
+
+const CONTRABAND_GLYPH: Record<ContrabandRelation, string> = {
+  carries:  '◆',
+  refuses:  '◇',
+  mediates: '◈',
+  exposes:  '◉',
+};
 
 export function CardTile({
   paneSlug,
   cardSlug,
   name,
-  axiom,
-  flavorLine,
   contrabandRelation,
   isPierreMenard,
 }: CardTileProps) {
   const [imgOk, setImgOk] = useState(true);
-  const truncatedAxiom =
-    axiom.length > 120 ? axiom.slice(0, 120).trimEnd() + '…' : axiom;
 
   return (
     <Link
       href={`/v3/moodboard/${paneSlug}/${cardSlug}`}
-      className="group block border border-zinc-800 rounded overflow-hidden bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-900/60 transition-all no-underline"
+      className="group relative block overflow-hidden rounded bg-black no-underline"
+      style={{ aspectRatio: '1 / 1' }}
     >
-      {imgOk && (
-        <div className="bg-black" style={{ aspectRatio: '1 / 1' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/v3/cards/${paneSlug}/${cardSlug}/silhouette.png`}
-            alt={`Silhouette of ${name}`}
-            className="w-full h-full object-cover"
-            loading="lazy"
-            onError={() => setImgOk(false)}
-          />
+      {imgOk ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`/v3/cards/${paneSlug}/${cardSlug}/silhouette.png`}
+          alt={name}
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-70"
+          loading="lazy"
+          onError={() => setImgOk(false)}
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 text-zinc-700 text-xs uppercase tracking-widest">
+          rendering
         </div>
       )}
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-zinc-100 text-base font-medium leading-snug group-hover:text-amber-400 transition-colors">
-            {name}
-          </h3>
-          {isPierreMenard && (
-            <span className="flex-shrink-0 text-[0.55rem] uppercase tracking-widest px-1.5 py-0.5 border border-amber-500/40 rounded text-amber-400 bg-amber-500/10">
-              PM
-            </span>
-          )}
-        </div>
+      {/* Top-right badges */}
+      <div className="absolute top-2 right-2 flex flex-col items-end gap-1.5 z-10">
+        {isPierreMenard && (
+          <span className="rounded border border-amber-400/60 bg-black/70 px-1.5 py-0.5 text-[0.5rem] uppercase tracking-widest text-amber-300 backdrop-blur-sm">
+            PM
+          </span>
+        )}
+        <span
+          title={`Contraband: ${contrabandRelation}`}
+          className="rounded border border-zinc-700 bg-black/70 px-1.5 py-0.5 text-[0.7rem] text-zinc-300 backdrop-blur-sm"
+        >
+          {CONTRABAND_GLYPH[contrabandRelation]}
+        </span>
+      </div>
 
-        <p className="text-zinc-400 text-sm leading-relaxed mb-3">
-          {truncatedAxiom}
-        </p>
-
-        <p className="text-zinc-500 text-xs italic leading-relaxed mb-3">
-          {flavorLine}
-        </p>
-
-        <ContrabandBadge relation={contrabandRelation} compact />
+      {/* Bottom name overlay — only on hover/focus */}
+      <div className="absolute inset-x-0 bottom-0 translate-y-1 bg-gradient-to-t from-black via-black/85 to-transparent p-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus:translate-y-0 group-focus:opacity-100">
+        <p className="text-sm leading-snug text-zinc-100">{name}</p>
       </div>
     </Link>
   );

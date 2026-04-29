@@ -5,31 +5,31 @@ import { CardTile } from '@/components/moodboard/CardTile';
 
 type ContrabandRelation = 'carries' | 'refuses' | 'mediates' | 'exposes';
 
-const PANE_META: Record<string, { displayName: string; doctrineHeader: string }> = {
+const PANE_META: Record<string, { displayName: string; axiom: string }> = {
   'lud-border': {
     displayName: 'Lud-Border',
-    doctrineHeader:
-      'The civic-Mirrlees pane. Honey-amber light. Bureaucratic ceremony as the last defense against a cosmological order the law cannot name. The form is the border. What cannot be written on the form crosses freely.',
+    axiom:
+      'The form is the border. What cannot be written on the form crosses freely.',
   },
   'old-ones-persist': {
     displayName: 'Old-Ones-Persist',
-    doctrineHeader:
-      'The Borges-warped archive. To catalogue is to be catalogued. The Old Ones are not entities — they are what remains when everything has been cross-referenced and the catalogue must point to itself. Cold fluorescent light and infinite stairs.',
+    axiom:
+      'To catalogue is to be catalogued.',
   },
   'sinterklaas-reigns': {
     displayName: 'Sinterklaas-Reigns',
-    doctrineHeader:
-      'The witnessing apparatus. The Good Book records not what a child did but what was witnessed. The annual accounting closes on December fifth. The unjust gift carries cosmological debt. Chimneys remember.',
+    axiom:
+      'The record is what makes events cosmological.',
   },
   'true-names-persist': {
     displayName: 'True-Names-Persist',
-    doctrineHeader:
-      'The naming-network pane. True names are cosmological tethers, not labels. The last speaker is the last load-bearing node. A stolen name does not empower the thief — it untethers the thing that was named.',
+    axiom:
+      'A stolen name does not empower the thief — it untethers the thing that was named.',
   },
   'holmes-canonical-london': {
     displayName: 'Holmes-Canonical-London',
-    doctrineHeader:
-      'The deduction-and-archive pane. Holmes deduces; Watson decides what the world can bear. The correct inference that cannot be stated remains correct, forever, without consequence. The published cases are the survivable ones.',
+    axiom:
+      'The published cases are the survivable ones.',
   },
 };
 
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props) {
   if (!meta) return {};
   return {
     title: `${meta.displayName} — Moodboard · LoreVault`,
-    description: meta.doctrineHeader.slice(0, 160),
+    description: meta.axiom,
   };
 }
 
@@ -60,50 +60,40 @@ export default async function PanePage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="max-w-4xl mx-auto px-5 py-16">
-
-        {/* Back link */}
+      <div className="mx-auto max-w-6xl px-5 py-12">
         <Link
           href="/v3/moodboard"
-          className="text-zinc-500 hover:text-zinc-300 text-sm transition-colors no-underline mb-8 block"
+          className="mb-10 inline-block text-xs uppercase tracking-widest text-zinc-500 no-underline transition-colors hover:text-zinc-300"
         >
-          ← The Moodboard
+          ← All Panes
         </Link>
 
-        {/* Header */}
-        <header className="mb-12">
-          <p className="text-amber-400 uppercase tracking-widest text-xs mb-3">
-            Pane
-          </p>
-          <h1 className="text-4xl font-medium italic text-zinc-100 mb-5 leading-tight">
+        {/* Header — Pane name + one-line axiom only */}
+        <header className="mb-10 max-w-3xl">
+          <p className="mb-3 text-xs uppercase tracking-widest text-amber-400">Pane</p>
+          <h1 className="mb-5 text-4xl font-medium italic leading-tight text-zinc-100 sm:text-5xl">
             {meta.displayName}
           </h1>
-          <p className="text-zinc-300 leading-relaxed max-w-2xl border-l-2 border-amber-500/40 pl-4 italic">
-            {meta.doctrineHeader}
+          <p className="border-l-2 border-amber-500/50 pl-4 text-lg italic leading-relaxed text-zinc-300">
+            {meta.axiom}
           </p>
         </header>
 
-        {/* Card grid */}
+        {/* Silhouette mosaic — 3 col mobile, 4 sm, 5 lg */}
         <section>
-          <p className="text-zinc-500 uppercase tracking-widest text-xs mb-5">
-            {cards.length} cards
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5">
             {cards.map((card) => (
               <CardTile
                 key={card.id}
                 paneSlug={pane}
                 cardSlug={card.id}
                 name={card.name}
-                axiom={card.axiom}
-                flavorLine={card.flavor_line}
                 contrabandRelation={card.contraband_relation as ContrabandRelation}
                 isPierreMenard={card.pierre_menard !== null}
               />
             ))}
           </div>
         </section>
-
       </div>
     </div>
   );
